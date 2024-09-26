@@ -1,11 +1,12 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const tourismGovernerSchema = new Schema(
   {
     Email: {
-        type:String,
-        required: true
+      type: String,
+      required: true,
     },
     UserName: {
       type: String,
@@ -15,25 +16,28 @@ const tourismGovernerSchema = new Schema(
       type: String,
       required: true,
     },
-    mobileNumber:{
-        type:String,
-        required:true
+    mobileNumber: {
+      type: String,
+      required: true,
     },
-    Nationality:{
-        type:Object,
-        required:true
+    Nationality: {
+      type: ObjectId,
+      required: true,
     },
-    DOB:{
-        type:Date,
-        required:true
+    DOB: {
+      type: Date,
+      required: true,
     },
-    Role:{
-        type:String,
-        required:true
-    }
+    Role: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const TourismGoverner = mongoose.model("TourismGoverner", tourismGovernerSchema);
-module.exports =TourismGoverner;
+const TourismGoverner = mongoose.model(
+  "TourismGoverner",
+  tourismGovernerSchema
+);
+module.exports = TourismGoverner;
