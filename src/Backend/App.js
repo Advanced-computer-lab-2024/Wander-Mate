@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 require("dotenv").config({ path: "../.env" });
+const { guestRegister } = require("./Routes/guestController");
 
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -22,3 +23,6 @@ mongoose
     });
   })
   .catch((err) => console.log(err));
+
+app.use(express.json());
+app.post("/guestRegister", guestRegister);
