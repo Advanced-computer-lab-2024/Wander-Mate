@@ -59,6 +59,53 @@ const touristRegister = async (req, res) => {
   }
 };
 
+const handleTourist = async (req, res) => {
+  const { touristID } = req.params;
+
+  try {
+    if (req.method === "GET") {
+      // Handle reading tourist information
+      const tourist = await userModel.findById(touristID).select("-Password"); // Exclude password field
+
+      if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found" });
+      }
+
+      return res.status(200).json(tourist);
+    } else if (req.method === "PUT") {
+      // Handle updating tourist information
+      const { Email, Password, MobileNumber, Nationality, DOB, Role } = req.body;
+
+      // Find the tourist
+      const tourist = await userModel.findById(touristID);
+
+      if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found" });
+      }
+
+      // Fields that can be updated (excluding UserName and Wallet)
+      if (Email) tourist.Email = Email;
+      if (Password) tourist.Password = Password; // Consider adding password hashing here
+      if (MobileNumber) tourist.MobileNumber = MobileNumber;
+      if (Nationality) tourist.Nationality = Nationality;
+      if (DOB) tourist.DOB = DOB;
+      if (Role) tourist.Role = Role;
+
+      // Save the updated tourist
+      const updatedTourist = await tourist.save();
+
+      return res.status(200).json({
+        message: "Tourist updated successfully",
+        updatedTourist: updatedTourist._id,
+      });
+    } else {
+      return res.status(405).json({ message: "Method not allowed" }); // Handle unsupported methods
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error processing request", error: error.message });
+  }
+};
+
 const searchAttractions = async (req, res) => {
   const { Name, Category, Tags } = req.body;
   const filter = {};
@@ -83,4 +130,4 @@ const searchAttractions = async (req, res) => {
   }
 };
 
-module.exports = { touristRegister, searchAttractions };
+module.exports = {touristRegister, searchAttractions , handleTourist };

@@ -6,6 +6,7 @@ require("dotenv").config({ path: "../.env" });
 const {
   touristRegister,
   searchAttractions,
+  handleTourist,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -55,6 +56,9 @@ app.get("/readSeller", readSeller);
 app.put("/updateSeller", updateSeller);
 ///////////////////////////////////////////
 app.post("/searchAttractions", searchAttractions);
+app.route("/handleTourist/:touristID")
+  .get(handleTourist) // Handle GET requests for reading tourist information
+  .put(handleTourist);
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
 
@@ -62,3 +66,5 @@ app.post("/createActivity", createActivity);
 app.get("/readActivity", readActivity);
 app.patch("/updateActivity", updateActivity);
 app.delete("/deleteActivity", deleteActivity);
+
+
