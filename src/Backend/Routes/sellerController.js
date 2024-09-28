@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 // Creating a seller
 const createSeller = async (req, res) => {
     try {
-        const { UserName, Password, Description} = req.body;
+        const { UserName, /*FullName,*/ Password, Description} = req.body;
 
         // Validate input
         if (!UserName || typeof UserName !== 'string' || !Password || typeof Password !== 'string') {
@@ -26,10 +26,8 @@ const createSeller = async (req, res) => {
 //Updating a seller
 const updateSeller = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { UserName, Password } = req.body;
-        const seller = await sellerModel.findByIdAndUpdate(id, { UserName, Password }, { new:
-            true });
+        const { UserName, FullName, Description } = req.body;
+        const seller = await sellerModel.findOneAndUpdate({ UserName },{FullName, Description});
             if(!seller){
                 return res.status(404).json({ message: "Seller not found" });
             }
@@ -45,8 +43,8 @@ const updateSeller = async (req, res) => {
 //Reading a seller
 const readSeller = async (req, res) => {
     try {
-        const { id } = req.params;
-        const seller = await sellerModel.findById(id);
+        const { UserName, Password, Description } = req.body;
+        const seller = await sellerModel.find({UserName});
         if (!seller) {
             return res.status(404).json({ message: "Seller not found" });
         }
