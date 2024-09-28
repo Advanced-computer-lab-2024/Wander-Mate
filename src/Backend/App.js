@@ -27,6 +27,7 @@ const {
   readActivity,
   updateActivity,
   deleteActivity,
+  
 } = require("./Routes/AdvertiserController.js");
 
 const {deletePlace,createPlace,updatePlace,getPlaces}=require("./Routes/tourismGovernerController.js");
@@ -76,5 +77,5 @@ app.post("/createActivity", createActivity);
 app.get("/readActivity", readActivity);
 app.patch("/updateActivity", updateActivity);
 app.delete("/deleteActivity", deleteActivity);
-
+app.post("/createTourGuide",createTourGuide);
 
