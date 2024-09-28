@@ -13,6 +13,10 @@ const {
   updateSeller,
 } = require("./Routes/sellerController.js");
 
+const {
+  createAdmin,
+} = require("./Routes/adminController.js");
+
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -39,3 +43,4 @@ app.post("/addSeller", createSeller);
 app.get("/readSeller/:id", readSeller);
 app.put("/updateSeller", updateSeller);
 app.post("/searchAttractions", searchAttractions);
+app.post("/addAdmin", createAdmin);
