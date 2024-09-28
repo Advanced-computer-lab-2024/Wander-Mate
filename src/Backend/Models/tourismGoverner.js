@@ -13,7 +13,7 @@ const tourismGovernerSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 const TourismGoverner = mongoose.model(

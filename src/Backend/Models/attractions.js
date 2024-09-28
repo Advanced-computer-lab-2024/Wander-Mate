@@ -16,7 +16,7 @@ const attractionSchema = new Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 const Attraction = mongoose.model("Attraction", attractionSchema);
