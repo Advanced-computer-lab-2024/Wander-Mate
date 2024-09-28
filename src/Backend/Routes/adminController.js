@@ -196,4 +196,38 @@ const deleteAccount = async (req, res) => {
 };
 
 
-module.exports = { createAdmin, createCategory, updateCategory, deleteCategory, deleteAccount };
+const createTourismGov = async(req,res)=>{
+    try{    
+        const { Username, Password } = req.body;
+
+        if (!Username || !Password) {
+            return res.status(400).json({ message: "Username and Password are required" });
+        }
+
+        
+        if (/\s/.test(Username)) {
+            return res.status(400).json({ message: "Username should not contain spaces" });
+        }
+
+       
+        const existingTourismGoverner = await TourismGoverner.findOne({ UserName: Username });
+        if (existingTourismGoverner) {
+            return res.status(400).json({ message: "Username already exists" });
+        }
+
+       
+         const saltRounds = 10;
+         const hashedPassword = await bcrypt.hash(Password, saltRounds);
+ 
+         
+         const TourismGov = await TourismGoverner.create({ UserName: Username, Password: hashedPassword });
+ 
+         res.status(200).json(TourismGov);
+
+    }catch(err){
+        console.error(err);
+        res.status(400).json({ message: "Can't create the tourism governer" });
+    }
+};
+
+module.exports = { createAdmin, createCategory, updateCategory, deleteCategory, deleteAccount,createTourismGov };
