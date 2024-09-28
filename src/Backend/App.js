@@ -15,6 +15,7 @@ const {
 
 const {
   createAdmin,
+  createCategory,
 } = require("./Routes/adminController.js");
 
 const MongoURI = process.env.MONGO_URI;
@@ -44,3 +45,4 @@ app.get("/readSeller/:id", readSeller);
 app.put("/updateSeller", updateSeller);
 app.post("/searchAttractions", searchAttractions);
 app.post("/addAdmin", createAdmin);
+app.post("/createCategory", createCategory);
