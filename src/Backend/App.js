@@ -55,7 +55,7 @@ mongoose
 app.use(express.json());
 app.post("/touristRegister", touristRegister);
 //Seller
-app.post("/addSeller", createSeller);
+app.post("/createSeller", createSeller);
 app.get("/readSeller", readSeller);
 app.put("/updateSeller", updateSeller);
 ///////////////////////////////////////////
