@@ -1,7 +1,7 @@
 const userModel = require("../Models/tourist.js");
+const attractionModel = require("../Models/attractions.js");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -41,7 +41,7 @@ const touristRegister = async (req, res) => {
 
     // 6. Send success response
     res
-      .status(201)
+      .status(200)
       .json({ message: "User registered successfully", userID: newUser._id });
   } catch (error) {
     // Handle errors (e.g., database issues)
@@ -51,4 +51,25 @@ const touristRegister = async (req, res) => {
   }
 };
 
-module.exports = { touristRegister };
+const searchAttractions = async (req, res) => {
+  const { Name, Category, Tags } = req.body;
+  const filter = {};
+  if (Name) {
+    filter.Name = { $regex: Name, $options: "i" };
+  }
+  if (Category) {
+    filter.Category = Category;
+  }
+  if (Tags && Array.isArray(Tags) && Tags.length > 0) {
+    filter.Tags = { $in: Tags };
+  }
+
+  try {
+    const searchResult = await attractionModel.find(filter);
+    res.status(200).json(searchResult);
+  } catch {
+    res.status(400).json({ message: "Error searching attractions" });
+  }
+};
+
+module.exports = { touristRegister, searchAttractions };
