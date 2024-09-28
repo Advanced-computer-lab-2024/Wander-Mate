@@ -28,6 +28,8 @@ const {
   updateActivity,
   deleteActivity,
 } = require("./Routes/AdvertiserController.js");
+
+const {deletePlace,createPlace,updatePlace,getPlaces}=require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -55,6 +57,14 @@ app.post("/addSeller", createSeller);
 app.get("/readSeller", readSeller);
 app.put("/updateSeller", updateSeller);
 ///////////////////////////////////////////
+
+//TourismGoverner
+app.post("/createPlace", createPlace);
+app.get("/readPlace", readPlace);
+app.put("/updatePlace", updatePlace);
+app.delete("deleteplace", deletePlace);
+//////////////////////////////////////////////////
+
 app.post("/searchAttractions", searchAttractions);
 app.route("/handleTourist/:touristID")
   .get(handleTourist) // Handle GET requests for reading tourist information
