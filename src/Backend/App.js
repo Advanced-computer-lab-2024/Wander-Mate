@@ -62,7 +62,7 @@ app.put("/updateSeller", updateSeller);
 app.post("/createPlace", createPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
-app.delete("deleteplace", deletePlace);
+app.delete("/deleteplace", deletePlace);
 //////////////////////////////////////////////////
 
 app.post("/searchAttractions", searchAttractions);
