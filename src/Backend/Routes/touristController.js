@@ -1,5 +1,7 @@
 const userModel = require("../Models/tourist.js");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -40,7 +42,7 @@ const touristRegister = async (req, res) => {
     // 6. Send success response
     res
       .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+      .json({ message: "User registered successfully", userID: newUser._id });
   } catch (error) {
     // Handle errors (e.g., database issues)
     res

@@ -16,7 +16,7 @@ const touristSchema = new Schema(
       type: String,
       required: true,
     },
-    mobileNumber: {
+    MobileNumber: {
       type: String,
       required: true,
     },
