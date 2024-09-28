@@ -49,7 +49,7 @@ app.use(express.json());
 app.post("/touristRegister", touristRegister);
 //Seller
 app.post("/addSeller", createSeller);
-app.get("/readSeller/:id", readSeller);
+app.get("/readSeller", readSeller);
 app.put("/updateSeller", updateSeller);
 ///////////////////////////////////////////
 app.post("/searchAttractions", searchAttractions);
