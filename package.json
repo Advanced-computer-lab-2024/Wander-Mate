@@ -2,7 +2,7 @@
   "name": "wander-mate",
   "version": "1.0.0",
   "description": "",
-  "main": "src/Backend/App.js",
+  "main": "App.js",
   "scripts": {
     "start": "nodemon src/Backend/App.js",
     "test": "echo \"Error: no test specified\" && exit 1"

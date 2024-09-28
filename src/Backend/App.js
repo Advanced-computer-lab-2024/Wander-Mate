@@ -20,6 +20,10 @@ const {
   deleteCategory
 } = require("./Routes/adminController.js");
 
+
+const{
+  createTourGuide,
+}=require("./Routes/tourGuideController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -48,5 +52,3 @@ app.put("/updateSeller", updateSeller);
 app.post("/searchAttractions", searchAttractions);
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
-app.put("/updateCategory", updateCategory);
-app.delete("/deleteCategory",deleteCategory);
