@@ -1,8 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config();
+//Requiring functions from Controllers
 const { touristRegister } = require("./Routes/touristController");
+const { createSeller, readSeller, updateSeller } = require("./Routes/sellerController.js");
 
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -26,3 +28,6 @@ mongoose
 
 app.use(express.json());
 app.post("/touristRegister", touristRegister);
+app.post("/addSeller",createSeller);
+app.get("/readSeller/:id",readSeller);
+app.put("/updateSeller",updateSeller);
