@@ -17,13 +17,16 @@ const {
   createAdmin,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } = require("./Routes/adminController.js");
 
-
-const{
-  createTourGuide,
-}=require("./Routes/tourGuideController.js");
+const { createTourGuide } = require("./Routes/tourGuideController.js");
+const {
+  createActivity,
+  readActivity,
+  updateActivity,
+  deleteActivity,
+} = require("./Routes/AdvertiserController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -54,3 +57,8 @@ app.put("/updateSeller", updateSeller);
 app.post("/searchAttractions", searchAttractions);
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
+
+app.post("/createActivity", createActivity);
+app.get("/readActivity", readActivity);
+app.patch("/updateActivity", updateActivity);
+app.delete("/deleteActivity", deleteActivity);
