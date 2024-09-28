@@ -13,6 +13,11 @@ const {
   updateSeller,
 } = require("./Routes/sellerController.js");
 
+const {
+  createAdmin,
+  createCategory,
+} = require("./Routes/adminController.js");
+
 
 const{
   createTourGuide,
@@ -43,4 +48,3 @@ app.post("/addSeller", createSeller);
 app.get("/readSeller/:id", readSeller);
 app.put("/updateSeller", updateSeller);
 app.post("/searchAttractions", searchAttractions);
-app.post("/createTourGuide", createTourGuide);
