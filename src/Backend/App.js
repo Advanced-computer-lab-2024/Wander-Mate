@@ -60,7 +60,7 @@ app.put("/updateSeller", updateSeller);
 
 //TourismGoverner
 app.post("/createPlace", createPlace);
-app.get("/readPlace", readPlace);
+app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
 app.delete("deleteplace", deletePlace);
 //////////////////////////////////////////////////
