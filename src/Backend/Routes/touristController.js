@@ -24,6 +24,13 @@ const touristRegister = async (req, res) => {
         .json({ message: "User with this email already exists." });
     }
 
+    const existingUser1 = await userModel.findOne({ UserName: UserName });
+    if (existingUser1) {
+      return res
+        .status(400)
+        .json({ message: "User with this username already exists." });
+    }
+
     // 3. Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
