@@ -12,7 +12,7 @@ const sellerSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 const Seller = mongoose.model("Seller", sellerSchema);

@@ -1,5 +1,6 @@
 const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
+const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -72,7 +73,10 @@ const searchAttractions = async (req, res) => {
   }
 
   try {
-    const searchResult = await attractionModel.find(filter);
+    const [attractions, itineraries] = await Promise.all([
+      attractionModel.find(filter),
+      itineraryModel.find(filter),
+    ]);
     res.status(200).json(searchResult);
   } catch {
     res.status(400).json({ message: "Error searching attractions" });

@@ -33,7 +33,7 @@ const touristSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 const Tourist = mongoose.model("Tourist", touristSchema);

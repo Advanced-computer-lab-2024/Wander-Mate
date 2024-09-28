@@ -12,11 +12,11 @@ const tourGuideSchema = new Schema(
       required: true,
     },
     Email: {
-        type: String, //to check correct format in the front end
-        required: true,
-    }
+      type: String, //to check correct format in the front end
+      required: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 const TourGuide = mongoose.model("TourGuide", tourGuideSchema);
