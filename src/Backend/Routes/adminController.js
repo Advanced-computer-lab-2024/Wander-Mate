@@ -2,6 +2,11 @@ const adminModel = require("../Models/admin.js");
 const Category = require("../Models/category.js");
 const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
+const Advertiser = require("../Models/advertiser.js");
+const Seller = require("../Models/seller.js");
+const tourGuide = require("../Models/tourGuide.js");
+const TourismGoverner = require("../Models/tourismGoverner.js");
+const tourist = require("../Models/tourist.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -123,4 +128,72 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-module.exports = { createAdmin, createCategory, updateCategory, deleteCategory };
+const deleteAccount = async (req, res) => {
+    try {
+        const { UserName } = req.body;
+
+        
+        if (!UserName) {
+            return res.status(400).json({ message: "Username is required" });
+        }
+
+        
+        let accountDeleted = false;
+
+        
+        const existingAdmin = await adminModel.findOne({ UserName });
+        if (existingAdmin) {
+            await adminModel.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+        
+        const existingAdvertiser = await Advertiser.findOne({ UserName });
+        if (existingAdvertiser) {
+            await Advertiser.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+       
+        const existingSeller = await Seller.findOne({ UserName });
+        if (existingSeller) {
+            await Seller.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+        
+        const existingTourGuide = await tourGuide.findOne({ UserName });
+        if (existingTourGuide) {
+            await tourGuide.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+        
+        const existingTourismGoverner = await TourismGoverner.findOne({ UserName });
+        if (existingTourismGoverner) {
+            await TourismGoverner.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+       
+        const existingTourist = await tourist.findOne({ UserName });
+        if (existingTourist) {
+            await tourist.deleteOne({ UserName });
+            accountDeleted = true;
+        }
+
+        
+        if (!accountDeleted) {
+            return res.status(404).json({ message: "User not found in any system" });
+        }
+
+        
+        res.status(200).json({ message: "User account deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "An error occurred while deleting the account" });
+    }
+};
+
+
+module.exports = { createAdmin, createCategory, updateCategory, deleteCategory, deleteAccount };
