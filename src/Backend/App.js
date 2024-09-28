@@ -27,6 +27,7 @@ const {
   readActivity,
   updateActivity,
   deleteActivity,
+  createAdvertiser,
   
 } = require("./Routes/AdvertiserController.js");
 
@@ -78,4 +79,5 @@ app.get("/readActivity", readActivity);
 app.patch("/updateActivity", updateActivity);
 app.delete("/deleteActivity", deleteActivity);
 app.post("/createTourGuide",createTourGuide);
+app.post("/createAdvertiser",createAdvertiser);
 

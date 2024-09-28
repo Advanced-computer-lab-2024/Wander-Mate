@@ -1,6 +1,7 @@
 const advertiserModel = require("../Models/advertiser.js");
 const attractionModel = require("../Models/attractions.js");
 const { default: mongoose } = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const createActivity = async (req, res) => {
   const {
@@ -116,9 +117,43 @@ const deleteActivity = async (req, res) => {
   }
 };
 
+const createAdvertiser = async (req, res) => {
+  try {
+      const { Username, Password, Email } = req.body;
+
+      // Check if Username, Password, and Email are provided
+      if (!Username || !Password || !Email) {
+          return res.status(400).json({ message: "Username, Password, and Email are all required" });
+      }
+
+      // Check if Username or Email already exists
+      const existingAdvertiser = await advertiserModel.findOne({
+          $or: [{ UserName: Username }, { Email: Email }]
+      });
+
+      if (existingAdvertiser) {
+          return res.status(400).json({ message: "Advertiser already exists" });
+      }
+
+      // Hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+      // Create the advertiser using the hashed password
+      const advertiser = await advertiserModel.create({ UserName: Username, Password: hashedPassword, Email: Email });
+
+      res.status(200).json(advertiser);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Can't create the advertiser" });
+  }
+};
+
+
 module.exports = {
   createActivity,
   readActivity,
   updateActivity,
   deleteActivity,
+  createAdvertiser
 };
