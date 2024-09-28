@@ -1,14 +1,24 @@
 const sellerModel = require("../Models/seller.js"); 
 const { default: mongoose } = require('mongoose');
+const bcrypt = require("bcrypt");
 
 // Creating a seller
 const createSeller = async (req, res) => {
     try {
-        const { Username, Password } = req.body; 
-        const seller = await sellerModel.create({ UserName: Username, Password });
+        const { UserName, Password, Description} = req.body;
+
+        // Validate input
+        if (!UserName || typeof UserName !== 'string' || !Password || typeof Password !== 'string') {
+            return res.status(400).json({ message: "Invalid input: Username and Password are required and should be strings." });
+        }
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+        const seller = await sellerModel.create({ UserName, Password: hashedPassword, Description: Description});
         res.status(200).json(seller);
     } catch (err) {
-        console.error(err); 
+        console.error(err);
         res.status(400).json({ message: "Can't create the seller" });
     }
 };
@@ -17,8 +27,8 @@ const createSeller = async (req, res) => {
 const updateSeller = async (req, res) => {
     try {
         const { id } = req.params;
-        const { Username, Password } = req.body;
-        const seller = await sellerModel.findByIdAndUpdate(id, { UserName: Username, Password }, { new:
+        const { UserName, Password } = req.body;
+        const seller = await sellerModel.findByIdAndUpdate(id, { UserName, Password }, { new:
             true });
             if(!seller){
                 return res.status(404).json({ message: "Seller not found" });

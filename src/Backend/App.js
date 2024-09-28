@@ -44,9 +44,11 @@ mongoose
 
 app.use(express.json());
 app.post("/touristRegister", touristRegister);
+//Seller
 app.post("/addSeller", createSeller);
 app.get("/readSeller/:id", readSeller);
 app.put("/updateSeller", updateSeller);
+///////////////////////////////////////////
 app.post("/searchAttractions", searchAttractions);
 app.post("/addAdmin" , createAdmin);
 app.post("/createCategory" , createCategory);
