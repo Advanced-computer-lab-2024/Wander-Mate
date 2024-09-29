@@ -256,8 +256,8 @@ const addProduct = async (req, res) => {
       price: parseFloat(Price), // Ensure price is a number
       description: Description, // Product description
       seller: Seller, // Seller ID
-      ratings: 0, // Optional: Initialize ratings
-      reviews: [], // Optional: Initialize reviews
+      ratings: 0, // Initialize ratings
+      reviews: [], // Initialize reviews
       quantity: parseInt(Quantity), // Convert quantity to an integer
     });
 
