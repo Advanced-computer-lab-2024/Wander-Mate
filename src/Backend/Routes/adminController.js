@@ -291,6 +291,25 @@ const getImage = async (req, res) => {
   }
 };
 
+const viewAdminProducts = async (req, res) => {
+  try {
+      // Find all products with the relevant fields
+      const products = await ProductModel.find({}); // Populate seller info if needed
+
+      // Check if products exist
+      if (!products) {
+          return res.status(400).json({ message: "No products available" });
+      }
+
+      // Return the list of products
+      res.status(200).json(products);
+  } catch (err) {
+      res.status(400).json({ message: "Unable to fetch products" });
+  }
+};
+
+
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -300,4 +319,5 @@ module.exports = {
   createTourismGov,
   addProduct,
   getImage,
+  viewAdminProducts
 };

@@ -17,6 +17,7 @@ const {
   createSeller,
   readSeller,
   updateSeller,
+  viewSellerProducts,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -28,6 +29,7 @@ const {
   createTourismGov,
   addProduct,
   getImage,
+  viewAdminProducts,
 } = require("./Routes/adminController.js");
 
 const { createTourGuide } = require("./Routes/tourGuideController.js");
@@ -110,6 +112,8 @@ app.post("/createTourGuide", createTourGuide);
 app.post("/createAdvertiser", createAdvertiser);
 app.post("/filterPlaces", filterPlaces);
 app.get("/viewTouristProducts", viewTouristProducts);
+app.get("/viewAdminProducts" ,viewAdminProducts);
+app.get("/viewSellerProducts",viewSellerProducts);
 
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 
