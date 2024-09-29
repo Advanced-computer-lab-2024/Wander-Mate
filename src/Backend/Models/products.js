@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
   picture: {
-    type: String,  // This can store the URL or path to the image file
+    type: Buffer,  // This can store the URL or path to the image file
     required: true
   },
   price: {
