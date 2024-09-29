@@ -74,7 +74,8 @@ const handleTourist = async (req, res) => {
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
       // Handle updating tourist information
-      const { Email, Password, MobileNumber, Nationality, DOB, Role } = req.body;
+      const { Email, Password, MobileNumber, Nationality, DOB, Role } =
+        req.body;
 
       // Find the tourist
       const tourist = await userModel.findById(touristID);
@@ -102,7 +103,9 @@ const handleTourist = async (req, res) => {
       return res.status(405).json({ message: "Method not allowed" }); // Handle unsupported methods
     }
   } catch (error) {
-    res.status(500).json({ message: "Error processing request", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error processing request", error: error.message });
   }
 };
 
@@ -130,4 +133,24 @@ const searchAttractions = async (req, res) => {
   }
 };
 
-module.exports = {touristRegister, searchAttractions , handleTourist };
+const filterPlaces = async (req, res) => {
+  const { Tags } = req.body;
+  const filter = { Type: mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c") };
+  if (Tags && Array.isArray(Tags) && Tags.length > 0) {
+    filter.Tags = { $in: Tags };
+  }
+
+  try {
+    const places = await attractionModel.find(filter);
+    res.status(200).json(places);
+  } catch {
+    res.status(400).json({ message: "Error filtering places" });
+  }
+};
+
+module.exports = {
+  touristRegister,
+  searchAttractions,
+  handleTourist,
+  filterPlaces,
+};

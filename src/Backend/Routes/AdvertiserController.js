@@ -33,6 +33,7 @@ const createActivity = async (req, res) => {
   if (!IsAvailable) {
     return res.status(400).json({ error: "Availability is required" });
   }
+  const objectId = mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
   try {
     const activity = attractionModel.create({
       Creator: Creator,
@@ -44,6 +45,7 @@ const createActivity = async (req, res) => {
       Tags: Tags,
       Discounts: Discounts,
       IsAvailable: IsAvailable,
+      Type: objectId,
     });
     res.status(200).json(activity);
   } catch {
@@ -61,6 +63,16 @@ const readActivity = async (req, res) => {
     res.status(200).json(activity);
   } catch {
     res.status(400).json({ error: "Error reading activity" });
+  }
+};
+
+const readActivities = async (req, res) => {
+  try {
+    const objectId = mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
+    const activities = await attractionModel.find({ Type: objectId });
+    res.status(200).json(activities);
+  } catch {
+    res.status(400).json({ error: "Error reading activities" });
   }
 };
 
@@ -119,41 +131,47 @@ const deleteActivity = async (req, res) => {
 
 const createAdvertiser = async (req, res) => {
   try {
-      const { Username, Password, Email } = req.body;
+    const { Username, Password, Email } = req.body;
 
-      // Check if Username, Password, and Email are provided
-      if (!Username || !Password || !Email) {
-          return res.status(400).json({ message: "Username, Password, and Email are all required" });
-      }
+    // Check if Username, Password, and Email are provided
+    if (!Username || !Password || !Email) {
+      return res
+        .status(400)
+        .json({ message: "Username, Password, and Email are all required" });
+    }
 
-      // Check if Username or Email already exists
-      const existingAdvertiser = await advertiserModel.findOne({
-          $or: [{ UserName: Username }, { Email: Email }]
-      });
+    // Check if Username or Email already exists
+    const existingAdvertiser = await advertiserModel.findOne({
+      $or: [{ UserName: Username }, { Email: Email }],
+    });
 
-      if (existingAdvertiser) {
-          return res.status(400).json({ message: "Advertiser already exists" });
-      }
+    if (existingAdvertiser) {
+      return res.status(400).json({ message: "Advertiser already exists" });
+    }
 
-      // Hash the password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(Password, saltRounds);
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-      // Create the advertiser using the hashed password
-      const advertiser = await advertiserModel.create({ UserName: Username, Password: hashedPassword, Email: Email });
+    // Create the advertiser using the hashed password
+    const advertiser = await advertiserModel.create({
+      UserName: Username,
+      Password: hashedPassword,
+      Email: Email,
+    });
 
-      res.status(200).json(advertiser);
+    res.status(200).json(advertiser);
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Can't create the advertiser" });
+    console.error(err);
+    res.status(500).json({ message: "Can't create the advertiser" });
   }
 };
-
 
 module.exports = {
   createActivity,
   readActivity,
   updateActivity,
   deleteActivity,
-  createAdvertiser
+  createAdvertiser,
+  readActivities,
 };

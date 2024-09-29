@@ -7,6 +7,7 @@ const {
   touristRegister,
   searchAttractions,
   handleTourist,
+  filterPlaces,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -28,10 +29,16 @@ const {
   updateActivity,
   deleteActivity,
   createAdvertiser,
-  
+  readActivities,
 } = require("./Routes/AdvertiserController.js");
 
-const {deletePlace,createPlace,updatePlace,getPlaces}=require("./Routes/tourismGovernerController.js");
+const {
+  deletePlace,
+  createPlace,
+  updatePlace,
+  getPlaces,
+  getPlace,
+} = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -62,22 +69,34 @@ app.put("/updateSeller", updateSeller);
 
 //TourismGoverner
 app.post("/createPlace", createPlace);
+app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
-app.delete("/deleteplace", deletePlace);
+app.delete("/deleteplace/:id", deletePlace);
 //////////////////////////////////////////////////
 
 app.post("/searchAttractions", searchAttractions);
-app.route("/handleTourist/:touristID")
+app
+  .route("/handleTourist/:touristID")
   .get(handleTourist) // Handle GET requests for reading tourist information
   .put(handleTourist);
+
+//Admin CRUD categories
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
+//Read remaining
+app.patch("/updateCategory", updateCategory);
+app.delete("/deleteCategory", deleteCategory);
 
+//CRUD activity
+app.get("/readActivities", readActivities);
 app.post("/createActivity", createActivity);
-app.get("/readActivity", readActivity);
+app.get("/readActivity/:id", readActivity);
 app.patch("/updateActivity", updateActivity);
 app.delete("/deleteActivity", deleteActivity);
-app.post("/createTourGuide",createTourGuide);
-app.post("/createAdvertiser",createAdvertiser);
+/////////////////////////////////////
 
+app.post("/createTourGuide", createTourGuide);
+app.post("/createAdvertiser", createAdvertiser);
+
+app.post("/filterPlaces", filterPlaces);

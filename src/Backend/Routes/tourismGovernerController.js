@@ -1,72 +1,100 @@
-const tourismGovernerModel = require("../Models/tourismGoverner.js"); 
-const { default: mongoose } = require('mongoose');
+const tourismGovernerModel = require("../Models/tourismGoverner.js");
+const attractionModel = require("../Models/attractions.js");
+const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 
-
 //Read
-const getPlaces = async (req,res) =>{
-    try{
-        const {UserName, Description,Pictures, Location, OpeningHours, TicketPrices}=req.body;
-        const places=await tourismGovernerModel.find({});
-        res.status(200).json(places);
-    }
-    catch(error){
-        res.status(400).json({message:error.message});
-    }
+const getPlaces = async (req, res) => {
+  try {
+    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    const places = await attractionModel.find({ Type: objectId });
+    res.status(200).json(places);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
+const getPlace = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const place = await attractionModel.findById(id);
+    if (!place) {
+      return res.status(404).json({ error: "place not found" });
+    }
+    res.status(200).json(place);
+  } catch {
+    res.status(400).json({ error: "Error reading place" });
+  }
+};
 
 //Create
-const createPlace = async (req,res) =>{
-    try{
-        const {UserName,Password, Description,Pictures, Location, OpeningHours, TicketPrices}=req.body;
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(Password, saltRounds);
-        const newPlace = await tourismGovernerModel.create({UserName, Password:hashedPassword, Description,Pictures, Location,
-            OpeningHours, TicketPrices});
-            res.status(201).json(newPlace);
-            }
-            catch(error){
-                res.status(400).json({message:error.message});
-                }
-                };
+const createPlace = async (req, res) => {
+  try {
+    const {
+      UserName,
+      Description,
+      Pictures,
+      Location,
+      OpeningHours,
+      TicketPrices,
+    } = req.body;
+    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
 
-
-
-//Update
-const updatePlace = async (req,res) =>{
-    try{
-        const {UserName, Description,Pictures, Location, OpeningHours, TicketPrices}=req.body;
-        const place = await tourismGovernerModel.find({UserName},{UserName, Description,Pictures, Location, OpeningHours, TicketPrices});
-        if(!place){
-            return res.status(404).json({message:"Place not found"});
-            }
-            else{
-                res.status(200).json(place);
-                }
-            }catch(error){
-                res.status(400).json({message:error.message});
-            }
-            };
-
-
-
-//Delete
-const deletePlace = async (req,res) =>{
-    try{
-        const {UserName}=req.body;
-        const place = await tourismGovernerModel.findByIdAndDelete(UserName);
-
-        if (!place) {
-            return res.status(404).json({ message: "Place not found" });
-        } else {
-            res.status(200).json({ message: "Place deleted" });
-        }
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+    const newPlace = await attractionModel.create({
+      Owner: UserName,
+      Description,
+      Pictures,
+      Location,
+      OpeningHours,
+      TicketPrices,
+      Type: objectId,
+    });
+    res.status(200).json(newPlace);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
+//Update
+const updatePlace = async (req, res) => {
+  try {
+    const { Id, Description, Pictures, Location, OpeningHours, TicketPrices } =
+      req.body;
+    const place = await attractionModel.findByIdAndUpdate(
+      Id,
+      {
+        Description: Description,
+        Pictures: Pictures,
+        Location: Location,
+        OpeningHours: OpeningHours,
+        TicketPrices: TicketPrices,
+      },
+      { new: true, runValidators: true }
+    );
+    if (!place) {
+      return res.status(404).json({ message: "Place not found" });
+    } else {
+      res.status(200).json(place);
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
+//Delete
+const deletePlace = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const place = await attractionModel.findByIdAndDelete(Id);
 
-module.exports ={getPlaces, createPlace, updatePlace, deletePlace};
+    if (!place) {
+      return res.status(400).json({ message: "Place not found" });
+    } else {
+      res.status(200).json({ message: "Place deleted" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+module.exports = { getPlaces, createPlace, updatePlace, deletePlace, getPlace };

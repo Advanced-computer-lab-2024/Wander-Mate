@@ -16,6 +16,10 @@ const attractionSchema = new Schema(
         required: true,
       },
     },
+    Type: {
+      type: ObjectId,
+      required: true,
+    },
   },
   { timestamps: true, strict: false }
 );
