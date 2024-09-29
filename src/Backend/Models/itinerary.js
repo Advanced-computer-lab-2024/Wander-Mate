@@ -18,7 +18,7 @@ const itinerarySchema = new Schema(
     Language: {
       type: String,
       required: true,
-    }, // array of tags
+    }, 
     Price: { type: String, required: true },
     AvailableDates: { type: [Date], required: true },
     PickUpLocation: {
