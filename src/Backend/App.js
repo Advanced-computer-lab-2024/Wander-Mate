@@ -34,7 +34,11 @@ const {
   viewAdminProducts,
 } = require("./Routes/adminController.js");
 
-const { createTourGuide } = require("./Routes/tourGuideController.js");
+const { 
+    createTourGuide,
+    createItinerary,
+} = require("./Routes/tourGuideController.js");
+
 const {
   createActivity,
   readActivity,
@@ -50,12 +54,13 @@ const {
   updatePlace,
   getPlaces,
   getPlace,
+  createTags,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 // #Importing the userController
 
 // configurations
@@ -109,16 +114,17 @@ app.get("/readActivity/:id", readActivity);
 app.patch("/updateActivity", updateActivity);
 app.delete("/deleteActivity", deleteActivity);
 /////////////////////////////////////
-
 app.post("/createTourGuide", createTourGuide);
 app.post("/createAdvertiser", createAdvertiser);
 app.post("/filterPlaces", filterPlaces);
 app.get("/viewTouristProducts", viewTouristProducts);
 app.get("/viewAdminProducts" ,viewAdminProducts);
 app.get("/viewSellerProducts",viewSellerProducts);
-
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
-
 app.get("/products/:productId/image", getImage); //getImage with productID
-
 app.get("/TouristsearchProductByName",TouristsearchProductByName);
+app.get("/viewTouristProducts",viewTouristProducts);
+//////////////////////////////////////////
+app.post("/createTags", createTags);
+app.post('/createItinerary', createItinerary);
+

@@ -1,6 +1,8 @@
 const tourGuideModel = require("../Models/tourGuide.js"); 
 const { default: mongoose } = require('mongoose');
 const bcrypt = require("bcrypt");
+const Itinerary = require('../Models/itinerary.js');  // Adjust the path based on your folder structure
+
 
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
@@ -35,6 +37,44 @@ const createTourGuide = async (req, res) => {
     }
 };
 
-
-
-module.exports = { createTourGuide };
+const createItinerary = async (req, res) => {
+    try {
+      const {
+        Activities,        
+        LocationsToVisit,  
+        TimeLine,          
+        Language,          
+        Price,             
+        AvailableDates,    
+        PickUpLocation,   
+        DropOffLocation,  
+      } = req.body;
+  
+      // Validate required fields
+      if (!Activities || !LocationsToVisit || !Language || !Price || !AvailableDates || !PickUpLocation || !DropOffLocation) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+  
+      // Create a new itinerary object
+      const newItinerary = new Itinerary({
+        Activities,
+        LocationsToVisit,
+        TimeLine,
+        Language,
+        Price,
+        AvailableDates,
+        PickUpLocation,
+        DropOffLocation,
+      });
+  
+      // Save to the database
+      await newItinerary.save();
+      
+      // Send a response with the newly created itinerary
+      return res.status(201).json(newItinerary);
+    } catch (error) {
+      console.error("Error creating itinerary:", error.message);  // Log the actual error message
+      return res.status(500).json({ message: "Error creating itinerary", error: error.message });
+    }
+  };
+module.exports = { createTourGuide, createItinerary };
