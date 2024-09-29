@@ -12,6 +12,7 @@ const {
   handleTourist,
   filterPlaces,
   viewTouristProducts,
+  TouristsearchProductByName
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -118,3 +119,5 @@ app.get("/viewSellerProducts",viewSellerProducts);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 
 app.get("/products/:productId/image", getImage); //getImage with productID
+
+app.get("/TouristsearchProductByName",TouristsearchProductByName);

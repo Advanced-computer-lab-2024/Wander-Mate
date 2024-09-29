@@ -167,6 +167,31 @@ const viewTouristProducts = async (req, res) => {
 };
 
 
+const TouristsearchProductByName = async (req, res) => {
+  try {
+      const { name } = req.query; // Expecting the product name in the query string
+
+      // Check if a name is provided
+      if (!name) {
+          return res.status(400).json({ message: "Product name is required" });
+      }
+
+      // Search for products that match the name (case-insensitive)
+      const products = await ProductModel.find({ name: { $regex: name, $options: 'i' } });
+
+      // Check if any products were found
+      if (!products) {
+          return res.status(400).json({ message: "No products found with that name" });
+      }
+
+      // Return the found products
+      res.status(200).json(products);
+  } catch (err) {
+      res.status(400).json({ message: "Error searching for products" });
+  }
+};
+
+
 
 module.exports = {
   touristRegister,
@@ -174,4 +199,5 @@ module.exports = {
   handleTourist,
   filterPlaces,
   viewTouristProducts,
+  TouristsearchProductByName,
 };
