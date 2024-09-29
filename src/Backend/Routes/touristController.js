@@ -152,7 +152,7 @@ const filterPlaces = async (req, res) => {
 const viewTouristProducts = async (req, res) => {
   try {
       // Find all products with the relevant fields
-      const products = await ProductModel.find(); // Populate seller info if needed
+      const products = await ProductModel.find({}); // Populate seller info if needed
 
       // Check if products exist
       if (!products) {
