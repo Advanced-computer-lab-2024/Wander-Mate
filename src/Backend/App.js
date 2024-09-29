@@ -1,5 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const multer = require("multer");
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage: storage }); // Initialize multer
 mongoose.set("strictQuery", false);
 require("dotenv").config({ path: "../.env" });
 //Requiring functions from Controllers
@@ -8,7 +11,7 @@ const {
   searchAttractions,
   handleTourist,
   filterPlaces,
-  viewTouristProducts
+  viewTouristProducts,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -22,7 +25,8 @@ const {
   updateCategory,
   deleteCategory,
   deleteAccount,
-  createTourismGov
+  createTourismGov,
+  addProduct,
 } = require("./Routes/adminController.js");
 
 const { createTourGuide } = require("./Routes/tourGuideController.js");
@@ -87,8 +91,8 @@ app
 //Admin CRUD categories
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
-app.delete("/deleteAccount",deleteAccount);
-app.post("/addTourismGov",createTourismGov);
+app.delete("/deleteAccount", deleteAccount);
+app.post("/addTourismGov", createTourismGov);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
@@ -104,4 +108,6 @@ app.delete("/deleteActivity", deleteActivity);
 app.post("/createTourGuide", createTourGuide);
 app.post("/createAdvertiser", createAdvertiser);
 app.post("/filterPlaces", filterPlaces);
-app.get("/viewTouristProducts",viewTouristProducts);
+app.get("/viewTouristProducts", viewTouristProducts);
+
+app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
