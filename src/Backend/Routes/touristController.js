@@ -148,9 +148,30 @@ const filterPlaces = async (req, res) => {
   }
 };
 
+const viewTouristProducts = async (req, res) => {
+  try {
+      // Find all products with the relevant fields
+      const products = await Product.find({}, 'picture price description seller ratings reviews').populate('seller', 'UserName'); // Populate seller info if needed
+
+      // Check if products exist
+      if (!products || products.length === 0) {
+          return res.status(404).json({ message: "No products available" });
+      }
+
+      // Return the list of products
+      res.status(200).json(products);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Unable to fetch products" });
+  }
+};
+
+
+
 module.exports = {
   touristRegister,
   searchAttractions,
   handleTourist,
   filterPlaces,
+  viewTouristProducts,
 };

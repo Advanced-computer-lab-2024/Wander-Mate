@@ -8,6 +8,7 @@ const {
   searchAttractions,
   handleTourist,
   filterPlaces,
+  viewTouristProducts
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -98,5 +99,5 @@ app.delete("/deleteActivity", deleteActivity);
 
 app.post("/createTourGuide", createTourGuide);
 app.post("/createAdvertiser", createAdvertiser);
-
 app.post("/filterPlaces", filterPlaces);
+app.get("/viewTouristProducts",viewTouristProducts);
