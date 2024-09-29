@@ -21,6 +21,8 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
+  deleteAccount,
+  createTourismGov
 } = require("./Routes/adminController.js");
 
 const { createTourGuide } = require("./Routes/tourGuideController.js");
@@ -85,6 +87,8 @@ app
 //Admin CRUD categories
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
+app.delete("/deleteAccount",deleteAccount);
+app.post("/addTourismGov",createTourismGov);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
