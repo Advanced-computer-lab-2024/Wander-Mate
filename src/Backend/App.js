@@ -12,7 +12,8 @@ const {
   handleTourist,
   filterPlaces,
   viewTouristProducts,
-  TouristsearchProductByName
+  TouristsearchProductByName,
+  viewUpcomingActivitiesAndItineraries
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -91,7 +92,7 @@ app
   .route("/handleTourist/:touristID")
   .get(handleTourist) // Handle GET requests for reading tourist information
   .put(handleTourist);
-
+app.get("/viewUpcomingActivitiesAndItineraries",viewUpcomingActivitiesAndItineraries);
 //Admin CRUD categories
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);

@@ -192,6 +192,30 @@ const TouristsearchProductByName = async (req, res) => {
 };
 
 
+const viewUpcomingActivitiesAndItineraries = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const historicalPlacesFilter = {
+      Date: { $gte: currentDate }, 
+      Tags: { $in: ["museum", "historical place"] } 
+    };
+    const itineraryDateFilter = { Date: { $gte: currentDate } };
+    const [upcomingHistoricalAttractions, upcomingItineraries] = await Promise.all([
+      attractionModel.find(historicalPlacesFilter), 
+      itineraryModel.find(itineraryDateFilter), 
+    ]);
+    const result = {
+      upcomingHistoricalAttractions,
+      upcomingItineraries,
+    };
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching activities and itineraries", error: error.message });
+  }
+};
+
+
+
 
 module.exports = {
   touristRegister,
@@ -200,4 +224,5 @@ module.exports = {
   filterPlaces,
   viewTouristProducts,
   TouristsearchProductByName,
+  viewUpcomingActivitiesAndItineraries
 };
