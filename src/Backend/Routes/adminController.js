@@ -268,6 +268,29 @@ const addProduct = async (req, res) => {
   }
 };
 
+const getImage = async (req, res) => {
+  try {
+    const { productId } = req.params; // Get the product ID from the request parameters
+
+    // Find the product by ID
+    const product = await productModel.findById(productId);
+
+    // Check if product exists
+    if (!product || !product.picture || !product.picture.data) {
+      return res.status(404).json({ error: "Product or image not found." });
+    }
+
+    // Set the content type for the image
+    res.set("Content-Type", product.picture.contentType);
+
+    // Send the image data
+    res.send(product.picture.data);
+  } catch (err) {
+    console.error("Error retrieving image:", err);
+    res.status(500).json({ error: "Failed to retrieve image." });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -276,4 +299,5 @@ module.exports = {
   deleteAccount,
   createTourismGov,
   addProduct,
+  getImage,
 };

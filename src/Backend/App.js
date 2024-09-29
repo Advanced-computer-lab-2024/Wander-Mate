@@ -27,6 +27,7 @@ const {
   deleteAccount,
   createTourismGov,
   addProduct,
+  getImage,
 } = require("./Routes/adminController.js");
 
 const { createTourGuide } = require("./Routes/tourGuideController.js");
@@ -111,3 +112,5 @@ app.post("/filterPlaces", filterPlaces);
 app.get("/viewTouristProducts", viewTouristProducts);
 
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
+
+app.get("/products/:productId/image", getImage); //getImage with productID
