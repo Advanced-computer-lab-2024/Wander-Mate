@@ -37,6 +37,9 @@ const {
 const { 
     createTourGuide,
     createItinerary,
+    createProfileInformation, 
+    updateProfileInformation,
+    readProfileInformation,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -127,4 +130,9 @@ app.get("/viewTouristProducts",viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createTags", createTags);
 app.post('/createItinerary', createItinerary);
+
+
+app.post("/createProfileInformation/:username", createProfileInformation);
+app.put("/updateProfileInformation",updateProfileInformation);
+app.get("/readProfileInformation",readProfileInformation);
 
