@@ -79,4 +79,31 @@ const createItinerary = async (req, res) => {
       return res.status(500).json({ message: "Error creating itinerary", error: error.message });
     }
   };
-module.exports = { createTourGuide, createItinerary };
+
+  const createProfileInformation = async (req, res) => {
+    try {
+        const { Username } = req.body;
+        const { MobileNumber, YearsOfExperience, PreviousWork } = req.body;
+
+        if (!MobileNumber || !YearsOfExperience) {
+            return res.status(400).json({ message: "Mobile number and years of experience are required" });
+        }
+
+        const tourGuide = await tourGuideModel.findOne({ UserName: Username });
+
+        if (!tourGuide) {
+            return res.status(404).json({ message: "Tour guide not found" });
+        }
+
+        tourGuide.MobileNumber = MobileNumber;
+        tourGuide.YearsOfExperience = YearsOfExperience;
+        tourGuide.PreviousWork = PreviousWork;
+
+        await tourGuide.save();
+        res.status(200).json({ message: "Profile information created", tourGuide });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error creating profile information" });
+    }
+};
+module.exports = { createTourGuide, createItinerary , createProfileInformation};
