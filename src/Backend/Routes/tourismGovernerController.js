@@ -2,6 +2,7 @@ const tourismGovernerModel = require("../Models/tourismGoverner.js");
 const attractionModel = require("../Models/attractions.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
+const Tag = require("../Models/tags.js");
 
 //Read
 const getPlaces = async (req, res) => {
