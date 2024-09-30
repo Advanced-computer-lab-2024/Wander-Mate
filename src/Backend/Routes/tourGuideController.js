@@ -77,4 +77,50 @@ const createItinerary = async (req, res) => {
       return res.status(500).json({ message: "Error creating itinerary", error: error.message });
     }
   };
-module.exports = { createTourGuide, createItinerary };
+  const updateItinerary = async (req, res) => {
+    try {
+      const { id } = req.params; // Itinerary ID from the request params
+      const {
+        Activities,
+        LocationsToVisit,
+        TimeLine,
+        Language,
+        Price,
+        AvailableDates,
+        PickUpLocation,
+        DropOffLocation,
+      } = req.body;
+  
+      const updateFields = {};
+      if (Activities) updateFields.Activities = Activities;
+      if (LocationsToVisit) updateFields.LocationsToVisit = LocationsToVisit;
+      if (TimeLine) updateFields.TimeLine = TimeLine;
+      if (Language) updateFields.Language = Language;
+      if (Price) updateFields.Price = Price;
+      if (AvailableDates) updateFields.AvailableDates = AvailableDates;
+      if (PickUpLocation) updateFields.PickUpLocation = PickUpLocation;
+      if (DropOffLocation) updateFields.DropOffLocation = DropOffLocation;
+  
+      // Perform the update
+      const updatedItinerary = await Itinerary.findOneAndReplace(
+        id,
+        updateFields,
+        { new: true }
+      );
+  
+      // Check if the itinerary was found
+      if (!updatedItinerary) {
+        return res.status(404).json({ message: "Itinerary not found" });
+      }
+  
+      // Respond with the updated itinerary
+      return res.status(200).json(updatedItinerary);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error updating itinerary" });
+    }
+  };
+
+
+
+module.exports = { createTourGuide, createItinerary, updateItinerary };

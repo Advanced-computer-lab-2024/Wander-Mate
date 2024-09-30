@@ -37,6 +37,7 @@ const {
 const { 
     createTourGuide,
     createItinerary,
+    updateItinerary,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -127,4 +128,5 @@ app.get("/viewTouristProducts",viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createTags", createTags);
 app.post('/createItinerary', createItinerary);
+app.patch('/updateItinerary', updateItinerary);
 
