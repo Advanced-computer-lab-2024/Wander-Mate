@@ -83,30 +83,77 @@ const createItinerary = async (req, res) => {
   };
 
 
-  const createProfileInformation = async (req, res) => {
-    try {
-        const { Username } = req.body;
-        const { MobileNumber, YearsOfExperience, PreviousWork } = req.body;
 
-        if (!MobileNumber || !YearsOfExperience) {
-            return res.status(400).json({ message: "Mobile number and years of experience are required" });
-        }
+const createProfileInformation = async (req, res) => {
+  try {
+      const { Username } = req.body;
+      const { MobileNumber, YearsOfExperience, PreviousWork } = req.body;
 
-        const tourGuide = await tourGuideModel.findOne({ UserName: Username });
+      if (!MobileNumber || !YearsOfExperience) {
+          return res.status(400).json({ message: "Mobile number and years of experience are required" });
+      }
 
-        if (!tourGuide) {
-            return res.status(404).json({ message: "Tour guide not found" });
-        }
+      const tourGuide = await tourGuideModel.findOne({ UserName: Username });
 
-        tourGuide.MobileNumber = MobileNumber;
-        tourGuide.YearsOfExperience = YearsOfExperience;
-        tourGuide.PreviousWork = PreviousWork;
+      if (!tourGuide) {
+          return res.status(404).json({ message: "Tour guide not found" });
+      }
 
-        await tourGuide.save();
-        res.status(200).json({ message: "Profile information created", tourGuide });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Error creating profile information" });
-    }
+      tourGuide.MobileNumber = MobileNumber;
+      tourGuide.YearsOfExperience = YearsOfExperience;
+      tourGuide.PreviousWork = PreviousWork;
+
+      await tourGuide.save();
+      res.status(200).json({ message: "Profile information created", tourGuide });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error creating profile information" });
+  }
 };
-module.exports = { createTourGuide, createItinerary , createProfileInformation};
+const readProfileInformation = async (req, res) => {
+try {
+  const { UserName } = req.body; // Using `req.body` to get the UserName, similar to `readSeller`
+
+  if (!UserName) {
+    return res.status(400).json({ message: "Username is required" });
+  }
+
+  const tourGuide = await tourGuideModel.findOne({ UserName });
+
+  if (!tourGuide) {
+    return res.status(404).json({ message: "Tour Guide not found" });
+  }
+
+  return res.status(200).json(tourGuide);
+} catch (err) {
+  console.error(err);
+  return res.status(500).json({ message: "Can't read the profile", error: err.message });
+}
+};
+
+
+const updateProfileInformation = async (req, res) => {
+try {
+  // Extract the parameters from the request body
+  const { UserName, MobileNumber, YearsOfExperience, PreviousWork } = req.body;
+
+  // Use `findOneAndUpdate` to find and update the tour guide by `UserName`
+  const updatedTourGuide = await tourGuideModel.findOneAndUpdate(
+    { UserName }, // Find the document by `UserName`
+    { MobileNumber, YearsOfExperience, PreviousWork }, // Fields to update
+    { new: true } // Option to return the updated document
+  );
+
+  // If the tour guide is not found, return a 404 response
+  if (!updatedTourGuide) {
+    return res.status(404).json({ message: 'Tour guide not found' });
+  }
+
+  // If successful, return the updated document
+  return res.status(200).json({ message: 'Profile information updated', tourGuide: updatedTourGuide });
+} catch (err) {
+  console.error(err);
+  return res.status(500).json({ message: "Can't update the profile", error: err.message });
+}
+};
+module.exports = { createTourGuide, createItinerary , createProfileInformation,readProfileInformation,updateProfileInformation};
