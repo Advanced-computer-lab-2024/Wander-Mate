@@ -37,6 +37,8 @@ const createTourGuide = async (req, res) => {
     }
 };
 
+
+
 const createItinerary = async (req, res) => {
     try {
       const {
@@ -80,50 +82,31 @@ const createItinerary = async (req, res) => {
     }
   };
 
-  const updateItinerary = async (req, res) => {
+
+  const createProfileInformation = async (req, res) => {
     try {
-      const { id } = req.params; // Itinerary ID from the request params
-      const {
-        Activities,
-        LocationsToVisit,
-        TimeLine,
-        Language,
-        Price,
-        AvailableDates,
-        PickUpLocation,
-        DropOffLocation,
-      } = req.body;
-  
-      const updateFields = {};
-      if (Activities) updateFields.Activities = Activities;
-      if (LocationsToVisit) updateFields.LocationsToVisit = LocationsToVisit;
-      if (TimeLine) updateFields.TimeLine = TimeLine;
-      if (Language) updateFields.Language = Language;
-      if (Price) updateFields.Price = Price;
-      if (AvailableDates) updateFields.AvailableDates = AvailableDates;
-      if (PickUpLocation) updateFields.PickUpLocation = PickUpLocation;
-      if (DropOffLocation) updateFields.DropOffLocation = DropOffLocation;
-  
-      // Perform the update
-      const updatedItinerary = await Itinerary.findOneAndReplace(
-        id,
-        updateFields,
-        { new: true }
-      );
-  
-      // Check if the itinerary was found
-      if (!updatedItinerary) {
-        return res.status(404).json({ message: "Itinerary not found" });
-      }
-  
-      // Respond with the updated itinerary
-      return res.status(200).json(updatedItinerary);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Error updating itinerary" });
+        const { Username } = req.body;
+        const { MobileNumber, YearsOfExperience, PreviousWork } = req.body;
+
+        if (!MobileNumber || !YearsOfExperience) {
+            return res.status(400).json({ message: "Mobile number and years of experience are required" });
+        }
+
+        const tourGuide = await tourGuideModel.findOne({ UserName: Username });
+
+        if (!tourGuide) {
+            return res.status(404).json({ message: "Tour guide not found" });
+        }
+
+        tourGuide.MobileNumber = MobileNumber;
+        tourGuide.YearsOfExperience = YearsOfExperience;
+        tourGuide.PreviousWork = PreviousWork;
+
+        await tourGuide.save();
+        res.status(200).json({ message: "Profile information created", tourGuide });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error creating profile information" });
     }
-  };
-
-
-
-module.exports = { createTourGuide, createItinerary, updateItinerary };
+};
+module.exports = { createTourGuide, createItinerary , createProfileInformation};
