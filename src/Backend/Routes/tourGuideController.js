@@ -40,6 +40,7 @@ const createTourGuide = async (req, res) => {
 const createItinerary = async (req, res) => {
     try {
       const {
+        Creator,
         Activities,        
         LocationsToVisit,  
         TimeLine,          
@@ -56,7 +57,8 @@ const createItinerary = async (req, res) => {
       }
   
       // Create a new itinerary object
-      const newItinerary = new Itinerary({
+      const newItinerary =Itinerary.create({
+        Creator,
         Activities,
         LocationsToVisit,
         TimeLine,
@@ -77,6 +79,7 @@ const createItinerary = async (req, res) => {
       return res.status(500).json({ message: "Error creating itinerary", error: error.message });
     }
   };
+
   const updateItinerary = async (req, res) => {
     try {
       const { id } = req.params; // Itinerary ID from the request params
