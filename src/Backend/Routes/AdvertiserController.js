@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const createActivity = async (req, res) => {
+  const Bookings = [];
   const {
     Creator,
     Date,
@@ -46,6 +47,7 @@ const createActivity = async (req, res) => {
       Discounts: Discounts,
       IsAvailable: IsAvailable,
       Type: objectId,
+      Bookings: Bookings,
     });
     res.status(200).json(activity);
   } catch {
@@ -117,10 +119,17 @@ const updateActivity = async (req, res) => {
 const deleteActivity = async (req, res) => {
   const id = req.body;
   try {
-    const activity = await attractionModel.findByIdAndDelete(id);
+    const activity = await attractionModel.findById(id);
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
+    // Check if bookings list is empty
+    if (activity.bookings && activity.bookings.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete activity with existing bookings." });
+    }
+    await attractionModel.findByIdAndDelete(id);
     return res
       .status(200)
       .json({ message: "Activity deleted successfully.", activity });
