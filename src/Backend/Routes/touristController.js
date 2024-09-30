@@ -2,7 +2,7 @@ const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
-const ProductModel =require("../Models/products.js");
+const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 
 // Registration function
@@ -151,71 +151,92 @@ const filterPlaces = async (req, res) => {
 
 const viewTouristProducts = async (req, res) => {
   try {
-      // Find all products with the relevant fields
-      const products = await ProductModel.find({}); // Populate seller info if needed
+    // Find all products with the relevant fields
+    const products = await ProductModel.find({}); // Populate seller info if needed
 
-      // Check if products exist
-      if (!products) {
-          return res.status(400).json({ message: "No products available" });
-      }
+    // Check if products exist
+    if (!products) {
+      return res.status(400).json({ message: "No products available" });
+    }
 
-      // Return the list of products
-      res.status(200).json(products);
+    // Return the list of products
+    res.status(200).json(products);
   } catch (err) {
-      res.status(400).json({ message: "Unable to fetch products" });
+    res.status(400).json({ message: "Unable to fetch products" });
   }
 };
-
 
 const TouristsearchProductByName = async (req, res) => {
   try {
-      const { name } = req.query; // Expecting the product name in the query string
+    const { name } = req.body; // Expecting the product name in the query string
 
-      // Check if a name is provided
-      if (!name) {
-          return res.status(400).json({ message: "Product name is required" });
-      }
+    // Check if a name is provided
+    if (!name) {
+      return res.status(400).json({ message: "Product name is required" });
+    }
 
-      // Search for products that match the name (case-insensitive)
-      const products = await ProductModel.find({ name: { $regex: name, $options: 'i' } });
+    // Search for products that match the name (case-insensitive)
+    const products = await ProductModel.find({
+      name: { $regex: name, $options: "i" },
+    });
 
-      // Check if any products were found
-      if (!products) {
-          return res.status(400).json({ message: "No products found with that name" });
-      }
+    // Check if any products were found
+    if (!products) {
+      return res
+        .status(400)
+        .json({ message: "No products found with that name" });
+    }
 
-      // Return the found products
-      res.status(200).json(products);
+    // Return the found products
+    res.status(200).json(products);
   } catch (err) {
-      res.status(400).json({ message: "Error searching for products" });
+    res.status(400).json({ message: "Error searching for products" });
   }
 };
-
 
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
     const currentDate = new Date();
+    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+    const activityObjectId = mongoose.Types.ObjectId(
+      "66f91e1da144543bfcfbae2a"
+    ); //activity type
     const historicalPlacesFilter = {
-      Date: { $gte: currentDate }, 
-      Tags: { $in: ["museum", "historical place"] } 
+      Type: objectId,
     };
-    const itineraryDateFilter = { Date: { $gte: currentDate } };
-    const [upcomingHistoricalAttractions, upcomingItineraries] = await Promise.all([
-      attractionModel.find(historicalPlacesFilter), 
-      itineraryModel.find(itineraryDateFilter), 
+    const activityFilter = {
+      Type: activityObjectId,
+      Date: { $gte: currentDate },
+    };
+    const itineraryDateFilter = {
+      AvailableDates: {
+        $elemMatch: { $gte: currentDate }, // At least one available date should be in the future
+      },
+    };
+    const [
+      upcomingHistoricalAttractions,
+      upcomingItineraries,
+      upcomingActivities,
+    ] = await Promise.all([
+      attractionModel.find(historicalPlacesFilter),
+      itineraryModel.find(itineraryDateFilter),
+      attractionModel.find(activityFilter),
     ]);
     const result = {
       upcomingHistoricalAttractions,
       upcomingItineraries,
+      upcomingActivities,
     };
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching activities and itineraries", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Error fetching activities and itineraries",
+        error: error.message,
+      });
   }
 };
-
-
-
 
 module.exports = {
   touristRegister,
@@ -224,5 +245,5 @@ module.exports = {
   filterPlaces,
   viewTouristProducts,
   TouristsearchProductByName,
-  viewUpcomingActivitiesAndItineraries
+  viewUpcomingActivitiesAndItineraries,
 };

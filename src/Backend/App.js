@@ -122,7 +122,7 @@ app.get("/viewAdminProducts" ,viewAdminProducts);
 app.get("/viewSellerProducts",viewSellerProducts);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.get("/products/:productId/image", getImage); //getImage with productID
-app.get("/TouristsearchProductByName",TouristsearchProductByName);
+app.post("/TouristsearchProductByName",TouristsearchProductByName);
 app.get("/viewTouristProducts",viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createTags", createTags);
