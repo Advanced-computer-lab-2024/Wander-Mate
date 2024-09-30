@@ -19,7 +19,7 @@ const {
   createSeller,
   readSeller,
   updateSeller,
-  viewSellerProducts,
+  viewSellerProducts
 } = require("./Routes/sellerController.js");
 
 const {

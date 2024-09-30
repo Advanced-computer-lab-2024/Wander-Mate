@@ -1,4 +1,5 @@
 const sellerModel = require("../Models/seller.js"); 
+const ProductModel = require("../Models/products.js");
 const { default: mongoose } = require('mongoose');
 const bcrypt = require("bcrypt");
 
@@ -109,5 +110,24 @@ const viewSellerProducts = async (req, res) => {
   }
 };
 
+const sortProductsByRatings = async (req, res) => {
+    try {
+      // Find and sort products by ratings in descending order (-1 for descending)
+      const products = await productModel.find({}).sort({ ratings: -1 });
+  
+      // Check if products exist
+      if (!products || products.length === 0) {
+        return res.status(404).json({ message: "No products found" });
+      }
+  
+      // Return sorted products
+      res.status(200).json(products);
+    } catch (err) {
+      console.error("Error sorting products by ratings:", err);
+      res.status(500).json({ message: "Failed to sort products by ratings" });
+    }
+  };
+  
 
-module.exports = { createSeller, updateSeller, readSeller,viewSellerProducts };
+
+module.exports = { createSeller, updateSeller, readSeller,viewSellerProducts, sortProductsByRatings };
