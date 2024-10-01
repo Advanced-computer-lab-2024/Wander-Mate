@@ -19,7 +19,8 @@ const {
   createSeller,
   readSeller,
   updateSeller,
-  viewSellerProducts
+  viewSellerProducts,
+  SellersearchProductByName,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -32,6 +33,7 @@ const {
   addProduct,
   getImage,
   viewAdminProducts,
+  AdminsearchProductByName,
 } = require("./Routes/adminController.js");
 
 const { 
@@ -126,6 +128,9 @@ app.get("/viewSellerProducts",viewSellerProducts);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName",TouristsearchProductByName);
+app.get("/AdminsearchProductByName",AdminsearchProductByName);
+app.get("/SellersearchProductByName",SellersearchProductByName);
+
 app.get("/viewTouristProducts",viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createTags", createTags);
