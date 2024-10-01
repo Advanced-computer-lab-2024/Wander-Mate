@@ -343,13 +343,13 @@ const AdminsearchProductByName = async (req, res) => {
 
     // Check if any products were found
     if (products.length === 0) {
-      return res.status(404).json({ message: "No products found with that name" });
+      return res.status(400).json({ message: "No products found with that name" });
     }
 
     // Return the found products
     res.status(200).json(products);
   } catch (err) {
-    res.status(500).json({ message: "Error searching for products" });
+    res.status(400).json({ message: "Error searching for products" });
   }
 };
 
