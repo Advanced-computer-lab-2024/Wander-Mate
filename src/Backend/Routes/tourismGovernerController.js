@@ -99,24 +99,29 @@ const deletePlace = async (req, res) => {
 };
 
 const createTags = async (req, res) => {
-  try{
-    const {
-     Name,
-    } = req.body;
+  try {
+    const { Name } = req.body;
 
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
-  }
+    }
 
-  const newTag = new Tag({ Name });
-  
-  // Save the new tag to the database
-  await newTag.save();
-}
-  catch (error) {
+    const newTag = new Tag({ Name });
+
+    // Save the new tag to the database
+    await newTag.save();
+    return res.status(201).json(newTag);
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error creating tag" });
   }
 };
 
-module.exports = { getPlaces, createPlace, updatePlace, deletePlace, getPlace, createTags };
+module.exports = {
+  getPlaces,
+  createPlace,
+  updatePlace,
+  deletePlace,
+  getPlace,
+  createTags,
+};

@@ -19,6 +19,7 @@ const createActivity = async (req, res) => {
   if (!Date) {
     return res.status(400).json({ error: "Date is required" });
   }
+  //let EnterDate = new Date(DateString);
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
   }
@@ -34,7 +35,7 @@ const createActivity = async (req, res) => {
   if (!IsAvailable) {
     return res.status(400).json({ error: "Availability is required" });
   }
-  const objectId = mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
+  const objectId = new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
   try {
     const activity = attractionModel.create({
       Creator: Creator,
@@ -49,7 +50,7 @@ const createActivity = async (req, res) => {
       Type: objectId,
       Bookings: Bookings,
     });
-    res.status(200).json(activity);
+    res.status(200).json((await activity).id);
   } catch {
     res.status(400).json({ error: "Error creating activity" });
   }
