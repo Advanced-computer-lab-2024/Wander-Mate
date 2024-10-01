@@ -168,7 +168,7 @@ const viewTouristProducts = async (req, res) => {
 
 const TouristsearchProductByName = async (req, res) => {
   try {
-    const { name } = req.body; // Expecting the product name in the query string
+    const { name } = req.body; // Expecting the product name in the request body
 
     // Check if a name is provided
     if (!name) {
@@ -181,18 +181,17 @@ const TouristsearchProductByName = async (req, res) => {
     });
 
     // Check if any products were found
-    if (!products) {
-      return res
-        .status(400)
-        .json({ message: "No products found with that name" });
+    if (products.length === 0) {
+      return res.status(404).json({ message: "No products found with that name" });
     }
 
     // Return the found products
     res.status(200).json(products);
   } catch (err) {
-    res.status(400).json({ message: "Error searching for products" });
+    res.status(500).json({ message: "Error searching for products" });
   }
 };
+
 
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
