@@ -294,7 +294,7 @@ const getImage = async (req, res) => {
 const viewAdminProducts = async (req, res) => {
   try {
       // Find all products with the relevant fields
-      const products = await ProductModel.find({}); // Populate seller info if needed
+      const products = await productModel.find({}); // Populate seller info if needed
 
       // Check if products exist
       if (!products) {
@@ -337,7 +337,7 @@ const AdminsearchProductByName = async (req, res) => {
     }
 
     // Search for products that match the name (case-insensitive)
-    const products = await ProductModel.find({
+    const products = await productModel.find({
       name: { $regex: name, $options: "i" },
     });
 
@@ -349,7 +349,8 @@ const AdminsearchProductByName = async (req, res) => {
     // Return the found products
     res.status(200).json(products);
   } catch (err) {
-    res.status(400).json({ message: "Error searching for products" });
+    res.status(400).json({ message: "Error searching for products", error: err.message });
+
   }
 };
 
