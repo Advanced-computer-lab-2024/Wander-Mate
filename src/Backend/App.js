@@ -34,6 +34,7 @@ const {
   getImage,
   viewAdminProducts,
   AdminsearchProductByName,
+  sortProductsByRatings
 } = require("./Routes/adminController.js");
 
 const { 
@@ -125,6 +126,7 @@ app.post("/filterPlaces", filterPlaces);
 app.get("/viewTouristProducts", viewTouristProducts);
 app.get("/viewAdminProducts" ,viewAdminProducts);
 app.get("/viewSellerProducts",viewSellerProducts);
+app.get("/sortProductsByRatings",sortProductsByRatings);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName",TouristsearchProductByName);
