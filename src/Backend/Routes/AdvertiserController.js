@@ -2,6 +2,7 @@ const advertiserModel = require("../Models/advertiser.js");
 const attractionModel = require("../Models/attractions.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -81,6 +82,7 @@ const readActivities = async (req, res) => {
 
 const updateActivity = async (req, res) => {
   const {
+    Creator,
     id,
     Date,
     Time,
@@ -92,7 +94,22 @@ const updateActivity = async (req, res) => {
     IsAvailable,
   } = req.body;
   try {
-    const activity = await attractionModel.findByIdAndUpdate(
+    let activity = await attractionModel.findById(id);
+    if (!activity) {
+      return res.status(400).json({ message: "Activity not found." });
+    }
+    // Convert Creator to ObjectId
+    const creatorObjectId = ObjectId.isValid(Creator)
+      ? new ObjectId(Creator)
+      : null;
+
+    // Compare using strict equality
+    if (!creatorObjectId.equals(activity.Creator)) {
+      return res
+        .status(400)
+        .json({ message: "You are not the creator of this activity" });
+    }
+    activity = await attractionModel.findByIdAndUpdate(
       id,
       {
         Date: Date,
@@ -106,9 +123,6 @@ const updateActivity = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    if (!activity) {
-      return res.status(400).json({ message: "Activity not found." });
-    }
     return res
       .status(200)
       .json({ message: "Activity updated successfully.", activity });
@@ -118,11 +132,22 @@ const updateActivity = async (req, res) => {
 };
 
 const deleteActivity = async (req, res) => {
-  const id = req.body;
+  const {id, Creator} = req.body;
   try {
     const activity = await attractionModel.findById(id);
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
+    }
+    // Convert Creator to ObjectId
+    const creatorObjectId = ObjectId.isValid(Creator)
+      ? new ObjectId(Creator)
+      : null;
+
+    // Compare using strict equality
+    if (!creatorObjectId.equals(activity.Creator)) {
+      return res
+        .status(400)
+        .json({ message: "You are not the creator of this activity" });
     }
     // Check if bookings list is empty
     if (activity.bookings && activity.bookings.length > 0) {
