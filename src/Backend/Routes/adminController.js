@@ -8,6 +8,7 @@ const Seller = require("../Models/seller.js");
 const tourGuide = require("../Models/tourGuide.js");
 const TourismGoverner = require("../Models/tourismGoverner.js");
 const tourist = require("../Models/tourist.js");
+const userModel = require("../Models/users.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -30,7 +31,8 @@ const createAdmin = async (req, res) => {
 
     // Check if the username already exists
     const existingAdmin = await adminModel.findOne({ UserName: Username });
-    if (existingAdmin) {
+    const existingUser = await userModel.findOne({ UserName: Username});
+    if (existingAdmin || existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
 
@@ -38,6 +40,8 @@ const createAdmin = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
+    //create UsreName
+    await userModel.create({UserName: Username});
     // Create admin with hashed password
     const admin = await adminModel.create({
       UserName: Username,
@@ -293,18 +297,18 @@ const getImage = async (req, res) => {
 
 const viewAdminProducts = async (req, res) => {
   try {
-      // Find all products with the relevant fields
-      const products = await productModel.find({}); // Populate seller info if needed
+    // Find all products with the relevant fields
+    const products = await productModel.find({}); // Populate seller info if needed
 
-      // Check if products exist
-      if (!products) {
-          return res.status(400).json({ message: "No products available" });
-      }
+    // Check if products exist
+    if (!products) {
+      return res.status(400).json({ message: "No products available" });
+    }
 
-      // Return the list of products
-      res.status(200).json(products);
+    // Return the list of products
+    res.status(200).json(products);
   } catch (err) {
-      res.status(400).json({ message: "Unable to fetch products" });
+    res.status(400).json({ message: "Unable to fetch products" });
   }
 };
 
@@ -326,7 +330,6 @@ const sortProductsByRatings = async (req, res) => {
   }
 };
 
-
 const AdminsearchProductByName = async (req, res) => {
   try {
     const { name } = req.body; // Expecting the product name in the request body
@@ -343,18 +346,19 @@ const AdminsearchProductByName = async (req, res) => {
 
     // Check if any products were found
     if (products.length === 0) {
-      return res.status(400).json({ message: "No products found with that name" });
+      return res
+        .status(400)
+        .json({ message: "No products found with that name" });
     }
 
     // Return the found products
     res.status(200).json(products);
   } catch (err) {
-    res.status(400).json({ message: "Error searching for products", error: err.message });
-
+    res
+      .status(400)
+      .json({ message: "Error searching for products", error: err.message });
   }
 };
-
-
 
 module.exports = {
   createAdmin,
