@@ -81,8 +81,14 @@ const handleTourist = async (req, res) => {
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
       // Handle updating tourist information
-      const { Email, Password, MobileNumber, Nationality, DOB, Role } =
-        req.body;
+      const { Username, DOB, Email, Password, MobileNumber, Nationality, Role } = req.body;
+
+      // Check if user is trying to update Username or DOB
+      if (req.body.hasOwnProperty("Username") || req.body.hasOwnProperty("DOB")) {
+        return res.status(400).json({
+          message: "Username and DOB cannot be changed",
+        });
+      }
 
       // Find the tourist
       const tourist = await userModel.findById(touristID);
@@ -91,12 +97,14 @@ const handleTourist = async (req, res) => {
         return res.status(404).json({ message: "Tourist not found" });
       }
 
-      // Fields that can be updated (excluding Username and Wallet)
+      // Fields that can be updated (excluding Username and DOB)
       if (Email) tourist.Email = Email;
-      if (Password) tourist.Password = Password; // Consider adding password hashing here
+      if (Password) {
+        // Consider adding password hashing here
+        tourist.Password = Password;
+      }
       if (MobileNumber) tourist.MobileNumber = MobileNumber;
       if (Nationality) tourist.Nationality = Nationality;
-      if (DOB) tourist.DOB = DOB;
       if (Role) tourist.Role = Role;
 
       // Save the updated tourist
@@ -110,11 +118,14 @@ const handleTourist = async (req, res) => {
       return res.status(405).json({ message: "Method not allowed" }); // Handle unsupported methods
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error processing request", error: error.message });
+    res.status(500).json({
+      message: "Error processing request",
+      error: error.message,
+    });
   }
 };
+
+
 
 const searchAttractions = async (req, res) => {
   const { Name, Category, Tags } = req.body;
