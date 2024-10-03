@@ -7,7 +7,6 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const Itinerary = require("../Models/itinerary.js");
 const Attraction = require("../Models/attractions.js");
 
-
 const createActivity = async (req, res) => {
   const Bookings = [];
   const {
@@ -210,9 +209,7 @@ const createAdvertiserInfo = async (req, res) => {
     // advertiser.CompanyProfile = CompanyProfile;
 
     await advertiser.save();
-    res
-      .status(200)
-      .json({ message: "Profile information created", advertiser });
+    res.status(200).json({ message: "Profile information created", advertiser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error creating profile information" });
