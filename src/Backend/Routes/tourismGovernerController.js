@@ -119,7 +119,7 @@ const createTags = async (req, res) => {
     return res.status(500).json({ message: "Error creating tag" });
   }
 };
-const viewAll = async (req, res) => {
+const viewAll0 = async (req, res) => {
   try {
     // Fetch all preference tags from the database
     const attractions = await Attraction.find();
@@ -150,5 +150,5 @@ module.exports = {
   deletePlace,
   getPlace,
   createTags,
-  viewAll
+  viewAll0
 };

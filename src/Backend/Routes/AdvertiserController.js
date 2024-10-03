@@ -227,7 +227,7 @@ const readAdvertiserInfo = async (req, res) => {
     res.status(400).json({ error: "Error reading Advertiser" });
   }
 };
-const viewAll = async (req, res) => {
+const viewAll2 = async (req, res) => {
   try {
     // Fetch all preference tags from the database
     const attractions = await Attraction.find();
@@ -261,5 +261,5 @@ module.exports = {
   readActivities,
   createAdvertiserInfo,
   readAdvertiserInfo,
-  viewAll
+  viewAll2
 };

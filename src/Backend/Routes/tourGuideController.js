@@ -5,7 +5,7 @@ const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
 const { searchAttractions } = require("./touristController.js");
 const Attraction = require("../Models/attractions.js");
-const Itinerary = require("../Models/itinerary.js");
+
 
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
@@ -216,6 +216,7 @@ const createProfileInformation = async (req, res) => {
     res.status(500).json({ message: "Error creating profile information" });
   }
 };
+
 const readProfileInformation = async (req, res) => {
   try {
     const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
@@ -267,7 +268,7 @@ const updateProfileInformation = async (req, res) => {
     res.status(500).json({ message: "Error updating profile information" });
   }
 };
-const viewAll = async (req, res) => {
+const viewAll1 = async (req, res) => {
   try {
     // Fetch all preference tags from the database
     const attractions = await Attraction.find();
@@ -300,5 +301,5 @@ module.exports = {
   updateProfileInformation,
   updateItinerary,
   deleteItinerary,
-  viewAll
+  viewAll1,
 };
