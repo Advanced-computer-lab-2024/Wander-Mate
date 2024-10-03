@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Update Profile | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">
+            Update My Profile
+        </div>
+        <form id="updateForm" action="seller.html" method="get" onsubmit="return updateSeller(event);">
+            <div class="field">
+                <input type="text" id="sellerUsername" name="sellerName" required>
+                <label for="sellerUsername">Username</label>
+            </div>
+            <div class="field">
+                <input type="text" id="sellerFullName" name="fullName" required>
+                <label for="sellerFullName">Full Name</label>
+            </div>
+            <div class="field">
+                <input type="text" id="sellerDescription" name="sellerDescription" required>
+                <label for="sellerDescription">Description</label>
+            </div>
+            <div class="field">
+                <input type="submit" value="Update">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function fetchSeller() {
+            const username = document.getElementById('sellerUsername').value;
+
+            try {
+                const response = await fetch(`http://localhost:8000/readSeller?username=${username}`);
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const seller = await response.json();
+                if (seller.length > 0) {
+                    const { FullName, Description } = seller[0]; // Assuming seller is an array
+                    document.getElementById('sellerFullName').value = FullName;
+                    document.getElementById('sellerDescription').value = Description;
+                } else {
+                    alert("Seller not found.");
+                }
+            } catch (error) {
+                console.error("Error fetching seller:", error);
+                alert("Could not load seller. Please try again later.");
+            }
+        }
+
+        async function updateSeller(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const username = document.getElementById('sellerUsername').value;
+            const fullName = document.getElementById('sellerFullName').value;
+            const description = document.getElementById('sellerDescription').value;
+
+            try {
+                const response = await fetch("http://localhost:8000/updateSeller", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ Username: username, FullName: fullName, Description: description }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const result = await response.json();
+                alert("Profile updated successfully!");
+                window.location.href = "seller.html"; // Redirect to success page
+            } catch (error) {
+                console.error("Error updating seller:", error);
+                alert("Could not update profile. Please try again later.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -85,7 +85,7 @@ const updateSeller = async (req, res) => {
 //Reading a seller
 const readSeller = async (req, res) => {
   try {
-    const { Username, Password, Description } = req.body;
+    const { Username } = req.body;
     const seller = await sellerModel.find({ Username });
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
