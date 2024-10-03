@@ -203,46 +203,35 @@ const createAdvertiser = async (req, res) => {
   }
 };
 
-const createAdvertiserComp = async (req, res) => {
+const createAdvertiserInfo = async (req, res) => {
   try {
-    // Extract data from the request body
-    const { Username, Password, Email, Website, CompanyProfile, Hotline } =
-      req.body;
+    const { Username, Email, Website, Hotline, CompanyProfile } = req.body;
 
-    // Validate required fields for advertiser
-    if (!Username || !Password) {
-      return res
-        .status(400)
-        .json({ message: "Username and Password are required" });
-    }
+      // if (!Email || !Website ||Hotline || CompanyProfile) {
+      //     return res.status(400).json({ message: "Mobile number and years of experience are required" });
+      // }
 
-    // Store the advertiser information in the database
-    const newAdvertiser = new Advertiser({
-      Username,
-      Password,
-    });
+      const advertiser = await advertiserModel.findOne({ Username: Username });
 
-    await newAdvertiser.save();
+      if (!advertiser) {
+          return res.status(404).json({ message: "Tour guide not found" });
+      }
 
-    // If additional company info is provided, you can handle it separately
-    const companyInfo = {
-      Email,
-      Website,
-      CompanyProfile,
-      Hotline,
-    };
+      advertiser.Email = Email;
+      advertiser.Website = Website;
+      advertiser.Hotline = Hotline;
+      advertiser.CompanyProfile = CompanyProfile;
+  
 
-    // Send success response including both advertiser and company info
-    res.status(201).json({
-      message: "Advertiser created successfully",
-      advertiser: newAdvertiser,
-      companyInfo: companyInfo,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error, please try again" });
+      await advertiser.save();
+      res.status(200).json({ message: "Profile information created", advertiser });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error creating profile information" });
   }
 };
+
+
 
 module.exports = {
   createActivity,
@@ -251,5 +240,5 @@ module.exports = {
   deleteActivity,
   createAdvertiser,
   readActivities,
-  createAdvertiserComp,
+  createAdvertiserInfo,
 };

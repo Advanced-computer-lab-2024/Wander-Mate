@@ -19,7 +19,7 @@ const itinerarySchema = new Schema(
       type: String,
       required: true,
     }, 
-    Price: { type: String, required: true },
+    Price: { type: Number, required: true },
     AvailableDates: { type: [Date], required: true },
     PickUpLocation: {
       type: {

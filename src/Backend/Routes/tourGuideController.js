@@ -87,7 +87,7 @@ const createItinerary = async (req, res) => {
     await newItinerary.save();
 
     // Send a response with the newly created itinerary
-    return res.status(201).json(newItinerary);
+    return res.status(200).json(newItinerary);
   } catch (error) {
     console.error("Error creating itinerary:", error.message); // Log the actual error message
     return res

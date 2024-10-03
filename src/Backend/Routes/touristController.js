@@ -214,8 +214,8 @@ const TouristsearchProductByName = async (req, res) => {
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
     const currentDate = new Date();
-    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
-    const activityObjectId = mongoose.Types.ObjectId(
+    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+    const activityObjectId = new mongoose.Types.ObjectId(
       "66f91e1da144543bfcfbae2a"
     ); //activity type
     const historicalPlacesFilter = {
@@ -270,45 +270,46 @@ const sortProductsByRatingstourist = async (req, res) => {
     res.status(500).json({ message: "Failed to sort products by ratings" });
   }
 };
+const filterItineraries = async (req, res) => {
+  const { minPrice, maxPrice, AvailableDates, Tags, Language } = req.body;
 
-// const filterItineraries = async (req, res) => {
-//   const { budget, dateRange, preferences, language } = req.body;
+  // Initialize the filter object
+  const filter = {};
 
-//   const filter = {
-//     Type: mongoose.Types.ObjectId(id), // Change this ID as needed
-//     available: true, // Assuming itineraries have an 'available' status
-//   };
+  // Filter by price if provided
+  if (minPrice || maxPrice) {
+    filter.Price = { $lte: maxPrice, $gte:minPrice }; // Assuming it's a maximum budget filter
+  }
 
-//   // Filter by budget if provided
-//   if (budget) {
-//     filter.budget = { $lte: budget };
-//   }
+  // Filter by available dates if provided
+  if (AvailableDates && AvailableDates.length > 0) {
+    filter.AvailableDates = {
+      $gte: new Date(AvailableDates[0]), // Start date
+      $lte: new Date(AvailableDates[1]), // End date
+    };
+  }
 
-//   // Filter by date range if provided
-//   if (dateRange && dateRange.start && dateRange.end) {
-//     filter.date = {
-//       $gte: new Date(dateRange.start),
-//       $lte: new Date(dateRange.end),
-//     };
-//   }
+  // Filter by locations to visit if provided
+  if (Tags && Array.isArray(Tags) && Tags.length > 0) {
+    filter.Tags = { $in: Tags };
+  }
 
-//   // Filter by preferences if provided (historic areas, beaches, family-friendly, shopping)
-//   if (preferences && Array.isArray(preferences) && preferences.length > 0) {
-//     filter.preferences = { $in: preferences };
-//   }
+  // Filter by language if provided
+  if (Language) {
+    filter.Language = Language;
+  }
 
-//   // Filter by language if provided
-//   if (language) {
-//     filter.language = language;
-//   }
-
-//   try {
-//     const itineraries = await itineraryModel.find(filter);
-//     res.status(200).json(itineraries);
-//   } catch (error) {
-//     res.status(400).json({ message: "Error filtering itineraries" });
-//   }
-// };
+  try {
+    const itineraries = await itineraryModel.find(filter);
+    if (itineraries && itineraries.length > 0) {
+      res.status(200).json(itineraries);
+    } else {
+      res.status(404).json({ message: "No itineraries found" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Error filtering itineraries", error: error.message });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -319,5 +320,6 @@ module.exports = {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
-  // filterItineraries
+  filterItineraries
+
 };
