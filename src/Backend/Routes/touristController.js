@@ -262,7 +262,7 @@ const sortProductsByRatingstourist = async (req, res) => {
 
 // const filterItineraries = async (req, res) => {
 //   const { budget, dateRange, preferences, language } = req.body;
-
+  
 //   const filter = {
 //     Type: mongoose.Types.ObjectId(id), // Change this ID as needed
 //     available: true, // Assuming itineraries have an 'available' status
@@ -275,8 +275,8 @@ const sortProductsByRatingstourist = async (req, res) => {
 
 //   // Filter by date range if provided
 //   if (dateRange && dateRange.start && dateRange.end) {
-//     filter.date = {
-//       $gte: new Date(dateRange.start),
+//     filter.date = { 
+//       $gte: new Date(dateRange.start), 
 //       $lte: new Date(dateRange.end),
 //     };
 //   }

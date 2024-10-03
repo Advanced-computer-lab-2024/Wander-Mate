@@ -184,9 +184,9 @@ const deleteAccount = async (req, res) => {
       accountDeleted = true;
     }
 
-    const existingTourist = await tourist.findOne({ UserName });
+    const existingTourist = await tourist.findOne({ Username });
     if (existingTourist) {
-      await tourist.deleteOne({ UserName });
+      await tourist.deleteOne({ Username });
       accountDeleted = true;
     }
 
