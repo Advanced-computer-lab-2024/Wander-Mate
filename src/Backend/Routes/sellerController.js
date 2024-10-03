@@ -110,7 +110,7 @@ const viewSellerProducts = async (req, res) => {
   }
 };
 
-const sortProductsByRatings = async (req, res) => {
+const sortProductsByRatingsseller = async (req, res) => {
     try {
       // Find and sort products by ratings in descending order (-1 for descending)
       const products = await productModel.find({}).sort({ ratings: -1 });
@@ -157,4 +157,4 @@ const sortProductsByRatings = async (req, res) => {
   
 
 
-module.exports = { createSeller, updateSeller, readSeller,viewSellerProducts, sortProductsByRatings ,SellersearchProductByName};
+module.exports = { createSeller, updateSeller, readSeller,viewSellerProducts,sortProductsByRatingsseller,SellersearchProductByName};
