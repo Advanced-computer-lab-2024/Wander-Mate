@@ -130,10 +130,24 @@ const updateItinerary = async (req, res) => {
       }
       if(itinerary.Creator !== Creator){
         return res.status(400).json({ message: "You are not the creator." });
-       }
-
-
-
+      }
+      itinerary = await attractionModel.findByIdAndUpdate(
+        id,
+        {
+          Activities,
+          LocationsToVisit,
+          TimeLine,
+          Language,
+          Price,
+          AvailableDates,
+          PickUpLocation,
+          DropOffLocation,
+        },
+        { new: true, runValidators: true }
+      );
+      return res
+      .status(200)
+      .json({ message: "Itinerary updated successfully.", itinerary });
     }
     catch{
 
