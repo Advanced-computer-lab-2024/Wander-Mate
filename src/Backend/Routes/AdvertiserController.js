@@ -100,17 +100,9 @@ const updateActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    // Convert Creator to ObjectId
-    const creatorObjectId = ObjectId.isValid(Creator)
-      ? new ObjectId(Creator)
-      : null;
-
-    // Compare using strict equality
-    if (!creatorObjectId.equals(activity.Creator)) {
-      return res
-        .status(400)
-        .json({ message: "You are not the creator of this activity" });
-    }
+   if(activity.Creator !== Creator){
+    return res.status(400).json({ message: "You are not the creator." });
+   }
     activity = await attractionModel.findByIdAndUpdate(
       id,
       {
@@ -140,17 +132,9 @@ const deleteActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    // Convert Creator to ObjectId
-    const creatorObjectId = ObjectId.isValid(Creator)
-      ? new ObjectId(Creator)
-      : null;
-
-    // Compare using strict equality
-    if (!creatorObjectId.equals(activity.Creator)) {
-      return res
-        .status(400)
-        .json({ message: "You are not the creator of this activity" });
-    }
+    if(activity.Creator !== Creator){
+      return res.status(400).json({ message: "You are not the creator." });
+     }
     // Check if bookings list is empty
     if (activity.bookings && activity.bookings.length > 0) {
       return res

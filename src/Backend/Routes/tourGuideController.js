@@ -70,7 +70,6 @@ const createItinerary = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Create a new itinerary object
     const newItinerary = new Itinerary({
       Creator,
       Activities,
@@ -113,8 +112,8 @@ const deleteItinerary = async (req, res) => {
 
 const updateItinerary = async (req, res) => {
   try {
-    const { id } = req.params; // Itinerary ID from the request params
     const {
+      Creator,
       Activities,
       LocationsToVisit,
       TimeLine,
@@ -124,6 +123,21 @@ const updateItinerary = async (req, res) => {
       PickUpLocation,
       DropOffLocation,
     } = req.body;
+    try {
+      let itinerary = await Itinerary.findById(id);
+      if (!itinerary) {
+        return res.status(400).json({ message: "Itinerary not found." });
+      }
+      if(itinerary.Creator !== Creator){
+        return res.status(400).json({ message: "You are not the creator." });
+       }
+
+
+
+    }
+    catch{
+
+    }
 
     const updateFields = {};
     if (Activities) updateFields.Activities = Activities;
