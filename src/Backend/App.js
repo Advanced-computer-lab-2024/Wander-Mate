@@ -56,6 +56,7 @@ const {
     updateProfileInformation,
     deleteItinerary,
     updateItinerary,
+    readItinerary,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -66,6 +67,7 @@ const {
   createAdvertiser,
   readActivities,
   createAdvertiserInfo,
+  readAdvertiserInfo,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -167,3 +169,4 @@ app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
+app.get("readAdvertiserInfo",readAdvertiserInfo);
