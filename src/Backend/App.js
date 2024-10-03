@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const mongoose = require("mongoose");
 const multer = require("multer");
 const storage = multer.memoryStorage(); // Store files in memory
@@ -16,7 +17,7 @@ const {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
-  filterItineraries
+  filterItineraries,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -24,7 +25,7 @@ const {
   updateSeller,
   viewSellerProducts,
   SellersearchProductByName,
-  sortProductsByRatingsseller
+  sortProductsByRatingsseller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -46,18 +47,18 @@ const {
   deletePreferenceTags,
   readPreferenceTags,
   readCategory,
-  
+  getNations,
 } = require("./Routes/adminController.js");
 
-const { 
-    createTourGuide,
-    createItinerary,
-    createProfileInformation,
-    readProfileInformation,
-    updateProfileInformation,
-    deleteItinerary,
-    updateItinerary,
-    viewAll1
+const {
+  createTourGuide,
+  createItinerary,
+  createProfileInformation,
+  readProfileInformation,
+  updateProfileInformation,
+  deleteItinerary,
+  updateItinerary,
+  viewAll1,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -70,7 +71,7 @@ const {
   createAdvertiserInfo,
   viewAll2,
   readAdvertiserInfo,
-  updateAdvertiserInfo
+  updateAdvertiserInfo,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -80,12 +81,13 @@ const {
   getPlaces,
   getPlace,
   createTags,
-  viewAll0
+  viewAll0,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
 const app = express();
+app.use(cors());
 const port = process.env.PORT || 8000;
 // #Importing the userController
 
@@ -116,9 +118,9 @@ app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
 app.delete("/deleteplace/:id", deletePlace);
-app.get("/viewAll0",viewAll0);
-app.get("/viewAll1",viewAll1);
-app.get("/viewAll2",viewAll2);
+app.get("/viewAll0", viewAll0);
+app.get("/viewAll1", viewAll1);
+app.get("/viewAll2", viewAll2);
 //////////////////////////////////////////////////
 
 app.post("/searchAttractions", searchAttractions);
@@ -126,21 +128,24 @@ app
   .route("/handleTourist/:touristID")
   .get(handleTourist) // Handle GET requests for reading tourist information
   .put(handleTourist);
-app.get("/viewUpcomingActivitiesAndItineraries",viewUpcomingActivitiesAndItineraries);
+app.get(
+  "/viewUpcomingActivitiesAndItineraries",
+  viewUpcomingActivitiesAndItineraries
+);
 //Admin CRUD categories
 app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
-app.patch("/UpdateProduct",UpdateProduct);
+app.patch("/UpdateProduct", UpdateProduct);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
-app.post("/createTags",createPreferenceTags);
-app.get("/readCategory",readCategory);
-app.put("/updateTags",updatePreferenceTags);
-app.delete("/deleteTags",deletePreferenceTags);
-app.get("/readTags",readPreferenceTags);
+app.post("/createTags", createPreferenceTags);
+app.get("/readCategory", readCategory);
+app.put("/updateTags", updatePreferenceTags);
+app.delete("/deleteTags", deletePreferenceTags);
+app.get("/readTags", readPreferenceTags);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -153,28 +158,30 @@ app.post("/createTourGuide", createTourGuide);
 app.post("/createAdvertiser", createAdvertiser);
 app.post("/filterPlaces", filterPlaces);
 app.get("/viewTouristProducts", viewTouristProducts);
-app.get("/viewAdminProducts" ,viewAdminProducts);
-app.get("/viewSellerProducts",viewSellerProducts);
-app.get("/sortProductsByRatings",sortProductsByRatings);
-app.get("/sortProductsByRatingsseller",sortProductsByRatingsseller);
-app.get("/sortProductsByRatingstourist",sortProductsByRatingstourist);
+app.get("/viewAdminProducts", viewAdminProducts);
+app.get("/viewSellerProducts", viewSellerProducts);
+app.get("/sortProductsByRatings", sortProductsByRatings);
+app.get("/sortProductsByRatingsseller", sortProductsByRatingsseller);
+app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.get("/products/:productId/image", getImage); //getImage with productID
-app.get("/TouristsearchProductByName",TouristsearchProductByName);
-app.get("/AdminsearchProductByName",AdminsearchProductByName);
-app.get("/SellersearchProductByName",SellersearchProductByName);
-app.post("/filterProductsByPrice",filterProductsByPrice)
+app.get("/TouristsearchProductByName", TouristsearchProductByName);
+app.get("/AdminsearchProductByName", AdminsearchProductByName);
+app.get("/SellersearchProductByName", SellersearchProductByName);
+app.post("/filterProductsByPrice", filterProductsByPrice);
 
-app.get("/viewTouristProducts",viewTouristProducts);
+app.get("/viewTouristProducts", viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createTags", createTags);
-app.post('/createItinerary', createItinerary);
+app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);
-app.get("/readProfileInformation",readProfileInformation);
-app.put("/updateProfileInformation",updateProfileInformation);
-app.put("/updateItinerary",updateItinerary);
+app.get("/readProfileInformation", readProfileInformation);
+app.put("/updateProfileInformation", updateProfileInformation);
+app.put("/updateItinerary", updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-app.patch("/readAdvertiserInfo",readAdvertiserInfo);
-app.put("/updateAdvertiserInfo",updateAdvertiserInfo);
+app.patch("/readAdvertiserInfo", readAdvertiserInfo);
+app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
+
+app.get("/getNations", getNations);

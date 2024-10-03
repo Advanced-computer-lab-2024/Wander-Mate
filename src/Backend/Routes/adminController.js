@@ -208,7 +208,9 @@ const readCategory = async (req, res) => {
   try {
     const categories = await Category.find();
     if (categories.length === 0) {
-      return res.status(404).json({ message: "No preference categories found." });
+      return res
+        .status(404)
+        .json({ message: "No preference categories found." });
     }
     res.status(200).json(categories);
   } catch (err) {
@@ -216,7 +218,6 @@ const readCategory = async (req, res) => {
     res.status(500).json({ message: "Error fetching categories." });
   }
 };
-
 
 const createTourismGov = async (req, res) => {
   try {
@@ -424,21 +425,25 @@ const filterProductsByPrice = async (req, res) => {
 
     // Check if any products were found
     if (products.length === 0) {
-      return res.status(404).json({ message: "No products found within the specified price range" });
+      return res.status(404).json({
+        message: "No products found within the specified price range",
+      });
     }
 
     // Return the filtered products
     res.status(200).json(products);
   } catch (err) {
     console.error("Error filtering products by price:", err);
-    res.status(500).json({ message: "Failed to filter products by price", error: err.message });
+    res.status(500).json({
+      message: "Failed to filter products by price",
+      error: err.message,
+    });
   }
 };
-const createPreferenceTags = async (req,res) => {
+const createPreferenceTags = async (req, res) => {
   try {
     const { Name } = req.body;
 
-  
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
     }
@@ -456,9 +461,9 @@ const createPreferenceTags = async (req,res) => {
     console.error(err);
     res.status(400).json({ message: "Can't create the tag" });
   }
-}
+};
 
-const updatePreferenceTags = async (req,res) => {
+const updatePreferenceTags = async (req, res) => {
   try {
     const { currentName, newName } = req.body; // Get current and new category names from the request body
 
@@ -492,9 +497,9 @@ const updatePreferenceTags = async (req,res) => {
     console.error(err);
     res.status(400).json({ message: "Can't update the category" });
   }
-}
+};
 
-const deletePreferenceTags = async (req,res) => {
+const deletePreferenceTags = async (req, res) => {
   try {
     const { Name } = req.body; // Get the category name from the request body
 
@@ -517,7 +522,7 @@ const deletePreferenceTags = async (req,res) => {
     console.error(err);
     res.status(400).json({ message: "Tag delete the category" });
   }
-}
+};
 
 const readPreferenceTags = async (req, res) => {
   try {
@@ -537,8 +542,16 @@ const readPreferenceTags = async (req, res) => {
   }
 };
 
-
-
+const getNations = async (req, res) => {
+  try {
+    const db = mongoose.connection;
+    const collection = db.collection("NationsLookUp");
+    const nations = await collection.find({}).toArray(); // Convert cursor to array
+    res.status(200).json(nations); // Send nations as JSON response
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching nations", error });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -559,5 +572,5 @@ module.exports = {
   updatePreferenceTags,
   deletePreferenceTags,
   readPreferenceTags,
-
+  getNations,
 };

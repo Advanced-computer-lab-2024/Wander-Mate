@@ -1,84 +1,220 @@
 <!DOCTYPE html>
-<!-- Created By CodingNepal -->
 <html lang="en">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Register Form</title>
-    <link rel="stylesheet" href="/src/Frontend/styles/register.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <style>
+      /* Hide tourist-specific fields by default */
+      .tourist-fields {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">
-            Register Form
+      <div class="title">Register Form</div>
+      <form id="registerForm" onsubmit="return submitForm(event)">
+        <div class="field">
+          <input type="text" id="username" required />
+          <label>Userame</label>
         </div>
-        <form id="registerForm" action="success.html" method="POST" onsubmit="return validateForm()">
-            <div class="field">
-                <input type="text" id="fullName" required>
-                <label>Full Name</label>
-            </div>
-            <div class="field">
-                <input type="email" id="email" required>
-                <label>Email Address</label>
-            </div>
-            <div class="field">
-                <input type="password" id="password" required>
-                <label>Password</label>
-            </div>
-            <div class="field">
-                <input type="password" id="confirmPassword" required>
-                <label>Confirm Password</label>
-            </div>
-            <div class="field">
-                <select id="roleDropdown" onchange="updateRole()">
-                    <option value="" disabled selected>Select your role</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Advertiser">Advertiser</option>
-                    <option value="Seller">Seller</option>
-                    <option value="Tour Guide">Tour Guide</option>
-                    <option value="Tourism Governer">Tourism Governer</option>
-                    <option value="Tourist">Tourist</option>
-                    <option value="Users">Users</option>
-                </select>
-                <label for="roleDropdown">Role</label>
-            </div>
-            <div class="content">
-                <div class="checkbox">
-                    <input type="checkbox" id="remember-me">
-                    <label for="remember-me">Remember me</label>
-                </div>
-            </div>
-            <div class="field">
-                <input type="submit" value="Register">
-            </div>
-        </form>
+        <div class="field">
+          <input type="email" id="email" required />
+          <label>Email Address</label>
+        </div>
+        <div class="field">
+          <input type="password" id="password" required />
+          <label>Password</label>
+        </div>
+        <div class="field">
+          <input type="password" id="confirmPassword" required />
+          <label>Confirm Password</label>
+        </div>
+        <div class="field">
+          <select id="roleDropdown" onchange="updateRole()">
+            <option value="" disabled selected>Select your role</option>
+            <option value="Advertiser">Advertiser</option>
+            <option value="Seller">Seller</option>
+            <option value="Tour Guide">Tour Guide</option>
+            <option value="Tourist">Tourist</option>
+          </select>
+          <label id="roleLabel" for="roleDropdown">Role</label>
+        </div>
+
+        <!-- Tourist-specific fields (hidden by default) -->
+        <div id="touristFields" class="tourist-fields">
+          <div class="field">
+            <input type="text" id="mobileNumber" />
+            <label>Mobile Number</label>
+          </div>
+          <div class="field">
+            <select id="nationality">
+              <option value="" disabled selected></option>
+            </select>
+            <label>Nationality</label>
+          </div>
+          <div class="field">
+            <input type="date" id="dob" />
+            <label>BirthDay</label>
+          </div>
+          <div class="field">
+            <input type="text" id="touristRole" />
+            <label for="touristRole">Job</label>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="checkbox">
+            <input type="checkbox" id="remember-me" />
+            <label for="remember-me">Remember me</label>
+          </div>
+        </div>
+        <div class="field">
+          <input type="submit" value="Register" />
+        </div>
+      </form>
     </div>
 
     <script>
-        function updateRole() {
-            const dropdown = document.getElementById('roleDropdown');
-            const selectedRole = dropdown.options[dropdown.selectedIndex].text;
+      async function fetchNations() {
+        const nationalitySelect = document.getElementById("nationality");
 
-            // Update the label with the selected role
-            const label = dropdown.previousElementSibling;
-            label.textContent = selectedRole; // Update label
+        try {
+          // Fetch list of nations from the API
+          const response = await fetch("http://localhost:8000/getNations");
 
-            // Hide the default option
-            dropdown.options[0].style.display = 'none'; // Hide the placeholder
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const nations = await response.json();
+
+          // Populate the dropdown with the fetched nations
+          nations.forEach((nation) => {
+            const option = document.createElement("option");
+            option.value = nation._id; // Use the nation ID as the value
+            option.textContent = nation.country_name; // Display the nation name
+            nationalitySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching nations:", error);
+          alert("Could not load nationalities. Please try again later.");
+        }
+      }
+
+      function updateRole() {
+        const dropdown = document.getElementById("roleDropdown");
+        const selectedRole = dropdown.options[dropdown.selectedIndex].text;
+
+        // Update the label with the selected role
+        const label = document.getElementById("roleLabel");
+        label.textContent = selectedRole;
+
+        // Show tourist-specific fields only if the selected role is "Tourist"
+        const touristFields = document.getElementById("touristFields");
+
+        if (selectedRole === "Tourist") {
+          touristFields.style.display = "block"; // Show tourist fields
+        } else {
+          touristFields.style.display = "none"; // Hide tourist fields
+        }
+      }
+
+      function validateForm() {
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        // Simple password matching validation
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
+          return false; // Prevent form submission
         }
 
-        function validateForm() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+        // Additional validation can go here if needed
 
-            // Simple password matching validation
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return false; // Prevent form submission
-            }
+        return true; // Allow form submission
+      }
 
-            // If validation passes, allow form submission
-            return true; 
+      async function submitForm(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Validate the form before submitting
+        if (!validateForm()) {
+          return;
         }
+
+        // Collect form data
+        const formData = {
+          Username: document.getElementById("username").value,
+          Email: document.getElementById("email").value,
+          Password: document.getElementById("password").value,
+          user: document.getElementById("roleDropdown").value,
+          MobileNumber: document.getElementById("mobileNumber")?.value,
+          Nationality: document.getElementById("nationality")?.value,
+          DOB: document.getElementById("dob")?.value,
+          Role: document.getElementById("touristRole")?.value,
+        };
+        console.log(formData.Nationality);
+
+        let URL = "http://localhost:8000/";
+
+        // Use formData.user to determine the correct URL
+        switch (formData.user) {
+          case "Advertiser":
+            URL += "createAdvertiser";
+            break;
+          case "Tourist":
+            URL += "touristRegister";
+            break;
+          case "Seller":
+            URL += "createSeller";
+            break;
+          case "Tour Guide":
+            URL += "createTourGuide";
+            break;
+          default:
+            URL = ""; // Handle case where no role is selected
+            break;
+        }
+
+        // Debugging: log the final URL
+        console.log("Final API URL:", URL);
+
+        if (!URL) {
+          console.error("Invalid URL. Check the role selected.");
+          alert("Invalid URL. Check the role selected.");
+          return;
+        }
+
+        try {
+          const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          // Debugging: log the response object
+          const responseData = await response.json();
+          console.log("Response from server:", responseData);
+
+          if (response.ok) {
+            // Handle success, e.g., redirect to success page or show a message
+            window.location.href = "success.html";
+          } else {
+            // Handle error, e.g., show an error message
+            alert("Error: " + responseData.message || "Unknown error");
+          }
+        } catch (error) {
+          console.error("Error in fetch call:", error);
+          alert("An error occurred. Please try again.");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchNations);
     </script>
-</body>
+  </body>
 </html>
