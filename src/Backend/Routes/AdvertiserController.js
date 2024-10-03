@@ -229,9 +229,9 @@ const createAdvertiserInfo = async (req, res) => {
   }
 };
 const readAdvertiserInfo = async (req, res) => {
-  const { id } = req.params;
+  const { Username } = req.params;
   try {
-    const Advertiser = await advertiserModel.findById(id);
+    const Advertiser = await advertiserModel.find({Username:Username});
     if (!Advertiser) {
       return res.status(404).json({ error: "Advertiser not found" });
     }
