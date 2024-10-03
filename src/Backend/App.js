@@ -69,7 +69,8 @@ const {
   readActivities,
   createAdvertiserInfo,
   viewAll2,
-  readAdvertiserInfo
+  readAdvertiserInfo,
+  updateAdvertiserInfo
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -176,3 +177,4 @@ app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
 app.patch("/readAdvertiserInfo",readAdvertiserInfo);
+app.put("/updateAdvertiserInfo",updateAdvertiserInfo);

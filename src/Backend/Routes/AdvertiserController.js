@@ -227,6 +227,34 @@ const readAdvertiserInfo = async (req, res) => {
     res.status(400).json({ error: "Error reading Advertiser" });
   }
 };
+const updateAdvertiserInfo = async (req, res) => {
+  try {
+    const {Username,Website, Hotline, CompanyProfile} =
+      req.body;
+
+    if (!Username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const updatedAdvertiser = await advertiserModel.findOneAndUpdate(
+      { Username },
+      { Website, Hotline, CompanyProfile },
+      { new: true }
+    );
+
+    if (!updatedAdvertiser) {
+      return res.status(404).json({ message: "Advertiser not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile information updated",
+      advertiser: updatedAdvertiser,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating profile information" });
+  }
+};
 const viewAll2 = async (req, res) => {
   try {
     // Fetch all preference tags from the database
@@ -261,5 +289,6 @@ module.exports = {
   readActivities,
   createAdvertiserInfo,
   readAdvertiserInfo,
-  viewAll2
+  viewAll2,
+updateAdvertiserInfo
 };
