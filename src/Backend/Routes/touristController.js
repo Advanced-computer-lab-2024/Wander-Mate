@@ -8,11 +8,11 @@ const bcrypt = require("bcrypt");
 // Registration function
 const touristRegister = async (req, res) => {
   try {
-    const { Email, UserName, Password, MobileNumber, Nationality, DOB, Role } =
+    const { Email, Username, Password, MobileNumber, Nationality, DOB, Role } =
       req.body;
 
     // 1. Validate the request data (check required fields)
-    if (!Email || !UserName || !Password || !MobileNumber || !Role) {
+    if (!Email || !Username || !Password || !MobileNumber || !Role) {
       return res
         .status(400)
         .json({ message: "Please provide all required fields." });
@@ -26,7 +26,7 @@ const touristRegister = async (req, res) => {
         .json({ message: "User with this email already exists." });
     }
 
-    const existingUser1 = await userModel.findOne({ UserName: UserName });
+    const existingUser1 = await userModel.findOne({ Username: Username });
     if (existingUser1) {
       return res
         .status(400)
@@ -40,7 +40,7 @@ const touristRegister = async (req, res) => {
     // 4. Create new user
     const newUser = await userModel.create({
       Email,
-      UserName,
+      Username,
       Password: hashedPassword, // Store the hashed password
       MobileNumber,
       Nationality,
@@ -85,7 +85,7 @@ const handleTourist = async (req, res) => {
         return res.status(404).json({ message: "Tourist not found" });
       }
 
-      // Fields that can be updated (excluding UserName and Wallet)
+      // Fields that can be updated (excluding Username and Wallet)
       if (Email) tourist.Email = Email;
       if (Password) tourist.Password = Password; // Consider adding password hashing here
       if (MobileNumber) tourist.MobileNumber = MobileNumber;
@@ -182,7 +182,9 @@ const TouristsearchProductByName = async (req, res) => {
 
     // Check if any products were found
     if (products.length === 0) {
-      return res.status(400).json({ message: "No products found with that name" });
+      return res
+        .status(400)
+        .json({ message: "No products found with that name" });
     }
 
     // Return the found products
@@ -191,7 +193,6 @@ const TouristsearchProductByName = async (req, res) => {
     res.status(400).json({ message: "Error searching for products" });
   }
 };
-
 
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
@@ -228,12 +229,10 @@ const viewUpcomingActivitiesAndItineraries = async (req, res) => {
     };
     res.status(200).json(result);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Error fetching activities and itineraries",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error fetching activities and itineraries",
+      error: error.message,
+    });
   }
 };
 
@@ -255,7 +254,6 @@ const sortProductsByRatingstourist = async (req, res) => {
   }
 };
 
-
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -264,5 +262,5 @@ module.exports = {
   viewTouristProducts,
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
-  sortProductsByRatingstourist
+  sortProductsByRatingstourist,
 };
