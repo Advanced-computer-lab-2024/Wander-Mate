@@ -9,6 +9,7 @@ const tourGuide = require("../Models/tourGuide.js");
 const TourismGoverner = require("../Models/tourismGoverner.js");
 const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
+const PreferenceTags = require("../Models/preferenceTags.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -202,6 +203,25 @@ const deleteAccount = async (req, res) => {
       .json({ message: "An error occurred while deleting the account" });
   }
 };
+
+const readCategory = async(req,res) => {
+  try {
+    // Fetch all preference tags from the database
+    const categories = await Category.find();
+
+    // Check if there are any tags
+    if (categories.length === 0) {
+      return res.status(404).json({ message: "No preference categories found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(categories);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching categories." });
+  }
+
+}
 
 const createTourismGov = async (req, res) => {
   try {
@@ -419,6 +439,110 @@ const filterProductsByPrice = async (req, res) => {
     res.status(500).json({ message: "Failed to filter products by price", error: err.message });
   }
 };
+const createPreferenceTags = async (req,res) => {
+  try {
+    const { Name } = req.body;
+
+  
+    if (!Name) {
+      return res.status(400).json({ message: "Tag name is required" });
+    }
+
+    const existingTag = await PreferenceTags.findOne({ Name });
+    if (existingTag) {
+      return res.status(400).json({ message: "Tag already exists" });
+    }
+
+    // Create the category
+    const Tag = await PreferenceTags.create({ Name });
+
+    res.status(200).json(Tag);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Can't create the tag" });
+  }
+}
+
+const updatePreferenceTags = async (req,res) => {
+  try {
+    const { currentName, newName } = req.body; // Get current and new category names from the request body
+
+    // Check if both names are provided
+    if (!currentName || !newName) {
+      return res
+        .status(400)
+        .json({ message: "Both current and new tags names are required" });
+    }
+
+    // Check if the category with the current name exists
+    const existingTag = await PreferenceTags.findOne({ Name: currentName });
+    if (!existingTag) {
+      return res.status(404).json({ message: "Tag not found" });
+    }
+
+    // Check if the new category name already exists
+    const tagWithSameName = await Category.findOne({ Name: newName });
+    if (tagWithSameName) {
+      return res
+        .status(400)
+        .json({ message: "Category with this new name already exists" });
+    }
+
+    // Update the category name
+    existingTag.Name = newName;
+    await existingTag.save();
+
+    res.status(200).json(existingTag);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Can't update the category" });
+  }
+}
+
+const deletePreferenceTags = async (req,res) => {
+  try {
+    const { Name } = req.body; // Get the category name from the request body
+
+    // Check if the category name is provided
+    if (!Name) {
+      return res.status(400).json({ message: "Tag name is required" });
+    }
+
+    // Check if the category exists
+    const existingTag = await PreferenceTags.findOne({ Name });
+    if (!existingTag) {
+      return res.status(404).json({ message: "Tag not found" });
+    }
+
+    // Delete the category
+    await PreferenceTags.deleteOne({ Name });
+
+    res.status(200).json({ message: "Tag deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Tag delete the category" });
+  }
+}
+
+const readPreferenceTags = async (req, res) => {
+  try {
+    // Fetch all preference tags from the database
+    const preferenceTags = await PreferenceTags.find();
+
+    // Check if there are any tags
+    if (preferenceTags.length === 0) {
+      return res.status(404).json({ message: "No preference tags found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(preferenceTags);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching preference tags." });
+  }
+};
+
+
 
 
 module.exports = {
@@ -426,6 +550,7 @@ module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
+  readCategory,
   deleteAccount,
   createTourismGov,
   addProduct,
@@ -434,5 +559,10 @@ module.exports = {
   sortProductsByRatings,
   AdminsearchProductByName,
   UpdateProduct,
-  filterProductsByPrice
+  filterProductsByPrice,
+  createPreferenceTags,
+  updatePreferenceTags,
+  deletePreferenceTags,
+  readPreferenceTags,
+
 };

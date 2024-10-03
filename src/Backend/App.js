@@ -40,7 +40,12 @@ const {
   AdminsearchProductByName,
   sortProductsByRatings,
   UpdateProduct,
-  filterProductsByPrice
+  filterProductsByPrice,
+  createPreferenceTags,
+  updatePreferenceTags,
+  deletePreferenceTags,
+  readPreferenceTags,
+  readCategory
 } = require("./Routes/adminController.js");
 
 const { 
@@ -122,6 +127,11 @@ app.patch("/UpdateProduct",UpdateProduct);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
+app.post("/createTags",createPreferenceTags);
+app.get("/readCategory",readCategory);
+app.put("/updateTags",updatePreferenceTags);
+app.delete("/deleteTags",deletePreferenceTags);
+app.get("/readTags",readPreferenceTags);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -157,4 +167,3 @@ app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-

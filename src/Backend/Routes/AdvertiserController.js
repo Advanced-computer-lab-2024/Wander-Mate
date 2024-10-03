@@ -100,17 +100,9 @@ const updateActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    // Convert Creator to ObjectId
-    const creatorObjectId = ObjectId.isValid(Creator)
-      ? new ObjectId(Creator)
-      : null;
-
-    // Compare using strict equality
-    if (!creatorObjectId.equals(activity.Creator)) {
-      return res
-        .status(400)
-        .json({ message: "You are not the creator of this activity" });
-    }
+   if(activity.Creator !== Creator){
+    return res.status(400).json({ message: "You are not the creator." });
+   }
     activity = await attractionModel.findByIdAndUpdate(
       id,
       {
@@ -140,17 +132,9 @@ const deleteActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    // Convert Creator to ObjectId
-    const creatorObjectId = ObjectId.isValid(Creator)
-      ? new ObjectId(Creator)
-      : null;
-
-    // Compare using strict equality
-    if (!creatorObjectId.equals(activity.Creator)) {
-      return res
-        .status(400)
-        .json({ message: "You are not the creator of this activity" });
-    }
+    if(activity.Creator !== Creator){
+      return res.status(400).json({ message: "You are not the creator." });
+     }
     // Check if bookings list is empty
     if (activity.bookings && activity.bookings.length > 0) {
       return res
@@ -231,6 +215,18 @@ const createAdvertiserInfo = async (req, res) => {
     res.status(500).json({ message: "Error creating profile information" });
   }
 };
+const readAdvertiserInfo = async (req, res) => {
+  const { Username } = req.params;
+  try {
+    const Advertiser = await advertiserModel.find({Username:Username});
+    if (!Advertiser) {
+      return res.status(404).json({ error: "Advertiser not found" });
+    }
+    res.status(200).json(Advertiser);
+  } catch {
+    res.status(400).json({ error: "Error reading Advertiser" });
+  }
+};
 
 module.exports = {
   createActivity,
@@ -240,4 +236,5 @@ module.exports = {
   createAdvertiser,
   readActivities,
   createAdvertiserInfo,
+  readAdvertiserInfo,
 };
