@@ -6,7 +6,6 @@ const Tag = require("../Models/HistoricalTags.js");
 const Attraction = require("../Models/attractions.js");
 const Itinerary = require("../Models/itinerary.js");
 
-
 //Read
 const getPlaces = async (req, res) => {
   try {
@@ -34,20 +33,24 @@ const getPlace = async (req, res) => {
 //Create
 const createPlace = async (req, res) => {
   try {
-    const {
-      Username,
-      Description,
-      Pictures,
-      Location,
-      OpeningHours,
-      TicketPrices,
-    } = req.body;
-    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    const { Username, Description, Location, OpeningHours, TicketPrices } =
+      req.body;
+    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    // Check if the pictures are uploaded (req.files is used for multiple file uploads)
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "At least one image is required." });
+    }
+
+    // Process all uploaded files
+    const pictures = req.files.map((file) => ({
+      data: file.buffer, // Get image data (Buffer)
+      contentType: file.mimetype, // Get content type of the image
+    }));
 
     const newPlace = await attractionModel.create({
-      Owner: Username,
+      Creator: Username,
       Description,
-      Pictures,
+      Pictures: pictures,
       Location,
       OpeningHours,
       TicketPrices,
@@ -125,7 +128,6 @@ const viewAll0 = async (req, res) => {
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-
     // Check if there are any tags
     if (attractions.length === 0) {
       return res.status(404).json({ message: "No attractions found." });
@@ -137,7 +139,6 @@ const viewAll0 = async (req, res) => {
     // Respond with the retrieved tags
     res.status(200).json(attractions);
     res.status(200).json(itineraries);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
@@ -150,5 +151,5 @@ module.exports = {
   deletePlace,
   getPlace,
   createTags,
-  viewAll0
+  viewAll0,
 };

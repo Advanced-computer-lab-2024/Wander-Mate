@@ -11,7 +11,7 @@ const createActivity = async (req, res) => {
   const Bookings = [];
   const {
     Creator,
-    Date,
+    DateString,
     Time,
     Location,
     Price,
@@ -20,10 +20,11 @@ const createActivity = async (req, res) => {
     Discounts,
     IsAvailable,
   } = req.body;
+  const Ratings = 0.0;
   if (!Date) {
     return res.status(400).json({ error: "Date is required" });
   }
-  //const dateObject = new Date(dateString);
+  const dateObject = new Date(DateString);
   //let EnterDate = new Date(DateString);
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
@@ -44,7 +45,7 @@ const createActivity = async (req, res) => {
   try {
     const activity = attractionModel.create({
       Creator: Creator,
-      Date: Date,
+      Date: dateObject,
       Time: Time,
       Location: Location,
       Price: Price,
@@ -54,6 +55,7 @@ const createActivity = async (req, res) => {
       IsAvailable: IsAvailable,
       Type: objectId,
       Bookings: Bookings,
+      Ratings: Ratings,
     });
     res.status(200).json((await activity).id);
   } catch {
@@ -88,7 +90,7 @@ const updateActivity = async (req, res) => {
   const {
     Creator,
     id,
-    Date,
+    DateString,
     Time,
     Location,
     Price,
@@ -102,13 +104,20 @@ const updateActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-   if(activity.Creator !== Creator){
-    return res.status(400).json({ message: "You are not the creator." });
-   }
+    let dateObject;
+    if (DateString) {
+      dateObject = new Date(DateString);
+    } else {
+      dateObject = activity.Date;
+    }
+
+    if (activity.Creator !== Creator) {
+      return res.status(400).json({ message: "You are not the creator." });
+    }
     activity = await attractionModel.findByIdAndUpdate(
       id,
       {
-        Date: Date,
+        Date: dateObject,
         Time: Time,
         Location: Location,
         Price: Price,
@@ -134,9 +143,9 @@ const deleteActivity = async (req, res) => {
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    if(activity.Creator !== Creator){
+    if (activity.Creator !== Creator) {
       return res.status(400).json({ message: "You are not the creator." });
-     }
+    }
     // Check if bookings list is empty
     if (activity.bookings && activity.bookings.length > 0) {
       return res
@@ -209,7 +218,9 @@ const createAdvertiserInfo = async (req, res) => {
     // advertiser.CompanyProfile = CompanyProfile;
 
     await advertiser.save();
-    res.status(200).json({ message: "Profile information created", advertiser });
+    res
+      .status(200)
+      .json({ message: "Profile information created", advertiser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error creating profile information" });
@@ -218,7 +229,7 @@ const createAdvertiserInfo = async (req, res) => {
 const readAdvertiserInfo = async (req, res) => {
   const { Username } = req.body;
   try {
-    const Advertiser = await advertiserModel.find({Username:Username});
+    const Advertiser = await advertiserModel.find({ Username: Username });
     if (!Advertiser) {
       return res.status(404).json({ error: "Advertiser not found" });
     }
@@ -229,8 +240,7 @@ const readAdvertiserInfo = async (req, res) => {
 };
 const updateAdvertiserInfo = async (req, res) => {
   try {
-    const {Username,Website, Hotline, CompanyProfile} =
-      req.body;
+    const { Username, Website, Hotline, CompanyProfile } = req.body;
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
@@ -261,7 +271,6 @@ const viewAll2 = async (req, res) => {
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-
     // Check if there are any tags
     if (attractions.length === 0) {
       return res.status(404).json({ message: "No attractions found." });
@@ -273,7 +282,6 @@ const viewAll2 = async (req, res) => {
     // Respond with the retrieved tags
     res.status(200).json(attractions);
     res.status(200).json(itineraries);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
@@ -290,5 +298,5 @@ module.exports = {
   createAdvertiserInfo,
   readAdvertiserInfo,
   viewAll2,
-updateAdvertiserInfo
+  updateAdvertiserInfo,
 };
