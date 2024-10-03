@@ -353,6 +353,37 @@ const AdminsearchProductByName = async (req, res) => {
 
   }
 };
+const UpdateProduct = async (req, res) =>{
+  try{
+    const { productId } = req.params; // Get product ID from request parameters
+    const { price, description } = req.body; // Get updated fields from the request body
+
+
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    
+    const product = await productModel.findByIdAndUpdate(productId,{
+      price : price,
+      description : description
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    
+
+    res.status(200).json({ message: "Product updated successfully", product });
+
+  }catch (err) {
+    res.status(400).json({ message: "Error to update product", error: err.message });
+
+  }
+  
+};
+
 
 
 
@@ -368,4 +399,5 @@ module.exports = {
   viewAdminProducts,
   sortProductsByRatings,
   AdminsearchProductByName,
+  UpdateProduct
 };
