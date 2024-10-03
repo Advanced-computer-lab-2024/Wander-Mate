@@ -210,34 +210,30 @@ const readProfileInformation = async (req, res) => {
 
 const updateProfileInformation = async (req, res) => {
   try {
-    // Extract the parameters from the request body
     const { Username, MobileNumber, YearsOfExperience, PreviousWork } =
       req.body;
 
-    // Use `findOneAndUpdate` to find and update the tour guide by `Username`
+    if (!Username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
     const updatedTourGuide = await tourGuideModel.findOneAndUpdate(
-      { Username }, // Find the document by `Username`
-      { MobileNumber, YearsOfExperience, PreviousWork }, // Fields to update
-      { new: true } // Option to return the updated document
+      { Username },
+      { MobileNumber, YearsOfExperience, PreviousWork },
+      { new: true }
     );
 
-    // If the tour guide is not found, return a 404 response
     if (!updatedTourGuide) {
       return res.status(404).json({ message: "Tour guide not found" });
     }
 
-    // If successful, return the updated document
-    return res
-      .status(200)
-      .json({
-        message: "Profile information updated",
-        tourGuide: updatedTourGuide,
-      });
+    res.status(200).json({
+      message: "Profile information updated",
+      tourGuide: updatedTourGuide,
+    });
   } catch (err) {
     console.error(err);
-    return res
-      .status(500)
-      .json({ message: "Can't update the profile", error: err.message });
+    res.status(500).json({ message: "Error updating profile information" });
   }
 };
 module.exports = {
