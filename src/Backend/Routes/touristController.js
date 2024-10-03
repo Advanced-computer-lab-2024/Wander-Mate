@@ -322,6 +322,7 @@ const filterItineraries = async (req, res) => {
   }
 };
 
+
 module.exports = {
   touristRegister,
   searchAttractions,
