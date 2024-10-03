@@ -386,6 +386,40 @@ const UpdateProduct = async (req, res) => {
       .json({ message: "Error to update product", error: err.message });
   }
 };
+const filterProductsByPrice = async (req, res) => {
+  try {
+    // Destructure minPrice and maxPrice from the request query
+    const { minPrice, maxPrice } = req.body;
+
+    // Build the filter object based on provided prices
+    const priceFilter = {};
+
+    if (minPrice) {
+      priceFilter.$gte = parseFloat(minPrice); // Greater than or equal to minPrice
+    }
+
+    if (maxPrice) {
+      priceFilter.$lte = parseFloat(maxPrice); // Less than or equal to maxPrice
+    }
+
+    // Fetch products that match the price range
+    const products = await productModel.find({
+      price: priceFilter, // Apply price filter
+    });
+
+    // Check if any products were found
+    if (products.length === 0) {
+      return res.status(404).json({ message: "No products found within the specified price range" });
+    }
+
+    // Return the filtered products
+    res.status(200).json(products);
+  } catch (err) {
+    console.error("Error filtering products by price:", err);
+    res.status(500).json({ message: "Failed to filter products by price", error: err.message });
+  }
+};
+
 
 module.exports = {
   createAdmin,
@@ -400,4 +434,5 @@ module.exports = {
   sortProductsByRatings,
   AdminsearchProductByName,
   UpdateProduct,
+  filterProductsByPrice
 };

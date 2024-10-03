@@ -39,7 +39,8 @@ const {
   viewAdminProducts,
   AdminsearchProductByName,
   sortProductsByRatings,
-  UpdateProduct
+  UpdateProduct,
+  filterProductsByPrice
 } = require("./Routes/adminController.js");
 
 const { 
@@ -143,6 +144,7 @@ app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName",TouristsearchProductByName);
 app.get("/AdminsearchProductByName",AdminsearchProductByName);
 app.get("/SellersearchProductByName",SellersearchProductByName);
+app.post("/filterProductsByPrice",filterProductsByPrice)
 
 app.get("/viewTouristProducts",viewTouristProducts);
 //////////////////////////////////////////
