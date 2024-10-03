@@ -3,6 +3,9 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
+const { searchAttractions } = require("./touristController.js");
+const Attraction = require("../Models/attractions.js");
+const Itinerary = require("../Models/itinerary.js");
 
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
@@ -44,7 +47,6 @@ const createTourGuide = async (req, res) => {
 };
 
 const createItinerary = async (req, res) => {
-  const Bookings = [];
   try {
     const {
       Creator,
@@ -70,6 +72,7 @@ const createItinerary = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+
     const newItinerary = new Itinerary({
       Creator,
       Activities,
@@ -80,10 +83,12 @@ const createItinerary = async (req, res) => {
       AvailableDates,
       PickUpLocation,
       DropOffLocation,
-      Bookings,
     });
 
+    // Save to the database
     await newItinerary.save();
+
+    // Send a response with the newly created itinerary
     return res.status(200).json(newItinerary);
   } catch (error) {
     console.error("Error creating itinerary:", error.message); // Log the actual error message
@@ -94,23 +99,17 @@ const createItinerary = async (req, res) => {
 };
 
 const deleteItinerary = async (req, res) => {
-  const { id,Creator } = req.body;
   try {
-    const itinerary = await Itinerary.findById(id);
+    const { id } = req.params;
+    const itinerary = await Itinerary.findByIdAndDelete(id);
+
     if (!itinerary) {
       return res.status(400).json({ message: "Itinerary not found" });
+    } else {
+      res.status(200).json({ message: "Itinerary deleted" });
     }
-    if(itinerary.Creator !== Creator){
-      return res.status(400).json({ message: "You are not the creator." });
-    }
-    if (itinerary.bookings && itinerary.bookings.length > 0) {
-      return 
-      res.status(400).json({ message: "Cannot delete itinerary with existing bookings." });
-    }
-    await Itinerary.findByIdAndDelete(id); 
-    res.status(200).json({ message: "Itinerary deleted", itinerary });
   } catch (error) {
-    res.status(400).json({ error: "Error deleting activity" });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -154,7 +153,7 @@ const updateItinerary = async (req, res) => {
       .json({ message: "Itinerary updated successfully.", itinerary });
     }
     catch{
-      res.status(400).json({ error: "Error Itinerary activity" });
+
     }
 
     const updateFields = {};
@@ -186,19 +185,6 @@ const updateItinerary = async (req, res) => {
     return res.status(500).json({ message: "Error updating itinerary" });
   }
 };
-
-const readItinerary = async (req,res) =>{
-  const { id } = req.params;
-  try {
-    const itinerary = await Itinerary.findById(id);
-    if (!itinerary) {
-      return res.status(404).json({ error: "itinerary not found" });
-    }
-    res.status(200).json(itinerary);
-  } catch {
-    res.status(400).json({ error: "Error reading itinerary" });
-  }
-}
 
 const createProfileInformation = async (req, res) => {
   try {
@@ -281,6 +267,31 @@ const updateProfileInformation = async (req, res) => {
     res.status(500).json({ message: "Error updating profile information" });
   }
 };
+const viewAll = async (req, res) => {
+  try {
+    // Fetch all preference tags from the database
+    const attractions = await Attraction.find();
+    const itineraries = await Itinerary.find();
+
+
+    // Check if there are any tags
+    if (attractions.length === 0) {
+      return res.status(404).json({ message: "No attractions found." });
+    }
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No itinaries found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(attractions);
+    res.status(200).json(itineraries);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -289,5 +300,5 @@ module.exports = {
   updateProfileInformation,
   updateItinerary,
   deleteItinerary,
-  readItinerary,
+  viewAll
 };

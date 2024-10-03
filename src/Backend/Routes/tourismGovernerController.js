@@ -3,6 +3,9 @@ const attractionModel = require("../Models/attractions.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const Tag = require("../Models/HistoricalTags.js");
+const Attraction = require("../Models/attractions.js");
+const Itinerary = require("../Models/itinerary.js");
+
 
 //Read
 const getPlaces = async (req, res) => {
@@ -116,7 +119,30 @@ const createTags = async (req, res) => {
     return res.status(500).json({ message: "Error creating tag" });
   }
 };
+const viewAll = async (req, res) => {
+  try {
+    // Fetch all preference tags from the database
+    const attractions = await Attraction.find();
+    const itineraries = await Itinerary.find();
 
+
+    // Check if there are any tags
+    if (attractions.length === 0) {
+      return res.status(404).json({ message: "No attractions found." });
+    }
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No itinaries found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(attractions);
+    res.status(200).json(itineraries);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
 module.exports = {
   getPlaces,
   createPlace,
@@ -124,4 +150,5 @@ module.exports = {
   deletePlace,
   getPlace,
   createTags,
+  viewAll
 };

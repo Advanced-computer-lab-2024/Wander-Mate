@@ -18,7 +18,6 @@ const {
   sortProductsByRatingstourist,
   filterItineraries
 } = require("./Routes/touristController");
-
 const {
   createSeller,
   readSeller,
@@ -46,7 +45,8 @@ const {
   updatePreferenceTags,
   deletePreferenceTags,
   readPreferenceTags,
-  readCategory
+  readCategory,
+  
 } = require("./Routes/adminController.js");
 
 const { 
@@ -57,7 +57,7 @@ const {
     updateProfileInformation,
     deleteItinerary,
     updateItinerary,
-    readItinerary,
+    viewAll
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -68,7 +68,7 @@ const {
   createAdvertiser,
   readActivities,
   createAdvertiserInfo,
-  readAdvertiserInfo,
+  viewAll
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -78,8 +78,8 @@ const {
   getPlaces,
   getPlace,
   createTags,
+  viewAll
 } = require("./Routes/tourismGovernerController.js");
-
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -114,6 +114,7 @@ app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
 app.delete("/deleteplace/:id", deletePlace);
+app.get("/viewAll",viewAll);
 //////////////////////////////////////////////////
 
 app.post("/searchAttractions", searchAttractions);
@@ -171,5 +172,3 @@ app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-app.get("/readAdvertiserInfo",readAdvertiserInfo);
-app.get("/readItinerary", readItinerary);
