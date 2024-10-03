@@ -4,7 +4,7 @@ const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
-const userNames = require("../Models/users.js");
+const Usernames = require("../Models/users.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -29,19 +29,19 @@ const touristRegister = async (req, res) => {
         .json({ message: "User with this email already exists." });
     }
 
-    const existingUser1 = await userNames.findOne({ UserName: Username });
+    const existingUser1 = await Usernames.findOne({ Username: Username });
 
     if (existingUser1) {
       return res
         .status(400)
-        .json({ message: "User with this username already exists." });
+        .json({ message: "User with this Username already exists." });
     }
 
     // 3. Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    await userNames.create({ UserName: Username });
+    await Usernames.create({ Username: Username });
     // 4. Create new user
     const newUser = await userModel.create({
       Email,
@@ -262,7 +262,7 @@ const sortProductsByRatingstourist = async (req, res) => {
 
 // const filterItineraries = async (req, res) => {
 //   const { budget, dateRange, preferences, language } = req.body;
-  
+
 //   const filter = {
 //     Type: mongoose.Types.ObjectId(id), // Change this ID as needed
 //     available: true, // Assuming itineraries have an 'available' status
@@ -275,8 +275,8 @@ const sortProductsByRatingstourist = async (req, res) => {
 
 //   // Filter by date range if provided
 //   if (dateRange && dateRange.start && dateRange.end) {
-//     filter.date = { 
-//       $gte: new Date(dateRange.start), 
+//     filter.date = {
+//       $gte: new Date(dateRange.start),
 //       $lte: new Date(dateRange.end),
 //     };
 //   }

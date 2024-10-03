@@ -1,6 +1,6 @@
 const advertiserModel = require("../Models/advertiser.js");
 const attractionModel = require("../Models/attractions.js");
-const userModel = require('../Models/users.js'); 
+const userModel = require("../Models/users.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -134,7 +134,7 @@ const updateActivity = async (req, res) => {
 };
 
 const deleteActivity = async (req, res) => {
-  const {id, Creator} = req.body;
+  const { id, Creator } = req.body;
   try {
     const activity = await attractionModel.findById(id);
     if (!activity) {
@@ -180,7 +180,7 @@ const createAdvertiser = async (req, res) => {
     if (existingUser1) {
       return res
         .status(400)
-        .json({ message: "User with this username already exists." });
+        .json({ message: "User with this Username already exists." });
     }
 
     // Hash the password
@@ -189,12 +189,12 @@ const createAdvertiser = async (req, res) => {
 
     // Create the advertiser using the hashed password
     const advertiser = await advertiserModel.create({
-      UserName: Username,
+      Username: Username,
       Password: hashedPassword,
       Email: Email,
     });
     //add to usermodel
-    await userModel.create({UserName: Username});
+    await userModel.create({ Username: Username });
 
     res.status(200).json(advertiser);
   } catch (err) {
@@ -206,16 +206,19 @@ const createAdvertiser = async (req, res) => {
 const createAdvertiserComp = async (req, res) => {
   try {
     // Extract data from the request body
-    const { UserName, Password, Email, Website, CompanyProfile, Hotline } = req.body;
+    const { Username, Password, Email, Website, CompanyProfile, Hotline } =
+      req.body;
 
     // Validate required fields for advertiser
-    if (!UserName || !Password) {
-      return res.status(400).json({ message: "UserName and Password are required" });
+    if (!Username || !Password) {
+      return res
+        .status(400)
+        .json({ message: "Username and Password are required" });
     }
 
     // Store the advertiser information in the database
     const newAdvertiser = new Advertiser({
-      UserName,
+      Username,
       Password,
     });
 
@@ -240,7 +243,6 @@ const createAdvertiserComp = async (req, res) => {
     res.status(500).json({ message: "Server error, please try again" });
   }
 };
-
 
 module.exports = {
   createActivity,

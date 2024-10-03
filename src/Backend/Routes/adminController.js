@@ -22,16 +22,16 @@ const createAdmin = async (req, res) => {
         .json({ message: "Username and Password are required" });
     }
 
-    // Check if the username contains spaces
+    // Check if the Username contains spaces
     if (/\s/.test(Username)) {
       return res
         .status(400)
         .json({ message: "Username should not contain spaces" });
     }
 
-    // Check if the username already exists
-    const existingAdmin = await adminModel.findOne({ UserName: Username });
-    const existingUser = await userModel.findOne({ UserName: Username });
+    // Check if the Username already exists
+    const existingAdmin = await adminModel.findOne({ Username: Username });
+    const existingUser = await userModel.findOne({ Username: Username });
     if (existingAdmin || existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
@@ -41,10 +41,10 @@ const createAdmin = async (req, res) => {
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
     //create UsreName
-    await userModel.create({ UserName: Username });
+    await userModel.create({ Username: Username });
     // Create admin with hashed password
     const admin = await adminModel.create({
-      UserName: Username,
+      Username: Username,
       Password: hashedPassword,
     });
 
@@ -146,41 +146,41 @@ const deleteCategory = async (req, res) => {
 
 const deleteAccount = async (req, res) => {
   try {
-    const { UserName } = req.body;
+    const { Username } = req.body;
 
-    if (!UserName) {
+    if (!Username) {
       return res.status(400).json({ message: "Username is required" });
     }
 
     let accountDeleted = false;
 
-    const existingAdmin = await adminModel.findOne({ UserName });
+    const existingAdmin = await adminModel.findOne({ Username });
     if (existingAdmin) {
-      await adminModel.deleteOne({ UserName });
+      await adminModel.deleteOne({ Username });
       accountDeleted = true;
     }
 
-    const existingAdvertiser = await Advertiser.findOne({ UserName });
+    const existingAdvertiser = await Advertiser.findOne({ Username });
     if (existingAdvertiser) {
-      await Advertiser.deleteOne({ UserName });
+      await Advertiser.deleteOne({ Username });
       accountDeleted = true;
     }
 
-    const existingSeller = await Seller.findOne({ UserName });
+    const existingSeller = await Seller.findOne({ Username });
     if (existingSeller) {
-      await Seller.deleteOne({ UserName });
+      await Seller.deleteOne({ Username });
       accountDeleted = true;
     }
 
-    const existingTourGuide = await tourGuide.findOne({ UserName });
+    const existingTourGuide = await tourGuide.findOne({ Username });
     if (existingTourGuide) {
-      await tourGuide.deleteOne({ UserName });
+      await tourGuide.deleteOne({ Username });
       accountDeleted = true;
     }
 
-    const existingTourismGoverner = await TourismGoverner.findOne({ UserName });
+    const existingTourismGoverner = await TourismGoverner.findOne({ Username });
     if (existingTourismGoverner) {
-      await TourismGoverner.deleteOne({ UserName });
+      await TourismGoverner.deleteOne({ Username });
       accountDeleted = true;
     }
 
@@ -220,7 +220,7 @@ const createTourismGov = async (req, res) => {
     }
 
     const existingTourismGoverner = await userModel.findOne({
-      UserName: Username,
+      Username: Username,
     });
     if (existingTourismGoverner) {
       return res.status(400).json({ message: "Username already exists" });
@@ -229,10 +229,10 @@ const createTourismGov = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    await userModel.create({ UserName: Username });
+    await userModel.create({ Username: Username });
 
     const TourismGov = await TourismGoverner.create({
-      UserName: Username,
+      Username: Username,
       Password: hashedPassword,
     });
 

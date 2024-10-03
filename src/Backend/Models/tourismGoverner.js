@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const tourismGovernerSchema = new Schema(
   {
-    UserName: {
+    Username: {
       type: String,
       required: true,
     },

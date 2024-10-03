@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const sellerSchema = new Schema(
   {
-    UserName: {
+    Username: {
       type: String,
       required: true,
     },
