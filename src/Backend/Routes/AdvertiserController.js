@@ -207,20 +207,18 @@ const createAdvertiserInfo = async (req, res) => {
   try {
     const { Username, Email, Website, Hotline, CompanyProfile } = req.body;
 
-      // if (!Email || !Website ||Hotline || CompanyProfile) {
-      //     return res.status(400).json({ message: "Mobile number and years of experience are required" });
-      // }
+    
 
-      const advertiser = await advertiserModel.findOne({ Username: Username });
+      const advertiser = await advertiserModel.findOneAndUpdate({ Username: Username }, {Email, Website, Hotline, CompanyProfile}, {new:true});
 
       if (!advertiser) {
-          return res.status(404).json({ message: "Tour guide not found" });
+          return res.status(404).json({ message: "Advertiser guide not found" });
       }
 
-      advertiser.Email = Email;
-      advertiser.Website = Website;
-      advertiser.Hotline = Hotline;
-      advertiser.CompanyProfile = CompanyProfile;
+      // advertiser.Email = Email;
+      // advertiser.Website = Website;
+      // advertiser.Hotline = Hotline;
+      // advertiser.CompanyProfile = CompanyProfile;
   
 
       await advertiser.save();
