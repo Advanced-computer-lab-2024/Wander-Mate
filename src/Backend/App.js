@@ -37,7 +37,8 @@ const {
   getImage,
   viewAdminProducts,
   AdminsearchProductByName,
-  sortProductsByRatings
+  sortProductsByRatings,
+  UpdateProduct
 } = require("./Routes/adminController.js");
 
 const { 
@@ -115,6 +116,7 @@ app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
+app.patch("/UpdateProduct",UpdateProduct);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
