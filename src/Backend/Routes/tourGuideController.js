@@ -6,7 +6,6 @@ const userModel = require("../Models/users.js"); // Adjust the path based on you
 const { searchAttractions } = require("./touristController.js");
 const Attraction = require("../Models/attractions.js");
 
-
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
   try {
@@ -117,6 +116,7 @@ const updateItinerary = async (req, res) => {
   try {
     const {
       Creator,
+      id,
       Activities,
       LocationsToVisit,
       TimeLine,
@@ -131,7 +131,7 @@ const updateItinerary = async (req, res) => {
       if (!itinerary) {
         return res.status(400).json({ message: "Itinerary not found." });
       }
-      if(itinerary.Creator !== Creator){
+      if (itinerary.Creator !== Creator) {
         return res.status(400).json({ message: "You are not the creator." });
       }
       itinerary = await Itinerary.findByIdAndUpdate(
@@ -149,12 +149,9 @@ const updateItinerary = async (req, res) => {
         { new: true, runValidators: true }
       );
       return res
-      .status(200)
-      .json({ message: "Itinerary updated successfully.", itinerary });
-    }
-    catch{
-
-    }
+        .status(200)
+        .json({ message: "Itinerary updated successfully.", itinerary });
+    } catch {}
 
     const updateFields = {};
     if (Activities) updateFields.Activities = Activities;
@@ -274,7 +271,6 @@ const viewAll1 = async (req, res) => {
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-
     // Check if there are any tags
     if (attractions.length === 0) {
       return res.status(404).json({ message: "No attractions found." });
@@ -286,7 +282,6 @@ const viewAll1 = async (req, res) => {
     // Respond with the retrieved tags
     res.status(200).json(attractions);
     res.status(200).json(itineraries);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
