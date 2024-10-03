@@ -46,6 +46,7 @@ const touristRegister = async (req, res) => {
       Nationality,
       DOB,
       Role,
+      Wallet,
     });
 
     // 6. Send success response
