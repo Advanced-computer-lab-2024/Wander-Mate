@@ -214,8 +214,8 @@ const TouristsearchProductByName = async (req, res) => {
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
     const currentDate = new Date();
-    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
-    const activityObjectId = mongoose.Types.ObjectId(
+    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+    const activityObjectId = new mongoose.Types.ObjectId(
       "66f91e1da144543bfcfbae2a"
     ); //activity type
     const historicalPlacesFilter = {
