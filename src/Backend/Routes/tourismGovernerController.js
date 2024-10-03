@@ -32,7 +32,7 @@ const getPlace = async (req, res) => {
 const createPlace = async (req, res) => {
   try {
     const {
-      UserName,
+      Username,
       Description,
       Pictures,
       Location,
@@ -42,7 +42,7 @@ const createPlace = async (req, res) => {
     const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
 
     const newPlace = await attractionModel.create({
-      Owner: UserName,
+      Owner: Username,
       Description,
       Pictures,
       Location,
