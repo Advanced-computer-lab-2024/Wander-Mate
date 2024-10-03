@@ -228,6 +228,18 @@ const createAdvertiserInfo = async (req, res) => {
       res.status(500).json({ message: "Error creating profile information" });
   }
 };
+const readAdvertiserInfo = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const Advertiser = await advertiserModel.findById(id);
+    if (!Advertiser) {
+      return res.status(404).json({ error: "Advertiser not found" });
+    }
+    res.status(200).json(Advertiser);
+  } catch {
+    res.status(400).json({ error: "Error reading Advertiser" });
+  }
+};
 
 
 
@@ -239,4 +251,5 @@ module.exports = {
   createAdvertiser,
   readActivities,
   createAdvertiserInfo,
+  readAdvertiserInfo,
 };
