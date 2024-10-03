@@ -8,7 +8,7 @@ const touristSchema = new Schema(
       type: String,
       required: true,
     },
-    UserName: {
+    Username: {
       type: String,
       required: true,
     },
