@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- Created By CodingNepal -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Register Form</title>
+    <link rel="stylesheet" href="/src/Frontend/styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">
+            Register Form
+        </div>
+        <form id="registerForm" action="success.html" method="POST" onsubmit="return validateForm()">
+            <div class="field">
+                <input type="text" id="fullName" required>
+                <label>Full Name</label>
+            </div>
+            <div class="field">
+                <input type="email" id="email" required>
+                <label>Email Address</label>
+            </div>
+            <div class="field">
+                <input type="password" id="password" required>
+                <label>Password</label>
+            </div>
+            <div class="field">
+                <input type="password" id="confirmPassword" required>
+                <label>Confirm Password</label>
+            </div>
+            <div class="field">
+                <select id="roleDropdown" onchange="updateRole()">
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Advertiser">Advertiser</option>
+                    <option value="Seller">Seller</option>
+                    <option value="Tour Guide">Tour Guide</option>
+                    <option value="Tourism Governer">Tourism Governer</option>
+                    <option value="Tourist">Tourist</option>
+                    <option value="Users">Users</option>
+                </select>
+                <label for="roleDropdown">Role</label>
+            </div>
+            <div class="content">
+                <div class="checkbox">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+            </div>
+            <div class="field">
+                <input type="submit" value="Register">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function updateRole() {
+            const dropdown = document.getElementById('roleDropdown');
+            const selectedRole = dropdown.options[dropdown.selectedIndex].text;
+
+            // Update the label with the selected role
+            const label = dropdown.previousElementSibling;
+            label.textContent = selectedRole; // Update label
+
+            // Hide the default option
+            dropdown.options[0].style.display = 'none'; // Hide the placeholder
+        }
+
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Simple password matching validation
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return false; // Prevent form submission
+            }
+
+            // If validation passes, allow form submission
+            return true; 
+        }
+    </script>
+</body>
+</html>
