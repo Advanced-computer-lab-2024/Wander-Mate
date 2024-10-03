@@ -1,5 +1,6 @@
 const advertiserModel = require("../Models/advertiser.js");
 const attractionModel = require("../Models/attractions.js");
+const userModel = require('../Models/users.js'); 
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -175,14 +176,11 @@ const createAdvertiser = async (req, res) => {
         .status(400)
         .json({ message: "Username, Password, and Email are all required" });
     }
-
-    // Check if Username or Email already exists
-    const existingAdvertiser = await advertiserModel.findOne({
-      $or: [{ UserName: Username }, { Email: Email }],
-    });
-
-    if (existingAdvertiser) {
-      return res.status(400).json({ message: "Advertiser already exists" });
+    const existingUser1 = await userModel.findOne({ Username: Username });
+    if (existingUser1) {
+      return res
+        .status(400)
+        .json({ message: "User with this username already exists." });
     }
 
     // Hash the password
@@ -195,6 +193,8 @@ const createAdvertiser = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
     });
+    //add to usermodel
+    await userModel.create({UserName: Username});
 
     res.status(200).json(advertiser);
   } catch (err) {

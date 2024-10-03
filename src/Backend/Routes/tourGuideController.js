@@ -1,7 +1,8 @@
 const tourGuideModel = require("../Models/tourGuide.js"); 
 const { default: mongoose } = require('mongoose');
 const bcrypt = require("bcrypt");
-const Itinerary = require('../Models/itinerary.js');  // Adjust the path based on your folder structure
+const Itinerary = require('../Models/itinerary.js');
+const userModel = require('../Models/users.js'); // Adjust the path based on your folder structure
 
 
 // Creating a tourGuide
@@ -15,9 +16,12 @@ const createTourGuide = async (req, res) => {
         }
 
         // Check if Username or Email already exists
-        const existingUser = await tourGuideModel.findOne({
-            $or: [{ UserName: Username }, { Email: Email }]
-        });
+        const existingUser1 = await userModel.findOne({ Username: Username });
+        if (existingUser1) {
+          return res
+            .status(400)
+            .json({ message: "User with this username already exists." });
+        }
         
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
@@ -29,6 +33,7 @@ const createTourGuide = async (req, res) => {
 
         // Create the tourGuide using the hashed password
         const tourGuide = await tourGuideModel.create({ UserName: Username, Password: hashedPassword, Email: Email });
+        await userModel.create({UserName: Username});
 
         res.status(200).json(tourGuide);
     } catch (err) {

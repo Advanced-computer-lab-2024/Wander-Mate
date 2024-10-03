@@ -1,5 +1,6 @@
 const sellerModel = require("../Models/seller.js"); 
 const ProductModel = require("../Models/products.js");
+const userModel = require('../Models/users.js'); 
 const { default: mongoose } = require('mongoose');
 const bcrypt = require("bcrypt");
 
@@ -34,20 +35,19 @@ const createSeller = async (req, res) => {
         }
 
         // Check if Username or Email already exists
-        const existingSeller = await sellerModel.findOne({
-            $or: [{ UserName: Username }, { Email: Email }]
-        });
-
-        if (existingSeller) {
-            return res.status(400).json({ message: "Seller already exists" });
+        const existingUser1 = await userModel.findOne({ Username: Username });
+        if (existingUser1) {
+          return res
+            .status(400)
+            .json({ message: "User with this username already exists." });
         }
-
         // Hash the password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
         // Create the seller using the hashed password
         const seller = await sellerModel.create({ UserName: Username, Password: hashedPassword, Email: Email });
+        await userModel.create({UserName: Username});
 
         res.status(200).json(seller);
     } catch (err) {
