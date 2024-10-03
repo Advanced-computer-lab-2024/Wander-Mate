@@ -16,10 +16,7 @@ const {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
-<<<<<<< Updated upstream
   filterItineraries
-=======
->>>>>>> Stashed changes
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -158,9 +155,6 @@ app.post("/createAdvertiserInfo", createAdvertiserInfo);
 app.get("/readProfileInformation",readProfileInformation);
 app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
-<<<<<<< Updated upstream
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-=======
-app.delete("/deleteItinerary/:id", deleteItinerary);
->>>>>>> Stashed changes
+

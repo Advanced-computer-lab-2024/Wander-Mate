@@ -273,7 +273,6 @@ const sortProductsByRatingstourist = async (req, res) => {
 const filterItineraries = async (req, res) => {
   const { minPrice, maxPrice, AvailableDates, Tags, Language } = req.body;
 
-<<<<<<< Updated upstream
   // Initialize the filter object
   const filter = {};
 
@@ -312,8 +311,6 @@ const filterItineraries = async (req, res) => {
   }
 };
 
-=======
->>>>>>> Stashed changes
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -323,9 +320,6 @@ module.exports = {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
-<<<<<<< Updated upstream
   filterItineraries
-=======
 
->>>>>>> Stashed changes
 };
