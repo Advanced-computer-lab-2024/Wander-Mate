@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const tagSchema = new Schema(
+const historicalTagSchema = new Schema(
   {
     Name: {
       type: String,
@@ -11,5 +11,5 @@ const tagSchema = new Schema(
   { timestamps: true, strict: false }
 );
 
-const Tag = mongoose.model("Tag", tagSchema);
-module.exports = Tag;
+const HistoricalTag = mongoose.model("HistoricalTag", historicalTagSchema);
+module.exports = HistoricalTag;
