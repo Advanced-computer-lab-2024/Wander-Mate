@@ -23,17 +23,15 @@ const createTourGuide = async (req, res) => {
             .json({ message: "User with this username already exists." });
         }
         
-        if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
-        }
+
 
         // Hash the password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
         // Create the tourGuide using the hashed password
-        const tourGuide = await tourGuideModel.create({ UserName: Username, Password: hashedPassword, Email: Email });
-        await userModel.create({UserName: Username});
+        const tourGuide = await tourGuideModel.create({ Username: Username, Password: hashedPassword, Email: Email });
+        await userModel.create({Username: Username});
 
         res.status(200).json(tourGuide);
     } catch (err) {
@@ -159,7 +157,7 @@ const createProfileInformation = async (req, res) => {
           return res.status(400).json({ message: "Mobile number and years of experience are required" });
       }
 
-      const tourGuide = await tourGuideModel.findOne({ UserName: Username });
+      const tourGuide = await tourGuideModel.findOne({ Username: Username });
 
       if (!tourGuide) {
           return res.status(404).json({ message: "Tour guide not found" });
@@ -178,13 +176,13 @@ const createProfileInformation = async (req, res) => {
 };
 const readProfileInformation = async (req, res) => {
 try {
-  const { UserName } = req.body; // Using `req.body` to get the UserName, similar to `readSeller`
+  const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
 
-  if (!UserName) {
+  if (!Username) {
     return res.status(400).json({ message: "Username is required" });
   }
 
-  const tourGuide = await tourGuideModel.findOne({ UserName });
+  const tourGuide = await tourGuideModel.findOne({ Username });
 
   if (!tourGuide) {
     return res.status(404).json({ message: "Tour Guide not found" });
@@ -200,11 +198,11 @@ try {
 const updateProfileInformation = async (req, res) => {
 try {
   // Extract the parameters from the request body
-  const { UserName, MobileNumber, YearsOfExperience, PreviousWork } = req.body;
+  const { Username, MobileNumber, YearsOfExperience, PreviousWork } = req.body;
 
-  // Use `findOneAndUpdate` to find and update the tour guide by `UserName`
+  // Use `findOneAndUpdate` to find and update the tour guide by `Username`
   const updatedTourGuide = await tourGuideModel.findOneAndUpdate(
-    { UserName }, // Find the document by `UserName`
+    { Username }, // Find the document by `Username`
     { MobileNumber, YearsOfExperience, PreviousWork }, // Fields to update
     { new: true } // Option to return the updated document
   );
