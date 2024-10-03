@@ -44,6 +44,7 @@ const createTourGuide = async (req, res) => {
 };
 
 const createItinerary = async (req, res) => {
+  const Bookings = [];
   try {
     const {
       Creator,
@@ -69,7 +70,6 @@ const createItinerary = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
     const newItinerary = new Itinerary({
       Creator,
       Activities,
@@ -80,12 +80,10 @@ const createItinerary = async (req, res) => {
       AvailableDates,
       PickUpLocation,
       DropOffLocation,
+      Bookings,
     });
 
-    // Save to the database
     await newItinerary.save();
-
-    // Send a response with the newly created itinerary
     return res.status(200).json(newItinerary);
   } catch (error) {
     console.error("Error creating itinerary:", error.message); // Log the actual error message
@@ -96,17 +94,23 @@ const createItinerary = async (req, res) => {
 };
 
 const deleteItinerary = async (req, res) => {
+  const { id,Creator } = req.body;
   try {
-    const { id } = req.params;
-    const itinerary = await Itinerary.findByIdAndDelete(id);
-
+    const itinerary = await Itinerary.findById(id);
     if (!itinerary) {
       return res.status(400).json({ message: "Itinerary not found" });
-    } else {
-      res.status(200).json({ message: "Itinerary deleted" });
     }
+    if(itinerary.Creator !== Creator){
+      return res.status(400).json({ message: "You are not the creator." });
+    }
+    if (itinerary.bookings && itinerary.bookings.length > 0) {
+      return 
+      res.status(400).json({ message: "Cannot delete itinerary with existing bookings." });
+    }
+    await Itinerary.findByIdAndDelete(id); 
+    res.status(200).json({ message: "Itinerary deleted", itinerary });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ error: "Error deleting activity" });
   }
 };
 
@@ -150,7 +154,7 @@ const updateItinerary = async (req, res) => {
       .json({ message: "Itinerary updated successfully.", itinerary });
     }
     catch{
-
+      res.status(400).json({ error: "Error Itinerary activity" });
     }
 
     const updateFields = {};
@@ -182,6 +186,19 @@ const updateItinerary = async (req, res) => {
     return res.status(500).json({ message: "Error updating itinerary" });
   }
 };
+
+const readItinerary= async (req,res) =>{
+  const { id } = req.params;
+  try {
+    const itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ error: "itinerary not found" });
+    }
+    res.status(200).json(itinerary);
+  } catch {
+    res.status(400).json({ error: "Error reading itinerary" });
+  }
+}
 
 const createProfileInformation = async (req, res) => {
   try {
