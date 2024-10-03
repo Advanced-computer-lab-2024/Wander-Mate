@@ -216,7 +216,7 @@ const createAdvertiserInfo = async (req, res) => {
   }
 };
 const readAdvertiserInfo = async (req, res) => {
-  const { Username } = req.params;
+  const { Username } = req.body;
   try {
     const Advertiser = await advertiserModel.find({Username:Username});
     if (!Advertiser) {

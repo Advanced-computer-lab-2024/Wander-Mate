@@ -175,4 +175,4 @@ app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-app.get("/readAdvertiserInfo",readAdvertiserInfo);
+app.patch("/readAdvertiserInfo",readAdvertiserInfo);
