@@ -1,9 +1,13 @@
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage }); // Initialize multer
+const uploadMult = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Set file size limit to 5MB
+}).array("pictures", 10);
 mongoose.set("strictQuery", false);
 require("dotenv").config({ path: "../.env" });
 
@@ -18,6 +22,7 @@ const {
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
   filterItineraries,
+  filterActivities,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -113,7 +118,7 @@ app.put("/updateSeller", updateSeller);
 ///////////////////////////////////////////
 
 //TourismGoverner
-app.post("/createPlace", createPlace);
+app.post("/createPlace", uploadMult, createPlace);
 app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
@@ -183,5 +188,5 @@ app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
 app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
-
+app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);

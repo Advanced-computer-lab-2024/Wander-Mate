@@ -20,6 +20,9 @@ const attractionSchema = new Schema(
       type: ObjectId,
       required: true,
     },
+    Tags: {
+      type: [ObjectId],
+    },
   },
   { timestamps: true, strict: false }
 );

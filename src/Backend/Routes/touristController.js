@@ -265,7 +265,7 @@ const viewUpcomingActivitiesAndItineraries = async (req, res) => {
 const sortProductsByRatingstourist = async (req, res) => {
   try {
     // Find and sort products by ratings in descending order (-1 for descending)
-    const products = await productModel.find({}).sort({ ratings: -1 });
+    const products = await ProductModel.find({}).sort({ ratings: -1 });
 
     // Check if products exist
     if (!products || products.length === 0) {
@@ -322,6 +322,38 @@ const filterItineraries = async (req, res) => {
   }
 };
 
+const filterActivities = async (req, res) => {
+  const { minPrice, maxPrice, minDate, maxDate, category, ratings } = req.body;
+
+  // Initialize filter object for upcoming activities
+  const filter = {
+    Type: new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a"),
+  };
+
+  // Add budget filter if it's provided
+  if (minPrice || maxPrice) {
+    filter.Price = { $lte: maxPrice, $gte: minPrice };
+  }
+  // Add date filter if it's provided
+  if (minDate || maxDate) {
+    filter.Date = { $gte: new Date(minDate), $lte: new Date(maxDate) }; // Assuming you want to filter activities starting from the given date
+  }
+  // Add category filter if it's provided
+  if (category) {
+    filter.Category = category; // Assuming category is a direct match
+  }
+  // Add ratings filter if it's provided
+  if (ratings) {
+    filter.Ratings = { $gte: ratings }; // Assuming you want to filter activities with ratings greater than or equal to the specified value
+  }
+  try {
+    const activities = await attractionModel.find(filter); // Replace activityModel with the actual model name for activities
+    res.status(200).json(activities);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error filtering activities" });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -333,4 +365,5 @@ module.exports = {
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
   filterItineraries,
+  filterActivities,
 };
