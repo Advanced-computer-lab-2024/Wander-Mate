@@ -21,7 +21,7 @@ const createActivity = async (req, res) => {
   if (!Date) {
     return res.status(400).json({ error: "Date is required" });
   }
-  const dateObject = new Date(dateString);
+  //const dateObject = new Date(dateString);
   //let EnterDate = new Date(DateString);
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
@@ -42,7 +42,7 @@ const createActivity = async (req, res) => {
   try {
     const activity = attractionModel.create({
       Creator: Creator,
-      Date: dateObject,
+      Date: Date,
       Time: Time,
       Location: Location,
       Price: Price,
@@ -207,29 +207,30 @@ const createAdvertiserInfo = async (req, res) => {
   try {
     const { Username, Email, Website, Hotline, CompanyProfile } = req.body;
 
-    
+    const advertiser = await advertiserModel.findOneAndUpdate(
+      { Username: Username },
+      { Email, Website, Hotline, CompanyProfile },
+      { new: true }
+    );
 
-      const advertiser = await advertiserModel.findOneAndUpdate({ Username: Username }, {Email, Website, Hotline, CompanyProfile}, {new:true});
+    if (!advertiser) {
+      return res.status(404).json({ message: "Advertiser guide not found" });
+    }
 
-      if (!advertiser) {
-          return res.status(404).json({ message: "Advertiser guide not found" });
-      }
+    // advertiser.Email = Email;
+    // advertiser.Website = Website;
+    // advertiser.Hotline = Hotline;
+    // advertiser.CompanyProfile = CompanyProfile;
 
-      // advertiser.Email = Email;
-      // advertiser.Website = Website;
-      // advertiser.Hotline = Hotline;
-      // advertiser.CompanyProfile = CompanyProfile;
-  
-
-      await advertiser.save();
-      res.status(200).json({ message: "Profile information created", advertiser });
+    await advertiser.save();
+    res
+      .status(200)
+      .json({ message: "Profile information created", advertiser });
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Error creating profile information" });
+    console.error(err);
+    res.status(500).json({ message: "Error creating profile information" });
   }
 };
-
-
 
 module.exports = {
   createActivity,
