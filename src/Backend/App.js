@@ -18,6 +18,7 @@ const {
   sortProductsByRatingstourist,
   filterItineraries
 } = require("./Routes/touristController");
+
 const {
   createSeller,
   readSeller,
@@ -78,6 +79,7 @@ const {
   getPlace,
   createTags,
 } = require("./Routes/tourismGovernerController.js");
+
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
 //App variables
@@ -169,4 +171,5 @@ app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
-app.get("readAdvertiserInfo",readAdvertiserInfo);
+app.get("/readAdvertiserInfo",readAdvertiserInfo);
+app.get("/readItinerary", readItinerary);
