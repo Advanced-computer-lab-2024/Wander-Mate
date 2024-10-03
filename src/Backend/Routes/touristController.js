@@ -11,6 +11,8 @@ const touristRegister = async (req, res) => {
     const { Email, Username, Password, MobileNumber, Nationality, DOB, Role } =
       req.body;
 
+    const Wallet = "";
+
     // 1. Validate the request data (check required fields)
     if (!Email || !Username || !Password || !MobileNumber || !Role) {
       return res
