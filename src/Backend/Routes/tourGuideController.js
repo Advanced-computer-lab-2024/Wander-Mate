@@ -3,6 +3,9 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
+const { searchAttractions } = require("./touristController.js");
+const Attraction = require("../Models/attractions.js");
+
 
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
@@ -213,6 +216,7 @@ const createProfileInformation = async (req, res) => {
     res.status(500).json({ message: "Error creating profile information" });
   }
 };
+
 const readProfileInformation = async (req, res) => {
   try {
     const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
@@ -264,6 +268,31 @@ const updateProfileInformation = async (req, res) => {
     res.status(500).json({ message: "Error updating profile information" });
   }
 };
+const viewAll1 = async (req, res) => {
+  try {
+    // Fetch all preference tags from the database
+    const attractions = await Attraction.find();
+    const itineraries = await Itinerary.find();
+
+
+    // Check if there are any tags
+    if (attractions.length === 0) {
+      return res.status(404).json({ message: "No attractions found." });
+    }
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No itinaries found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(attractions);
+    res.status(200).json(itineraries);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -272,4 +301,5 @@ module.exports = {
   updateProfileInformation,
   updateItinerary,
   deleteItinerary,
+  viewAll1,
 };

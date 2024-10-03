@@ -4,6 +4,8 @@ const userModel = require("../Models/users.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const ObjectId = require("mongoose").Types.ObjectId;
+const Itinerary = require("../Models/itinerary.js");
+const Attraction = require("../Models/attractions.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -207,9 +209,7 @@ const createAdvertiserInfo = async (req, res) => {
     // advertiser.CompanyProfile = CompanyProfile;
 
     await advertiser.save();
-    res
-      .status(200)
-      .json({ message: "Profile information created", advertiser });
+    res.status(200).json({ message: "Profile information created", advertiser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error creating profile information" });
@@ -227,6 +227,30 @@ const readAdvertiserInfo = async (req, res) => {
     res.status(400).json({ error: "Error reading Advertiser" });
   }
 };
+const viewAll2 = async (req, res) => {
+  try {
+    // Fetch all preference tags from the database
+    const attractions = await Attraction.find();
+    const itineraries = await Itinerary.find();
+
+
+    // Check if there are any tags
+    if (attractions.length === 0) {
+      return res.status(404).json({ message: "No attractions found." });
+    }
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No itinaries found." });
+    }
+
+    // Respond with the retrieved tags
+    res.status(200).json(attractions);
+    res.status(200).json(itineraries);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
 
 module.exports = {
   createActivity,
@@ -237,4 +261,5 @@ module.exports = {
   readActivities,
   createAdvertiserInfo,
   readAdvertiserInfo,
+  viewAll2
 };

@@ -45,7 +45,8 @@ const {
   updatePreferenceTags,
   deletePreferenceTags,
   readPreferenceTags,
-  readCategory
+  readCategory,
+  
 } = require("./Routes/adminController.js");
 
 const { 
@@ -56,6 +57,7 @@ const {
     updateProfileInformation,
     deleteItinerary,
     updateItinerary,
+    viewAll1
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -66,6 +68,7 @@ const {
   createAdvertiser,
   readActivities,
   createAdvertiserInfo,
+  viewAll2
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -75,6 +78,7 @@ const {
   getPlaces,
   getPlace,
   createTags,
+  viewAll0
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -110,6 +114,9 @@ app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
 app.delete("/deleteplace/:id", deletePlace);
+app.get("/viewAll0",viewAll0);
+app.get("/viewAll1",viewAll1);
+app.get("/viewAll2",viewAll2);
 //////////////////////////////////////////////////
 
 app.post("/searchAttractions", searchAttractions);
