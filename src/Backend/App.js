@@ -5,6 +5,7 @@ const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage }); // Initialize multer
 mongoose.set("strictQuery", false);
 require("dotenv").config({ path: "../.env" });
+
 //Requiring functions from Controllers
 const {
   touristRegister,
@@ -43,6 +44,8 @@ const {
     createProfileInformation,
     readProfileInformation,
     updateProfileInformation,
+    deleteItinerary,
+    updateItinerary,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -52,6 +55,7 @@ const {
   deleteActivity,
   createAdvertiser,
   readActivities,
+  createAdvertiserComp,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -138,5 +142,8 @@ app.get("/viewTouristProducts",viewTouristProducts);
 app.post("/createTags", createTags);
 app.post('/createItinerary', createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
+app.post("/createAdvertiserComp", createAdvertiserComp);
 app.get("/readProfileInformation",readProfileInformation);
 app.put("/updateProfileInformation",updateProfileInformation);
+app.put("/updateItinerary",updateItinerary);
+app.delete("/deleteItinerary/:id", deleteItinerary);

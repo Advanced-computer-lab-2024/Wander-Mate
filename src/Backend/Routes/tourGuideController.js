@@ -82,8 +82,68 @@ const createItinerary = async (req, res) => {
     }
   };
 
+  const deleteItinerary = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const itinerary = await Itinerary.findByIdAndDelete(id);
+  
+      if (!itinerary) {
+        return res.status(400).json({ message: "Itinerary not found" });
+      } else {
+        res.status(200).json({ message: "Itinerary deleted" });
+      }
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  };
+  
 
 
+const updateItinerary = async (req, res) => {
+  try {
+    const { id } = req.params; // Itinerary ID from the request params
+    const {
+      Activities,
+      LocationsToVisit,
+      TimeLine,
+      Language,
+      Price,
+      AvailableDates,
+      PickUpLocation,
+      DropOffLocation,
+    } = req.body;
+
+    const updateFields = {};
+    if (Activities) updateFields.Activities = Activities;
+    if (LocationsToVisit) updateFields.LocationsToVisit = LocationsToVisit;
+    if (TimeLine) updateFields.TimeLine = TimeLine;
+    if (Language) updateFields.Language = Language;
+    if (Price) updateFields.Price = Price;
+    if (AvailableDates) updateFields.AvailableDates = AvailableDates;
+    if (PickUpLocation) updateFields.PickUpLocation = PickUpLocation;
+    if (DropOffLocation) updateFields.DropOffLocation = DropOffLocation;
+
+    // Perform the update
+    const updatedItinerary = await Itinerary.findOneAndReplace(
+      id,
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the itinerary was found
+    if (!updatedItinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    // Respond with the updated itinerary
+    return res.status(200).json(updatedItinerary);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error updating itinerary" });
+  }
+};
+
+  
 const createProfileInformation = async (req, res) => {
   try {
       const { Username } = req.body;
@@ -131,7 +191,6 @@ try {
 }
 };
 
-
 const updateProfileInformation = async (req, res) => {
 try {
   // Extract the parameters from the request body
@@ -156,4 +215,4 @@ try {
   return res.status(500).json({ message: "Can't update the profile", error: err.message });
 }
 };
-module.exports = { createTourGuide, createItinerary , createProfileInformation,readProfileInformation,updateProfileInformation};
+module.exports = { createTourGuide, createItinerary , createProfileInformation,readProfileInformation,updateProfileInformation, updateItinerary, deleteItinerary};

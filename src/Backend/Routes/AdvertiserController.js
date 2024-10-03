@@ -20,6 +20,7 @@ const createActivity = async (req, res) => {
   if (!Date) {
     return res.status(400).json({ error: "Date is required" });
   }
+  const dateObject = new Date(dateString);
   //let EnterDate = new Date(DateString);
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
@@ -40,7 +41,7 @@ const createActivity = async (req, res) => {
   try {
     const activity = attractionModel.create({
       Creator: Creator,
-      Date: Date,
+      Date: dateObject,
       Time: Time,
       Location: Location,
       Price: Price,
@@ -202,6 +203,45 @@ const createAdvertiser = async (req, res) => {
   }
 };
 
+const createAdvertiserComp = async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { UserName, Password, Email, Website, CompanyProfile, Hotline } = req.body;
+
+    // Validate required fields for advertiser
+    if (!UserName || !Password) {
+      return res.status(400).json({ message: "UserName and Password are required" });
+    }
+
+    // Store the advertiser information in the database
+    const newAdvertiser = new Advertiser({
+      UserName,
+      Password,
+    });
+
+    await newAdvertiser.save();
+
+    // If additional company info is provided, you can handle it separately
+    const companyInfo = {
+      Email,
+      Website,
+      CompanyProfile,
+      Hotline,
+    };
+
+    // Send success response including both advertiser and company info
+    res.status(201).json({
+      message: "Advertiser created successfully",
+      advertiser: newAdvertiser,
+      companyInfo: companyInfo,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error, please try again" });
+  }
+};
+
+
 module.exports = {
   createActivity,
   readActivity,
@@ -209,4 +249,5 @@ module.exports = {
   deleteActivity,
   createAdvertiser,
   readActivities,
+  createAdvertiserComp,
 };
