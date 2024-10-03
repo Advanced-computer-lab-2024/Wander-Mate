@@ -40,47 +40,48 @@ const createTourGuide = async (req, res) => {
 
 
 const createItinerary = async (req, res) => {
-    try {
-      const {
-        Creator,
-        Activities,        
-        LocationsToVisit,  
-        TimeLine,          
-        Language,          
-        Price,             
-        AvailableDates,    
-        PickUpLocation,   
-        DropOffLocation,  
-      } = req.body;
-  
-      // Validate required fields
-      if (!Activities || !LocationsToVisit || !Language || !Price || !AvailableDates || !PickUpLocation || !DropOffLocation) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-  
-      // Create a new itinerary object
-      const newItinerary =Itinerary.create({
-        Creator,
-        Activities,
-        LocationsToVisit,
-        TimeLine,
-        Language,
-        Price,
-        AvailableDates,
-        PickUpLocation,
-        DropOffLocation,
-      });
-  
-      // Save to the database
-      await newItinerary.save();
-      
-      // Send a response with the newly created itinerary
-      return res.status(201).json(newItinerary);
-    } catch (error) {
-      console.error("Error creating itinerary:", error.message);  // Log the actual error message
-      return res.status(500).json({ message: "Error creating itinerary", error: error.message });
+  try {
+    const {
+      Creator,
+      Activities,        
+      LocationsToVisit,  
+      TimeLine,          
+      Language,          
+      Price,             
+      AvailableDates,    
+      PickUpLocation,   
+      DropOffLocation,  
+    } = req.body;
+
+    // Validate required fields
+    if (!Activities || !LocationsToVisit || !Language || !Price || !AvailableDates || !PickUpLocation || !DropOffLocation) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
-  };
+
+    // Create a new itinerary object
+    const newItinerary = new Itinerary({
+      Creator,
+      Activities,
+      LocationsToVisit,
+      TimeLine,
+      Language,
+      Price,
+      AvailableDates,
+      PickUpLocation,
+      DropOffLocation,
+    });
+
+    // Save to the database
+    await newItinerary.save();
+    
+    // Send a response with the newly created itinerary
+    return res.status(201).json(newItinerary);
+  } catch (error) {
+    console.error("Error creating itinerary:", error.message);  // Log the actual error message
+    return res.status(500).json({ message: "Error creating itinerary", error: error.message });
+  }
+};
+
 
   const deleteItinerary = async (req, res) => {
     try {
