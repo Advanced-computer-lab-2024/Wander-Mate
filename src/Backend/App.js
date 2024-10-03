@@ -15,7 +15,8 @@ const {
   viewTouristProducts,
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
-  sortProductsByRatingstourist
+  sortProductsByRatingstourist,
+  // filterItineraries
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -153,3 +154,4 @@ app.get("/readProfileInformation",readProfileInformation);
 app.put("/updateProfileInformation",updateProfileInformation);
 app.put("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary/:id", deleteItinerary);
+// app.post("/filterItineraries", filterItineraries);

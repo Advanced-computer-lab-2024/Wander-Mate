@@ -257,6 +257,45 @@ const sortProductsByRatingstourist = async (req, res) => {
   }
 };
 
+// const filterItineraries = async (req, res) => {
+//   const { budget, dateRange, preferences, language } = req.body;
+  
+//   const filter = {
+//     Type: mongoose.Types.ObjectId(id), // Change this ID as needed
+//     available: true, // Assuming itineraries have an 'available' status
+//   };
+
+//   // Filter by budget if provided
+//   if (budget) {
+//     filter.budget = { $lte: budget };
+//   }
+
+//   // Filter by date range if provided
+//   if (dateRange && dateRange.start && dateRange.end) {
+//     filter.date = { 
+//       $gte: new Date(dateRange.start), 
+//       $lte: new Date(dateRange.end),
+//     };
+//   }
+
+//   // Filter by preferences if provided (historic areas, beaches, family-friendly, shopping)
+//   if (preferences && Array.isArray(preferences) && preferences.length > 0) {
+//     filter.preferences = { $in: preferences };
+//   }
+
+//   // Filter by language if provided
+//   if (language) {
+//     filter.language = language;
+//   }
+
+//   try {
+//     const itineraries = await itineraryModel.find(filter);
+//     res.status(200).json(itineraries);
+//   } catch (error) {
+//     res.status(400).json({ message: "Error filtering itineraries" });
+//   }
+// };
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -266,4 +305,5 @@ module.exports = {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
+  // filterItineraries
 };
