@@ -204,24 +204,19 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-const readCategory = async(req,res) => {
+const readCategory = async (req, res) => {
   try {
-    // Fetch all preference tags from the database
     const categories = await Category.find();
-
-    // Check if there are any tags
     if (categories.length === 0) {
       return res.status(404).json({ message: "No preference categories found." });
     }
-
-    // Respond with the retrieved tags
     res.status(200).json(categories);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching categories." });
   }
+};
 
-}
 
 const createTourismGov = async (req, res) => {
   try {
