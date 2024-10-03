@@ -12,7 +12,7 @@ const touristRegister = async (req, res) => {
     const { Email, Username, Password, MobileNumber, Nationality, DOB, Role } =
       req.body;
 
-    const Wallet = "";
+    const Wallet = 0.0;
 
     // 1. Validate the request data (check required fields)
     if (!Email || !Username || !Password || !MobileNumber || !Role) {
@@ -81,10 +81,21 @@ const handleTourist = async (req, res) => {
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
       // Handle updating tourist information
-      const { Username, DOB, Email, Password, MobileNumber, Nationality, Role } = req.body;
+      const {
+        Username,
+        DOB,
+        Email,
+        Password,
+        MobileNumber,
+        Nationality,
+        Role,
+      } = req.body;
 
       // Check if user is trying to update Username or DOB
-      if (req.body.hasOwnProperty("Username") || req.body.hasOwnProperty("DOB")) {
+      if (
+        req.body.hasOwnProperty("Username") ||
+        req.body.hasOwnProperty("DOB")
+      ) {
         return res.status(400).json({
           message: "Username and DOB cannot be changed",
         });
@@ -124,8 +135,6 @@ const handleTourist = async (req, res) => {
     });
   }
 };
-
-
 
 const searchAttractions = async (req, res) => {
   const { Name, Category, Tags } = req.body;
@@ -278,7 +287,7 @@ const filterItineraries = async (req, res) => {
 
   // Filter by price if provided
   if (minPrice || maxPrice) {
-    filter.Price = { $lte: maxPrice, $gte:minPrice }; // Assuming it's a maximum budget filter
+    filter.Price = { $lte: maxPrice, $gte: minPrice }; // Assuming it's a maximum budget filter
   }
 
   // Filter by available dates if provided
@@ -307,7 +316,9 @@ const filterItineraries = async (req, res) => {
       res.status(404).json({ message: "No itineraries found" });
     }
   } catch (error) {
-    res.status(400).json({ message: "Error filtering itineraries", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Error filtering itineraries", error: error.message });
   }
 };
 
@@ -320,6 +331,5 @@ module.exports = {
   TouristsearchProductByName,
   viewUpcomingActivitiesAndItineraries,
   sortProductsByRatingstourist,
-  filterItineraries
-
+  filterItineraries,
 };

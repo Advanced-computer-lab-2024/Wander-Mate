@@ -32,6 +32,10 @@ const touristSchema = new Schema(
       type: String,
       required: true,
     },
+    Wallet: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true, strict: false }
 );
