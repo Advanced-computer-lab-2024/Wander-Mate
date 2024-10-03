@@ -31,7 +31,7 @@ const createAdmin = async (req, res) => {
 
     // Check if the username already exists
     const existingAdmin = await adminModel.findOne({ UserName: Username });
-    const existingUser = await userModel.findOne({ UserName: Username});
+    const existingUser = await userModel.findOne({ UserName: Username });
     if (existingAdmin || existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
@@ -41,7 +41,7 @@ const createAdmin = async (req, res) => {
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
     //create UsreName
-    await userModel.create({UserName: Username});
+    await userModel.create({ UserName: Username });
     // Create admin with hashed password
     const admin = await adminModel.create({
       UserName: Username,
@@ -219,7 +219,7 @@ const createTourismGov = async (req, res) => {
         .json({ message: "Username should not contain spaces" });
     }
 
-    const existingTourismGoverner = await TourismGoverner.findOne({
+    const existingTourismGoverner = await userModel.findOne({
       UserName: Username,
     });
     if (existingTourismGoverner) {
@@ -228,6 +228,8 @@ const createTourismGov = async (req, res) => {
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+    await userModel.create({ UserName: Username });
 
     const TourismGov = await TourismGoverner.create({
       UserName: Username,
@@ -359,37 +361,31 @@ const AdminsearchProductByName = async (req, res) => {
       .json({ message: "Error searching for products", error: err.message });
   }
 };
-const UpdateProduct = async (req, res) =>{
-  try{
+const UpdateProduct = async (req, res) => {
+  try {
     const { productId } = req.params; // Get product ID from request parameters
     const { price, description } = req.body; // Get updated fields from the request body
-
 
     if (!productId) {
       return res.status(400).json({ message: "Product ID is required" });
     }
 
-    
-    const product = await productModel.findByIdAndUpdate(productId,{
-      price : price,
-      description : description
+    const product = await productModel.findByIdAndUpdate(productId, {
+      price: price,
+      description: description,
     });
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    
-
     res.status(200).json({ message: "Product updated successfully", product });
-
-  }catch (err) {
-    res.status(400).json({ message: "Error to update product", error: err.message });
-
+  } catch (err) {
+    res
+      .status(400)
+      .json({ message: "Error to update product", error: err.message });
   }
-  
 };
-
 
 module.exports = {
   createAdmin,
@@ -403,5 +399,5 @@ module.exports = {
   viewAdminProducts,
   sortProductsByRatings,
   AdminsearchProductByName,
-  UpdateProduct
+  UpdateProduct,
 };
