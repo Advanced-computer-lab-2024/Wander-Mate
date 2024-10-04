@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Read Tour Guide Profile</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Read Tour Guide Profile</div>
+      <form id="readProfileForm" onsubmit="return submitForm(event)">
+        <div class="field">
+          <input type="text" id="username" required />
+          <label>Username</label>
+        </div>
+        <div class="field">
+          <input type="submit" value="Read Profile" />
+        </div>
+      </form>
+
+      <!-- Placeholder for displaying fetched profile data -->
+      <div id="profileInfo" class="profile-info"></div>
+    </div>
+
+    <script>
+      // Fetch the profile information with a GET request
+      const submitForm = async (event) => {
+        event.preventDefault(); // Prevent form from submitting the default way
+
+        const username = document.getElementById("username").value;
+        const URL = `http://localhost:8000/readProfileInformation?Username=${encodeURIComponent(username)}`;
+
+        try {
+          const response = await fetch(URL, {
+            method: "GET", // Now it's a GET request
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const profileData = await response.json();
+          console.log("Response from server:", profileData);
+
+          if (response.ok) {
+            displayProfile(profileData);
+          } else {
+            alert("Error: " + (profileData.message || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error in fetch call:", error);
+          alert("An error occurred. Please try again.");
+        }
+      };
+
+      // Function to display the profile data on the page
+      const displayProfile = (data) => {
+        const profileInfoDiv = document.getElementById("profileInfo");
+        profileInfoDiv.style.display = "block";
+        profileInfoDiv.innerHTML = `
+          <h3>Profile Information:</h3>
+          <p><strong>Username:</strong> ${data.Username || "N/A"}</p>
+          <p><strong>Mobile Number:</strong> ${data.MobileNumber || "N/A"}</p>
+          <p><strong>Years of Experience:</strong> ${data.YearsOfExperience || "N/A"}</p>
+          <p><strong>Previous Work:</strong> ${data.PreviousWork || "N/A"}</p>
+        `;
+      };
+    </script>
+  </body>
+</html>
