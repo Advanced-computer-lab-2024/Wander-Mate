@@ -64,6 +64,7 @@ const {
   deleteItinerary,
   updateItinerary,
   viewAll1,
+  readItinerary
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -143,6 +144,7 @@ app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
+app.get("/readItinerary/:id",readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);

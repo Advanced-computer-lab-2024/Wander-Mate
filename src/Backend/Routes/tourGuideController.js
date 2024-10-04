@@ -186,7 +186,7 @@ const updateItinerary = async (req, res) => {
 };
 
 const readItinerary = async (req, res) => {
-  const { id } = req.body;
+  const  id  = req.params;
   try {
     const itinerary = await Itinerary.findById({ id });
     if (!itinerary) {
@@ -312,4 +312,5 @@ module.exports = {
   updateItinerary,
   deleteItinerary,
   viewAll1,
+  readItinerary
 };
