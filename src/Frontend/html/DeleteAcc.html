@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Delete Account | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">
+            Delete Account
+        </div>
+        <form id="Delete" action="admin.html" method="get" onsubmit="return deleteAccount(event);">
+            <div class="field">
+                <input type="text" id="DeleteUsername" name="Delete User" required>
+                <label for="DeleteUsername">Username</label>
+            </div>
+            
+            <div class="field">
+                <input type="submit" value="Delete">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function fetchSeller() {
+            const username = document.getElementById('sellerUsername').value;
+
+            try {
+                const response = await fetch(`http://localhost:8000/readSeller?username=${username}`);
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const seller = await response.json();
+                if (seller.length > 0) {
+                    const { FullName, Description } = seller[0]; // Assuming seller is an array
+                    document.getElementById('sellerFullName').value = FullName;
+                    document.getElementById('sellerDescription').value = Description;
+                } else {
+                    alert("Seller not found.");
+                }
+            } catch (error) {
+                console.error("Error fetching seller:", error);
+                alert("Could not load seller. Please try again later.");
+            }
+        }
