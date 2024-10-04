@@ -262,7 +262,7 @@ const createTourismGov = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     // Destructure fields from the request body
-    const { Price, Description, Seller, Quantity } = req.body;
+    const { Name, Price, Description, Seller, Quantity } = req.body;
 
     // Check if the image is uploaded
     if (!req.file) {
@@ -275,6 +275,7 @@ const addProduct = async (req, res) => {
         data: req.file.buffer, // Get image data (Buffer)
         contentType: req.file.mimetype, // Get content type of the image
       },
+      name: Name,
       price: parseFloat(Price), // Ensure price is a number
       description: Description, // Product description
       seller: Seller, // Seller ID
