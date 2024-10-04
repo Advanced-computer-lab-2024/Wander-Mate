@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Place</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Create a New Place</h2>
+        <form id="createPlaceForm" onsubmit="return createPlace(event);">
+            <div class="field">
+                <input type="text" id="Username" name="Username" placeholder="Creator Name" required>
+            </div>
+            <div class="field">
+                <input type="text" id="Description" name="Description" placeholder="Place Description" required>
+            </div>
+            <div class="field">
+                <input type="text" id="Location" name="Location" placeholder="Location" required>
+            </div>
+            <div class="field">
+                <input type="text" id="OpeningHours" name="OpeningHours" placeholder="Opening Hours" required>
+            </div>
+            <div class="field">
+                <input type="text" id="TicketPrices" name="TicketPrices" placeholder="Ticket Prices" required>
+            </div>
+            <div class="field">
+                <input type="file" id="Pictures" name="Pictures" multiple required>
+            </div>
+            <div class="field">
+                <input type="submit" value="Create Place">
+            </div>
+        </form>
+
+        <script>
+            async function createPlace(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(document.getElementById('createPlaceForm'));
+
+                try {
+                    const response = await fetch('http://localhost:8000/createPlace', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Place created successfully!');
+                    } else {
+                        alert('Error creating place.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to create place.');
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Places</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h2>View All Places</h2>
+        <button onclick="getPlaces()">View All Places</button>
+        <div id="placesContainer"></div>
+
+        <script>
+            async function getPlaces() {
+                try {
+                    const response = await fetch('http://localhost:8000/getPlaces', {
+                        method: 'GET',
+                    });
+
+                    if (response.ok) {
+                        const places = await response.json();
+                        const placesContainer = document.getElementById('placesContainer');
+                        placesContainer.innerHTML = '';
+
+                        places.forEach(place => {
+                            const placeElement = document.createElement('div');
+                            placeElement.innerHTML = `
+                                <h3>${place.Creator}</h3>
+                                <p><strong>Description:</strong> ${place.Description}</p>
+                                <p><strong>Location:</strong> ${place.Location}</p>
+                                <p><strong>Opening Hours:</strong> ${place.OpeningHours}</p>
+                                <p><strong>Ticket Prices:</strong> ${place.TicketPrices}</p>
+                            `;
+                            placesContainer.appendChild(placeElement);
+                        });
+                    } else {
+                        alert('Error fetching places.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to fetch places.');
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
