@@ -186,9 +186,9 @@ const updateItinerary = async (req, res) => {
 };
 
 const readItinerary = async (req, res) => {
-  const  id  = req.params;
+  const id= req.params;
   try {
-    const itinerary = await Itinerary.findById({ id });
+    const itinerary = await Itinerary.findById( id );
     if (!itinerary) {
       return res.status(404).json({ error: "itinerary not found" });
     }
