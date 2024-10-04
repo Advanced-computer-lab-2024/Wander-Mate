@@ -47,6 +47,7 @@ const createTourGuide = async (req, res) => {
 
 const createItinerary = async (req, res) => {
   try {
+    const Bookings = [];
     const {
       Creator,
       Activities,
@@ -58,12 +59,12 @@ const createItinerary = async (req, res) => {
       PickUpLocation,
       DropOffLocation,
     } = req.body;
-
     const Ratings = 0.0;
     // Validate required fields
     if (
       !Activities ||
       !LocationsToVisit ||
+      !TimeLine||
       !Language ||
       !Price ||
       !AvailableDates ||
@@ -74,6 +75,7 @@ const createItinerary = async (req, res) => {
     }
 
     const newItinerary = new Itinerary({
+      Bookings,
       Creator,
       Activities,
       LocationsToVisit,
@@ -101,18 +103,26 @@ const createItinerary = async (req, res) => {
 
 const deleteItinerary = async (req, res) => {
   try {
-    const { id } = req.params;
-    const itinerary = await Itinerary.findByIdAndDelete(id);
-
+    const { id, Creator } = req.body;  // Destructure id and Creator from the request body
+    let itinerary = await Itinerary.findById(id);
     if (!itinerary) {
-      return res.status(400).json({ message: "Itinerary not found" });
-    } else {
-      res.status(200).json({ message: "Itinerary deleted" });
+      return res.status(404).json({ message: "Itinerary not found" });
     }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (itinerary.Creator !== Creator) {
+      return res.status(403).json({ message: "You are not the creator." });
+    }
+    if (itinerary.Bookings && itinerary.Bookings.length > 0) {
+      return res.status(400).json({ message: "Cannot delete itinerary with existing bookings." });
+    }
+    await Itinerary.findByIdAndDelete(id);
+    res.status(200).json({ message: "Itinerary deleted successfully." });
+  } 
+  catch (error) {
+    console.error("Error deleting itinerary:", error.message);
+    res.status(500).json({ message: "Error deleting itinerary", error: error.message });
   }
 };
+
 
 const updateItinerary = async (req, res) => {
   try {
@@ -186,7 +196,7 @@ const updateItinerary = async (req, res) => {
 };
 
 const readItinerary = async (req, res) => {
-  const id= req.params;
+  const { id } = req.params; // Correct extraction of id from req.params
   try {
     const itinerary = await Itinerary.findById( id );
     if (!itinerary) {

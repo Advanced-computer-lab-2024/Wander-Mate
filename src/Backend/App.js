@@ -186,7 +186,7 @@ app.post("/createAdvertiserInfo", createAdvertiserInfo);
 app.get("/readProfileInformation", readProfileInformation);
 app.put("/updateProfileInformation", updateProfileInformation);
 app.put("/updateItinerary", updateItinerary);
-app.delete("/deleteItinerary/:id", deleteItinerary);
+app.delete("/deleteItinerary", deleteItinerary);
 app.post("/filterItineraries", filterItineraries);
 app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
