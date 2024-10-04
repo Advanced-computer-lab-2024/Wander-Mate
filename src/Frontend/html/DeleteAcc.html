@@ -23,26 +23,40 @@
     </div>
 
     <script>
-        async function fetchSeller() {
-            const username = document.getElementById('sellerUsername').value;
+        // Function to handle account deletion
+        async function deleteAccount(event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+
+            const username = document.getElementById('DeleteUsername').value; // Get the username from the form
+
+            if (!username) {
+                alert("Please enter a username.");
+                return;
+            }
 
             try {
-                const response = await fetch(`http://localhost:8000/readSeller?username=${username}`);
+                // Make DELETE request to the backend to delete the account
+                const response = await fetch(`http://localhost:8000/deleteSeller?username=${username}`, {
+                    method: 'DELETE'
+                });
 
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
 
-                const seller = await response.json();
-                if (seller.length > 0) {
-                    const { FullName, Description } = seller[0]; // Assuming seller is an array
-                    document.getElementById('sellerFullName').value = FullName;
-                    document.getElementById('sellerDescription').value = Description;
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Account for ${username} has been deleted.`);
+                    window.location.href = 'admin.html'; // Redirect to admin page after deletion
                 } else {
-                    alert("Seller not found.");
+                    alert("Account deletion failed. Please try again.");
                 }
             } catch (error) {
-                console.error("Error fetching seller:", error);
-                alert("Could not load seller. Please try again later.");
+                console.error("Error deleting account:", error);
+                alert("An error occurred while trying to delete the account.");
             }
         }
+    </script>
+</body>
+</html>
