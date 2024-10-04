@@ -142,7 +142,7 @@ app.post("/addAdmin", createAdmin);
 app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
-app.patch("/UpdateProduct", UpdateProduct);
+app.patch("/UpdateProduct/:id", UpdateProduct);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
