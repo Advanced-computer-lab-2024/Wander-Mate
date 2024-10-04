@@ -9,14 +9,7 @@
 <body>
     <div class="wrapper">
         <div class="title">
-            Search Seller Profile
-        </div>
-
-        <!-- Username input field -->
-        <div class="field">
-            <label for="usernameInput">Enter Username:</label>
-            <input type="text" id="usernameInput" required>
-            <button onclick="fetchSeller()">Search</button> <!-- Button to trigger search -->
+            Seller Profile
         </div>
 
         <!-- Profile details -->
@@ -45,52 +38,62 @@
     </div>
 
     <script>
-        async function fetchSeller() {
-    const username = document.getElementById("usernameInput").value; // Get the input value
+        window.onload = function() {
+            const username = sessionStorage.getItem('username'); // Get the username from sessionStorage
 
-    try {
-        // Fetch seller details with the username as a query parameter
-        const response = await fetch(`http://localhost:8000/readSeller?username=${encodeURIComponent(username)}`);
-        console.log(response); // Log the response object
+            // Check if username is retrieved successfully
+            if (username) {
+                console.log("Username found in session storage:", username);
+                fetchSeller(username); // Call fetchSeller with the username
+            } else {
+                console.error("Username not found in session storage.");
+                alert("Username not found. Please log in or register.");
+                // Redirect to login page if needed
+                //window.location.href = '/login.html'; // Adjust the path if necessary
+            }
+        };
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
+        async function fetchSeller(username) {
+            console.log("Fetching seller profile for username:", username);
+
+            try {
+                // Fetch seller details with the username as a query parameter
+                const response = await fetch(`http://localhost:8000/readSeller?username=${encodeURIComponent(username)}`);
+                console.log(response); // Log the response object
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const seller = await response.json();
+                console.log(seller); // Log the seller data
+
+                // Check if seller data is returned
+                if (seller.length > 0) {
+                    const sellerData = seller[0]; // Get the first seller object
+                    document.getElementById("sellerName").textContent = sellerData.Name || "Not Available"; // Update name
+                    document.getElementById("sellerDescription").textContent = sellerData.Description || "Not Available"; // Update description
+                    document.getElementById("sellerEmail").textContent = sellerData.Email || "Not Available"; // Update email
+                    document.getElementById("sellerPhone").textContent = sellerData.Phone || "Not Available"; // Update phone
+                    document.getElementById("sellerRating").textContent = sellerData.Rating || "Not Available"; // Update rating
+                } else {
+                    alert("Seller not found.");
+                    resetSellerDetails(); // Reset the displayed values
+                }
+            } catch (error) {
+                console.error("Error fetching seller:", error);
+                alert("Could not load seller.");
+            }
         }
 
-        const seller = await response.json();
-        console.log(seller); // Log the seller data
-
-        // Check if seller data is returned
-        if (seller.length > 0) {
-            // Assuming seller[0] has the desired fields
-            const sellerData = seller[0]; // Get the first seller object
-            document.getElementById("sellerName").textContent = sellerData.Name || "Not Available"; // Update name
-            document.getElementById("sellerDescription").textContent = sellerData.Description || "Not Available"; // Update description
-            document.getElementById("sellerEmail").textContent = sellerData.Email || "Not Available"; // Update email
-            document.getElementById("sellerPhone").textContent = sellerData.Phone || "Not Available"; // Update phone
-            document.getElementById("sellerRating").textContent = sellerData.Rating || "Not Available"; // Update rating
-        } else {
-            // If no seller is found
-            alert("Seller not found.");
-            // Optionally reset the displayed values
-            resetSellerDetails();
+        // Function to reset seller details
+        function resetSellerDetails() {
+            document.getElementById("sellerName").textContent = "Not Available";
+            document.getElementById("sellerDescription").textContent = "Not Available";
+            document.getElementById("sellerEmail").textContent = "Not Available";
+            document.getElementById("sellerPhone").textContent = "Not Available";
+            document.getElementById("sellerRating").textContent = "Not Available";
         }
-    } catch (error) {
-        console.error("Error fetching seller:", error);
-        alert("Could not load seller.");
-    }
-}
-
-// Function to reset seller details
-function resetSellerDetails() {
-    document.getElementById("sellerName").textContent = "Not Available";
-    document.getElementById("sellerDescription").textContent = "Not Available";
-    document.getElementById("sellerEmail").textContent = "Not Available";
-    document.getElementById("sellerPhone").textContent = "Not Available";
-    document.getElementById("sellerRating").textContent = "Not Available";
-}
-
-
     </script>
 </body>
 </html>

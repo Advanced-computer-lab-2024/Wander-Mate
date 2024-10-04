@@ -11,10 +11,10 @@
             Update My Profile
         </div>
         <form id="updateForm" action="seller.html" method="get" onsubmit="return updateSeller(event);">
-            <div class="field">
+            <!-- <div class="field">
                 <input type="text" id="sellerUsername" name="sellerName" required>
                 <label for="sellerUsername">Username</label>
-            </div>
+            </div> -->
             <div class="field">
                 <input type="text" id="sellerFullName" name="fullName" required>
                 <label for="sellerFullName">Full Name</label>
@@ -30,8 +30,22 @@
     </div>
 
     <script>
-        async function fetchSeller() {
-            const username = document.getElementById('sellerUsername').value;
+        window.onload = function() {
+            const username = sessionStorage.getItem('username'); // Get the username from sessionStorage
+
+            // Check if username is retrieved successfully
+            if (username) {
+                console.log("Username found in session storage:", username);
+                fetchSeller(username); // Call fetchSeller with the username
+            } else {
+                console.error("Username not found in session storage.");
+                alert("Username not found. Please log in or register.");
+                // Redirect to login page if needed
+                //window.location.href = '/login.html'; // Adjust the path if necessary
+            }
+        };
+        async function fetchSeller(username) {
+            console.log("Fetching seller profile for username:", username);
 
             try {
                 const response = await fetch(`http://localhost:8000/readSeller?username=${username}`);
@@ -41,6 +55,7 @@
                 }
 
                 const seller = await response.json();
+                console.log(seller);
                 if (seller.length > 0) {
                     const { FullName, Description } = seller[0]; // Assuming seller is an array
                     document.getElementById('sellerFullName').value = FullName;
