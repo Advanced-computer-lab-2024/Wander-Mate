@@ -185,6 +185,19 @@ const updateItinerary = async (req, res) => {
   }
 };
 
+const readItinerary = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const itinerary = await Itinerary.findById({ id });
+    if (!itinerary) {
+      return res.status(404).json({ error: "itinerary not found" });
+    }
+    res.status(200).json(itinerary);
+  } catch {
+    res.status(400).json({ error: "Error reading itinerary" });
+  }
+};
+
 const createProfileInformation = async (req, res) => {
   try {
     const { Username } = req.body;
