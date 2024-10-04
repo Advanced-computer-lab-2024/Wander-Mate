@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">
+            Edit Product
+        </div>
+        <form id="edit-product-form">
+            <input type="hidden" id="product-id">
+            <div>
+                <label for="product-price">Price:</label>
+                <input type="number" id="product-price" required>
+            </div>
+            <div>
+                <label for="product-description">Description:</label>
+                <textarea id="product-description" required></textarea>
+            </div>
+            <button type="submit">Update Product</button>
+        </form>
+        <div class="back-button">
+            <a href="viewProducts.html">Back to Products</a>
+        </div>
+    </div>
+
+    <script>
+        // Fetch product details by ID
+        async function fetchProductDetails(productId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5500/api/products/${productId}`);
+                if (!response.ok) {
+                    throw new Error('Error fetching product details');
+                }
+                const product = await response.json();
+                document.getElementById('product-id').value = product._id;
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-description').value = product.description;
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        }
+
+        // Update product details on form submission
+        document.getElementById('edit-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('product-id').value;
+            const price = document.getElementById('product-price').value;
+            const description = document.getElementById('product-description').value;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5500/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ price, description }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error updating product');
+                }
+
+                const result = await response.json();
+                alert(result.message);
+                window.location.href = 'viewProducts.html'; // Redirect to products view
+            } catch (error) {
+                console.error('Error updating product:', error);
+            }
+        });
+
+        // Get the product ID from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        if (productId) {
+            fetchProductDetails(productId);
+        } else {
+            console.error('No product ID provided');
+        }
+    </script>
+</body>
+</html>

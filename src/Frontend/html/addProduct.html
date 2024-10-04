@@ -11,7 +11,7 @@
         <div class="title">
             Add New Product
         </div>
-        <form action="/addProduct" method="post" enctype="multipart/form-data">
+        <form id="addProductForm" enctype="multipart/form-data">
             <div class="field">
                 <label for="picture">Product Picture</label>
                 <input type="file" name="picture" id="picture" accept="image/*" required>
@@ -41,5 +41,35 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('addProductForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this); // Create a FormData object
+
+            try {
+                const response = await fetch('/addProduct', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to add product");
+                }
+
+                const result = await response.json();
+                alert(result.message); // Show success message
+
+                // Optionally, redirect or reset the form
+                this.reset(); // Reset form fields after successful submission
+
+            } catch (error) {
+                console.error("Error adding product:", error);
+                alert("Could not add product. Please try again.");
+            }
+        });
+    </script>
+
 </body>
 </html>
