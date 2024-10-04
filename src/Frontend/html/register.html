@@ -147,6 +147,11 @@
           return;
         }
 
+        // Save the username to session storage before submitting
+        const username = document.getElementById("username").value;
+        sessionStorage.setItem('username', username); // Save username
+        console.log("Username saved to session storage:", username);
+
         // Collect form data
         const formData = {
           Username: document.getElementById("username").value,
