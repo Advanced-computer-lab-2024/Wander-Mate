@@ -380,14 +380,14 @@ const AdminsearchProductByName = async (req, res) => {
 };
 const UpdateProduct = async (req, res) => {
   try {
-    const { productId } = req.params; // Get product ID from request parameters
+    const  id  = req.params.id; // Get product ID from request parameters
     const { price, description } = req.body; // Get updated fields from the request body
 
-    if (!productId) {
+    if (!id) {
       return res.status(400).json({ message: "Product ID is required" });
     }
 
-    const product = await productModel.findByIdAndUpdate(productId, {
+    const product = await productModel.findByIdAndUpdate(id, {
       price: price,
       description: description,
     });
