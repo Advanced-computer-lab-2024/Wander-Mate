@@ -86,21 +86,19 @@ const updateSeller = async (req, res) => {
 //Reading a seller
 const readSeller = async (req, res) => {
   try {
-      const { username } = req.query; // Get the username from query parameters
-      const seller = await sellerModel.find({ Username: username }); // Query the database
+    const { username } = req.query; // Get the username from query parameters
+    const seller = await sellerModel.find({ Username: username }); // Query the database
 
-      if (!seller) {
-          return res.status(404).json({ message: "Seller not found" });
-      } else {
-          res.status(200).json(seller);
-      }
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    } else {
+      res.status(200).json(seller);
+    }
   } catch (err) {
-      console.error(err);
-      res.status(400).json({ message: "Can't read the seller" });
+    console.error(err);
+    res.status(400).json({ message: "Can't read the seller" });
   }
 };
-
-
 
 const viewSellerProducts = async (req, res) => {
   try {
@@ -122,7 +120,7 @@ const viewSellerProducts = async (req, res) => {
 const sortProductsByRatingsseller = async (req, res) => {
   try {
     // Find and sort products by ratings in descending order (-1 for descending)
-    const products = await productModel.find({}).sort({ ratings: -1 });
+    const products = await ProductModel.find({}).sort({ ratings: -1 });
 
     // Check if products exist
     if (!products || products.length === 0) {

@@ -1,165 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Products | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">
-            Available Products
-        </div>
+      <div class="title">Available Products</div>
 
-        <div class="search-section">
-            <label for="productName">Search by Product Name:</label>
-            <input type="text" id="productName" placeholder="Enter product name">
-            <button id="searchButton">Search</button>
-        </div>
+      <div class="search-section">
+        <label for="productName">Search by Product Name:</label>
+        <input type="text" id="productName" placeholder="Enter product name" />
+        <button id="searchButton">Search</button>
+      </div>
 
-        <div class="filter-section">
-            <label for="minPrice">Min Price:</label>
-            <input type="number" id="minPrice" placeholder="0">
-            <label for="maxPrice">Max Price:</label>
-            <input type="number" id="maxPrice" placeholder="1000">
-            <button id="filterButton">Apply Filter</button>
-            <button id="resetButton">Reset Filter</button> <!-- Add reset button -->
-            <button id="sortButton">Sort by Ratings</button> <!-- Add sort button -->
-        </div>
+      <div class="filter-section">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" placeholder="0" />
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" placeholder="1000" />
+        <button id="filterButton">Apply Filter</button>
+        <button id="resetButton">Reset Filter</button>
+        <!-- Add reset button -->
+        <button id="sortButton">Sort by Ratings</button>
+        <!-- Add sort button -->
+      </div>
 
-        <div class="product-list" id="productList">
-            <!-- Products will be dynamically inserted here -->
-        </div>
+      <div class="product-list" id="productList">
+        <!-- Products will be dynamically inserted here -->
+      </div>
     </div>
 
     <script>
-        let allProducts = []; // Variable to store all fetched products
+      let allProducts = []; // Variable to store all fetched products
 
-        async function fetchProducts() {
-            try {
-                const response = await fetch("http://localhost:8000/viewSellerProducts"); // Adjust the endpoint accordingly
-                const products = await response.json();
+      async function fetchProducts() {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/viewSellerProducts"
+          ); // Adjust the endpoint accordingly
+          const products = await response.json();
 
-                // Check if products exist
-                if (response.ok) {
-                    allProducts = products; // Store all products
-                    displayProducts(allProducts); // Display all products initially
-                } else {
-                    document.getElementById('productList').innerHTML = '<p>No products available</p>';
-                }
-            } catch (error) {
-                console.error("Error fetching products:", error);
-                document.getElementById('productList').innerHTML = '<p>An error occurred while fetching products.</p>';
-            }
+          // Check if products exist
+          if (response.ok) {
+            allProducts = products; // Store all products
+            displayProducts(allProducts); // Display all products initially
+          } else {
+            document.getElementById("productList").innerHTML =
+              "<p>No products available</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while fetching products.</p>";
         }
+      }
 
-        function displayProducts(products) {
-            const productList = document.getElementById('productList');
-            productList.innerHTML = ''; // Clear existing products
+      function displayProducts(products) {
+        const productList = document.getElementById("productList");
+        productList.innerHTML = ""; // Clear existing products
 
-            products.forEach((product) => {
-                const productItem = document.createElement('div');
-                productItem.className = 'product-item';
+        products.forEach((product) => {
+          const productItem = document.createElement("div");
+          productItem.className = "product-item";
 
-                const productImage = product.image ? product.image : 'src/Frontend/images/default-product.jpg';
+          // Use the product ID to get the image from the backend
+          const productImage = `http://localhost:8000/products/${product._id}/image`; // Adjust this to match your backend
 
-                productItem.innerHTML = `
-                    <img src="${productImage}" alt="Product Image" class="product-image">
-                    <div class="product-details">
-                        <h2 class="product-name">${product.name}</h2>
-                        <p class="product-description">${product.description}</p>
-                        <p class="product-price">Price: $${product.price.toFixed(2)}</p>
-                        <p class="product-seller">Seller: ${product.sellerName}</p>
-                        <p class="product-ratings">Ratings: ${'★'.repeat(product.ratings)}${'☆'.repeat(5 - product.ratings)} (${product.ratings})</p>
-                        <p class="product-reviews">Reviews: 
-                            <ul>
-                                ${product.reviews.map(review => `<li>${review}</li>`).join('')}
-                            </ul>
-                        </p>
-                    </div>
-                    <div class="edit-button">
-                        <a href="editProduct.html?id=${product.id}">Edit</a>
-                    </div>
-                `;
+          productItem.innerHTML = `
+            <img src="${productImage}" alt="Product Image" class="product-image">
+            <div class="product-details">
+                <h2 class="product-name">${product.name}</h2>
+                <p class="product-description">${product.description}</p>
+                <p class="product-price">Price: $${product.price.toFixed(2)}</p>
+                <p class="product-seller">Seller: ${product.sellerName}</p>
+                <p class="product-ratings">Ratings: ${"★".repeat(
+                  product.ratings
+                )}${"☆".repeat(5 - product.ratings)} (${product.ratings})</p>
+                <p class="product-reviews">Reviews: 
+                    <ul>
+                        ${product.reviews
+                          .map((review) => `<li>${review}</li>`)
+                          .join("")}
+                    </ul>
+                </p>
+            </div>
+            <div class="edit-button">
+                <a href="editProduct.html?id=${product._id}">Edit</a>
+            </div>
+        `;
 
-                productList.appendChild(productItem);
-            });
-        }
+          productList.appendChild(productItem);
+        });
+      }
 
-        async function searchProductsByName(name) {
-            try {
-                const response = await fetch("http://localhost:8000/searchProductByName", { // Adjust the endpoint accordingly
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name }) // Send the product name in the request body
-                });
-
-                const products = await response.json();
-
-                // Check if products exist
-                if (response.ok) {
-                    displayProducts(products); // Display found products
-                } else {
-                    document.getElementById('productList').innerHTML = `<p>${products.message}</p>`;
-                }
-            } catch (error) {
-                console.error("Error searching products:", error);
-                document.getElementById('productList').innerHTML = '<p>An error occurred while searching for products.</p>';
+      async function searchProductsByName(name) {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/searchProductByName",
+            {
+              // Adjust the endpoint accordingly
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name }), // Send the product name in the request body
             }
+          );
+
+          const products = await response.json();
+
+          // Check if products exist
+          if (response.ok) {
+            displayProducts(products); // Display found products
+          } else {
+            document.getElementById(
+              "productList"
+            ).innerHTML = `<p>${products.message}</p>`;
+          }
+        } catch (error) {
+          console.error("Error searching products:", error);
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while searching for products.</p>";
         }
+      }
 
-        async function sortProductsByRatings() {
-            try {
-                const response = await fetch("http://localhost:8000/sortProductsByRatingsseller"); // Adjust the endpoint accordingly
-                const products = await response.json();
+      async function sortProductsByRatings() {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/sortProductsByRatingsseller"
+          ); // Adjust the endpoint accordingly
+          const products = await response.json();
 
-                // Check if products exist
-                if (response.ok) {
-                    displayProducts(products); // Display sorted products
-                } else {
-                    document.getElementById('productList').innerHTML = `<p>${products.message}</p>`;
-                }
-            } catch (error) {
-                console.error("Error sorting products:", error);
-                document.getElementById('productList').innerHTML = '<p>An error occurred while sorting products.</p>';
-            }
+          // Check if products exist
+          if (response.ok) {
+            displayProducts(products); // Display sorted products
+          } else {
+            document.getElementById(
+              "productList"
+            ).innerHTML = `<p>${products.message}</p>`;
+          }
+        } catch (error) {
+          console.error("Error sorting products:", error);
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while sorting products.</p>";
         }
-
-        // Fetch products when the page loads
-        document.addEventListener('DOMContentLoaded', fetchProducts);
-
-        document.getElementById('searchButton').addEventListener('click', () => {
-            const productName = document.getElementById('productName').value.trim(); // Get product name
-            if (productName) {
-                searchProductsByName(productName); // Call the search function
-            } else {
-                displayProducts(allProducts); // If no name is provided, show all products
+      }
+      async function filterProducts(minPrice, maxPrice) {
+        try {
+          // Send a POST request to the filterProductsByPrice endpoint with minPrice and maxPrice
+          const response = await fetch(
+            "http://localhost:8000/filterProductsByPrice",
+            {
+              method: "POST", // Assuming you are using POST based on the backend
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                minPrice: minPrice, // Passing the minimum price
+                maxPrice: maxPrice, // Passing the maximum price
+              }),
             }
-        });
+          );
 
-        document.getElementById('filterButton').addEventListener('click', () => {
-            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0; // Default to 0 if NaN
-            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity; // Default to Infinity if NaN
-            
-            const filteredProducts = filterProducts(minPrice, maxPrice);
-            displayProducts(filteredProducts); // Display filtered products
-        });
+          const products = await response.json(); // Parse the response as JSON
 
-        document.getElementById('resetButton').addEventListener('click', () => {
-            // Reset the filter and display all products again
-            document.getElementById('minPrice').value = '';
-            document.getElementById('maxPrice').value = '';
-            document.getElementById('productName').value = ''; // Clear the search input
-            displayProducts(allProducts); // Display all products
-        });
+          // Check if the response is successful
+          if (response.ok) {
+            // Display the filtered products if successful
+            displayProducts(products);
+          } else {
+            // Handle the case where no products were found or other errors
+            document.getElementById(
+              "productList"
+            ).innerHTML = `<p>${products.message}</p>`;
+          }
+        } catch (error) {
+          // Handle any errors that occur during the fetch request
+          console.error("Error filtering products by price:", error);
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while filtering products.</p>";
+        }
+      }
 
-        // Event listener for the sort button
-        document.getElementById('sortButton').addEventListener('click', () => {
-            sortProductsByRatings(); // Call the sort function when clicked
-        });
+      // Fetch products when the page loads
+      document.addEventListener("DOMContentLoaded", fetchProducts);
+
+      document.getElementById("searchButton").addEventListener("click", () => {
+        const productName = document.getElementById("productName").value.trim(); // Get product name
+        if (productName) {
+          searchProductsByName(productName); // Call the search function
+        } else {
+          displayProducts(allProducts); // If no name is provided, show all products
+        }
+      });
+
+      document.getElementById("filterButton").addEventListener("click", () => {
+        const minPrice =
+          parseFloat(document.getElementById("minPrice").value) || 0; // Default to 0 if NaN
+        const maxPrice =
+          parseFloat(document.getElementById("maxPrice").value) || Infinity; // Default to Infinity if NaN
+
+        const filteredProducts = filterProducts(minPrice, maxPrice);
+        displayProducts(filteredProducts); // Display filtered products
+      });
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        // Reset the filter and display all products again
+        document.getElementById("minPrice").value = "";
+        document.getElementById("maxPrice").value = "";
+        document.getElementById("productName").value = ""; // Clear the search input
+        displayProducts(allProducts); // Display all products
+      });
+
+      // Event listener for the sort button
+      document.getElementById("sortButton").addEventListener("click", () => {
+        sortProductsByRatings(); // Call the sort function when clicked
+      });
     </script>
-</body>
+  </body>
 </html>
