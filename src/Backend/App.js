@@ -126,7 +126,7 @@ app.post("/createPlace", uploadMult, createPlace);
 app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
-app.delete("/deleteplace/:id", deletePlace);
+app.delete("/deleteplace/:Id", deletePlace);
 app.get("/viewAll0", viewAll0);
 app.get("/viewAll1", viewAll1);
 app.get("/viewAll2", viewAll2);
