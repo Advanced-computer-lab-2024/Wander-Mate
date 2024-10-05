@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories</title>
+</head>
+<body>
+    <h1>Categories</h1>
+    <ul id="categories-list"></ul>
+
+    <script>
+        // Make a GET request to the server to fetch categories
+        fetch('/categories')
+            .then(response => response.json())
+            .then(categories => {
+                const categoriesList = document.getElementById('categories-list');
+                categories.forEach(category => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = category.name; // assuming category has a 'name' property
+                    categoriesList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error fetching categories.');
+            });
+    </script>
+</body>
+</html>

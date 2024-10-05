@@ -3,49 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delete Category | Wander-Mate</title>
+    <title>Update Preference Tag | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
     <!-- Ensure the correct path -->
   </head>
   <body>
     <div class="wrapper">
-      <div class="title">Delete Category</div>
+      <div class="title">Update an Old Tag</div>
       <form id="registerForm">
         <div class="field">
-          <input type="text" id="username" name="username" required />
-          <label for="username">Category Name</label>
+          <input type="text" id="oldname" name="oldname" required />
+          <label for="username">Old Name</label>
         </div>
         <div class="field">
-            <input type="submit" value="Delete Category" />
+            <input type="text" id="newname" name="newname" required />
+            <label for="username">New Name</label>
+          </div>
+        <div class="field">
+            <input type="submit" value="Update Tag" />
           </div>
       </form>
     </div>
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const categoryName = document.getElementById('username').value;
+            const OldName = document.getElementById('oldname').value;
+            const NewName = document.getElementById('newname').value;
             
             try {
-                const response = await fetch("http://localhost:8000/deleteCategory", {
-                    method: 'DELETE',
+                const response = await fetch("http://localhost:8000/updateTags", {
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ Name: categoryName })
+                    body: JSON.stringify({ currentName : OldName, newName: NewName })
                 });
                 const responseData = await response.json();
               console.log("Response from server:", responseData);
 
           // Handle success or failure based on the server response
           if (response.ok) {
-            alert("Category successfully deleted");
-            window.location.href = "Category.html"; // Optional redirect on success
+            alert("Tag successfully updated");
+            window.location.href = "preferencetags.html"; // Optional redirect on success
           } else {
             alert("Error: " + (responseData.message || "Unknown error"));
           }
             } catch (error) {
-              console.error("Error in fetch call:", error);
-              alert("An error occurred. Please try again.");
+                console.error("Error in fetch call:", error);
+                alert("An error occurred. Please try again.");
             }
         });
     </script>
