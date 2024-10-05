@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Category | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <!-- Ensure the correct path -->
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Add New Category</div>
+      <form id="registerForm">
+        <div class="field">
+          <input type="text" id="username" name="username" required />
+          <label for="username">Category Name</label>
+        </div>
+        <div class="field">
+            <input type="submit" value="Add Category" />
+          </div>
+      </form>
+    </div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryName = document.getElementById('username').value;
+            try {
+                const response = await fetch('/create-category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Name: categoryName })
+                });
+                const result = await response.json();
+                console.log(result);
+                // You can also display a success message to the user here
+            } catch (error) {
+                console.error(error);
+                // You can also display an error message to the user here
+            }
+        });
+    </script>
+</body>
+</html>
