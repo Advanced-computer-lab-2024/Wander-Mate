@@ -83,7 +83,7 @@ const readActivity = async (req, res) => {
 
 const readActivities = async (req, res) => {
   try {
-    const objectId = mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
+    const objectId = new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
     const activities = await attractionModel.find({ Type: objectId });
     res.status(200).json(activities);
   } catch {
