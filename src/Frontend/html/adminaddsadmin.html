@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Add Admin</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Add Admin Form</div>
+      <form id="registerForm" onsubmit="return createAdmin(event)">
+        <div class="field">
+          <input type="text" id="username" name="username" required />
+          <label for="username">Username</label>
+        </div>
+        <div class="field">
+          <input type="password" id="password" name="password" required />
+          <label for="password">Password</label>
+        </div>
+
+        <div class="field">
+          <input type="submit" value="Add Admin" />
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Function to handle the creation of a Tourism Governor
+      async function createAdmin(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+
+        // Capture username and password values
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        // Check if username or password is empty
+        if (!username || !password) {
+          alert("Username and password are required.");
+          return;
+        }
+
+        // Prepare data to be sent in the request
+        const formData = {
+          Username: username,
+          Password: password,
+        };
+
+        // Define the API endpoint
+        const URL = "http://localhost:8000/addAdmin";
+
+        try {
+          // Send a POST request to the backend
+          const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          // Parse the JSON response from the server
+          const responseData = await response.json();
+          console.log("Response from server:", responseData);
+
+          // Handle success or failure based on the server response
+          if (response.ok) {
+            alert("Admin profile successfully created");
+            window.location.href = "admin.html"; // Optional redirect on success
+          } else {
+            alert("Error: " + (responseData.message || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error in fetch call:", error);
+          alert("An error occurred. Please try again.");
+        }
+      }
+    </script>
+  </body>
+</html>
