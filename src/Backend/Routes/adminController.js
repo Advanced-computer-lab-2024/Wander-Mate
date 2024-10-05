@@ -567,6 +567,18 @@ const getID = async (req, res) => {
   }
 };
 
+const getCategories = async (req, res) => {
+  try {
+    const db = mongoose.connection; 
+    const collection = db.collection("categories"); 
+    const categories = await collection.find({}).toArray(); 
+
+    res.status(200).json(categories); 
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching categories", error });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -588,4 +600,5 @@ module.exports = {
   readPreferenceTags,
   getNations,
   getID,
+  getCategories,
 };

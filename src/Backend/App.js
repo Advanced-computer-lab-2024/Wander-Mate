@@ -61,6 +61,7 @@ const {
   readCategory,
   getNations,
   getID,
+  getCategories,
 } = require("./Routes/adminController.js");
 
 const {
@@ -204,6 +205,7 @@ app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
+app.get("/getCategories", getCategories);
 app.get("/getID/:Username", getID);
 app.get("/getSellers/", getSellers);
 app.get("/viewPlaces", viewPlaces);

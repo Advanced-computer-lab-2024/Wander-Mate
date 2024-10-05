@@ -51,6 +51,53 @@ body {
   position: relative;
 }
 
+
+/* Styling for the dropdown select */
+.wrapper form .field select {
+  appearance: none; /* Remove default dropdown styling */
+  width: 100%;
+  height: 100%;
+  padding-left: 20px;
+  font-size: 17px;
+  border: 1px solid lightgrey;
+  border-radius: 25px;
+  background-color: #fff;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><polygon points="0,0 20,0 10,10" fill="#999" /></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.wrapper form .field select:focus {
+  outline: none;
+  border-color: #4158d0;
+}
+
+.wrapper form .field select option {
+  font-size: 16px;
+  padding: 10px;
+}
+
+/* Add padding and better text alignment for the select dropdown */
+.wrapper form .field select option {
+  font-size: 16px;
+  padding: 10px;
+  background-color: white;
+  color: #333; /* Adjust the text color for better visibility */
+}
+
+.wrapper form .field select option:hover {
+  background-color: #f0f0f0; /* Adds a hover effect for the options */
+}
+
+.wrapper form .field select option[selected] {
+  background-color: #4158d0;
+  color: white;
+}
+
+
+
 .wrapper form .field input,
 .wrapper form .field select {
   height: 100%;
