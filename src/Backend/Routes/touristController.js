@@ -41,7 +41,6 @@ const touristRegister = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    await Usernames.create({ Username: Username });
     // 4. Create new user
     const newUser = await userModel.create({
       Email,
@@ -53,7 +52,8 @@ const touristRegister = async (req, res) => {
       Role,
       Wallet,
     });
-
+    const userID = newUser._id;
+    await Usernames.create({ Username: Username, userID });
     // 6. Send success response
     res
       .status(200)
