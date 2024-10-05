@@ -31,6 +31,8 @@ const {
   viewSellerProducts,
   SellersearchProductByName,
   sortProductsByRatingsseller,
+  addProductseller,
+  UpdateProductseller
 } = require("./Routes/sellerController.js");
 
 const {
@@ -144,6 +146,7 @@ app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
+app.patch("/UpdateProductseller/:id",UpdateProductseller);
 app.get("/readItinerary/:id",readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
@@ -171,6 +174,7 @@ app.get("/sortProductsByRatings", sortProductsByRatings);
 app.get("/sortProductsByRatingsseller", sortProductsByRatingsseller);
 app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
+app.post("/addProductseller",upload.single("picture"),addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
 app.get("/AdminsearchProductByName", AdminsearchProductByName);

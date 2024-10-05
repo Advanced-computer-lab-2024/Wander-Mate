@@ -163,6 +163,64 @@ const SellersearchProductByName = async (req, res) => {
   }
 };
 
+const addProductseller = async (req, res) => {
+  try {
+    // Destructure fields from the request body
+    const { Name, Price, Description, Seller, Quantity } = req.body;
+
+    // Check if the image is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required." });
+    }
+
+    // Create a new product instance
+    const product = await productModel.create({
+      picture: {
+        data: req.file.buffer, // Get image data (Buffer)
+        contentType: req.file.mimetype, // Get content type of the image
+      },
+      name: Name,
+      price: parseFloat(Price), // Ensure price is a number
+      description: Description, // Product description
+      seller: Seller, // Seller ID
+      ratings: 0, // Initialize ratings
+      reviews: [], // Initialize reviews
+      quantity: parseInt(Quantity), // Convert quantity to an integer
+    });
+
+    res.status(200).json({ message: "Product added successfully!", product });
+  } catch (err) {
+    console.error("Error adding product:", err);
+    res.status(400).json({ error: "Failed to add product." });
+  }
+};
+
+const UpdateProductseller = async (req, res) => {
+  try {
+    const  id  = req.params.id; // Get product ID from request parameters
+    const { price, description } = req.body; // Get updated fields from the request body
+
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const product = await productModel.findByIdAndUpdate(id, {
+      price: price,
+      description: description,
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (err) {
+    res
+      .status(400)
+      .json({ message: "Error to update product", error: err.message });
+  }
+};
+
 module.exports = {
   createSeller,
   updateSeller,
@@ -170,4 +228,6 @@ module.exports = {
   viewSellerProducts,
   sortProductsByRatingsseller,
   SellersearchProductByName,
+  addProductseller,
+  UpdateProductseller
 };
