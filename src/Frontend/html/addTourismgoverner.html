@@ -35,45 +35,50 @@
       async function createTourismGov(event) {
         event.preventDefault(); // Prevent default form submission behavior
 
-        const username = document.getElementById('Username').value;
-        const password = document.getElementById('Password').value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
         if (!username || !password) {
-          alert('Please fill in both username and password.');
+          alert("Please fill in both username and password.");
           return;
         }
 
         try {
           // Make a POST request to the server to create a Tourism Governor
-          const response = await fetch('http://localhost:8000/addTourismGov', {
-            method: 'POST',
+          const response = await fetch("http://localhost:8000/addTourismGov", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: username,
-              password: password,
+              Username: username,
+              Password: password,
             }),
           });
 
           // Check if the request was successful
           if (!response.ok) {
-            throw new Error('Failed to create Tourism Governor');
+            throw new Error("Failed to create Tourism Governor");
           }
 
           const result = await response.json();
+          console.log("Server response:", result); // Add this line to inspect the response
 
           // Check if the server indicates success
-          if (result.success) {
-            alert('Tourism Governor account for ${username} has been created successfully!');
-            // Optionally, redirect to a different page
-            window.location.href = 'admin.html';
+          if (result._id) {
+            alert(
+              `Tourism Governor account for ${username} has been created successfully!`
+            );
+
+            window.location.href = "admin.html";
           } else {
-            alert('Error creating account: ' + result.message);
+            alert("Error creating account: " + result.message);
           }
         } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred while creating the account. Please try again.');
+          console.error("Error:", error);
+          alert(
+            "An error occurred while creating the account. Please try again."
+          );
         }
       }
     </script>
