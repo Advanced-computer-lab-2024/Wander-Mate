@@ -199,14 +199,14 @@ const addProductseller = async (req, res) => {
 
 const UpdateProductseller = async (req, res) => {
   try {
-    const  id  = req.params.id; // Get product ID from request parameters
+    const id = req.params.id; // Get product ID from request parameters
     const { price, description } = req.body; // Get updated fields from the request body
 
     if (!id) {
       return res.status(400).json({ message: "Product ID is required" });
     }
 
-    const product = await productModel.findByIdAndUpdate(id, {
+    const product = await ProductModel.findByIdAndUpdate(id, {
       price: price,
       description: description,
     });
@@ -223,6 +223,28 @@ const UpdateProductseller = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await ProductModel.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ product });
+  } catch {
+    res.status(400).json({ message: "Error to get product" });
+  }
+};
+
+const getSellers = async (req, res) => {
+  try {
+    const sellers = await sellerModel.find().select("-Password");
+    res.status(200).json({ sellers });
+  } catch {
+    res.status(400).json({ message: "Error to get sellers" });
+  }
+};
+
 module.exports = {
   createSeller,
   updateSeller,
@@ -231,5 +253,7 @@ module.exports = {
   sortProductsByRatingsseller,
   SellersearchProductByName,
   addProductseller,
-  UpdateProductseller
+  UpdateProductseller,
+  getProduct,
+  getSellers,
 };

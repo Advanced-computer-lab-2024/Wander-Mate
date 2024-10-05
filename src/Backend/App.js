@@ -33,6 +33,8 @@ const {
   sortProductsByRatingsseller,
   addProductseller,
   UpdateProductseller,
+  getProduct,
+  getSellers,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -45,7 +47,7 @@ const {
   addProduct,
   getImage,
   viewAdminProducts,
-  AdminsearchProductByName,
+  searchProductsByName,
   sortProductsByRatings,
   UpdateProduct,
   filterProductsByPrice,
@@ -180,10 +182,10 @@ app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matc
 app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
-app.get("/AdminsearchProductByName", AdminsearchProductByName);
+app.post("/searchProductsByName", searchProductsByName);
 app.get("/SellersearchProductByName", SellersearchProductByName);
 app.post("/filterProductsByPrice", filterProductsByPrice);
-
+app.get("/getProduct/:id", getProduct);
 app.get("/viewTouristProducts", viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
@@ -200,3 +202,4 @@ app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getID/:Username", getID);
+app.get("/getSellers/", getSellers);
