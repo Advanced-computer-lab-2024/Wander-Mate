@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps with Places Search</title>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
+      async
+      defer
+    ></script>
+    <style>
+      /* Style for the map */
+      #map {
+        height: 500px;
+        width: 100%;
+      }
+      /* Style for the search box */
+      #pac-input {
+        margin-top: 10px;
+        width: 300px;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="pac-input" class="controls" type="text" placeholder="Search for places" />
+    <div id="map"></div>
+
+    <script>
+      let map;
+      let marker;
+
+      function initMap() {
+        // Initialize the map centered on a default location
+        const defaultLocation = { lat: -34.397, lng: 150.644 };
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: defaultLocation,
+          zoom: 8,
+        });
+
+        // Initialize a search box
+        const input = document.getElementById("pac-input");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        // Bias the SearchBox results towards the current map's viewport
+        map.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        // Event listener for search box results
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length === 0) {
+            return;
+          }
+
+          // Clear any previous markers
+          if (marker) {
+            marker.setMap(null);
+          }
+
+          // Get the first place from the search results
+          const place = places[0];
+
+          // If the place has a geometry (location), drop a pin and center the map
+          if (place.geometry && place.geometry.location) {
+            // Drop a pin
+            marker = new google.maps.Marker({
+              map: map,
+              position: place.geometry.location,
+            });
+
+            // Center the map to the location
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+
+            // Get the latitude and longitude
+            const location = place.geometry.location;
+            console.log("Location:", location.lat(), location.lng());
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
