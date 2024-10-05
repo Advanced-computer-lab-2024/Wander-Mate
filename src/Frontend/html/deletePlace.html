@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Place</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h2>Delete a Place</h2>
+        <form id="deletePlaceForm" onsubmit="return deletePlace(event);">
+            <div class="field">
+                <input type="text" id="PlaceId" name="PlaceId" placeholder="Enter Place ID" required>
+            </div>
+            <div class="field">
+                <input type="submit" value="Delete Place">
+            </div>
+        </form>
+
+        <script>
+            async function deletePlace(event) {
+                event.preventDefault();
+
+                const placeId = document.getElementById('PlaceId').value;
+
+                try {
+                    const response = await fetch(`http://localhost:8000/deletePlace/${placeId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Place deleted successfully!');
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error deleting place: ${errorData.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to delete place.');
+                }
+            }
+        </script>
+    </div>
+</body>
+
+</html>
