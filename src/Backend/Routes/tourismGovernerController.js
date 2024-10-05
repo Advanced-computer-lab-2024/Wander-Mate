@@ -132,20 +132,15 @@ const createTags = async (req, res) => {
 };
 const viewAll0 = async (req, res) => {
   try {
-    // Fetch all preference tags from the database
-    const attractions = await Attraction.find();
+   
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    if (attractions.length === 0) {
-      return res.status(404).json({ message: "No attractions found." });
-    }
+
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No itinaries found." });
     }
 
     // Respond with the retrieved tags
-    res.status(200).json(attractions);
     res.status(200).json(itineraries);
   } catch (err) {
     console.error(err);
