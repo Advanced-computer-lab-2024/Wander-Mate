@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Attractions and Itineraries</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h2>View All Attractions and Itineraries</h2>
+        <button id="fetchDataButton">Fetch Attractions and Itineraries</button>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('fetchDataButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:8000/viewAll0');
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.message}`);
+                    return;
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to fetch attractions and itineraries.');
+            }
+        });
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            if (data.attractions.length === 0 && data.itineraries.length === 0) {
+                resultsDiv.innerHTML = '<p>No attractions or itineraries found.</p>';
+                return;
+            }
+
+            if (data.attractions.length > 0) {
+                resultsDiv.innerHTML += '<h3>Attractions</h3><ul>';
+                data.attractions.forEach(attraction => {
+                    resultsDiv.innerHTML += `<li>${attraction.Name}: ${attraction.Description}</li>`;
+                });
+                resultsDiv.innerHTML += '</ul>';
+            }
+
+            if (data.itineraries.length > 0) {
+                resultsDiv.innerHTML += '<h3>Itineraries</h3><ul>';
+                data.itineraries.forEach(itinerary => {
+                    resultsDiv.innerHTML += `<li>${itinerary.Name}: ${itinerary.Description}</li>`;
+                });
+                resultsDiv.innerHTML += '</ul>';
+            }
+        }
+    </script>
+</body>
+
+</html>

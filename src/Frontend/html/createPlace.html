@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Place</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
     <link rel="stylesheet" href="../styles/register.css">
 </head>
+
 <body>
     <div class="wrapper">
         <h2>Create a New Place</h2>
@@ -36,7 +39,7 @@
         <script>
             async function createPlace(event) {
                 event.preventDefault();
-                
+
                 const formData = new FormData(document.getElementById('createPlaceForm'));
 
                 try {
@@ -58,4 +61,5 @@
         </script>
     </div>
 </body>
+
 </html>
