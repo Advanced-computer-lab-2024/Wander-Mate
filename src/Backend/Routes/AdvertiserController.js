@@ -21,20 +21,22 @@ const createActivity = async (req, res) => {
     Discounts,
     IsAvailable,
   } = req.body;
+
   const Ratings = 0.0;
-  if (!Date) {
+
+  if (!DateString) {
     return res.status(400).json({ error: "Date is required" });
   }
+
   const dateObject = new Date(DateString);
-  //let EnterDate = new Date(DateString);
   if (!Name) {
     return res.status(400).json({ error: "Name is required" });
   }
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
   }
-  if (!Location) {
-    return res.status(400).json({ error: "Location is required" });
+  if (!Location || !Location.coordinates || Location.coordinates.length !== 2) {
+    return res.status(400).json({ error: "Valid Location is required" });
   }
   if (!Price) {
     return res.status(400).json({ error: "Price is required" });
@@ -45,28 +47,30 @@ const createActivity = async (req, res) => {
   if (!IsAvailable) {
     return res.status(400).json({ error: "Availability is required" });
   }
-  const objectId = new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
+
   try {
-    const activity = attractionModel.create({
-      Creator: Creator,
-      Name: Name,
+    const activity = await attractionModel.create({
+      Creator,
+      Name,
       Date: dateObject,
-      Time: Time,
-      Location: Location,
-      Price: Price,
-      Category: Category,
-      Tags: Tags,
-      Discounts: Discounts,
-      IsAvailable: IsAvailable,
-      Type: objectId,
-      Bookings: Bookings,
-      Ratings: Ratings,
+      Time,
+      Location,
+      Price,
+      Category,
+      Tags,
+      Discounts,
+      IsAvailable,
+      Type: new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a"),
+      Bookings,
+      Ratings,
     });
-    res.status(200).json((await activity).id);
-  } catch {
+    res.status(200).json(activity._id);
+  } catch (error) {
+    console.error("Error creating activity:", error); // Log the error
     res.status(400).json({ error: "Error creating activity" });
   }
 };
+
 
 const readActivity = async (req, res) => {
   const { id } = req.params;

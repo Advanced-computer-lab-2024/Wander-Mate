@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read All Activities | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Read All Activities</div>
+        <form id="readActivitiesForm" onsubmit="return submitForm(event)">
+            <div class="field">
+                <input type="submit" value="Read All Activities">
+            </div>
+        </form>
+
+        <!-- Placeholder for displaying fetched activities -->
+        <div id="activitiesList" class="activities-list"></div>
+    </div>
+
+    <script>
+      // Fetch all activities from the correct URL
+      const submitForm = async (event) => {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        const URL = `http://localhost:8000/readActivities`; // Correct URL based on your backend route
+
+        try {
+          const response = await fetch(URL, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: 'cors', // Add this to enable CORS
+            credentials: 'include' // Add this to include credentials (e.g., cookies)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Server returned an error:", errorData);
+            alert("Error: " + (errorData.message || "Unknown error"));
+            return;
+          }
+
+          const activitiesData = await response.json();
+          console.log("Response from server:", activitiesData);
+
+          displayActivities(activitiesData);
+        } catch (error) {
+          console.error("Error in fetch call:", error); // Log the detailed error to the console
+          alert("An error occurred. Please try again.");
+        }
+      };
+
+      // Function to display the activities data on the page
+      const displayActivities = (data) => {
+        const activitiesListDiv = document.getElementById("activitiesList");
+        activitiesListDiv.style.display = "block";
+        activitiesListDiv.innerHTML = `<h3>All Activities:</h3>`;
+
+        if (data.length === 0) {
+            activitiesListDiv.innerHTML += `<p>No activities found.</p>`;
+        } else {
+            data.forEach(activity => {
+                activitiesListDiv.innerHTML += `
+                    <div class="activity-item">
+                        <h3>${activity.Name || "N/A"}</h3>
+                        <p><strong>Date:</strong> ${new Date(activity.Date).toLocaleDateString()}</p>
+                        <p><strong>Time:</strong> ${activity.Time || "N/A"}</p>
+                        <p><strong>Location:</strong> ${activity.Location || "N/A"}</p>
+                        <p><strong>Price:</strong> ${activity.Price || "N/A"}</p>
+                        <p><strong>Category:</strong> ${activity.Category || "N/A"}</p>
+                        <p><strong>Ratings:</strong> ${activity.Ratings || 0}</p>
+                    </div>
+                    <hr>
+                `;
+            });
+        }
+      };
+    </script>
+</body>
+</html>
