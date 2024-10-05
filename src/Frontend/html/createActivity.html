@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Activity | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Create Activity</div>
+        <form id="createActivityForm">
+            <div class="field">
+                <input type="text" name="creator" id="creator" placeholder=" " required>
+                <label for="creator">Creator Name/ID</label>
+            </div>
+            <div class="field">
+                <input type="text" name="name" id="name" placeholder=" " required>
+                <label for="name">Activity Name</label>
+            </div>
+            <div class="field">
+                <input type="date" name="date" id="date" placeholder=" " required>
+                <label for="date">Date</label>
+            </div>
+            <div class="field">
+                <input type="time" name="time" id="time" placeholder=" " required>
+                <label for="time">Time</label>
+            </div>
+            <div class="field">
+                <input type="text" name="location" id="location" placeholder="Enter coordinates (e.g., -74.0445, 40.6892)" required>
+                <label for="location">Location (Coordinates)</label>
+            </div>
+            <div class="field">
+                <input type="number" name="price" id="price" placeholder=" " required min="0" step="0.1">
+                <label for="price">Price</label>
+            </div>
+            <div class="field">
+                <select name="category" id="category" required>
+                    <option value="Select Category">Select Category</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Food and Drink">Food and Drink</option>
+                    <option value="History and Culture">History and Culture</option>
+                    <option value="Nature and Wildlife">Nature and Wildlife</option>
+                    <option value="Sports and Fitness">Sports and Fitness</option>
+                </select>
+                <label for="category">Category</label>
+            </div>
+            <div class="field">
+                <input type="text" name="tags" id="tags" placeholder="Enter tags as ObjectIds, comma-separated" required>
+                <label for="tags">Tags (Comma-separated ObjectIds)</label>
+            </div>
+            <div class="field">
+                <input type="text" name="discounts" id="discounts" placeholder="Enter discounts, comma-separated">
+                <label for="discounts">Discounts</label>
+            </div>
+            <div class="field">
+                <label for="isAvailable">Is Available?</label>
+                <input type="checkbox" name="isAvailable" id="isAvailable" checked>
+            </div>
+            <div class="field">
+                <input type="submit" value="Create Activity">
+            </div>
+        </form>
+
+        <div id="successMessage" style="color: green; display: none;"></div>
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        // Form submission logic
+        const form = document.getElementById('createActivityForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const creator = document.getElementById('creator').value;
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value; // Date input (YYYY-MM-DD format)
+            const time = document.getElementById('time').value; // Time input (HH:MM format)
+            const location = document.getElementById('location').value; // This is the coordinates as text
+            const price = document.getElementById('price').value;
+            const category = document.getElementById('category').value;
+            const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim()); // Convert comma-separated tags to array
+            const discounts = document.getElementById('discounts').value ? document.getElementById('discounts').value.split(',').map(discount => discount.trim()) : []; // Convert discounts to array
+            const isAvailable = document.getElementById('isAvailable').checked; // Get the checkbox value
+
+            // Split the location into latitude and longitude
+            const [lat, lng] = location.split(", ").map(coord => parseFloat(coord.trim()));
+
+            try {
+                const response = await fetch('http://localhost:8000/createActivity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Creator: creator,
+                        Name: name,
+                        DateString: date, // Date is passed as a string
+                        Time: time, // Time is passed as a string
+                        Location: {
+                            type: "Point",
+                            coordinates: [lng, lat] // Longitude, Latitude for GeoJSON
+                        },
+                        Price: price,
+                        Category: category,
+                        Tags: tags, // Array of ObjectIds
+                        Discounts: discounts, // Array of discounts
+                        IsAvailable: isAvailable
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    document.getElementById('errorMessage').innerText = errorData.error;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                } else {
+                    const activityId = await response.json();
+                    document.getElementById('successMessage').innerText = `Activity created successfully with ID: ${activityId}`;
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').innerText = "An error occurred while creating the activity.";
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
