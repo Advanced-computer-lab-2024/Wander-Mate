@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Itinerary</title>
+    <link rel="stylesheet" href="../styles/register.css"> <!-- Link to your external CSS file -->
+</head>
+<body>
+    <div class="wrapper">
+        <h1 class="title">View Itinerary</h1>
+        <form id="itineraryForm">
+            <div class="field">
+                <label for="itineraryId">Enter Itinerary ID:</label>
+                <input type="text" id="itineraryId" name="itineraryId" required>
+            </div>
+            <input type="submit" value="Get Itinerary">
+        </form>
+
+        <div id="itineraryInfo" class="itinerary-info" style="display:none;">
+            <h2>Itinerary Details</h2>
+            <p><strong>Itinerary ID:</strong> <span id="displayId"></span></p>
+            <p><strong>Name:</strong> <span id="displayName"></span></p>
+            <p><strong>Activities:</strong> <span id="displayActivities"></span></p>
+            <p><strong>Locations to Visit:</strong> <span id="displayLocations"></span></p>
+            <p><strong>Timeline:</strong> <span id="displayTimeline"></span></p>
+            <p><strong>Language:</strong> <span id="displayLanguage"></span></p>
+            <p><strong>Price:</strong> <span id="displayPrice"></span></p>
+            <p><strong>Available Dates:</strong> <span id="displayDates"></span></p>
+            <p><strong>Pick-Up Location:</strong> <span id="displayPickUpLocation"></span></p>
+            <p><strong>Drop-Off Location:</strong> <span id="displayDropOffLocation"></span></p>
+        </div>
+
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('itineraryForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const itineraryId = document.getElementById('itineraryId').value;
+
+            try {
+                const response = await fetch(`http://localhost:8000/readItinerary/${encodeURIComponent(itineraryId)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    document.getElementById('errorMessage').innerText = errorData.error;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('itineraryInfo').style.display = 'none';
+                } else {
+                    const itineraryData = await response.json();
+                    
+                    // Update itinerary details with fetched data
+                    document.getElementById('displayId').innerText = itineraryData._id;
+                    document.getElementById('displayName').innerText = itineraryData.Name || 'N/A';
+                    document.getElementById('displayActivities').innerText = itineraryData.Activities.join(", ") || 'N/A';
+                    document.getElementById('displayLocations').innerText = itineraryData.LocationsToVisit.join(", ") || 'N/A';
+                    document.getElementById('displayTimeline').innerText = itineraryData.TimeLine || 'N/A';
+                    document.getElementById('displayLanguage').innerText = itineraryData.Language || 'N/A';
+                    document.getElementById('displayPrice').innerText = itineraryData.Price || 'N/A';
+                    
+                    // Format available dates
+                    const formattedDates = itineraryData.AvailableDates.map(date => new Date(date).toLocaleDateString());
+                    document.getElementById('displayDates').innerText = formattedDates.join(", ") || 'N/A';
+
+                    // Display pickup location
+                    const pickUpCoords = itineraryData.PickUpLocation.coordinates.join(", ");
+                    document.getElementById('displayPickUpLocation').innerText = `Type: ${itineraryData.PickUpLocation.type}, Coordinates: ${pickUpCoords}`;
+
+                    // Display dropoff location
+                    const dropOffCoords = itineraryData.DropOffLocation.coordinates.join(", ");
+                    document.getElementById('displayDropOffLocation').innerText = `Type: ${itineraryData.DropOffLocation.type}, Coordinates: ${dropOffCoords}`;
+
+                    document.getElementById('itineraryInfo').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').innerText = "An error occurred while fetching the itinerary.";
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
