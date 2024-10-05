@@ -24,8 +24,9 @@
         document.getElementById('registerForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const categoryName = document.getElementById('username').value;
+            
             try {
-                const response = await fetch('/create-category', {
+                const response = await fetch("http://localhost:8000/createCategory", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
