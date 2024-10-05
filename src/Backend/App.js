@@ -187,7 +187,7 @@ app.post("/createTags", createTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);
-app.get("/readProfileInformation", readProfileInformation);
+app.get("/readProfileInformation/:Username", readProfileInformation);
 app.put("/updateProfileInformation", updateProfileInformation);
 app.put("/updateItinerary", updateItinerary);
 app.delete("/deleteItinerary", deleteItinerary);

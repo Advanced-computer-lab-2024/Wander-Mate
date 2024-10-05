@@ -247,7 +247,7 @@ const createProfileInformation = async (req, res) => {
 
 const readProfileInformation = async (req, res) => {
   try {
-    const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
+    const  Username  = req.params.Username; // Using `req.body` to get the Username, similar to `readSeller`
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
