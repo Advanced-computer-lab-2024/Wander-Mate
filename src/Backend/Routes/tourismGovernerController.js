@@ -9,7 +9,7 @@ const Itinerary = require("../Models/itinerary.js");
 //Read
 const getPlaces = async (req, res) => {
   try {
-    const objectId = mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
     const places = await attractionModel.find({ Type: objectId });
     res.status(200).json(places);
   } catch (error) {
@@ -27,6 +27,31 @@ const getPlace = async (req, res) => {
     res.status(200).json(place);
   } catch {
     res.status(400).json({ error: "Error reading place" });
+  }
+};
+
+const getPlaceImage = async (req, res) => {
+  try {
+    const { placeId } = req.params; // Get the place ID from the request parameters
+
+    // Find the place by ID
+    const place = await attractionModel.findById(placeId);
+
+    // Check if place exists and has pictures
+    if (!place || !place.Pictures || place.Pictures.length === 0) {
+      return res.status(400).json({ error: "Place or images not found." });
+    }
+
+    // Send all images in an array
+    const images = place.Pictures.map((picture) => ({
+      contentType: picture.contentType,
+      data: picture.data.toString("base64"), // Convert Buffer to base64 string
+    }));
+
+    res.status(200).json(images); // Send the images as JSON
+  } catch (err) {
+    console.error("Error retrieving images:", err);
+    res.status(400).json({ error: "Failed to retrieve images." });
   }
 };
 
@@ -166,4 +191,5 @@ module.exports = {
   getPlace,
   createHistoricalTags,
   viewAll0,
+  getPlaceImage,
 };

@@ -91,6 +91,7 @@ const {
   getPlace,
   createHistoricalTags,
   viewAll0,
+  getPlaceImage,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -127,6 +128,7 @@ app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
 app.delete("/deleteplace/:Id", deletePlace);
+app.get("/getPlaceImage/:placeId", getPlaceImage);
 app.get("/viewAll0", viewAll0);
 app.get("/viewAll1", viewAll1);
 app.get("/viewAll2", viewAll2);
