@@ -193,14 +193,14 @@ const deleteAccount = async (req, res) => {
     }
 
     if (!accountDeleted) {
-      return res.status(404).json({ message: "User not found in any system" });
+      return res.status(400).json({ message: "User not found in any system" });
     }
 
     res.status(200).json({ message: "User account deleted successfully" });
   } catch (err) {
     console.error(err);
     res
-      .status(500)
+      .status(400)
       .json({ message: "An error occurred while deleting the account" });
   }
 };

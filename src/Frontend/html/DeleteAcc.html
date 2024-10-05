@@ -1,48 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Delete Account | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
-</head>
-<body>
-    <div class="wrapper">
-        <div class="title">
-            Delete Account
-        </div>
-        <form id="Delete" action="admin.html" method="get" onsubmit="return deleteAccount(event);">
-            <div class="field">
-                <input type="text" id="DeleteUsername" name="Delete User" required>
-                <label for="DeleteUsername">Username</label>
-            </div>
-            
-            <div class="field">
-                <input type="submit" value="Delete">
-            </div>
-        </form>
-    </div>
-
+    <link rel="stylesheet" href="../styles/register.css" />
     <script>
-        async function fetchSeller() {
-            const username = document.getElementById('sellerUsername').value;
+      const deleteAccount = async (event) => {
+        event.preventDefault(); // Prevent the default form submission
 
-            try {
-                const response = await fetch(`http://localhost:8000/readSeller?username=${username}`);
+        const username = document.getElementById("DeleteUsername").value;
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
+        try {
+          const response = await fetch("http://localhost:8000/deleteAccount", {
+            // Update the endpoint accordingly
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ Username: username }),
+          });
 
-                const seller = await response.json();
-                if (seller.length > 0) {
-                    const { FullName, Description } = seller[0]; // Assuming seller is an array
-                    document.getElementById('sellerFullName').value = FullName;
-                    document.getElementById('sellerDescription').value = Description;
-                } else {
-                    alert("Seller not found.");
-                }
-            } catch (error) {
-                console.error("Error fetching seller:", error);
-                alert("Could not load seller. Please try again later.");
-            }
+          const data = await response.json();
+
+          if (response.ok) {
+            alert(data.message); // Show success message
+            // Optionally redirect to admin page or perform additional actions
+            window.location.href = "admin.html"; // Redirect after deletion
+          } else {
+            alert(data.message); // Show error message
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while deleting the account.");
         }
+      };
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Delete Account</div>
+      <form id="Delete" method="post" onsubmit="return deleteAccount(event);">
+        <div class="field">
+          <input
+            type="text"
+            id="DeleteUsername"
+            name="DeleteUsername"
+            required
+          />
+          <label for="DeleteUsername">Username</label>
+        </div>
+
+        <div class="field">
+          <input type="submit" value="Delete" />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

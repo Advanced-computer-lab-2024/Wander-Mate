@@ -119,7 +119,7 @@ const deletePlace = async (req, res) => {
   }
 };
 
-const createTags = async (req, res) => {
+const createHistoricalTags = async (req, res) => {
   try {
     const { Name } = req.body;
 
@@ -145,7 +145,9 @@ const viewAll0 = async (req, res) => {
 
     // Check if there are any attractions or itineraries
     if (attractions.length === 0 && itineraries.length === 0) {
-      return res.status(404).json({ message: "No attractions or itineraries found." });
+      return res
+        .status(404)
+        .json({ message: "No attractions or itineraries found." });
     }
 
     // Respond with the retrieved data
@@ -162,6 +164,6 @@ module.exports = {
   updatePlace,
   deletePlace,
   getPlace,
-  createTags,
+  createHistoricalTags,
   viewAll0,
 };
