@@ -195,6 +195,7 @@ const deleteAccount = async (req, res) => {
     if (!accountDeleted) {
       return res.status(400).json({ message: "User not found in any system" });
     }
+    await userModel.deleteOne({ Username });
 
     res.status(200).json({ message: "User account deleted successfully" });
   } catch (err) {
