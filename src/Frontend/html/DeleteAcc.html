@@ -1,62 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Delete Account | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
-</head>
-<body>
-    <div class="wrapper">
-        <div class="title">
-            Delete Account
-        </div>
-        <form id="Delete" action="admin.html" method="get" onsubmit="return deleteAccount(event);">
-            <div class="field">
-                <input type="text" id="DeleteUsername" name="Delete User" required>
-                <label for="DeleteUsername">Username</label>
-            </div>
-            
-            <div class="field">
-                <input type="submit" value="Delete">
-            </div>
-        </form>
-    </div>
-
+    <link rel="stylesheet" href="../styles/register.css" />
     <script>
-        // Function to handle account deletion
-        async function deleteAccount(event) {
-            event.preventDefault(); // Prevent the form from submitting traditionally
+      const deleteAccount = async (event) => {
+        event.preventDefault(); // Prevent the default form submission
 
-            const username = document.getElementById('DeleteUsername').value; // Get the username from the form
+        const username = document.getElementById("DeleteUsername").value;
 
-            if (!username) {
-                alert("Please enter a username.");
-                return;
-            }
+        try {
+          const response = await fetch("http://localhost:8000/deleteAccount", {
+            // Update the endpoint accordingly
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ Username: username }),
+          });
 
-            try {
-                // Make DELETE request to the backend to delete the account
-                const response = await fetch(`http://localhost:8000/deleteSeller?username=${username}`, {
-                    method: 'DELETE'
-                });
+          const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert(`Account for ${username} has been deleted.`);
-                    window.location.href = 'admin.html'; // Redirect to admin page after deletion
-                } else {
-                    alert("Account deletion failed. Please try again.");
-                }
-            } catch (error) {
-                console.error("Error deleting account:", error);
-                alert("An error occurred while trying to delete the account.");
-            }
+          if (response.ok) {
+            alert(data.message); // Show success message
+            // Optionally redirect to admin page or perform additional actions
+            window.location.href = "admin.html"; // Redirect after deletion
+          } else {
+            alert(data.message); // Show error message
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while deleting the account.");
         }
+      };
     </script>
-</body>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Delete Account</div>
+      <form id="Delete" method="post" onsubmit="return deleteAccount(event);">
+        <div class="field">
+          <input
+            type="text"
+            id="DeleteUsername"
+            name="DeleteUsername"
+            required
+          />
+          <label for="DeleteUsername">Username</label>
+        </div>
+
+        <div class="field">
+          <input type="submit" value="Delete" />
+        </div>
+      </form>
+    </div>
+  </body>
 </html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Update Profile | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Update My Profile</div>
+      <form
+        id="updateForm"
+        action="tourist.html"
+        method="get"
+        onsubmit="return updateTourist(event);"
+      >
+        <!-- <div class="field">
+                <input type="text" id="sellerUsername" name="sellerName" required>
+                <label for="sellerUsername">Username</label>
+            </div> -->
+        <div class="field">
+          <input type="text" id="touristUserName" name="Username" required />
+          <label for="touristUserName">Username</label>
+        </div>
+        <div class="field">
+          <input type="text" id="touristFullName" name="fullName" required />
+          <label for="touristFullName">Full Name</label>
+        </div>
+        <div class="field">
+          <input type="text" id="touristEmail" name="touristEmail" required />
+          <label for="touristEmail">Email</label>
+        </div>
+        <div class="field">
+          <input type="text" id="MobileNumber" name="MobileNumber" required />
+          <label for="MobileNumber">Phone number</label>
+        </div>
+        <div class="field">
+          <input type="date" id="touristDOB" name="DOB" readonly />
+          <label for="touristDOB">Date of Birth</label>
+        </div>
+        <div class="field">
+          <select id="nationality">
+            <option value="" disabled selected></option>
+          </select>
+          <label>Nationality</label>
+        </div>
+        <div class="field">
+          <input type="text" id="Role" name="Role" required />
+          <label for="Role">Job</label>
+        </div>
+        <div class="field">
+          <input type="text" id="walletBalance" name="wallet" readonly />
+          <label for="walletBalance">Wallet Balance</label>
+        </div>
+
+        <div class="field">
+          <input type="submit" value="Update" />
+        </div>
+      </form>
+    </div>
+
+    <script>
+      window.onload = function () {
+        const username = sessionStorage.getItem("username"); // Get the username from sessionStorage
+        if (!username) {
+          alert("User not logged in. Please log in first.");
+          return;
+        }
+
+        if (username) {
+          //fetchTouristDetails(username);
+          loadNationalities(username);
+        } else {
+          console.error("Tourist ID not found in session storage.");
+          alert("Tourist ID not found. Please log in or register.");
+          // Optionally, redirect to login page
+          // window.location.href = '/login.html';
+        }
+      };
+
+      // Fetch tourist details from API
+      async function fetchTouristDetails(username) {
+        try {
+          // Call the backend to get the user ID based on the username
+          const idResponse = await fetch(
+            `http://localhost:8000/getID/${username}`
+          ); // Assuming your getID route is set up this way
+          if (!idResponse.ok) {
+            throw new Error("Failed to get user ID");
+          }
+
+          const { userID } = await idResponse.json();
+
+          const response = await fetch(
+            `http://localhost:8000/handleTourist/${userID}`
+          );
+          const tourist = await response.json();
+          const isoDOB = tourist.DOB; // Fetching DOB
+          const formattedDOB = isoDOB.split("T")[0]; // Extract 'YYYY-MM-DD'
+
+          // Fill in the form fields with the tourist data
+          document.getElementById("touristUserName").value = tourist.Username;
+          document.getElementById("touristFullName").value = tourist.FullName;
+          document.getElementById("touristEmail").value = tourist.Email;
+          document.getElementById("MobileNumber").value = tourist.MobileNumber;
+          document.getElementById("Role").value = tourist.Role;
+          document.getElementById("touristDOB").value = formattedDOB; // Assuming DOB is in the correct format
+          document.getElementById("walletBalance").value = tourist.Wallet; // Assuming Wallet is the balance field
+
+          // Set the nationality after loading the dropdown options
+          const nationalityDropdown = document.getElementById("nationality");
+          nationalityDropdown.value = tourist.Nationality; // Assuming Nationality contains the ID
+        } catch (error) {
+          console.error("Error fetching tourist details:", error);
+        }
+      }
+
+      // Fetch nationalities from API and populate the dropdown
+      async function loadNationalities(username) {
+        try {
+          // Call the backend to get the user ID based on the username
+          const idResponse = await fetch(
+            `http://localhost:8000/getID/${username}`
+          ); // Assuming your getID route is set up this way
+          if (!idResponse.ok) {
+            throw new Error("Failed to get user ID");
+          }
+
+          const { userID } = await idResponse.json();
+
+          const response = await fetch("http://localhost:8000/getNations");
+          const nationalities = await response.json();
+
+          const nationalityDropdown = document.getElementById("nationality");
+          nationalities.forEach((nation) => {
+            const option = document.createElement("option");
+            option.value = nation._id; // Assuming each nation has an _id field
+            option.textContent = nation.country_name; // Assuming each nation has a name field
+            nationalityDropdown.appendChild(option);
+          });
+
+          // After loading nationalities, select the one that matches the tourist’s nationality
+          fetchTouristDetails(username);
+        } catch (error) {
+          console.error("Error loading nationalities:", error);
+        }
+      }
+
+      // Function to handle form submission
+      async function updateTourist(event) {
+        event.preventDefault(); // Prevent form from submitting the default way
+        const username = sessionStorage.getItem("username"); // Get the username from sessionStorage
+
+        const idResponse = await fetch(
+          `http://localhost:8000/getID/${username}`
+        ); // Assuming your getID route is set up this way
+        if (!idResponse.ok) {
+          throw new Error("Failed to get user ID");
+        }
+
+        const { userID } = await idResponse.json();
+        if (!userID) {
+          alert("Tourist ID not found. Please log in.");
+          return;
+        }
+
+        const updatedProfile = {
+          FullName: document.getElementById("touristFullName").value,
+          Email: document.getElementById("touristEmail").value,
+          MobileNumber: document.getElementById("MobileNumber").value,
+          Nationality: document.getElementById("nationality").value,
+          Role: document.getElementById("Role").value,
+        };
+
+        fetch(`http://localhost:8000/handleTourist/${userID}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProfile),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message === "Tourist updated successfully") {
+              alert("Profile updated successfully.");
+              // Optionally reload or redirect to a different page
+            } else {
+              alert(`Error updating profile: ${data.message}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating profile:", error);
+            alert(
+              "There was an error updating your profile. Please try again."
+            );
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", loadNationalities);
+    </script>
+  </body>
+</html>

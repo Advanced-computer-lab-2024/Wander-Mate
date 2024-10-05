@@ -9,13 +9,28 @@ const Usernames = require("../Models/users.js");
 // Registration function
 const touristRegister = async (req, res) => {
   try {
-    const { Email, Username, Password, MobileNumber, Nationality, DOB, Role } =
-      req.body;
+    const {
+      Email,
+      FullName,
+      Username,
+      Password,
+      MobileNumber,
+      Nationality,
+      DOB,
+      Role,
+    } = req.body;
 
     const Wallet = 0.0;
 
     // 1. Validate the request data (check required fields)
-    if (!Email || !Username || !Password || !MobileNumber || !Role) {
+    if (
+      !Email ||
+      !FullName ||
+      !Username ||
+      !Password ||
+      !MobileNumber ||
+      !Role
+    ) {
       return res
         .status(400)
         .json({ message: "Please provide all required fields." });
@@ -44,6 +59,7 @@ const touristRegister = async (req, res) => {
     // 4. Create new user
     const newUser = await userModel.create({
       Email,
+      FullName,
       Username,
       Password: hashedPassword, // Store the hashed password
       MobileNumber,
@@ -84,6 +100,7 @@ const handleTourist = async (req, res) => {
       const {
         Username,
         DOB,
+        FullName,
         Email,
         Password,
         MobileNumber,
@@ -117,6 +134,7 @@ const handleTourist = async (req, res) => {
       if (MobileNumber) tourist.MobileNumber = MobileNumber;
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
+      if(FullName) tourist.FullName = FullName;
 
       // Save the updated tourist
       const updatedTourist = await tourist.save();

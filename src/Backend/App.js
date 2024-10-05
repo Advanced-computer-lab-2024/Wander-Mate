@@ -32,7 +32,7 @@ const {
   SellersearchProductByName,
   sortProductsByRatingsseller,
   addProductseller,
-  UpdateProductseller
+  UpdateProductseller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -89,8 +89,9 @@ const {
   updatePlace,
   getPlaces,
   getPlace,
-  createTags,
+  createHistoricalTags,
   viewAll0,
+  getPlaceImage,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -126,7 +127,8 @@ app.post("/createPlace", uploadMult, createPlace);
 app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
 app.put("/updatePlace", updatePlace);
-app.delete("/deleteplace/:id", deletePlace);
+app.delete("/deleteplace/:Id", deletePlace);
+app.get("/getPlaceImage/:placeId", getPlaceImage);
 app.get("/viewAll0", viewAll0);
 app.get("/viewAll1", viewAll1);
 app.get("/viewAll2", viewAll2);
@@ -147,12 +149,12 @@ app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
-app.patch("/UpdateProductseller/:id",UpdateProductseller);
+app.patch("/UpdateProductseller/:id", UpdateProductseller);
 app.get("/readItinerary/:id", readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
-app.post("/createTags", createPreferenceTags);
+app.post("/createPreferenceTags", createPreferenceTags);
 app.get("/readCategory", readCategory);
 app.put("/updateTags", updatePreferenceTags);
 app.delete("/deleteTags", deletePreferenceTags);
@@ -175,7 +177,7 @@ app.get("/sortProductsByRatings", sortProductsByRatings);
 app.get("/sortProductsByRatingsseller", sortProductsByRatingsseller);
 app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
-app.post("/addProductseller",upload.single("picture"),addProductseller);
+app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
 app.get("/AdminsearchProductByName", AdminsearchProductByName);
@@ -184,7 +186,7 @@ app.post("/filterProductsByPrice", filterProductsByPrice);
 
 app.get("/viewTouristProducts", viewTouristProducts);
 //////////////////////////////////////////
-app.post("/createTags", createTags);
+app.post("/createHistoricalTags", createHistoricalTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);

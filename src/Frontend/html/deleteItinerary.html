@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/register.css"> <!-- Ensure this path is correct -->
+    <title>Delete Itinerary</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Delete Itinerary</div>
+        <form id="deleteItineraryForm">
+            <div class="field">
+                <label for="itineraryId">Itinerary ID:</label>
+                <input type="text" id="itineraryId" required>
+            </div>
+            <div class="field">
+                <label for="creator">Your Name (Creator):</label>
+                <input type="text" id="creator" required>
+            </div>
+            <div class="field">
+                <input type="submit" value="Delete Itinerary">
+            </div>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('deleteItineraryForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const id = document.getElementById('itineraryId').value;
+            const Creator = document.getElementById('creator').value; // Use 'Creator' as the key
+
+            try {
+                const response = await fetch('http://localhost:8000/deleteItinerary', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, Creator }), // Ensure the keys match your backend
+                });
+
+                if (!response.ok) {
+                    // Handle non-200 response
+                    const errorResult = await response.json();
+                    throw new Error(errorResult.message || "Something went wrong");
+                }
+
+                const result = await response.json();
+                document.getElementById('responseMessage').innerText = result.message;
+
+            } catch (error) {
+                document.getElementById('responseMessage').innerText = 'Error deleting itinerary: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attractions and Itineraries</title>
+    
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="../styles/register.css">
+
+    <script>
+        async function fetchAttractionsAndItineraries() {
+            try {
+                const response = await fetch('http://localhost:8000/viewAll1'); // Adjust the URL as needed
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Clear any previous messages
+                    document.getElementById('message').textContent = '';
+                    
+                    // Display attractions
+                    const attractionsContainer = document.getElementById('attractions');
+                    attractionsContainer.innerHTML = '<h2>Attractions</h2>';
+                    data.attractions.forEach(attraction => {
+                        attractionsContainer.innerHTML += `<div class="attraction">
+                            <h3>${attraction.Name}</h3>
+                            <p><strong>Creator:</strong> ${attraction.Creator}</p>
+                            <p><strong>Location:</strong> ${attraction.Location.coordinates.join(', ')}</p>
+                        </div>`;
+                    });
+
+                    // Display itineraries
+                    const itinerariesContainer = document.getElementById('itineraries');
+                    itinerariesContainer.innerHTML = '<h2>Itineraries</h2>';
+                    data.itineraries.forEach(itinerary => {
+                        itinerariesContainer.innerHTML += `<div class="itinerary">
+                            <h3>${itinerary.Name}</h3>
+                            <p><strong>Price:</strong> $${itinerary.Price}</p>
+                            <p><strong>Language:</strong> ${itinerary.Language}</p>
+                            <p><strong>Available Dates:</strong> ${itinerary.AvailableDates.join(', ')}</p>
+                            <p><strong>Pickup Location:</strong> ${itinerary.PickUpLocation.coordinates.join(', ')}</p>
+                            <p><strong>Drop-off Location:</strong> ${itinerary.DropOffLocation.coordinates.join(', ')}</p>
+                        </div>`;
+                    });
+                } else {
+                    document.getElementById('message').textContent = data.message;
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('message').textContent = 'An error occurred while fetching data.';
+            }
+        }
+
+        // Fetch the data when the page loads
+        window.onload = fetchAttractionsAndItineraries;
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Attractions and Itineraries</h1>
+            <div id="message" class="error"></div>
+            <div id="attractions"></div>
+            <div id="itineraries"></div>
+        </div>
+    </div>
+</body>
+</html>
