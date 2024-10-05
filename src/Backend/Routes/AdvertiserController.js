@@ -273,19 +273,18 @@ const updateAdvertiserInfo = async (req, res) => {
   }
 };
 const viewAll2 = async (req, res) => {
-  try {
-    // Fetch all preference tags from the database
+   try {
+    // Fetch all attractions and itineraries from the database
+    const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    
-    if (itineraries.length === 0) {
-      return res.status(404).json({ message: "No itinaries found." });
+    // Check if there are any attractions or itineraries
+    if (attractions.length === 0 && itineraries.length === 0) {
+      return res.status(404).json({ message: "No attractions or itineraries found." });
     }
 
-    // Respond with the retrieved tags
-
-    res.status(200).json(itineraries);
+    // Respond with the retrieved data
+    res.status(200).json({ attractions, itineraries });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
