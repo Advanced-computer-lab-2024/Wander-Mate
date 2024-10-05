@@ -1,77 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View All Places</title>
     <link rel="stylesheet" href="../styles/register.css" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="wrapper">
-      <h2>View All Places</h2>
-      <button onclick="getPlaces()">View All Places</button>
-      <div id="placesContainer"></div>
+        <h2>View All Places</h2>
+        <button onclick="getPlaces()">View All Places</button>
+        <div id="placesContainer"></div>
 
-      <script>
-        async function getPlaces() {
-          try {
-            const response = await fetch("http://localhost:8000/getPlaces", {
-              method: "GET",
-            });
+        <script>
+            async function getPlaces() {
+                try {
+                    const response = await fetch("http://localhost:8000/getPlaces", {
+                        method: "GET",
+                    });
 
-            if (response.ok) {
-              const places = await response.json();
-              const placesContainer =
-                document.getElementById("placesContainer");
-              placesContainer.innerHTML = "";
+                    if (response.ok) {
+                        const places = await response.json();
+                        const placesContainer = document.getElementById("placesContainer");
+                        placesContainer.innerHTML = "";
 
-              if (places.length === 0) {
-                placesContainer.innerHTML = "<p>No places found.</p>";
-                return;
-              }
+                        if (places.length === 0) {
+                            placesContainer.innerHTML = "<p>No places found.</p>";
+                            return;
+                        }
 
-              places.forEach(async (place) => {
-                const placeElement = document.createElement("div");
-                placeElement.innerHTML = `
-                    <h3>${place.Creator}</h3>
-                    <p><strong>Description:</strong> ${place.Description}</p>
-                    <p><strong>Location:</strong> ${place.Location}</p>
-                    <p><strong>Opening Hours:</strong> ${place.OpeningHours}</p>
-                    <p><strong>Ticket Prices:</strong> ${place.TicketPrices}</p>
-                `;
+                        places.forEach(async (place) => {
+                            const placeElement = document.createElement("div");
+                            placeElement.innerHTML = `
+                                <h3>${place.Creator}</h3>
+                                <p><strong>Description:</strong> ${place.Description}</p>
+                                <p><strong>Location:</strong> ${place.Location}</p>
+                                <p><strong>Opening Hours:</strong> ${place.OpeningHours}</p>
+                                <p><strong>Ticket Prices:</strong> ${place.TicketPrices}</p>
+                                <button onclick="location.href='updatePlace.html?id=${place._id}'">Update</button>
+                                <button onclick="location.href='deletePlace.html?id=${place._id}'">Delete</button>
+                            `;
 
-                // Fetch and display all images for this place
-                const imageResponse = await fetch(
-                  `http://localhost:8000/getPlaceImage/${place._id}`
-                );
-                if (imageResponse.ok) {
-                  const images = await imageResponse.json();
-                  const imageContainer = document.createElement("div");
+                            // Fetch and display all images for this place
+                            const imageResponse = await fetch(
+                                `http://localhost:8000/getPlaceImage/${place._id}`
+                            );
+                            if (imageResponse.ok) {
+                                const images = await imageResponse.json();
+                                const imageContainer = document.createElement("div");
 
-                  images.forEach((image) => {
-                    const imgElement = document.createElement("img");
-                    imgElement.src = `data:${image.contentType};base64,${image.data}`; // Create a data URL
-                    imgElement.alt = `${place.Creator}'s image`;
-                    imgElement.style = "max-width: 100%; height: auto;";
-                    imageContainer.appendChild(imgElement);
-                  });
+                                images.forEach((image) => {
+                                    const imgElement = document.createElement("img");
+                                    imgElement.src = `data:${image.contentType};base64,${image.data}`; // Create a data URL
+                                    imgElement.alt = `${place.Creator}'s image`;
+                                    imgElement.style = "max-width: 100%; height: auto;";
+                                    imageContainer.appendChild(imgElement);
+                                });
 
-                  placeElement.appendChild(imageContainer); // Append images to the place element
-                } else {
-                  console.error("Error fetching images for place:", place._id);
+                                placeElement.appendChild(imageContainer); // Append images to the place element
+                            } else {
+                                console.error("Error fetching images for place:", place._id);
+                            }
+
+                            placesContainer.appendChild(placeElement); // Append place details to the container
+                        });
+                    } else {
+                        alert("Error fetching places.");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Failed to fetch places.");
                 }
-
-                placesContainer.appendChild(placeElement); // Append place details to the container
-              });
-            } else {
-              alert("Error fetching places.");
             }
-          } catch (error) {
-            console.error("Error:", error);
-            alert("Failed to fetch places.");
-          }
-        }
-      </script>
+        </script>
     </div>
-  </body>
+</body>
+
 </html>

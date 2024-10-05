@@ -12,7 +12,7 @@
 <body>
     <div class="wrapper">
         <h2>Create a New Tag</h2>
-        <form id="createTagsForm" onsubmit="return createTags(event);">
+        <form id="createHistoricalTagsForm" onsubmit="return createHistoricalTags(event);">
             <div class="field">
                 <input type="text" id="TagName" name="TagName" placeholder="Enter Tag Name" required>
             </div>
@@ -22,13 +22,13 @@
         </form>
 
         <script>
-            async function createTags(event) {
+            async function createHistoricalTags(event) {
                 event.preventDefault();
 
                 const tagName = document.getElementById('TagName').value;
 
                 try {
-                    const response = await fetch('http://localhost:8000/createTags', {
+                    const response = await fetch('http://localhost:8000/createHistoricalTags', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
