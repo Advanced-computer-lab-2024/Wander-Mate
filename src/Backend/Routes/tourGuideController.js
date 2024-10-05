@@ -3,7 +3,6 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
-const { searchAttractions } = require("./touristController.js");
 const Attraction = require("../Models/attractions.js");
 
 // Creating a tourGuide
@@ -36,7 +35,9 @@ const createTourGuide = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
     });
-    await userModel.create({ Username: Username });
+
+    const userID = tourGuide._id;
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(tourGuide);
   } catch (err) {
@@ -47,8 +48,10 @@ const createTourGuide = async (req, res) => {
 
 const createItinerary = async (req, res) => {
   try {
+    const Bookings = [];
     const {
       Creator,
+      Name,
       Activities,
       LocationsToVisit,
       TimeLine,
@@ -58,22 +61,25 @@ const createItinerary = async (req, res) => {
       PickUpLocation,
       DropOffLocation,
     } = req.body;
-
     const Ratings = 0.0;
     // Validate required fields
     if (
       !Activities ||
       !LocationsToVisit ||
+      !TimeLine ||
       !Language ||
       !Price ||
       !AvailableDates ||
       !PickUpLocation ||
-      !DropOffLocation
+      !DropOffLocation ||
+      !Name
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const newItinerary = new Itinerary({
+      Bookings,
+      Name,
       Creator,
       Activities,
       LocationsToVisit,
@@ -101,16 +107,26 @@ const createItinerary = async (req, res) => {
 
 const deleteItinerary = async (req, res) => {
   try {
-    const { id } = req.params;
-    const itinerary = await Itinerary.findByIdAndDelete(id);
-
+    const { id, Creator } = req.body; // Destructure id and Creator from the request body
+    let itinerary = await Itinerary.findById(id);
     if (!itinerary) {
-      return res.status(400).json({ message: "Itinerary not found" });
-    } else {
-      res.status(200).json({ message: "Itinerary deleted" });
+      return res.status(404).json({ message: "Itinerary not found" });
     }
+    if (itinerary.Creator !== Creator) {
+      return res.status(403).json({ message: "You are not the creator." });
+    }
+    if (itinerary.Bookings && itinerary.Bookings.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete itinerary with existing bookings." });
+    }
+    await Itinerary.findByIdAndDelete(id);
+    res.status(200).json({ message: "Itinerary deleted successfully." });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error deleting itinerary:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error deleting itinerary", error: error.message });
   }
 };
 
@@ -118,6 +134,7 @@ const updateItinerary = async (req, res) => {
   try {
     const {
       Creator,
+      Name,
       id,
       Activities,
       LocationsToVisit,
@@ -140,6 +157,7 @@ const updateItinerary = async (req, res) => {
         id,
         {
           Activities,
+          Name,
           LocationsToVisit,
           TimeLine,
           Language,
@@ -185,6 +203,19 @@ const updateItinerary = async (req, res) => {
   }
 };
 
+const readItinerary = async (req, res) => {
+  const { id } = req.params; // Correct extraction of id from req.params
+  try {
+    const itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ error: "itinerary not found" });
+    }
+    res.status(200).json(itinerary);
+  } catch {
+    res.status(400).json({ error: "Error reading itinerary" });
+  }
+};
+
 const createProfileInformation = async (req, res) => {
   try {
     const { Username } = req.body;
@@ -218,7 +249,7 @@ const createProfileInformation = async (req, res) => {
 
 const readProfileInformation = async (req, res) => {
   try {
-    const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
+    const  Username  = req.params.Username; // Using `req.body` to get the Username, similar to `readSeller`
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
@@ -268,22 +299,18 @@ const updateProfileInformation = async (req, res) => {
   }
 };
 const viewAll1 = async (req, res) => {
-  try {
-    // Fetch all preference tags from the database
+    try {
+    // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    if (attractions.length === 0) {
-      return res.status(404).json({ message: "No attractions found." });
-    }
-    if (itineraries.length === 0) {
-      return res.status(404).json({ message: "No itinaries found." });
+    // Check if there are any attractions or itineraries
+    if (attractions.length === 0 && itineraries.length === 0) {
+      return res.status(404).json({ message: "No attractions or itineraries found." });
     }
 
-    // Respond with the retrieved tags
-    res.status(200).json(attractions);
-    res.status(200).json(itineraries);
+    // Respond with the retrieved data
+    res.status(200).json({ attractions, itineraries });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
@@ -299,4 +326,5 @@ module.exports = {
   updateItinerary,
   deleteItinerary,
   viewAll1,
+  readItinerary,
 };

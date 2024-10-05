@@ -33,8 +33,14 @@ const getPlace = async (req, res) => {
 //Create
 const createPlace = async (req, res) => {
   try {
-    const { Username, Description, Location, OpeningHours, TicketPrices } =
-      req.body;
+    const {
+      Username,
+      Name,
+      Description,
+      Location,
+      OpeningHours,
+      TicketPrices,
+    } = req.body;
     const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
@@ -49,6 +55,7 @@ const createPlace = async (req, res) => {
 
     const newPlace = await attractionModel.create({
       Creator: Username,
+      Name,
       Description,
       Pictures: pictures,
       Location,
@@ -65,12 +72,20 @@ const createPlace = async (req, res) => {
 //Update
 const updatePlace = async (req, res) => {
   try {
-    const { Id, Description, Pictures, Location, OpeningHours, TicketPrices } =
-      req.body;
+    const {
+      Id,
+      Name,
+      Description,
+      Pictures,
+      Location,
+      OpeningHours,
+      TicketPrices,
+    } = req.body;
     const place = await attractionModel.findByIdAndUpdate(
       Id,
       {
         Description: Description,
+        Name: Name,
         Pictures: Pictures,
         Location: Location,
         OpeningHours: OpeningHours,
@@ -124,26 +139,23 @@ const createTags = async (req, res) => {
 };
 const viewAll0 = async (req, res) => {
   try {
-    // Fetch all preference tags from the database
+    // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    if (attractions.length === 0) {
-      return res.status(404).json({ message: "No attractions found." });
-    }
-    if (itineraries.length === 0) {
-      return res.status(404).json({ message: "No itinaries found." });
+    // Check if there are any attractions or itineraries
+    if (attractions.length === 0 && itineraries.length === 0) {
+      return res.status(404).json({ message: "No attractions or itineraries found." });
     }
 
-    // Respond with the retrieved tags
-    res.status(200).json(attractions);
-    res.status(200).json(itineraries);
+    // Respond with the retrieved data
+    res.status(200).json({ attractions, itineraries });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
   }
 };
+
 module.exports = {
   getPlaces,
   createPlace,

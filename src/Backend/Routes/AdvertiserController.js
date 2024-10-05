@@ -11,6 +11,7 @@ const createActivity = async (req, res) => {
   const Bookings = [];
   const {
     Creator,
+    Name,
     DateString,
     Time,
     Location,
@@ -26,6 +27,9 @@ const createActivity = async (req, res) => {
   }
   const dateObject = new Date(DateString);
   //let EnterDate = new Date(DateString);
+  if (!Name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
   }
@@ -45,6 +49,7 @@ const createActivity = async (req, res) => {
   try {
     const activity = attractionModel.create({
       Creator: Creator,
+      Name: Name,
       Date: dateObject,
       Time: Time,
       Location: Location,
@@ -89,6 +94,7 @@ const readActivities = async (req, res) => {
 const updateActivity = async (req, res) => {
   const {
     Creator,
+    Name,
     id,
     DateString,
     Time,
@@ -118,6 +124,7 @@ const updateActivity = async (req, res) => {
       id,
       {
         Date: dateObject,
+        Name: Name,
         Time: Time,
         Location: Location,
         Price: Price,
@@ -188,8 +195,10 @@ const createAdvertiser = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
     });
+
+    const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username });
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(advertiser);
   } catch (err) {
@@ -266,22 +275,18 @@ const updateAdvertiserInfo = async (req, res) => {
   }
 };
 const viewAll2 = async (req, res) => {
-  try {
-    // Fetch all preference tags from the database
+   try {
+    // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    if (attractions.length === 0) {
-      return res.status(404).json({ message: "No attractions found." });
-    }
-    if (itineraries.length === 0) {
-      return res.status(404).json({ message: "No itinaries found." });
+    // Check if there are any attractions or itineraries
+    if (attractions.length === 0 && itineraries.length === 0) {
+      return res.status(404).json({ message: "No attractions or itineraries found." });
     }
 
-    // Respond with the retrieved tags
-    res.status(200).json(attractions);
-    res.status(200).json(itineraries);
+    // Respond with the retrieved data
+    res.status(200).json({ attractions, itineraries });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });

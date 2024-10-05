@@ -55,7 +55,9 @@ const createSeller = async (req, res) => {
       Email: Email,
       Description: Description,
     });
-    await userModel.create({ Username: Username });
+
+    const userID = seller._id;
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(seller);
   } catch (err) {
@@ -67,10 +69,10 @@ const createSeller = async (req, res) => {
 //Updating a seller
 const updateSeller = async (req, res) => {
   try {
-    const { Username, FullName, Description } = req.body;
+    const { Username, FullName, Description, MobileNumber } = req.body;
     const seller = await sellerModel.findOneAndUpdate(
       { Username },
-      { FullName, Description }
+      { FullName, Description, MobileNumber }
     );
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
@@ -86,21 +88,19 @@ const updateSeller = async (req, res) => {
 //Reading a seller
 const readSeller = async (req, res) => {
   try {
-      const { username } = req.query; // Get the username from query parameters
-      const seller = await sellerModel.find({ Username: username }); // Query the database
+    const { username } = req.query; // Get the username from query parameters
+    const seller = await sellerModel.find({ Username: username }); // Query the database
 
-      if (!seller) {
-          return res.status(404).json({ message: "Seller not found" });
-      } else {
-          res.status(200).json(seller);
-      }
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    } else {
+      res.status(200).json(seller);
+    }
   } catch (err) {
-      console.error(err);
-      res.status(400).json({ message: "Can't read the seller" });
+    console.error(err);
+    res.status(400).json({ message: "Can't read the seller" });
   }
 };
-
-
 
 const viewSellerProducts = async (req, res) => {
   try {
@@ -122,7 +122,7 @@ const viewSellerProducts = async (req, res) => {
 const sortProductsByRatingsseller = async (req, res) => {
   try {
     // Find and sort products by ratings in descending order (-1 for descending)
-    const products = await productModel.find({}).sort({ ratings: -1 });
+    const products = await ProductModel.find({}).sort({ ratings: -1 });
 
     // Check if products exist
     if (!products || products.length === 0) {
@@ -165,6 +165,64 @@ const SellersearchProductByName = async (req, res) => {
   }
 };
 
+const addProductseller = async (req, res) => {
+  try {
+    // Destructure fields from the request body
+    const { Name, Price, Description, Seller, Quantity } = req.body;
+
+    // Check if the image is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required." });
+    }
+
+    // Create a new product instance
+    const product = await productModel.create({
+      picture: {
+        data: req.file.buffer, // Get image data (Buffer)
+        contentType: req.file.mimetype, // Get content type of the image
+      },
+      name: Name,
+      price: parseFloat(Price), // Ensure price is a number
+      description: Description, // Product description
+      seller: Seller, // Seller ID
+      ratings: 0, // Initialize ratings
+      reviews: [], // Initialize reviews
+      quantity: parseInt(Quantity), // Convert quantity to an integer
+    });
+
+    res.status(200).json({ message: "Product added successfully!", product });
+  } catch (err) {
+    console.error("Error adding product:", err);
+    res.status(400).json({ error: "Failed to add product." });
+  }
+};
+
+const UpdateProductseller = async (req, res) => {
+  try {
+    const  id  = req.params.id; // Get product ID from request parameters
+    const { price, description } = req.body; // Get updated fields from the request body
+
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    const product = await productModel.findByIdAndUpdate(id, {
+      price: price,
+      description: description,
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (err) {
+    res
+      .status(400)
+      .json({ message: "Error to update product", error: err.message });
+  }
+};
+
 module.exports = {
   createSeller,
   updateSeller,
@@ -172,4 +230,6 @@ module.exports = {
   viewSellerProducts,
   sortProductsByRatingsseller,
   SellersearchProductByName,
+  addProductseller,
+  UpdateProductseller
 };

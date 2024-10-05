@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Place</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Update Place Information</h2>
+        <form id="updatePlaceForm" onsubmit="return updatePlace(event);">
+            <div class="field">
+                <input type="text" id="placeId" name="placeId" placeholder="Place ID" required>
+            </div>
+            <div class="field">
+                <input type="text" id="newDescription" name="newDescription" placeholder="New Description" required>
+            </div>
+            <div class="field">
+                <input type="text" id="newLocation" name="newLocation" placeholder="New Location">
+            </div>
+            <div class="field">
+                <input type="text" id="newOpeningHours" name="newOpeningHours" placeholder="New Opening Hours">
+            </div>
+            <div class="field">
+                <input type="text" id="newTicketPrices" name="newTicketPrices" placeholder="New Ticket Prices">
+            </div>
+            <div class="field">
+                <input type="file" id="newPictures" name="newPictures" multiple>
+            </div>
+            <div class="field">
+                <input type="submit" value="Update Place">
+            </div>
+        </form>
+
+        <script>
+            async function updatePlace(event) {
+                event.preventDefault();
+
+                const placeId = document.getElementById('placeId').value;
+                const newDescription = document.getElementById('newDescription').value;
+                const newLocation = document.getElementById('newLocation').value;
+                const newOpeningHours = document.getElementById('newOpeningHours').value;
+                const newTicketPrices = document.getElementById('newTicketPrices').value;
+
+                const updateData = {
+                    Description: newDescription,
+                    Location: newLocation,
+                    OpeningHours: newOpeningHours,
+                    TicketPrices: newTicketPrices
+                };
+
+                try {
+                    const response = await fetch(`http://localhost:8000/updatePlace/${placeId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(updateData),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Place updated successfully!');
+                    } else {
+                        alert('Error updating place.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to update place.');
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

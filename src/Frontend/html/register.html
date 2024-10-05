@@ -83,14 +83,14 @@
         try {
           // Fetch list of nations from the API
           const response = await fetch("http://localhost:8000/getNations");
-          console.log (response)
+          console.log(response);
 
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
 
           const nations = await response.json();
-          console.log(nations)
+          console.log(nations);
 
           // Populate the dropdown with the fetched nations
           nations.forEach((nation) => {
@@ -147,6 +147,11 @@
           return;
         }
 
+        // Save the username to session storage before submitting
+        const username = document.getElementById("username").value;
+        sessionStorage.setItem('username', username); // Save username
+        console.log("Username saved to session storage:", username);
+
         // Collect form data
         const formData = {
           Username: document.getElementById("username").value,
@@ -161,6 +166,7 @@
         console.log(formData.Nationality);
 
         let URL = "http://localhost:8000/";
+        let direction = "";
 
         // Use formData.user to determine the correct URL
         switch (formData.user) {
@@ -172,6 +178,7 @@
             break;
           case "Seller":
             URL += "createSeller";
+            direction = "seller.html";
             break;
           case "Tour Guide":
             URL += "createTourGuide";
@@ -205,7 +212,7 @@
 
           if (response.ok) {
             // Handle success, e.g., redirect to success page or show a message
-            window.location.href = "success.html";
+            window.location.href = direction;
           } else {
             // Handle error, e.g., show an error message
             alert("Error: " + responseData.message || "Unknown error");
