@@ -5,6 +5,7 @@ const { ObjectId } = require("mongodb");
 const attractionSchema = new Schema(
   {
     Creator: { type: String, required: true },
+    Name: { type: String, required: true },
     Location: {
       type: {
         type: String,

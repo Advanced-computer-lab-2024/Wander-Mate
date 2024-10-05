@@ -3,7 +3,6 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
-const { searchAttractions } = require("./touristController.js");
 const Attraction = require("../Models/attractions.js");
 
 // Creating a tourGuide
@@ -50,6 +49,7 @@ const createItinerary = async (req, res) => {
     const Bookings = [];
     const {
       Creator,
+      Name,
       Activities,
       LocationsToVisit,
       TimeLine,
@@ -64,18 +64,20 @@ const createItinerary = async (req, res) => {
     if (
       !Activities ||
       !LocationsToVisit ||
-      !TimeLine||
+      !TimeLine ||
       !Language ||
       !Price ||
       !AvailableDates ||
       !PickUpLocation ||
-      !DropOffLocation
+      !DropOffLocation ||
+      !Name
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const newItinerary = new Itinerary({
       Bookings,
+      Name,
       Creator,
       Activities,
       LocationsToVisit,
@@ -103,7 +105,7 @@ const createItinerary = async (req, res) => {
 
 const deleteItinerary = async (req, res) => {
   try {
-    const { id, Creator } = req.body;  // Destructure id and Creator from the request body
+    const { id, Creator } = req.body; // Destructure id and Creator from the request body
     let itinerary = await Itinerary.findById(id);
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
@@ -112,22 +114,25 @@ const deleteItinerary = async (req, res) => {
       return res.status(403).json({ message: "You are not the creator." });
     }
     if (itinerary.Bookings && itinerary.Bookings.length > 0) {
-      return res.status(400).json({ message: "Cannot delete itinerary with existing bookings." });
+      return res
+        .status(400)
+        .json({ message: "Cannot delete itinerary with existing bookings." });
     }
     await Itinerary.findByIdAndDelete(id);
     res.status(200).json({ message: "Itinerary deleted successfully." });
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error deleting itinerary:", error.message);
-    res.status(500).json({ message: "Error deleting itinerary", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting itinerary", error: error.message });
   }
 };
-
 
 const updateItinerary = async (req, res) => {
   try {
     const {
       Creator,
+      Name,
       id,
       Activities,
       LocationsToVisit,
@@ -150,6 +155,7 @@ const updateItinerary = async (req, res) => {
         id,
         {
           Activities,
+          Name,
           LocationsToVisit,
           TimeLine,
           Language,
@@ -198,7 +204,7 @@ const updateItinerary = async (req, res) => {
 const readItinerary = async (req, res) => {
   const { id } = req.params; // Correct extraction of id from req.params
   try {
-    const itinerary = await Itinerary.findById( id );
+    const itinerary = await Itinerary.findById(id);
     if (!itinerary) {
       return res.status(404).json({ error: "itinerary not found" });
     }
@@ -322,5 +328,5 @@ module.exports = {
   updateItinerary,
   deleteItinerary,
   viewAll1,
-  readItinerary
+  readItinerary,
 };

@@ -33,8 +33,14 @@ const getPlace = async (req, res) => {
 //Create
 const createPlace = async (req, res) => {
   try {
-    const { Username, Description, Location, OpeningHours, TicketPrices } =
-      req.body;
+    const {
+      Username,
+      Name,
+      Description,
+      Location,
+      OpeningHours,
+      TicketPrices,
+    } = req.body;
     const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
@@ -49,6 +55,7 @@ const createPlace = async (req, res) => {
 
     const newPlace = await attractionModel.create({
       Creator: Username,
+      Name,
       Description,
       Pictures: pictures,
       Location,
@@ -65,12 +72,13 @@ const createPlace = async (req, res) => {
 //Update
 const updatePlace = async (req, res) => {
   try {
-    const { Id, Description, Pictures, Location, OpeningHours, TicketPrices } =
+    const { Id, Name, Description, Pictures, Location, OpeningHours, TicketPrices } =
       req.body;
     const place = await attractionModel.findByIdAndUpdate(
       Id,
       {
         Description: Description,
+        Name: Name,
         Pictures: Pictures,
         Location: Location,
         OpeningHours: OpeningHours,

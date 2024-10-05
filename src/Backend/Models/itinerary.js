@@ -8,6 +8,10 @@ const itinerarySchema = new Schema(
       type: [ObjectId],
       required: true,
     },
+    Name: {
+      type: String,
+      required: true,
+    },
     LocationsToVisit: {
       type: [ObjectId],
       required: true,
@@ -18,7 +22,7 @@ const itinerarySchema = new Schema(
     Language: {
       type: String,
       required: true,
-    }, 
+    },
     Price: { type: Number, required: true },
     AvailableDates: { type: [Date], required: true },
     PickUpLocation: {

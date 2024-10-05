@@ -154,6 +154,7 @@ const searchAttractions = async (req, res) => {
       attractionModel.find(filter),
       itineraryModel.find(filter),
     ]);
+    const searchResult = { ...attractions, ...itineraries };
     res.status(200).json(searchResult);
   } catch {
     res.status(400).json({ message: "Error searching attractions" });

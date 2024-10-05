@@ -11,6 +11,7 @@ const createActivity = async (req, res) => {
   const Bookings = [];
   const {
     Creator,
+    Name,
     DateString,
     Time,
     Location,
@@ -26,6 +27,9 @@ const createActivity = async (req, res) => {
   }
   const dateObject = new Date(DateString);
   //let EnterDate = new Date(DateString);
+  if (!Name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
   if (!Time) {
     return res.status(400).json({ error: "Time is required" });
   }
@@ -45,6 +49,7 @@ const createActivity = async (req, res) => {
   try {
     const activity = attractionModel.create({
       Creator: Creator,
+      Name: Name,
       Date: dateObject,
       Time: Time,
       Location: Location,
@@ -89,6 +94,7 @@ const readActivities = async (req, res) => {
 const updateActivity = async (req, res) => {
   const {
     Creator,
+    Name,
     id,
     DateString,
     Time,
@@ -118,6 +124,7 @@ const updateActivity = async (req, res) => {
       id,
       {
         Date: dateObject,
+        Name: Name,
         Time: Time,
         Location: Location,
         Price: Price,
