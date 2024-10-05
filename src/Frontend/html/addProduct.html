@@ -1,75 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add Product | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css"> <!-- Ensure you have the correct path -->
-</head>
-<body>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <!-- Ensure the correct path -->
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">
-            Add New Product
+      <div class="title">Add New Product</div>
+      <form id="addProductForm" enctype="multipart/form-data">
+        <div class="field">
+            <input
+            type="file"
+            name="picture"
+            id="picture"
+            accept="image/*"
+            required
+            />
+            <label for="picture">Product Picture</label>
         </div>
-        <form id="addProductForm" enctype="multipart/form-data">
-            <div class="field">
-                <label for="picture">Product Picture</label>
-                <input type="file" name="picture" id="picture" accept="image/*" required>
-            </div>
-            <div class="field">
-                <label for="price">Price</label>
-                <input type="number" name="price" id="price" required min="0" step="0.01">
-            </div>
-            <div class="field">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" required></textarea>
-            </div>
-            <div class="field">
-                <label for="seller">Seller ID</label>
-                <input type="text" name="seller" id="seller" required>
-            </div>
-            <div class="field">
-                <label for="ratings">Ratings (0-5)</label>
-                <input type="number" name="ratings" id="ratings" min="0" max="5" step="0.1">
-            </div>
-            <div class="field">
-                <label for="reviews">Reviews (comma separated)</label>
-                <input type="text" name="reviews" id="reviews">
-            </div>
-            <div class="field">
-                <input type="submit" value="Add Product">
-            </div>
-        </form>
+        <div class="field">
+            <input type="text" name="Name" id="Name" required />
+            <label for="Name">Product Name</label>
+        </div>
+        <div class="field">
+            <input
+            type="number"
+            name="Price"
+            id="Price"
+            required
+            min="0"
+            step="0.01"
+            />
+            <label for="Price">Price</label>
+        </div>
+        <div class="field">
+            <input type="text" name="Description" id="Description" required></textarea>
+            <label for="Description">Description</label>
+        </div>
+        <div class="field">
+            <input type="number" name="Quantity" id="Quantity" required min="1" />
+            <label for="Quantity">Quantity</label>
+        </div>
+        <div class="field">
+          <input type="submit" value="Add Product" />
+        </div>
+      </form>
     </div>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
+      document
+        .getElementById("addProductForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent default form submission
 
-            const formData = new FormData(this); // Create a FormData object
+          const formData = new FormData(this); // Create a FormData object
 
-            try {
-                const response = await fetch('/addProduct', {
-                    method: 'POST',
-                    body: formData,
-                });
+          // Get the username from sessionStorage
+          const username = sessionStorage.getItem("username");
 
-                if (!response.ok) {
-                    throw new Error("Failed to add product");
-                }
+          if (!username) {
+            alert("User not logged in. Please log in first.");
+            return;
+          }
 
-                const result = await response.json();
-                alert(result.message); // Show success message
-
-                // Optionally, redirect or reset the form
-                this.reset(); // Reset form fields after successful submission
-
-            } catch (error) {
-                console.error("Error adding product:", error);
-                alert("Could not add product. Please try again.");
+          try {
+            // Call the backend to get the user ID based on the username
+            const idResponse = await fetch(
+              `http://localhost:8000/getID/${username}`
+            ); // Assuming your getID route is set up this way
+            if (!idResponse.ok) {
+              throw new Error("Failed to get user ID");
             }
+
+            const { userID } = await idResponse.json();
+            console.log(userID); // Assuming your backend returns { userId }
+
+            // Add the user ID to the form data
+            formData.append("Seller", userID);
+
+            // Submit the form data to add the product
+            const response = await fetch("http://localhost:8000/addProduct", {
+              method: "POST",
+              body: formData, // Send the form data, including the image file and seller ID
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to add product");
+            }
+
+            const result = await response.json();
+            alert(result.message); // Show success message
+
+            // Optionally, redirect or reset the form
+            this.reset(); // Reset form fields after successful submission
+          } catch (error) {
+            console.error("Error adding product:", error);
+            alert("Could not add product. Please try again.");
+          }
         });
     </script>
-
-</body>
+  </body>
 </html>

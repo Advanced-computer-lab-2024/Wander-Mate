@@ -55,7 +55,9 @@ const createSeller = async (req, res) => {
       Email: Email,
       Description: Description,
     });
-    await userModel.create({ Username: Username });
+
+    const userID = seller._id;
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(seller);
   } catch (err) {
@@ -67,10 +69,10 @@ const createSeller = async (req, res) => {
 //Updating a seller
 const updateSeller = async (req, res) => {
   try {
-    const { Username, FullName, Description } = req.body;
+    const { Username, FullName, Description, MobileNumber } = req.body;
     const seller = await sellerModel.findOneAndUpdate(
       { Username },
-      { FullName, Description }
+      { FullName, Description, MobileNumber }
     );
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });

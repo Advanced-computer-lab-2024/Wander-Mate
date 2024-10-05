@@ -1,99 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Read Seller Profile | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">
-            Seller Profile
-        </div>
+      <div class="title">Seller Profile</div>
 
-        <!-- Profile details -->
-        <div class="profile-details">
-            <div class="field">
-                <label for="sellerName">Name:</label>
-                <p id="sellerName">Not Available</p> <!-- Placeholder text -->
-            </div>
-            <div class="field">
-                <label for="sellerDescription">Description:</label>
-                <p id="sellerDescription">Not Available</p> <!-- Placeholder text -->
-            </div>
-            <div class="field">
-                <label for="sellerEmail">Email:</label>
-                <p id="sellerEmail">Not Available</p> <!-- Placeholder text -->
-            </div>
-            <div class="field">
-                <label for="sellerPhone">Phone:</label>
-                <p id="sellerPhone">Not Available</p> <!-- Placeholder text -->
-            </div>
-            <div class="field">
-                <label for="sellerRating">Rating:</label>
-                <p id="sellerRating">Not Available</p> <!-- Placeholder text -->
-            </div>
+      <!-- Profile details -->
+      <div class="profile-details">
+        <div class="field">
+          <label for="sellerName">Name:</label>
+          <p id="sellerName">Not Available</p>
+          <!-- Placeholder text -->
         </div>
+        <div class="field">
+          <label for="sellerDescription">Description:</label>
+          <p id="sellerDescription">Not Available</p>
+          <!-- Placeholder text -->
+        </div>
+        <div class="field">
+          <label for="sellerEmail">Email:</label>
+          <p id="sellerEmail">Not Available</p>
+          <!-- Placeholder text -->
+        </div>
+        <div class="field">
+          <label for="sellerPhone">Phone:</label>
+          <p id="sellerPhone">Not Available</p>
+          <!-- Placeholder text -->
+        </div>
+      </div>
     </div>
 
     <script>
-        window.onload = function() {
-            const username = sessionStorage.getItem('username'); // Get the username from sessionStorage
+      window.onload = function () {
+        const username = sessionStorage.getItem("username"); // Get the username from sessionStorage
 
-            // Check if username is retrieved successfully
-            if (username) {
-                console.log("Username found in session storage:", username);
-                fetchSeller(username); // Call fetchSeller with the username
-            } else {
-                console.error("Username not found in session storage.");
-                alert("Username not found. Please log in or register.");
-                // Redirect to login page if needed
-                //window.location.href = '/login.html'; // Adjust the path if necessary
-            }
-        };
-
-        async function fetchSeller(username) {
-            console.log("Fetching seller profile for username:", username);
-
-            try {
-                // Fetch seller details with the username as a query parameter
-                const response = await fetch(`http://localhost:8000/readSeller?username=${encodeURIComponent(username)}`);
-                console.log(response); // Log the response object
-
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-
-                const seller = await response.json();
-                console.log(seller); // Log the seller data
-
-                // Check if seller data is returned
-                if (seller.length > 0) {
-                    const sellerData = seller[0]; // Get the first seller object
-                    document.getElementById("sellerName").textContent = sellerData.Name || "Not Available"; // Update name
-                    document.getElementById("sellerDescription").textContent = sellerData.Description || "Not Available"; // Update description
-                    document.getElementById("sellerEmail").textContent = sellerData.Email || "Not Available"; // Update email
-                    document.getElementById("sellerPhone").textContent = sellerData.Phone || "Not Available"; // Update phone
-                    document.getElementById("sellerRating").textContent = sellerData.Rating || "Not Available"; // Update rating
-                } else {
-                    alert("Seller not found.");
-                    resetSellerDetails(); // Reset the displayed values
-                }
-            } catch (error) {
-                console.error("Error fetching seller:", error);
-                alert("Could not load seller.");
-            }
+        // Check if username is retrieved successfully
+        if (username) {
+          console.log("Username found in session storage:", username);
+          fetchSeller(username); // Call fetchSeller with the username
+        } else {
+          console.error("Username not found in session storage.");
+          alert("Username not found. Please log in or register.");
+          // Redirect to login page if needed
+          //window.location.href = '/login.html'; // Adjust the path if necessary
         }
+      };
 
-        // Function to reset seller details
-        function resetSellerDetails() {
-            document.getElementById("sellerName").textContent = "Not Available";
-            document.getElementById("sellerDescription").textContent = "Not Available";
-            document.getElementById("sellerEmail").textContent = "Not Available";
-            document.getElementById("sellerPhone").textContent = "Not Available";
-            document.getElementById("sellerRating").textContent = "Not Available";
+      async function fetchSeller(username) {
+        console.log("Fetching seller profile for username:", username);
+
+        try {
+          // Fetch seller details with the username as a query parameter
+          const response = await fetch(
+            `http://localhost:8000/readSeller?username=${encodeURIComponent(
+              username
+            )}`
+          );
+          console.log(response); // Log the response object
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const seller = await response.json();
+          console.log(seller); // Log the seller data
+
+          // Check if seller data is returned
+          if (seller.length > 0) {
+            const sellerData = seller[0]; // Get the first seller object
+            document.getElementById("sellerName").textContent =
+              sellerData.FullName || "Not Available"; // Update name
+            document.getElementById("sellerDescription").textContent =
+              sellerData.Description || "Not Available"; // Update description
+            document.getElementById("sellerEmail").textContent =
+              sellerData.Email || "Not Available"; // Update email
+            document.getElementById("sellerPhone").textContent =
+              sellerData.MobileNumber || "Not Available"; // Update phone
+            // document.getElementById("sellerRating").textContent =
+            //   sellerData.Rating || "Not Available"; // Update rating
+          } else {
+            alert("Seller not found.");
+            resetSellerDetails(); // Reset the displayed values
+          }
+        } catch (error) {
+          console.error("Error fetching seller:", error);
+          alert("Could not load seller.");
         }
+      }
+
+      // Function to reset seller details
+      function resetSellerDetails() {
+        document.getElementById("sellerName").textContent = "Not Available";
+        document.getElementById("sellerDescription").textContent =
+          "Not Available";
+        document.getElementById("sellerEmail").textContent = "Not Available";
+        document.getElementById("sellerPhone").textContent = "Not Available";
+        document.getElementById("sellerRating").textContent = "Not Available";
+      }
     </script>
-</body>
+  </body>
 </html>

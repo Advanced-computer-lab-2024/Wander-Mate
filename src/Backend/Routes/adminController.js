@@ -42,12 +42,13 @@ const createAdmin = async (req, res) => {
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
     //create UsreName
-    await userModel.create({ Username: Username });
     // Create admin with hashed password
     const admin = await adminModel.create({
       Username: Username,
       Password: hashedPassword,
     });
+    const userId = admin._id;
+    await userModel.create({ Username: Username, userId });
 
     res.status(200).json(admin);
   } catch (err) {
@@ -245,12 +246,12 @@ const createTourismGov = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    await userModel.create({ Username: Username });
-
     const TourismGov = await TourismGoverner.create({
       Username: Username,
       Password: hashedPassword,
     });
+    const userId = TourismGov._id;
+    await userModel.create({ Username: Username, userId });
 
     res.status(200).json(TourismGov);
   } catch (err) {
@@ -380,7 +381,7 @@ const AdminsearchProductByName = async (req, res) => {
 };
 const UpdateProduct = async (req, res) => {
   try {
-    const  id  = req.params.id; // Get product ID from request parameters
+    const id = req.params.id; // Get product ID from request parameters
     const { price, description } = req.body; // Get updated fields from the request body
 
     if (!id) {
@@ -554,6 +555,17 @@ const getNations = async (req, res) => {
   }
 };
 
+const getID = async (req, res) => {
+  try {
+    const db = mongoose.connection;
+    const collection = db.collection("users");
+    const user = await collection.findOne({ Username: req.params.Username });
+    res.status(200).json({ userID: user.userID }); // Send user as JSON response
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -574,4 +586,5 @@ module.exports = {
   deletePreferenceTags,
   readPreferenceTags,
   getNations,
+  getID,
 };

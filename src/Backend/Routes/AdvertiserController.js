@@ -195,8 +195,10 @@ const createAdvertiser = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
     });
+
+    const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username });
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(advertiser);
   } catch (err) {

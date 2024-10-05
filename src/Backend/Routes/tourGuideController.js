@@ -35,7 +35,9 @@ const createTourGuide = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
     });
-    await userModel.create({ Username: Username });
+
+    const userID = tourGuide._id;
+    await userModel.create({ Username: Username, userID });
 
     res.status(200).json(tourGuide);
   } catch (err) {

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guide Profile</title>
+    <link rel="stylesheet" href="../styles/register.css"> <!-- Connect the provided CSS here -->
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Get Tour Guide Profile</div>
+        <form id="profileForm">
+            <div class="field">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Enter Username</label>
+            </div>
+            <div class="field">
+                <input type="submit" value="Get Profile">
+            </div>
+        </form>
+
+        <div id="profileInfo" class="profile-info" style="display:none;">
+            <h2>Profile Information</h2>
+            <p><strong>Username:</strong> <span id="displayUsername"></span></p>
+            <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="displayMobileNumber"></span></p>
+            <p><strong>Previous Work:</strong> <span id="displayPreviousWork"></span></p>
+            <p><strong>Years of Experience:</strong> <span id="displayYearsOfExperience"></span></p>
+        </div>
+
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+
+        try {
+            const response = await fetch(`http://localhost:8000/readProfileInformation/${encodeURIComponent(username)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                document.getElementById('errorMessage').innerText = errorData.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('profileInfo').style.display = 'none';
+            } else {
+                const profileData = await response.json();
+
+                document.getElementById('displayUsername').innerText = profileData.Username;
+                document.getElementById('displayEmail').innerText = profileData.Email || 'N/A';
+                document.getElementById('displayMobileNumber').innerText = profileData.MobileNumber || 'N/A';
+                document.getElementById('displayPreviousWork').innerText = profileData.PreviousWork || 'N/A';
+                document.getElementById('displayYearsOfExperience').innerText = profileData.YearsOfExperience || 'N/A';
+
+                document.getElementById('profileInfo').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+        } catch (error) {
+            document.getElementById('errorMessage').innerText = "An error occurred while fetching the profile.";
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    });
+    </script>
+</body>
+</html>

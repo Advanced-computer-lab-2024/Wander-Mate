@@ -55,6 +55,7 @@ const {
   readPreferenceTags,
   readCategory,
   getNations,
+  getID,
 } = require("./Routes/adminController.js");
 
 const {
@@ -66,7 +67,7 @@ const {
   deleteItinerary,
   updateItinerary,
   viewAll1,
-  readItinerary
+  readItinerary,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -147,7 +148,7 @@ app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
 app.patch("/UpdateProductseller/:id",UpdateProductseller);
-app.get("/readItinerary/:id",readItinerary);
+app.get("/readItinerary/:id", readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
 app.delete("/deleteCategory", deleteCategory);
@@ -196,3 +197,4 @@ app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
+app.get("/getID/:Username", getID);

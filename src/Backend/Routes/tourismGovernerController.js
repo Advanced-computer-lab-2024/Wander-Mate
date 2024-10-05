@@ -72,8 +72,15 @@ const createPlace = async (req, res) => {
 //Update
 const updatePlace = async (req, res) => {
   try {
-    const { Id, Name, Description, Pictures, Location, OpeningHours, TicketPrices } =
-      req.body;
+    const {
+      Id,
+      Name,
+      Description,
+      Pictures,
+      Location,
+      OpeningHours,
+      TicketPrices,
+    } = req.body;
     const place = await attractionModel.findByIdAndUpdate(
       Id,
       {
