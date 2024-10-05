@@ -249,7 +249,7 @@ const createProfileInformation = async (req, res) => {
 
 const readProfileInformation = async (req, res) => {
   try {
-    const { Username } = req.body; // Using `req.body` to get the Username, similar to `readSeller`
+    const  Username  = req.params.Username; // Using `req.body` to get the Username, similar to `readSeller`
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
@@ -299,22 +299,18 @@ const updateProfileInformation = async (req, res) => {
   }
 };
 const viewAll1 = async (req, res) => {
-  try {
-    // Fetch all preference tags from the database
+    try {
+    // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
-    // Check if there are any tags
-    if (attractions.length === 0) {
-      return res.status(404).json({ message: "No attractions found." });
-    }
-    if (itineraries.length === 0) {
-      return res.status(404).json({ message: "No itinaries found." });
+    // Check if there are any attractions or itineraries
+    if (attractions.length === 0 && itineraries.length === 0) {
+      return res.status(404).json({ message: "No attractions or itineraries found." });
     }
 
-    // Respond with the retrieved tags
-    res.status(200).json(attractions);
-    res.status(200).json(itineraries);
+    // Respond with the retrieved data
+    res.status(200).json({ attractions, itineraries });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
