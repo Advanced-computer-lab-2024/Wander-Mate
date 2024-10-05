@@ -177,3 +177,24 @@ form .signup-link a:hover {
   display: block;
   margin: 0 auto; /* Center the image horizontally */
 }
+
+/* Styling readonly fields to look active */
+.wrapper form .field input[readonly] {
+  background-color: white; /* Keep the same background color as editable inputs */
+  color: black; /* Ensure the text is readable */
+  border: 1px solid lightgrey; /* Match the border style of editable inputs */
+  padding-left: 20px; /* Keep padding consistent with other inputs */
+  cursor: default;
+  border-color: #4158d0; /* Avoid showing the text selection cursor */
+}
+
+/* Handle label behavior for readonly fields */
+form .field input[readonly] ~ label,
+form .field input[disabled] ~ label,
+form .field input:valid ~ label {
+  top: 0%; /* Move the label to the top */
+  font-size: 16px;
+  color: #4158d0; /* Active color */
+  background: #fff;
+  transform: translateY(-50%);
+}

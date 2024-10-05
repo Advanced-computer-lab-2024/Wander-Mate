@@ -76,7 +76,6 @@
             }
 
             const { userID } = await idResponse.json();
-            console.log(userID); // Assuming your backend returns { userId }
 
             // Add the user ID to the form data
             formData.append("Seller", userID);

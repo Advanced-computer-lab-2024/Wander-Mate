@@ -45,6 +45,10 @@
         <!-- Tourist-specific fields (hidden by default) -->
         <div id="touristFields" class="tourist-fields">
           <div class="field">
+            <input type="text" id="fullName" />
+            <label>Full Name</label>
+          </div>
+          <div class="field">
             <input type="text" id="mobileNumber" />
             <label>Mobile Number</label>
           </div>
@@ -83,14 +87,14 @@
         try {
           // Fetch list of nations from the API
           const response = await fetch("http://localhost:8000/getNations");
-          console.log(response);
+          
 
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
 
           const nations = await response.json();
-          console.log(nations);
+          
 
           // Populate the dropdown with the fetched nations
           nations.forEach((nation) => {
@@ -149,7 +153,7 @@
 
         // Save the username to session storage before submitting
         const username = document.getElementById("username").value;
-        sessionStorage.setItem('username', username); // Save username
+        sessionStorage.setItem("username", username); // Save username
         console.log("Username saved to session storage:", username);
 
         // Collect form data
@@ -162,6 +166,7 @@
           Nationality: document.getElementById("nationality")?.value,
           DOB: document.getElementById("dob")?.value,
           Role: document.getElementById("touristRole")?.value,
+          FullName: document.getElementById("fullName")?.value,
         };
         console.log(formData.Nationality);
 
@@ -175,6 +180,7 @@
             break;
           case "Tourist":
             URL += "touristRegister";
+            direction = "tourist.html";
             break;
           case "Seller":
             URL += "createSeller";
