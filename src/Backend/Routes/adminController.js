@@ -351,7 +351,7 @@ const sortProductsByRatings = async (req, res) => {
   }
 };
 
-const AdminsearchProductByName = async (req, res) => {
+const searchProductsByName = async (req, res) => {
   try {
     const { name } = req.body; // Expecting the product name in the request body
 
@@ -579,7 +579,7 @@ module.exports = {
   getImage,
   viewAdminProducts,
   sortProductsByRatings,
-  AdminsearchProductByName,
+  searchProductsByName,
   UpdateProduct,
   filterProductsByPrice,
   createPreferenceTags,
