@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories</title>
+    <link rel="stylesheet" href="../styles/register.css" />
 </head>
 <body>
-    <h1>Categories</h1>
-    <ul id="categories-list"></ul>
-
+    <div class="wrapper">
+        <div class="title">Categories</div>
+    <div class="field">
+    <li id="categories-list"></li>
+    </div>
     <script>
         // Make a GET request to the server to fetch categories
-        fetch('/categories')
+        fetch('http://localhost:8000/readCategory')
             .then(response => response.json())
             .then(categories => {
                 const categoriesList = document.getElementById('categories-list');
