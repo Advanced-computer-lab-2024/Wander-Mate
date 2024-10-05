@@ -23,6 +23,9 @@ const {
   sortProductsByRatingstourist,
   filterItineraries,
   filterActivities,
+  viewPlaces,
+  viewActivities,
+  viewItineraries,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -203,3 +206,6 @@ app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getID/:Username", getID);
 app.get("/getSellers/", getSellers);
+app.get("/viewPlaces", viewPlaces);
+app.get("/viewActivities", viewActivities);
+app.get("/viewItineraries", viewItineraries);

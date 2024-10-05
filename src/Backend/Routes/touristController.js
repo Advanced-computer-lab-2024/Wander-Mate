@@ -134,7 +134,7 @@ const handleTourist = async (req, res) => {
       if (MobileNumber) tourist.MobileNumber = MobileNumber;
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
-      if(FullName) tourist.FullName = FullName;
+      if (FullName) tourist.FullName = FullName;
 
       // Save the updated tourist
       const updatedTourist = await tourist.save();
@@ -281,6 +281,52 @@ const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   }
 };
 
+const viewActivities = async (req, res) => {
+  const activityObjectId = new mongoose.Types.ObjectId(
+    "66f91e1da144543bfcfbae2a"
+  ); //activity type
+  const currentDate = new Date();
+  const activityFilter = {
+    Type: activityObjectId,
+    Date: { $gte: currentDate },
+  };
+  try {
+    const activities = await attractionModel.find(activityFilter);
+    res.status(200).json(activities);
+  } catch {
+    res.status(400).json("Error");
+  }
+};
+
+const viewItineraries = async (req, res) => {
+  const currentDate = new Date();
+  const itineraryDateFilter = {
+    AvailableDates: {
+      $elemMatch: { $gte: currentDate }, // At least one available date should be in the future
+    },
+  };
+
+  try {
+    const itineraries = await itineraryModel.find(itineraryDateFilter);
+    res.status(200).json(itineraries);
+  } catch {
+    res.status(400).json("Error");
+  }
+};
+
+const viewPlaces = async (req, res) => {
+  const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+  const historicalPlacesFilter = {
+    Type: objectId,
+  };
+  try {
+    const places = await attractionModel.find(historicalPlacesFilter);
+    res.status(200).json(places);
+  } catch {
+    res.status(400).json("Error");
+  }
+};
+
 const sortProductsByRatingstourist = async (req, res) => {
   try {
     // Find and sort products by ratings in descending order (-1 for descending)
@@ -385,4 +431,7 @@ module.exports = {
   sortProductsByRatingstourist,
   filterItineraries,
   filterActivities,
+  viewActivities,
+  viewItineraries,
+  viewPlaces,
 };
