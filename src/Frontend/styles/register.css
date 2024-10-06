@@ -245,3 +245,23 @@ form .field input:valid ~ label {
   background: #fff;
   transform: translateY(-50%);
 }
+
+
+
+/* Tour Guide */
+/* Style for the buttons */
+.wrapper form .field input[type="button"] {
+  background: linear-gradient(-135deg, #c850c0, #4158d0); /* Button background color */
+  color: #fff; /* Button text color */
+  border: none;
+  border-radius: 25px;
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Change color on hover */
+.wrapper form .field input[type="button"]:hover {
+  background: linear-gradient(-135deg, #4158d0, #c850c0); /* Hover background color */
+}
