@@ -5,21 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Read Advertiser Info</title>
   <link rel="stylesheet" href="../styles/register.css">
-  
 </head>
 <body>
 
   <div class="wrapper">
-    <div class="title">Read Advertiser Info</div>
-    <form id="readAdvertiserInfoForm">
-      <div class="field">
-        <input type="text" id="username" name="Username" placeholder=" " required>
-        <label for="username">Username</label>
-      </div>
-      <div class="field">
-        <button type="button" id="readAdvertiserInfoBtn">Read Info</button>
-      </div>
-    </form>
+    <div class="title">Advertiser Info</div>
 
     <div class="message" id="errorMessage" style="color: red; display: none;"></div>
 
@@ -33,7 +23,6 @@
   </div>
 
   <script>
-    const readForm = document.getElementById('readAdvertiserInfoForm');
     const errorMessage = document.getElementById('errorMessage');
     const advertiserInfoDiv = document.getElementById('advertiserInfo');
     const infoUsername = document.getElementById('infoUsername');
@@ -42,9 +31,15 @@
     const infoHotline = document.getElementById('infoHotline');
     const infoCompanyProfile = document.getElementById('infoCompanyProfile');
 
-    // Handle form submission for reading advertiser info
-    document.getElementById('readAdvertiserInfoBtn').addEventListener('click', async function() {
-      const username = document.getElementById('username').value;
+    // Automatically load advertiser info when the page loads
+    window.onload = async function() {
+      // Retrieve the username from sessionStorage
+      const username = sessionStorage.getItem('username');
+
+      if (!username) {
+        alert('User not logged in. Please log in first.');
+        return;
+      }
 
       try {
         const response = await fetch('http://localhost:8000/readAdvertiserInfo', {
@@ -52,7 +47,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ Username: username }),
+          body: JSON.stringify({ Username: username }), // Send the username from session storage
         });
 
         const result = await response.json();
@@ -63,7 +58,7 @@
           infoWebsite.innerText = result[0].Website;
           infoHotline.innerText = result[0].Hotline;
           infoCompanyProfile.innerText = result[0].CompanyProfile;
-          
+
           advertiserInfoDiv.style.display = 'block';
           errorMessage.style.display = 'none';
         } else {
@@ -76,7 +71,7 @@
         errorMessage.style.display = 'block';
         advertiserInfoDiv.style.display = 'none';
       }
-    });
+    };
   </script>
 
 </body>
