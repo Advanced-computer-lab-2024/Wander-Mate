@@ -332,10 +332,14 @@ const viewItineraries = async (req, res) => {
   };
 
   try {
-    const itineraries = await itineraryModel.find(itineraryDateFilter);
+    const itineraries = await itineraryModel
+      .find(itineraryDateFilter)
+      .populate("Activities")
+      .populate("LocationsToVisit");
     res.status(200).json(itineraries);
-  } catch {
-    res.status(400).json("Error");
+  } catch (error) {
+    console.error(error); // Log the error to the console for debugging
+    res.status(400).json({ message: "Error", error: error.message });
   }
 };
 

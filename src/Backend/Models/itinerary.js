@@ -6,6 +6,7 @@ const itinerarySchema = new Schema(
   {
     Activities: {
       type: [ObjectId],
+      ref: "Attraction",
       required: true,
     },
     Name: {
@@ -14,6 +15,7 @@ const itinerarySchema = new Schema(
     },
     LocationsToVisit: {
       type: [ObjectId],
+      ref: "Attraction",
       required: true,
     },
     TimeLine: {

@@ -206,7 +206,7 @@ const updateItinerary = async (req, res) => {
 const readItinerary = async (req, res) => {
   const { id } = req.params; // Correct extraction of id from req.params
   try {
-    const itinerary = await Itinerary.findById(id);
+    const itinerary = await Itinerary.findById(id).populate("Activities").populate("LocationsToVisit");
     if (!itinerary) {
       return res.status(404).json({ error: "itinerary not found" });
     }
@@ -321,7 +321,7 @@ const viewAll1 = async (req, res) => {
 
 const getTourguides = async (req, res) => {
   try {
-    const Creator = await advertiserModel.find().select("-Password");
+    const Creator = await tourGuideModel.find().select("-Password");
     res.status(200).json({ Creator });
   } catch {
     res.status(400).json({ message: "Error to get Tourguides" });
