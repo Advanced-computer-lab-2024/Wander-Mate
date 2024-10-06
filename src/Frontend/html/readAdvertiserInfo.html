@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read Advertiser Info</title>
+  <link rel="stylesheet" href="../styles/register.css">
+  
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="title">Read Advertiser Info</div>
+    <form id="readAdvertiserInfoForm">
+      <div class="field">
+        <input type="text" id="username" name="Username" placeholder=" " required>
+        <label for="username">Username</label>
+      </div>
+      <div class="field">
+        <button type="button" id="readAdvertiserInfoBtn">Read Info</button>
+      </div>
+    </form>
+
+    <div class="message" id="errorMessage" style="color: red; display: none;"></div>
+
+    <div class="advertiser-info" id="advertiserInfo" style="display: none;">
+      <p><strong>Username:</strong> <span id="infoUsername"></span></p>
+      <p><strong>Email:</strong> <span id="infoEmail"></span></p>
+      <p><strong>Website:</strong> <span id="infoWebsite"></span></p>
+      <p><strong>Hotline:</strong> <span id="infoHotline"></span></p>
+      <p><strong>Company Profile:</strong> <span id="infoCompanyProfile"></span></p>
+    </div>
+  </div>
+
+  <script>
+    const readForm = document.getElementById('readAdvertiserInfoForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const advertiserInfoDiv = document.getElementById('advertiserInfo');
+    const infoUsername = document.getElementById('infoUsername');
+    const infoEmail = document.getElementById('infoEmail');
+    const infoWebsite = document.getElementById('infoWebsite');
+    const infoHotline = document.getElementById('infoHotline');
+    const infoCompanyProfile = document.getElementById('infoCompanyProfile');
+
+    // Handle form submission for reading advertiser info
+    document.getElementById('readAdvertiserInfoBtn').addEventListener('click', async function() {
+      const username = document.getElementById('username').value;
+
+      try {
+        const response = await fetch('http://localhost:8000/readAdvertiserInfo', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ Username: username }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          // Populate the advertiser information
+          infoUsername.innerText = result[0].Username;
+          infoEmail.innerText = result[0].Email;
+          infoWebsite.innerText = result[0].Website;
+          infoHotline.innerText = result[0].Hotline;
+          infoCompanyProfile.innerText = result[0].CompanyProfile;
+          
+          advertiserInfoDiv.style.display = 'block';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.innerText = result.error || 'Advertiser not found.';
+          errorMessage.style.display = 'block';
+          advertiserInfoDiv.style.display = 'none';
+        }
+      } catch (error) {
+        errorMessage.innerText = 'Error reading advertiser info. Please try again.';
+        errorMessage.style.display = 'block';
+        advertiserInfoDiv.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

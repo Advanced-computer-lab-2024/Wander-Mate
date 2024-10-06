@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Advertiser Info</title>
+  <link rel="stylesheet" href="../styles/register.css">
+  
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="title">Update Advertiser Info</div>
+    <form id="updateAdvertiserInfoForm">
+      <div class="field">
+        <input type="text" id="username" name="Username" placeholder=" " required>
+        <label for="username">Username</label>
+      </div>
+      <div class="field">
+        <input type="text" id="website" name="Website" placeholder=" " required>
+        <label for="website">Website</label>
+      </div>
+      <div class="field">
+        <input type="text" id="hotline" name="Hotline" placeholder=" " required>
+        <label for="hotline">Hotline</label>
+      </div>
+      <div class="field">
+        <textarea id="companyProfile" name="CompanyProfile" placeholder=" " required></textarea>
+        <label for="companyProfile">Company Profile</label>
+      </div>
+      <div class="field">
+        <button type="button" id="updateAdvertiserInfoBtn">Update Info</button>
+      </div>
+    </form>
+
+    <div class="message" id="successMessage" style="color: green; display: none;"></div>
+    <div class="message" id="errorMessage" style="color: red; display: none;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('updateAdvertiserInfoForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Handle form submission for updating advertiser info
+    document.getElementById('updateAdvertiserInfoBtn').addEventListener('click', async function() {
+      const username = document.getElementById('username').value;
+      const website = document.getElementById('website').value;
+      const hotline = document.getElementById('hotline').value;
+      const companyProfile = document.getElementById('companyProfile').value;
+
+      try {
+        const response = await fetch('http://localhost:8000/updateAdvertiserInfo', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            Username: username,
+            Website: website,
+            Hotline: hotline,
+            CompanyProfile: companyProfile,
+          }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          successMessage.innerText = result.message || 'Advertiser info updated successfully!';
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.innerText = result.message || 'Error updating advertiser info.';
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+        }
+      } catch (error) {
+        errorMessage.innerText = 'An error occurred. Please try again.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
