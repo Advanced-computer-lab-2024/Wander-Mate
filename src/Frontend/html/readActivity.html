@@ -18,6 +18,88 @@
                 <input type="submit" value="Read Activity">
             </div>
         </form>
+
+        <!-- Area to display fetched activity data -->
+        <div id="activityDetails" style="margin-top: 20px; display: none;">
+            <h3>Activity Details</h3>
+            <p><strong>Activity Name:</strong> <span id="activityName"></span></p>
+            <p><strong>Creator:</strong> <span id="activityCreator"></span></p>
+            <p><strong>Date:</strong> <span id="activityDate"></span></p>
+            <p><strong>Time:</strong> <span id="activityTime"></span></p>
+            <p><strong>Location:</strong> <span id="activityLocation"></span></p>
+            <p><strong>Price:</strong> <span id="activityPrice"></span></p>
+            <p><strong>Category:</strong> <span id="activityCategory"></span></p>
+            <p><strong>Tags:</strong> <span id="activityTags"></span></p>
+            <p><strong>Discounts:</strong> <span id="activityDiscounts"></span></p>
+            <p><strong>Is Available:</strong> <span id="activityAvailability"></span></p>
+            <p><strong>Bookings:</strong> <span id="activityBookings"></span></p>
+            <p><strong>Created At:</strong> <span id="activityCreatedAt"></span></p>
+            <p><strong>Updated At:</strong> <span id="activityUpdatedAt"></span></p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" style="color: red; display: none;"></div>
+
     </div>
+
+    <script>
+        // Form submission event handler
+        document.getElementById('readActivityForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const id = document.getElementById('id').value;
+            const activityDetailsDiv = document.getElementById('activityDetails');
+            const errorMessageDiv = document.getElementById('errorMessage');
+
+            try {
+                // Send GET request to the backend
+                const response = await fetch(`http://localhost:8000/readActivity/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Activity not found or error reading activity');
+                }
+
+                // Parse the response
+                const activity = await response.json();
+
+                // Display activity details
+                document.getElementById('activityName').textContent = activity.Name || 'N/A';
+                document.getElementById('activityCreator').textContent = activity.Creator || 'N/A';
+                document.getElementById('activityDate').textContent = activity.Date ? new Date(activity.Date).toLocaleDateString() : 'N/A';
+                document.getElementById('activityTime').textContent = activity.Time || 'N/A';
+                document.getElementById('activityLocation').textContent = activity.Location && activity.Location.coordinates 
+                    ? activity.Location.coordinates.join(', ') 
+                    : 'N/A';
+                document.getElementById('activityPrice').textContent = activity.Price ? `$${activity.Price}` : 'N/A';
+                document.getElementById('activityCategory').textContent = activity.Category || 'N/A';
+                document.getElementById('activityTags').textContent = activity.Tags && activity.Tags.length > 0 
+                    ? activity.Tags.join(', ') 
+                    : 'N/A';
+                document.getElementById('activityDiscounts').textContent = activity.Discounts && activity.Discounts.length > 0 
+                    ? activity.Discounts.join(', ') 
+                    : 'None';
+                document.getElementById('activityAvailability').textContent = activity.IsAvailable ? 'Yes' : 'No';
+                document.getElementById('activityBookings').textContent = activity.Bookings && activity.Bookings.length > 0 
+                    ? activity.Bookings.length + ' booking(s)' 
+                    : 'No bookings';
+                document.getElementById('activityCreatedAt').textContent = activity.createdAt ? new Date(activity.createdAt).toLocaleString() : 'N/A';
+                document.getElementById('activityUpdatedAt').textContent = activity.updatedAt ? new Date(activity.updatedAt).toLocaleString() : 'N/A';
+
+                // Show activity details
+                activityDetailsDiv.style.display = 'block';
+                errorMessageDiv.style.display = 'none'; // Hide error message if shown
+            } catch (error) {
+                // Show error message if an error occurs
+                errorMessageDiv.textContent = error.message;
+                errorMessageDiv.style.display = 'block';
+                activityDetailsDiv.style.display = 'none'; // Hide activity details if error occurs
+            }
+        });
+    </script>
 </body>
 </html>
