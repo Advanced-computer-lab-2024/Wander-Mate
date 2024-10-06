@@ -15,9 +15,57 @@
                 <label for="id">Activity ID</label>
             </div>
             <div class="field">
+                <input type="text" name="creator" id="creator" placeholder=" " required>
+                <label for="creator">Creator Name/ID</label>
+            </div>
+            <div class="field">
                 <input type="submit" value="Delete Activity">
             </div>
         </form>
+
+        <div id="successMessage" style="color: green; display: none;"></div>
+        <div id="errorMessage" style="color: red; display: none;"></div>
     </div>
+
+    <script>
+        document.getElementById('deleteActivityForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            const id = document.getElementById('id').value;
+            const creator = document.getElementById('creator').value;
+
+            try {
+                const response = await fetch('http://localhost:8000/deleteActivity', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        Creator: creator
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success case
+                    document.getElementById('successMessage').innerText = result.message;
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                } else {
+                    // Error case
+                    document.getElementById('errorMessage').innerText = result.message || 'Error deleting activity';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
