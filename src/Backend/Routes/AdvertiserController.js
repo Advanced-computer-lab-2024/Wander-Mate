@@ -94,10 +94,11 @@ const readActivities = async (req, res) => {
       Date: { $gte: currentDate },
     });
     res.status(200).json(activities);
-  } catch {
+  } catch (error) {
     res.status(400).json({ error: "Error reading activities" });
   }
 };
+
 
 const updateActivity = async (req, res) => {
   const {
@@ -291,7 +292,9 @@ const viewAll2 = async (req, res) => {
     // Check if there are any attractions or itineraries
     if (attractions.length === 0 && itineraries.length === 0) {
       return res
+        
         .status(404)
+        
         .json({ message: "No attractions or itineraries found." });
     }
 
@@ -300,6 +303,14 @@ const viewAll2 = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
+const getAdvertisers = async (req, res) => {
+  try {
+    const Creator = await advertiserModel.find().select("-Password");
+    res.status(200).json({ Creator });
+  } catch {
+    res.status(400).json({ message: "Error to get advertisers" });
   }
 };
 const getAdvertisers = async (req, res) => {
@@ -322,5 +333,6 @@ module.exports = {
   readAdvertiserInfo,
   viewAll2,
   updateAdvertiserInfo,
+  getAdvertisers,
   getAdvertisers,
 };

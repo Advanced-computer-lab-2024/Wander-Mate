@@ -15,7 +15,7 @@
                 <label for="id">Activity ID</label>
             </div>
             <div class="field">
-                <input type="text" name="creator" id="creator" placeholder=" " required>
+                <input type="text" name="creator" id="creator" placeholder=" " required readonly>
                 <label for="creator">Creator Name/ID</label>
             </div>
             <div class="field">
@@ -28,6 +28,33 @@
     </div>
 
     <script>
+        // Function to fetch the creator ID based on the logged-in username
+        async function fetchCreatorID(username) {
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get creator ID');
+                }
+
+                const { userID } = await response.json();
+                document.getElementById('creator').value = userID; // Automatically fill the creator field
+            } catch (error) {
+                console.error('Error fetching creator ID:', error);
+                alert('Could not load creator ID.');
+            }
+        }
+
+        // Simulate logged-in user by fetching the username from sessionStorage
+        document.addEventListener("DOMContentLoaded", () => {
+            const loggedInUsername = sessionStorage.getItem('username'); // Fetch from sessionStorage
+            if (loggedInUsername) {
+                fetchCreatorID(loggedInUsername); // Fetch the creator ID based on the username
+            } else {
+                console.error('No logged-in user found.');
+            }
+        });
+
+        // Form submission logic for deleting an activity
         document.getElementById('deleteActivityForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the form from submitting normally
 

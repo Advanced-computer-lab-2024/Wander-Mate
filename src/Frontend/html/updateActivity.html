@@ -11,7 +11,7 @@
         <div class="title">Update Activity</div>
         <form id="updateActivityForm">
             <div class="field">
-                <input type="text" name="id" id="id" placeholder=" " required>
+                <input type="text" name="id" id="id" placeholder=" " required readonly>
                 <label for="id">Activity ID*</label>
             </div>
             <div class="field">
@@ -53,6 +53,20 @@
     </div>
 
     <script>
+        // Function to get the query parameter from the URL
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Fill the Activity ID field with the ID from the URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const activityId = getQueryParameter('id');
+            if (activityId) {
+                document.getElementById('id').value = activityId;
+            }
+        });
+
         // Form submission logic
         document.getElementById('updateActivityForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission

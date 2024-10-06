@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Read All Activities | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css">
+    <style>
+        .activity-item {
+            margin-bottom: 15px;
+        }
+
+        .activity-item button {
+            margin-right: 10px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .update-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="wrapper">
@@ -76,11 +100,22 @@
                         <p><strong>Category:</strong> ${activity.Category || "N/A"}</p>
                         <p><strong>Tags:</strong> ${tags}</p>
                         <p><strong>Ratings:</strong> ${activity.Ratings || 0}</p>
+                        
+                        <!-- Functionless Delete Button -->
+                        <button class="delete-btn">Delete</button>
+
+                        <!-- Update Button -->
+                        <button class="update-btn" onclick="redirectToUpdatePage('${activity._id}')">Update</button>
                     </div>
                     <hr>
                 `;
             });
         }
+      };
+
+      // Redirect to updateActivity.html with the activity ID
+      const redirectToUpdatePage = (activityId) => {
+        window.location.href = `updateActivity.html?id=${activityId}`;
       };
     </script>
 </body>
