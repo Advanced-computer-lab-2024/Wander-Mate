@@ -80,6 +80,7 @@ const {
   updateItinerary,
   viewAll1,
   readItinerary,
+  getTourguides,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -229,3 +230,4 @@ app.get("/getAdvertisers", getAdvertisers);
 app.get("/searchActivities", searchActivities);
 app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
+app.get("/getTourguides", getTourguides);

@@ -249,7 +249,7 @@ const createProfileInformation = async (req, res) => {
 
 const readProfileInformation = async (req, res) => {
   try {
-    const  Username  = req.params.Username; // Using `req.body` to get the Username, similar to `readSeller`
+    const Username = req.params.Username; // Using `req.body` to get the Username, similar to `readSeller`
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
@@ -299,14 +299,16 @@ const updateProfileInformation = async (req, res) => {
   }
 };
 const viewAll1 = async (req, res) => {
-    try {
+  try {
     // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
     // Check if there are any attractions or itineraries
     if (attractions.length === 0 && itineraries.length === 0) {
-      return res.status(404).json({ message: "No attractions or itineraries found." });
+      return res
+        .status(404)
+        .json({ message: "No attractions or itineraries found." });
     }
 
     // Respond with the retrieved data
@@ -314,6 +316,15 @@ const viewAll1 = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
+
+const getTourguides = async (req, res) => {
+  try {
+    const Creator = await advertiserModel.find().select("-Password");
+    res.status(200).json({ Creator });
+  } catch {
+    res.status(400).json({ message: "Error to get Tourguides" });
   }
 };
 
@@ -327,4 +338,5 @@ module.exports = {
   deleteItinerary,
   viewAll1,
   readItinerary,
+  getTourguides,
 };
