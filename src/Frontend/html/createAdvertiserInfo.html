@@ -5,17 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Advertiser Info</title>
   <link rel="stylesheet" href="../styles/register.css">
-  
 </head>
 <body>
 
   <div class="wrapper">
     <div class="title">Update Advertiser Info</div>
     <form id="updateAdvertiserInfoForm">
-      <div class="field">
-        <input type="text" id="username" name="Username" placeholder=" " required>
-        <label for="username">Username</label>
-      </div>
       <div class="field">
         <input type="email" id="email" name="Email" placeholder=" " required>
         <label for="email">Email</label>
@@ -42,16 +37,19 @@
   </div>
 
   <script>
-    const form = document.getElementById('updateAdvertiserInfoForm');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
+    document.getElementById('updateAdvertiserInfoForm').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Prevent default form submission
 
-    // Handle form submission for updating advertiser info
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
+      // Retrieve the username from sessionStorage
+      const username = sessionStorage.getItem('username');
+
+      if (!username) {
+        alert('User not logged in. Please log in first.');
+        return;
+      }
 
       const formData = {
-        Username: document.getElementById('username').value,
+        Username: username, // Automatically populated from sessionStorage
         Email: document.getElementById('email').value,
         Website: document.getElementById('website').value,
         Hotline: document.getElementById('hotline').value,
@@ -59,15 +57,19 @@
       };
 
       try {
+        // Submit the form data
         const response = await fetch('http://localhost:8000/createAdvertiserInfo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData), // Send the form data in JSON format
         });
 
         const result = await response.json();
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
         if (response.ok) {
           successMessage.innerText = 'Advertiser info updated successfully!';
           successMessage.style.display = 'block';
@@ -78,6 +80,7 @@
           successMessage.style.display = 'none';
         }
       } catch (error) {
+        const errorMessage = document.getElementById('errorMessage');
         errorMessage.innerText = 'An error occurred. Please try again.';
         errorMessage.style.display = 'block';
         successMessage.style.display = 'none';
