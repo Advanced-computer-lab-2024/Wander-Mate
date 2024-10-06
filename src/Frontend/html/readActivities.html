@@ -30,15 +30,12 @@
           const response = await fetch(URL, {
             method: "GET",
             headers: {
-              "Content-Type": "application/json",
-            },
-            mode: 'cors', // Add this to enable CORS
-            credentials: 'include' // Add this to include credentials (e.g., cookies)
+              "Content-Type": "application/json"
+            }
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error("Server returned an error:", errorData);
             alert("Error: " + (errorData.message || "Unknown error"));
             return;
           }
@@ -63,14 +60,21 @@
             activitiesListDiv.innerHTML += `<p>No activities found.</p>`;
         } else {
             data.forEach(activity => {
+                // Handle tag names (now populated in the backend)
+                const tags = activity.Tags && activity.Tags.length 
+                  ? activity.Tags.map(tag => tag.name).join(", ") 
+                  : "No tags available";
+
                 activitiesListDiv.innerHTML += `
                     <div class="activity-item">
                         <h3>${activity.Name || "N/A"}</h3>
+                        <p><strong>Creator:</strong> ${activity.Creator || "N/A"}</p>
                         <p><strong>Date:</strong> ${new Date(activity.Date).toLocaleDateString()}</p>
                         <p><strong>Time:</strong> ${activity.Time || "N/A"}</p>
-                        <p><strong>Location:</strong> ${activity.Location || "N/A"}</p>
-                        <p><strong>Price:</strong> ${activity.Price || "N/A"}</p>
+                        <p><strong>Location:</strong> ${activity.Location ? activity.Location.coordinates.join(", ") : "N/A"}</p>
+                        <p><strong>Price:</strong> $${activity.Price || "N/A"}</p>
                         <p><strong>Category:</strong> ${activity.Category || "N/A"}</p>
+                        <p><strong>Tags:</strong> ${tags}</p>
                         <p><strong>Ratings:</strong> ${activity.Ratings || 0}</p>
                     </div>
                     <hr>
