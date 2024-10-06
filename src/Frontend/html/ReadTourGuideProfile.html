@@ -9,16 +9,6 @@
 <body>
     <div class="wrapper">
         <div class="title">Get Tour Guide Profile</div>
-        <form id="profileForm">
-            <div class="field">
-                <input type="text" id="username" name="username" required>
-                <label for="username">Enter Username</label>
-            </div>
-            <div class="field">
-                <input type="submit" value="Get Profile">
-            </div>
-        </form>
-
         <div id="profileInfo" class="profile-info" style="display:none;">
             <h2>Profile Information</h2>
             <p><strong>Username:</strong> <span id="displayUsername"></span></p>
@@ -32,12 +22,25 @@
     </div>
 
     <script>
-    const form = document.getElementById('profileForm');
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
+    window.onload = function () {
+        const username = sessionStorage.getItem("username"); // Get the username from sessionStorage
+
+        // Check if username is retrieved successfully
+        if (username) {
+            console.log("Username found in session storage:", username);
+            fetchProfile(username); // Call fetchProfile with the username
+        } else {
+            console.error("Username not found in session storage.");
+            document.getElementById('errorMessage').innerText = "Username not found. Please log in or register.";
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    };
+
+    async function fetchProfile(username) {
+        console.log("Fetching profile for username:", username);
 
         try {
+            // Fetch profile details using the username
             const response = await fetch(`http://localhost:8000/readProfileInformation/${encodeURIComponent(username)}`, {
                 method: 'GET',
                 headers: {
@@ -52,8 +55,10 @@
                 document.getElementById('profileInfo').style.display = 'none';
             } else {
                 const profileData = await response.json();
+                console.log(profileData); // Log the profile data for debugging
 
-                document.getElementById('displayUsername').innerText = profileData.Username;
+                // Display the profile information
+                document.getElementById('displayUsername').innerText = profileData.Username || 'N/A';
                 document.getElementById('displayEmail').innerText = profileData.Email || 'N/A';
                 document.getElementById('displayMobileNumber').innerText = profileData.MobileNumber || 'N/A';
                 document.getElementById('displayPreviousWork').innerText = profileData.PreviousWork || 'N/A';
@@ -63,10 +68,11 @@
                 document.getElementById('errorMessage').style.display = 'none';
             }
         } catch (error) {
+            console.error("Error fetching profile:", error);
             document.getElementById('errorMessage').innerText = "An error occurred while fetching the profile.";
             document.getElementById('errorMessage').style.display = 'block';
         }
-    });
+    }
     </script>
 </body>
 </html>

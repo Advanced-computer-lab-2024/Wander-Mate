@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Itinerary</title>
+    <style>
+      /* Optional: Adjust styles for the map container */
+      #map {
+        height: 300px; /* Set a height for the map */
+        width: 100%; /* Make the map full width */
+        margin-top: 10px;
+      }
+      /* Style for the search boxes */
+      #pac-input-pickup,
+      #pac-input-dropoff {
+        margin-top: 10px;
+        width: 300px;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Update Itinerary</div>
+      <form id="updateItineraryForm">
+        <div class="field">
+          <input type="text" id="creator" name="Creator" required />
+          <label for="creator">Creator (ObjectID)</label>
+        </div>
+
+        <div class="field">
+          <input type="text" id="name" name="Name" required />
+          <label for="name">Name</label>
+        </div>
+
+        <div class="field">
+          <input
+            type="text"
+            id="id"
+            name="id"
+            required
+            pattern="^[a-fA-F0-9]{24}$"
+            placeholder="Enter Itinerary ID (24 hex characters)"
+          />
+          <label for="id">Itinerary ID (ObjectID)</label>
+        </div>
+
+        <div class="field">
+          <label>Activities</label>
+          <div id="activitiesContainer"></div>
+        </div>
+
+        <div class="field">
+          <label>Locations to Visit</label>
+          <div id="locationsContainer"></div>
+        </div>
+
+        <div class="field">
+          <input type="text" id="timeline" name="TimeLine" />
+          <label for="timeline">TimeLine</label>
+        </div>
+
+        <div class="field">
+          <input type="text" id="language" name="Language" required />
+          <label for="language">Language</label>
+        </div>
+
+        <div class="field">
+          <input type="number" id="price" name="Price" required />
+          <label for="price">Price</label>
+        </div>
+
+        <div class="field">
+          <label for="availableDates">Available Dates</label>
+          <input type="date" id="availableDateInput" />
+          <button type="button" id="addDateBtn">Add Date</button>
+          <ul id="selectedDatesList"></ul>
+          <input type="hidden" id="availableDates" name="AvailableDates" required />
+        </div>
+
+        <div class="field">
+          <input
+            type="text"
+            id="pac-input-pickup"
+            placeholder="Search for Pick Up Location"
+            required
+          />
+          <input type="hidden" id="pickUpLocation" name="PickUpLocation" />
+          <label for="pickUpLocation">Pick Up Location</label>
+        </div>
+
+        <div class="field">
+          <input
+            type="text"
+            id="pac-input-dropoff"
+            placeholder="Search for Drop Off Location"
+            required
+          />
+          <input type="hidden" id="dropOffLocation" name="DropOffLocation" />
+          <label for="dropOffLocation">Drop Off Location</label>
+          <div id="map"></div>
+        </div>
+
+        <div class="field">
+          <input type="submit" value="Update Itinerary" />
+        </div>
+      </form>
+    </div>
+
+    <script>
+      let map;
+      let pickupMarker, dropoffMarker;
+      let selectedDates = [];
+
+      function initMap() {
+        const defaultLocation = { lat: -34.397, lng: 150.644 };
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: defaultLocation,
+          zoom: 8,
+        });
+
+        const pickupInput = document.getElementById("pac-input-pickup");
+        const dropoffInput = document.getElementById("pac-input-dropoff");
+
+        const pickupSearchBox = new google.maps.places.SearchBox(pickupInput);
+        const dropoffSearchBox = new google.maps.places.SearchBox(dropoffInput);
+
+        map.addListener("bounds_changed", () => {
+          pickupSearchBox.setBounds(map.getBounds());
+          dropoffSearchBox.setBounds(map.getBounds());
+        });
+
+        pickupSearchBox.addListener("places_changed", () => {
+          const places = pickupSearchBox.getPlaces();
+          if (places.length === 0) return;
+
+          if (pickupMarker) pickupMarker.setMap(null);
+          const place = places[0];
+          if (place.geometry && place.geometry.location) {
+            pickupMarker = new google.maps.Marker({
+              map: map,
+              position: place.geometry.location,
+            });
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+            document.getElementById("pickUpLocation").value = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`;
+          }
+        });
+
+        dropoffSearchBox.addListener("places_changed", () => {
+          const places = dropoffSearchBox.getPlaces();
+          if (places.length === 0) return;
+
+          if (dropoffMarker) dropoffMarker.setMap(null);
+          const place = places[0];
+          if (place.geometry && place.geometry.location) {
+            dropoffMarker = new google.maps.Marker({
+              map: map,
+              position: place.geometry.location,
+            });
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+            document.getElementById("dropOffLocation").value = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`;
+          }
+        });
+      }
+
+      // Fetch and display activities on page load
+      async function fetchActivities() {
+        try {
+          const response = await fetch("http://localhost:8000/viewActivities");
+          if (response.ok) {
+            const activities = await response.json();
+            populateActivitiesCheckboxes(activities);
+          } else {
+            console.error("Failed to fetch activities");
+          }
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+        }
+      }
+
+      // Populate the checkbox container with activities
+      function populateActivitiesCheckboxes(activities) {
+        const activitiesContainer = document.getElementById("activitiesContainer");
+        activities.forEach((activity) => {
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = "Activities"; // Same name for all activities
+          checkbox.value = activity._id; // Use _id as the value
+          const label = document.createElement("label");
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(activity.Name)); // Display activity name
+          activitiesContainer.appendChild(label);
+          activitiesContainer.appendChild(document.createElement("br")); // New line for better layout
+        });
+      }
+
+      // Fetch and display locations on page load
+      async function fetchPlaces() {
+        try {
+          const response = await fetch("http://localhost:8000/readPlaces");
+          if (response.ok) {
+            const places = await response.json();
+            populatePlacesCheckboxes(places);
+          } else {
+            console.error("Failed to fetch places");
+          }
+        } catch (error) {
+          console.error("Error fetching places:", error);
+        }
+      }
+
+      // Populate the checkbox container with locations
+      function populatePlacesCheckboxes(places) {
+        const locationsContainer = document.getElementById("locationsContainer");
+        places.forEach((place) => {
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = "LocationsToVisit"; // Same name for all locations
+          checkbox.value = place._id; // Use _id as the value
+          const label = document.createElement("label");
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(place.Name)); // Display place name
+          locationsContainer.appendChild(label);
+          locationsContainer.appendChild(document.createElement("br")); // New line for better layout
+        });
+      }
+
+      // Handle adding multiple dates
+      const addDateBtn = document.getElementById("addDateBtn");
+      const selectedDatesList = document.getElementById("selectedDatesList");
+      const availableDatesInput = document.getElementById("availableDates");
+
+      addDateBtn.addEventListener("click", () => {
+        const dateInput = document.getElementById("availableDateInput");
+        const selectedDate = dateInput.value;
+        if (selectedDate && !selectedDates.includes(selectedDate)) {
+          selectedDates.push(selectedDate);
+
+          // Add the date to the displayed list
+          const li = document.createElement("li");
+          li.textContent = selectedDate;
+          selectedDatesList.appendChild(li);
+
+          // Update the hidden input with selected dates
+          availableDatesInput.value = selectedDates.join(",");
+        }
+        dateInput.value = ""; // Clear the input for the next selection
+      });
+
+      // Function to update the itinerary
+      async function updateItinerary(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const formObject = {};
+        formData.forEach((value, key) => {
+          if (!formObject[key]) {
+            formObject[key] = value;
+          } else if (Array.isArray(formObject[key])) {
+            formObject[key].push(value);
+          } else {
+            formObject[key] = [formObject[key], value];
+          }
+        });
+
+        try {
+          const response = await fetch("http://localhost:8000/updateItinerary", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formObject),
+          });
+          if (response.ok) {
+            const result = await response.json();
+            alert("Itinerary updated successfully!");
+            console.log(result);
+          } else {
+            alert("Failed to update itinerary");
+            console.error("Update failed:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error updating itinerary:", error);
+        }
+      }
+
+      // Bind the update itinerary function to form submission
+      document.getElementById("updateItineraryForm").addEventListener("submit", updateItinerary);
+
+      // Load activities and places on page load
+      fetchActivities();
+      fetchPlaces();
+      initMap();
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"></script>
+  </body>
+</html>
