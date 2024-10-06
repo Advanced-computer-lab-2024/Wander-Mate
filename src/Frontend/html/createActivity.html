@@ -152,7 +152,7 @@
                 const categories = await response.json();
                 categories.forEach(category => {
                     const option = document.createElement("option");
-                    option.value = category.Name;
+                    option.value = category.id;
                     option.textContent = category.Name;
                     categorySelect.appendChild(option);
                 });
