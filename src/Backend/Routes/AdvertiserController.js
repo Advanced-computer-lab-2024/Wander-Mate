@@ -313,14 +313,6 @@ const getAdvertisers = async (req, res) => {
     res.status(400).json({ message: "Error to get advertisers" });
   }
 };
-const getAdvertisers = async (req, res) => {
-  try {
-    const Creator = await advertiserModel.find().select("-Password");
-    res.status(200).json({ Creator });
-  } catch {
-    res.status(400).json({ message: "Error to get advertisers" });
-  }
-};
 
 module.exports = {
   createActivity,
