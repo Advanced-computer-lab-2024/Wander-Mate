@@ -120,6 +120,36 @@ const updateCategory = async (req, res) => {
   }
 };
 
+const updateCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the category ID from the URL parameters
+    const { newName } = req.body; // Get the new category name from the request body
+    // Check if the ID and new name are provided
+    if (!id || !newName) {
+      return res.status(400).json("Id, name are required");
+    }
+    // Check if the category with the given ID exists
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    // Check if the new category name already exists
+    const categoryWithSameName = await Category.findOne({ Name: newName });
+    if (categoryWithSameName) {
+      return res
+        .status(400)
+        .json({ message: "Category with this new name already exists" });
+    }
+    // Update the category name
+    category.Name = newName;
+    await category.save();
+    res.status(200).json(category);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Can't update the category" });
+  }
+};
+
 // Deleting a category by its name
 const deleteCategory = async (req, res) => {
   try {
@@ -142,6 +172,26 @@ const deleteCategory = async (req, res) => {
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (err) {
     console.error(err);
+    res.status(400).json({ message: "Can't delete the category" });
+  }
+};
+
+const deleteCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the category ID from the URL parameters
+    // Check if the category ID is provided
+    if (!id) {
+      return res.status(400).json({ message: "Category ID is required" });
+    }
+    // Check if the category exists
+    const existingCategory = await Category.findById(id);
+    if (!existingCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    // Delete the category
+    await Category.deleteOne({ _id: id });
+    res.status(200).json("Deleted");
+  } catch {
     res.status(400).json({ message: "Can't delete the category" });
   }
 };
@@ -569,11 +619,11 @@ const getID = async (req, res) => {
 
 const getCategories = async (req, res) => {
   try {
-    const db = mongoose.connection; 
-    const collection = db.collection("categories"); 
-    const categories = await collection.find({}).toArray(); 
+    const db = mongoose.connection;
+    const collection = db.collection("categories");
+    const categories = await collection.find({}).toArray();
 
-    res.status(200).json(categories); 
+    res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: "Error fetching categories", error });
   }
@@ -581,11 +631,11 @@ const getCategories = async (req, res) => {
 
 const getTags = async (req, res) => {
   try {
-    const db = mongoose.connection; 
-    const collection = db.collection("tags"); 
-    const Tags = await collection.find({}).toArray(); 
+    const db = mongoose.connection;
+    const collection = db.collection("tags");
+    const Tags = await collection.find({}).toArray();
 
-    res.status(200).json(Tags); 
+    res.status(200).json(Tags);
   } catch (error) {
     res.status(500).json({ message: "Error fetching categories", error });
   }
@@ -614,4 +664,6 @@ module.exports = {
   getID,
   getCategories,
   getTags,
+  deleteCategoryById,
+  updateCategoryById,
 };

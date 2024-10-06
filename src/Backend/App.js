@@ -63,6 +63,8 @@ const {
   getID,
   getCategories,
   getTags,
+  deleteCategoryById,
+  updateCategoryById,
 } = require("./Routes/adminController.js");
 
 const {
@@ -160,7 +162,9 @@ app.patch("/UpdateProductseller/:id", UpdateProductseller);
 app.get("/readItinerary/:id", readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
+app.patch("/updateCategoryById/:id", updateCategoryById);
 app.delete("/deleteCategory", deleteCategory);
+app.delete("/deleteCategoryById/:id", deleteCategoryById);
 app.post("/createPreferenceTags", createPreferenceTags);
 app.get("/readCategory", readCategory);
 app.put("/updateTags", updatePreferenceTags);
@@ -207,7 +211,7 @@ app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getCategories", getCategories);
-app.get("/getTags",getTags);
+app.get("/getTags", getTags);
 app.get("/getID/:Username", getID);
 app.get("/getSellers/", getSellers);
 app.get("/viewPlaces", viewPlaces);
