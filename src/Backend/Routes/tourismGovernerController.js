@@ -9,7 +9,7 @@ const Itinerary = require("../Models/itinerary.js");
 //Read
 const getPlaces = async (req, res) => {
   try {
-    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378");
     const places = await attractionModel.find({ Type: objectId });
     res.status(200).json(places);
   } catch (error) {
@@ -65,8 +65,9 @@ const createPlace = async (req, res) => {
       Location,
       OpeningHours,
       TicketPrices,
+      Category,
     } = req.body;
-    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c");
+    const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378");
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "At least one image is required." });
@@ -87,6 +88,7 @@ const createPlace = async (req, res) => {
       OpeningHours,
       TicketPrices,
       Type: objectId,
+      Category,
     });
     res.status(200).json(newPlace);
   } catch (error) {

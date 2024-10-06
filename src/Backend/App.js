@@ -26,6 +26,9 @@ const {
   viewPlaces,
   viewActivities,
   viewItineraries,
+  searchActivities,
+  sortActivitiesByRatings,
+  readPlaces,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -90,6 +93,7 @@ const {
   viewAll2,
   readAdvertiserInfo,
   updateAdvertiserInfo,
+  getAdvertisers,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -221,3 +225,7 @@ app.get("/getSellers/", getSellers);
 app.get("/viewPlaces", viewPlaces);
 app.get("/viewActivities", viewActivities);
 app.get("/viewItineraries", viewItineraries);
+app.get("/getAdvertisers", getAdvertisers);
+app.get("/searchActivities", searchActivities);
+app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
+app.get("/readPlaces", readPlaces);

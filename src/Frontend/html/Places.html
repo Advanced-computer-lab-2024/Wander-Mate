@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Places | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
+    <!-- Replace with your API Key -->
+    <style>
+      .map-container {
+        width: 100%;
+        height: 200px;
+        margin-top: 10px;
+      }
+      .activity-item {
+        margin-bottom: 20px;
+      }
+      .activity-images img {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">All Places</div>
+
+      <div class="search-section">
+        <label for="ActivityName">Search by Place Name:</label>
+        <input
+          type="text"
+          id="ActivityName"
+          placeholder="Enter activity name"
+        />
+        <button id="searchButton">Search</button>
+      </div>
+
+      <div class="filter-section">
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+          <option value="all">All Categories</option>
+        </select>
+
+        <div id="tagsSection">
+          <label>Tags:</label>
+          <div id="tagsContainer"></div>
+        </div>
+        <button id="filterButton">Apply Filter</button>
+        <button id="resetButton">Reset</button>
+      </div>
+
+      <div class="activity-list" id="activityList"></div>
+    </div>
+
+    <script>
+      let allActivities = [];
+      let displayedActivities = [];
+      let allAdvertisers = [];
+      let advertiserMap = {};
+      let categories = [];
+      let tags = [];
+
+      async function fetchCategories() {
+        const categorySelect = document.getElementById("category");
+        try {
+          const response = await fetch("http://localhost:8000/getCategories");
+          if (!response.ok) throw new Error("Network response was not ok");
+          categories = await response.json();
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id;
+            option.textContent = category.Name;
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          alert("Could not load categories. Please try again later.");
+        }
+      }
+
+      async function fetchTags() {
+        const tagsContainer = document.getElementById("tagsContainer");
+        try {
+          const response = await fetch(
+            "http://localhost:8000/readHistoricalTags"
+          );
+          if (!response.ok) throw new Error("Network response was not ok");
+          tags = await response.json();
+          tags.forEach((tag) => {
+            const tagCheckbox = document.createElement("div");
+            tagCheckbox.innerHTML = `
+                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                        <label for="tag-${tag._id}">${tag.Name}</label>
+                    `;
+            tagsContainer.appendChild(tagCheckbox);
+          });
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+          alert("Could not load tags. Please try again later.");
+        }
+      }
+
+      async function fetchActivities() {
+        try {
+          const response = await fetch("http://localhost:8000/readPlaces");
+          const Activities = await response.json();
+          if (response.ok) {
+            allActivities = Activities;
+            displayedActivities = allActivities;
+            displayActivities(displayedActivities);
+          } else {
+            document.getElementById("activityList").innerHTML =
+              "<p>No Activities available</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching Activities:", error);
+          document.getElementById("activityList").innerHTML =
+            "<p>An error occurred while fetching Activities.</p>";
+        }
+      }
+
+      async function fetchImages(activityId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/getPlaceImage/${activityId}`
+          );
+          if (response.ok) {
+            return await response.json();
+          } else {
+            console.error("Error fetching images for activity:", activityId);
+          }
+        } catch (error) {
+          console.error("Error fetching images:", error);
+        }
+        return [];
+      }
+
+      async function displayActivities(activities) {
+        const activityList = document.getElementById("activityList");
+        activityList.innerHTML = ""; // Clear existing Activities
+        for (const activity of activities) {
+          const activityItem = document.createElement("div");
+          activityItem.className = "activity-item";
+
+          // Fetch images for each activity
+          const images = await fetchImages(activity._id);
+
+          // Create image container
+          const imageContainer = document.createElement("div");
+          imageContainer.className = "activity-images";
+          images.forEach((image) => {
+            const imgElement = document.createElement("img");
+            imgElement.src = `data:${image.contentType};base64,${image.data}`;
+            imgElement.alt = `${activity.Name} image`;
+            imageContainer.appendChild(imgElement);
+          });
+
+          activityItem.innerHTML = `
+                    <div class="activity-details">
+                        <h2 class="activity-name">${activity.Name}</h2>
+                        <p class="activity-creator">Advertiser: ${
+                          advertiserMap[activity.Creator] || "Unknown"
+                        }</p>
+                    </div>
+                    <div class="edit-button">
+                        <a href="">Book</a>
+                    </div>
+                    <div class="map-container" id="map-${activity._id}"></div>
+                `;
+
+          // Append image container to activity item
+          activityItem.appendChild(imageContainer);
+          activityList.appendChild(activityItem);
+          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this activity
+        }
+      }
+
+      function initMap(location, elementId) {
+        const map = new google.maps.Map(document.getElementById(elementId), {
+          zoom: 10,
+          center: {
+            lat: location.coordinates[1], // latitude
+            lng: location.coordinates[0], // longitude
+          },
+        });
+
+        new google.maps.Marker({
+          position: {
+            lat: location.coordinates[1],
+            lng: location.coordinates[0],
+          },
+          map: map,
+        });
+      }
+
+      function applyFiltersAndSearch() {
+        const activityName = document
+          .getElementById("ActivityName")
+          .value.trim()
+          .toLowerCase();
+        const selectedCategory = document.getElementById("category").value;
+
+        const selectedTags = Array.from(
+          document.querySelectorAll(
+            "#tagsContainer input[type='checkbox']:checked"
+          )
+        ).map((checkbox) => checkbox.value);
+
+        displayedActivities = allActivities.filter((activity) => {
+          const matchesName =
+            activity.Name && activity.Name.toLowerCase().includes(activityName);
+          const matchesCategory =
+            selectedCategory === "all" ||
+            (selectedCategory ? activity.Category === selectedCategory : true);
+          const matchesTags =
+            selectedTags.length === 0 ||
+            (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false);
+          return matchesName && matchesCategory && matchesTags;
+        });
+
+        displayActivities(displayedActivities); // Display filtered and searched Activities
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        await fetchActivities(); // Then fetch Activities
+        fetchCategories(); // Fetch categories
+        fetchTags(); // Fetch tags
+      });
+
+      document
+        .getElementById("searchButton")
+        .addEventListener("click", applyFiltersAndSearch);
+      document
+        .getElementById("filterButton")
+        .addEventListener("click", applyFiltersAndSearch);
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        document.getElementById("ActivityName").value = ""; // Clear the search input
+        document.getElementById("category").selectedIndex = 0; // Reset the category dropdown
+
+        const tagCheckboxes = document.querySelectorAll(
+          "#tagsContainer input[type='checkbox']"
+        );
+        tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
+        displayedActivities = allActivities; // Reset displayed activities
+        displayActivities(displayedActivities); // Display all Activities
+      });
+    </script>
+  </body>
+</html>

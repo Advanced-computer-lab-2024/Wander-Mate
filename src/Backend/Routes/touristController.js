@@ -179,9 +179,34 @@ const searchAttractions = async (req, res) => {
   }
 };
 
+const searchActivities = async (req, res) => {
+  const { Name, Category, Tags } = req.body;
+  const objectId = new mongoose.Types.ObjectId("67025cb6bb14549b7e29f376");
+  const filter = { Type: objectId };
+  if (Name) {
+    filter.Name = { $regex: Name, $options: "i" };
+  }
+  if (Category) {
+    filter.Category = Category;
+  }
+  if (Tags && Array.isArray(Tags) && Tags.length > 0) {
+    filter.Tags = { $in: Tags };
+  }
+
+  try {
+    const [attractions, itineraries] = await Promise.all([
+      attractionModel.find(filter),
+    ]);
+    const searchResult = { ...attractions, ...itineraries };
+    res.status(200).json(searchResult);
+  } catch {
+    res.status(400).json({ message: "Error searching attractions" });
+  }
+};
+
 const filterPlaces = async (req, res) => {
   const { Tags } = req.body;
-  const filter = { Type: mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c") };
+  const filter = { Type: mongoose.Types.ObjectId("67025cc3bb14549b7e29f378") };
   if (Tags && Array.isArray(Tags) && Tags.length > 0) {
     filter.Tags = { $in: Tags };
   }
@@ -242,9 +267,9 @@ const TouristsearchProductByName = async (req, res) => {
 const viewUpcomingActivitiesAndItineraries = async (req, res) => {
   try {
     const currentDate = new Date();
-    const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+    const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378"); //place type
     const activityObjectId = new mongoose.Types.ObjectId(
-      "66f91e1da144543bfcfbae2a"
+      "67025cb6bb14549b7e29f376"
     ); //activity type
     const historicalPlacesFilter = {
       Type: objectId,
@@ -283,7 +308,7 @@ const viewUpcomingActivitiesAndItineraries = async (req, res) => {
 
 const viewActivities = async (req, res) => {
   const activityObjectId = new mongoose.Types.ObjectId(
-    "66f91e1da144543bfcfbae2a"
+    "67025cb6bb14549b7e29f376"
   ); //activity type
   const currentDate = new Date();
   const activityFilter = {
@@ -315,7 +340,7 @@ const viewItineraries = async (req, res) => {
 };
 
 const viewPlaces = async (req, res) => {
-  const objectId = new mongoose.Types.ObjectId("66f91e39a144543bfcfbae2c"); //place type
+  const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378"); //place type
   const historicalPlacesFilter = {
     Type: objectId,
   };
@@ -387,17 +412,37 @@ const filterItineraries = async (req, res) => {
   }
 };
 
+const sortActivitiesByRatings = async (req, res) => {
+  try {
+    // Find and sort activities by ratings in descending order (-1 for descending)
+    const activities = await attractionModel.find({}).sort({ Ratings: -1 });
+
+    // Check if activities exist
+    if (!activities || activities.length === 0) {
+      return res.status(404).json({ message: "No activities found" });
+    }
+
+    // Return sorted activities
+    res.status(200).json(activities);
+  } catch (err) {
+    console.error("Error sorting activities by ratings:", err);
+    res.status(500).json({ message: "Failed to sort activities by ratings" });
+  }
+};
+
 const filterActivities = async (req, res) => {
   const { minPrice, maxPrice, minDate, maxDate, category, ratings } = req.body;
 
   // Initialize filter object for upcoming activities
   const filter = {
-    Type: new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a"),
+    Type: new mongoose.Types.ObjectId("67025cb6bb14549b7e29f376"),
   };
 
   // Add budget filter if it's provided
   if (minPrice || maxPrice) {
-    filter.Price = { $lte: maxPrice, $gte: minPrice };
+    filter.Price = {};
+    if (minPrice) filter.Price.$gte = String(minPrice); // Convert to string
+    if (maxPrice) filter.Price.$lte = String(maxPrice); // Convert to string
   }
   // Add date filter if it's provided
   if (minDate || maxDate) {
@@ -412,11 +457,23 @@ const filterActivities = async (req, res) => {
     filter.Ratings = { $gte: ratings }; // Assuming you want to filter activities with ratings greater than or equal to the specified value
   }
   try {
-    const activities = await attractionModel.find(filter); // Replace activityModel with the actual model name for activities
+    const activities = await attractionModel.find(filter);
     res.status(200).json(activities);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "Error filtering activities" });
+  }
+};
+
+const readPlaces = async (req, res) => {
+  try {
+    const filter = {
+      Type: new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378"),
+    };
+    const places = await attractionModel.find(filter);
+    res.status(200).json(places);
+  } catch {
+    res.status(400).json({ message: "Error reading places" });
   }
 };
 
@@ -434,4 +491,7 @@ module.exports = {
   viewActivities,
   viewItineraries,
   viewPlaces,
+  searchActivities,
+  sortActivitiesByRatings,
+  readPlaces,
 };

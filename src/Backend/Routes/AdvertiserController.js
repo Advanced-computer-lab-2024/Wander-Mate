@@ -60,7 +60,7 @@ const createActivity = async (req, res) => {
       Tags,
       Discounts,
       IsAvailable,
-      Type: new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a"),
+      Type: new mongoose.Types.ObjectId("67025cb6bb14549b7e29f376"),
       Bookings,
       Ratings,
     });
@@ -70,7 +70,6 @@ const createActivity = async (req, res) => {
     res.status(400).json({ error: "Error creating activity" });
   }
 };
-
 
 const readActivity = async (req, res) => {
   const { id } = req.params;
@@ -87,8 +86,13 @@ const readActivity = async (req, res) => {
 
 const readActivities = async (req, res) => {
   try {
-    const objectId = new mongoose.Types.ObjectId("66f91e1da144543bfcfbae2a");
-    const activities = await attractionModel.find({ Type: objectId });
+    const objectId = new mongoose.Types.ObjectId("67025cb6bb14549b7e29f376");
+    const currentDate = new Date();
+
+    const activities = await attractionModel.find({
+      Type: objectId,
+      Date: { $gte: currentDate },
+    });
     res.status(200).json(activities);
   } catch {
     res.status(400).json({ error: "Error reading activities" });
@@ -279,14 +283,16 @@ const updateAdvertiserInfo = async (req, res) => {
   }
 };
 const viewAll2 = async (req, res) => {
-   try {
+  try {
     // Fetch all attractions and itineraries from the database
     const attractions = await Attraction.find();
     const itineraries = await Itinerary.find();
 
     // Check if there are any attractions or itineraries
     if (attractions.length === 0 && itineraries.length === 0) {
-      return res.status(404).json({ message: "No attractions or itineraries found." });
+      return res
+        .status(404)
+        .json({ message: "No attractions or itineraries found." });
     }
 
     // Respond with the retrieved data
@@ -294,6 +300,14 @@ const viewAll2 = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching all upcoming." });
+  }
+};
+const getAdvertisers = async (req, res) => {
+  try {
+    const Creator = await advertiserModel.find().select("-Password");
+    res.status(200).json({ Creator });
+  } catch {
+    res.status(400).json({ message: "Error to get advertisers" });
   }
 };
 
@@ -308,4 +322,5 @@ module.exports = {
   readAdvertiserInfo,
   viewAll2,
   updateAdvertiserInfo,
+  getAdvertisers,
 };
