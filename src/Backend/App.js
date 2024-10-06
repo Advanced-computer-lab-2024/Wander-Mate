@@ -62,6 +62,7 @@ const {
   getNations,
   getID,
   getCategories,
+  getTags,
 } = require("./Routes/adminController.js");
 
 const {
@@ -206,6 +207,7 @@ app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getCategories", getCategories);
+app.get("/getTags",getTags);
 app.get("/getID/:Username", getID);
 app.get("/getSellers/", getSellers);
 app.get("/viewPlaces", viewPlaces);
