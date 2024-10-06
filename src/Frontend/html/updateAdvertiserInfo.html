@@ -5,17 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Advertiser Info</title>
   <link rel="stylesheet" href="../styles/register.css">
-  
 </head>
 <body>
 
   <div class="wrapper">
     <div class="title">Update Advertiser Info</div>
     <form id="updateAdvertiserInfoForm">
-      <div class="field">
-        <input type="text" id="username" name="Username" placeholder=" " required>
-        <label for="username">Username</label>
-      </div>
       <div class="field">
         <input type="text" id="website" name="Website" placeholder=" " required>
         <label for="website">Website</label>
@@ -38,13 +33,19 @@
   </div>
 
   <script>
-    const form = document.getElementById('updateAdvertiserInfoForm');
     const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
 
     // Handle form submission for updating advertiser info
     document.getElementById('updateAdvertiserInfoBtn').addEventListener('click', async function() {
-      const username = document.getElementById('username').value;
+      // Get username from session storage
+      const username = sessionStorage.getItem('username');
+
+      if (!username) {
+        alert('User not logged in. Please log in first.');
+        return;
+      }
+
       const website = document.getElementById('website').value;
       const hotline = document.getElementById('hotline').value;
       const companyProfile = document.getElementById('companyProfile').value;
@@ -56,7 +57,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            Username: username,
+            Username: username, // Use the username from session storage
             Website: website,
             Hotline: hotline,
             CompanyProfile: companyProfile,
