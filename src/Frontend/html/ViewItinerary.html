@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Itinerary Details</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #map {
+        height: 400px; /* Set the height of the map */
+        width: 100%; /* Full width */
+      }
+      #itinerary-details {
+        margin-top: 20px;
+      }
+      h2,
+      h3 {
+        margin: 0;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"></script>
+  </head>
+  <body>
+    <h1>Itinerary Details</h1>
+    <div id="map"></div>
+    <div id="itinerary-details"></div>
+
+    <script>
+      let itineraryData;
+
+      // Function to get query parameters from the URL
+      function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          id: params.get("id"), // Get the itinerary ID from the URL
+        };
+      }
+
+      // Fetch itinerary data from the API
+      async function fetchItineraryData(itineraryId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/readItinerary/${itineraryId}`,
+            {
+              headers: {},
+            }
+          );
+          if (!response.ok) throw new Error("Network response was not ok");
+          itineraryData = await response.json();
+          initMap();
+          displayItineraryDetails();
+        } catch (error) {
+          console.error("Error fetching itinerary data:", error);
+          document.getElementById("itinerary-details").innerText =
+            "Error loading itinerary details.";
+        }
+      }
+
+      function initMap() {
+        // Create a map centered around the first pickup location
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 5,
+          center: {
+            lat: itineraryData.PickUpLocation.coordinates[0],
+            lng: itineraryData.PickUpLocation.coordinates[1],
+          },
+        });
+
+        // Add markers for pickup and drop-off locations
+        addMarker(
+          map,
+          itineraryData.PickUpLocation.coordinates,
+          "Pick-Up Location"
+        );
+        addMarker(
+          map,
+          itineraryData.DropOffLocation.coordinates,
+          "Drop-Off Location"
+        );
+      }
+
+      function addMarker(map, coordinates, title) {
+        const marker = new google.maps.Marker({
+          position: {
+            lat: coordinates[0],
+            lng: coordinates[1],
+          },
+          map: map,
+          title: title,
+        });
+      }
+
+      function displayItineraryDetails() {
+        const detailsDiv = document.getElementById("itinerary-details");
+        detailsDiv.innerHTML = `
+               
+                <h3>Name: ${itineraryData.Name}</h3>
+                <h3>Language: ${itineraryData.Language}</h3>
+                <h3>Price: $${itineraryData.Price}</h3>
+                <h3>TimeLine:</h3>
+                <p>${itineraryData.TimeLine}</p>
+                <h3>Available Dates:</h3>
+                <ul>
+                    ${itineraryData.AvailableDates.map(
+                      (date) => `
+                        <li>${new Date(date).toLocaleDateString()}</li>
+                    `
+                    ).join("")}
+                </ul>
+                <h3>Activities:</h3>
+                <ul>
+                    ${itineraryData.Activities.map(
+                      (activity) => `
+                        <li>
+                            <strong>Name:</strong> ${activity.Name}<br>
+                        </li>
+                    `
+                    ).join("")}
+                </ul>
+                <h3>Loactions To Visit:</h3>
+                <ul>
+                    ${itineraryData.LocationsToVisit.map(
+                      (activity) => `
+                        <li>
+                            <strong>Name:</strong> ${activity.Name}<br>
+                        </li>
+                    `
+                    ).join("")}
+                </ul>
+            `;
+      }
+
+      // Call fetchItineraryData with the itinerary ID from the URL when the window loads
+      window.onload = () => {
+        const { id } = getQueryParams(); // Get itinerary ID from the URL
+        if (id) {
+          fetchItineraryData(id); // Fetch data for the given itinerary ID
+        } else {
+          document.getElementById("itinerary-details").innerText =
+            "Please log in to view itinerary details or no itinerary ID provided.";
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -100,20 +100,24 @@
           const response = await fetch(
             "http://localhost:8000/readPreferenceTags"
           );
-
-          if (!response.ok) {
+          const response1 = await fetch(
+            "http://localhost:8000/readHistoricalTags"
+          );
+          if (!response.ok || !response1.ok) {
             throw new Error("Network response was not ok");
           }
 
-          tags = await response.json();
+          tags1 = await response.json();
+          tags2 = await response1.json();
+          tags = tags1.concat(tags2);
 
           // Populate the checkboxes with fetched tags
           tags.forEach((tag) => {
             const tagCheckbox = document.createElement("div");
             tagCheckbox.innerHTML = `
-                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
-                        <label for="tag-${tag._id}">${tag.Name}</label>
-                    `;
+                              <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                              <label for="tag-${tag._id}">${tag.Name}</label>
+                          `;
             tagsContainer.appendChild(tagCheckbox);
           });
         } catch (error) {
@@ -165,8 +169,6 @@
         }
       }
 
-      
-
       function displayActivities(activities) {
         const activityList = document.getElementById("activityList");
         activityList.innerHTML = ""; // Clear existing Activities
@@ -175,28 +177,29 @@
           activityItem.className = "activity-item";
 
           activityItem.innerHTML = `
-                    <div class="activity-details">
-                        <h2 class="activity-name">${activity.Name}</h2>
-                        <p class="activity-price">Price: $${activity.Price}</p>
-                        <p class="activity-creator">Advertiser: ${
-                          advertiserMap[activity.Creator] || "Unknown"
-                        }</p> <!-- Use seller's name from map -->
-                        <p class="activity-ratings">Ratings: ${"★".repeat(
-                          activity.Ratings
-                        )}${"☆".repeat(5 - activity.Ratings)} (${
+                          <div class="activity-details">
+                              <h2 class="activity-name">${activity.Name}</h2>
+                              <p class="activity-price">Price: $${
+                                activity.Price
+                              }</p>
+                              <p class="activity-creator">Advertiser: ${
+                                advertiserMap[activity.Creator] || "Unknown"
+                              }</p> <!-- Use seller's name from map -->
+                              <p class="activity-ratings">Ratings: ${"★".repeat(
+                                activity.Ratings
+                              )}${"☆".repeat(5 - activity.Ratings)} (${
             activity.Ratings
           })</p>
-                        <p class="activity-date">Nearest Date: ${new Date(
-                          activity.AvailableDates[0]
-                        ).toLocaleDateString()}</p>
-                    </div>
-                    <div class="edit-button">
-                        <a href="">View</a>
-                    </div>
-                                   `;
+                              <p class="activity-date">Nearest Date: ${new Date(
+                                activity.AvailableDates[0]
+                              ).toLocaleDateString()}</p>
+                          </div>
+                          <div class="edit-button">
+                              <a href="ViewItinerary.html?id=${activity._id}">View</a>
+                          </div>
+                                         `;
 
           activityList.appendChild(activityItem);
-          
         });
       }
 
@@ -224,19 +227,45 @@
         displayedActivities = allActivities.filter((activity) => {
           const withinPriceRange =
             activity.Price >= minPrice && activity.Price <= maxPrice;
+
           const matchesName =
             activity.Name && activity.Name.toLowerCase().includes(activityName);
+
           const matchesCategory =
             selectedCategory === "all" ||
-            (selectedCategory ? activity.Category === selectedCategory : true);
+            (selectedCategory &&
+              (activity.Activities.some(
+                (activit) => activit.Category === selectedCategory
+              ) ||
+                activity.LocationsToVisit.some(
+                  (loc) => loc.Category === selectedCategory
+                )));
+
           const matchesTags =
             selectedTags.length === 0 ||
-            (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false); // Use optional chaining
+            (activity.Activities?.some((activityItem) =>
+              activityItem.Tags?.some((tag) => selectedTags.includes(tag))
+            ) ??
+              false) ||
+            (activity.LocationsToVisit?.some((locationItem) =>
+              locationItem.Tags?.some((tag) => selectedTags.includes(tag))
+            ) ??
+              false);
 
           const activityDate = new Date(activity.Date);
           const withinDateRange =
-            (!minDate || activityDate >= new Date(minDate)) &&
-            (!maxDate || activityDate <= new Date(maxDate));
+            activity.AvailableDates?.some((date) => {
+              const availableDate = new Date(date);
+              const minDateUTC = minDate ? new Date(minDate) : null;
+              const maxDateUTC = maxDate ? new Date(maxDate) : null;
+
+              const availableDateUTC = availableDate.getTime();
+
+              return (
+                (!minDateUTC || availableDateUTC >= minDateUTC) &&
+                (!maxDateUTC || availableDateUTC <= maxDateUTC)
+              );
+            }) ?? false;
 
           return (
             withinPriceRange &&
