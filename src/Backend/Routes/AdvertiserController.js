@@ -244,6 +244,7 @@ const createAdvertiserInfo = async (req, res) => {
     res.status(500).json({ message: "Error creating profile information" });
   }
 };
+
 const readAdvertiserInfo = async (req, res) => {
   const { Username } = req.body;
   try {
@@ -256,6 +257,8 @@ const readAdvertiserInfo = async (req, res) => {
     res.status(400).json({ error: "Error reading Advertiser" });
   }
 };
+
+
 const updateAdvertiserInfo = async (req, res) => {
   try {
     const { Username, Website, Hotline, CompanyProfile } = req.body;

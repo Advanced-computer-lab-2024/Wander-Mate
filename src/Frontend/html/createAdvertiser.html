@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Advertiser</title>
+  <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="title">Create Advertiser</div>
+    <form id="createAdvertiserForm">
+      <div class="field">
+        <input type="text" id="username" name="Username" placeholder=" " required>
+        <label for="username">Username</label>
+      </div>
+      <div class="field">
+        <input type="email" id="email" name="Email" placeholder=" " required>
+        <label for="email">Email</label>
+      </div>
+      <div class="field">
+        <input type="password" id="password" name="Password" placeholder=" " required>
+        <label for="password">Password</label>
+      </div>
+      
+      <div class="field">
+        <input type="submit" value="Create Advertiser">
+      </div>
+    </form>
+
+    <div class="message" id="successMessage" style="color: green; display: none;"></div>
+    <div class="message" id="errorMessage" style="color: red; display: none;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('createAdvertiserForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const formData = {
+        Username: document.getElementById('username').value,
+        Password: document.getElementById('password').value,
+        Email: document.getElementById('email').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:8000/createAdvertiser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          successMessage.innerText = 'Advertiser created successfully!';
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.innerText = result.message || 'Error creating advertiser.';
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+        }
+      } catch (error) {
+        errorMessage.innerText = 'An error occurred. Please try again.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

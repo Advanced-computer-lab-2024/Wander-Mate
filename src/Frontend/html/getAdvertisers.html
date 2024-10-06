@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View All Advertisers</title>
+  <link rel="stylesheet" href="../styles/register.css">
+ 
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="title">All Advertisers</div>
+    
+    <div class="message" id="errorMessage" style="color: red; display: none;"></div>
+    
+    <div class="info-section" id="advertisersSection" style="display: none;">
+      <h3>Advertisers</h3>
+      <ul id="advertisersList"></ul>
+    </div>
+    
+  </div>
+
+  <script>
+    // Fetch all advertisers when the page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const response = await fetch('http://localhost:8000/getAdvertisers');
+        const result = await response.json();
+
+        if (response.ok) {
+          // If there are advertisers, display them
+          if (result.Creator && result.Creator.length > 0) {
+            const advertisersSection = document.getElementById('advertisersSection');
+            const advertisersList = document.getElementById('advertisersList');
+            advertisersSection.style.display = 'block';
+            result.Creator.forEach(advertiser => {
+              const listItem = document.createElement('li');
+              listItem.innerHTML = `
+                <strong>Username:</strong> ${advertiser.Username}<br>
+                <strong>Email:</strong> ${advertiser.Email}<br>
+                <strong>Website:</strong> ${advertiser.Website || 'N/A'}<br>
+                <strong>Hotline:</strong> ${advertiser.Hotline || 'N/A'}<br>
+                <strong>Company Profile:</strong> ${advertiser.CompanyProfile || 'N/A'}
+              `;
+              advertisersList.appendChild(listItem);
+            });
+          } else {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'No advertisers found.';
+            errorMessage.style.display = 'block';
+          }
+        } else {
+          const errorMessage = document.getElementById('errorMessage');
+          errorMessage.textContent = result.message || 'Error fetching advertisers.';
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = 'An error occurred. Please try again.';
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
