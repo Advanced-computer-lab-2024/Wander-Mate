@@ -156,12 +156,36 @@ const createHistoricalTags = async (req, res) => {
 
     // Save the new tag to the database
     await newTag.save();
-    return res.status(201).json(newTag);
+    return res.status(200).json(newTag);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error creating tag" });
+    return res.status(400).json({ message: "Error creating tag" });
   }
 };
+
+const readHistoricalTags = async (req, res) => {
+  try {
+    const tags = await Tag.find();
+    return res.status(200).json(tags);
+  } catch {
+    return res.status(400).json({ message: "Error reading tags" });
+  }
+};
+
+const updateHistoricalTags = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const { Name } = req.body;
+    const tag = await Tag.findByIdAndUpdate(Id, { Name }, { new: true });
+    if (!tag) {
+      return res.status(400).json({ message: "Tag not found" });
+    }
+    return res.status(200).json(tag);
+  } catch {
+    return res.status(400).json({ message: "Error updating tag" });
+  }
+};
+
 const viewAll0 = async (req, res) => {
   try {
     // Fetch all attractions and itineraries from the database
@@ -190,6 +214,8 @@ module.exports = {
   deletePlace,
   getPlace,
   createHistoricalTags,
+  readHistoricalTags,
+  updateHistoricalTags,
   viewAll0,
   getPlaceImage,
 };

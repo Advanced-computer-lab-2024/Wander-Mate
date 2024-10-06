@@ -87,14 +87,12 @@
         try {
           // Fetch list of nations from the API
           const response = await fetch("http://localhost:8000/getNations");
-          
 
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
 
           const nations = await response.json();
-          
 
           // Populate the dropdown with the fetched nations
           nations.forEach((nation) => {
@@ -177,6 +175,7 @@
         switch (formData.user) {
           case "Advertiser":
             URL += "createAdvertiser";
+            direction = "Advertiser.html";
             break;
           case "Tourist":
             URL += "touristRegister";

@@ -101,6 +101,8 @@ const {
   createHistoricalTags,
   viewAll0,
   getPlaceImage,
+  readHistoricalTags,
+  updateHistoricalTags,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -167,9 +169,9 @@ app.delete("/deleteCategory", deleteCategory);
 app.delete("/deleteCategoryById/:id", deleteCategoryById);
 app.post("/createPreferenceTags", createPreferenceTags);
 app.get("/readCategory", readCategory);
-app.put("/updateTags", updatePreferenceTags);
-app.delete("/deleteTags", deletePreferenceTags);
-app.get("/readTags", readPreferenceTags);
+app.put("/updatePreferenceTags", updatePreferenceTags);
+app.delete("/deletePreferenceTags", deletePreferenceTags);
+app.get("/readPreferenceTags", readPreferenceTags);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -198,6 +200,8 @@ app.get("/getProduct/:id", getProduct);
 app.get("/viewTouristProducts", viewTouristProducts);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
+app.get("/readHistoricalTags", readHistoricalTags);
+app.patch("/updateHistoricalTags/:id", updateHistoricalTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);

@@ -1,282 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Activity | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
+    <link rel="stylesheet" href="../styles/register.css" />
     <style>
-        /* Style for checkbox menu */
-        .checkbox-container {
-            display: flex;
-            flex-direction: column; /* Align checkboxes vertically */
-            margin-top: 10px;
-            max-height: 150px; /* Set a max height */
-            overflow-y: auto;  /* Enable vertical scrolling */
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-        }
+      /* Style for checkbox menu */
+      .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        max-height: 150px;
+        overflow-y: auto; /* Enable scrolling for checkboxes */
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
 
-        /* Add styling for checkboxes and labels */
-        .checkbox-container div {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px; /* Space between checkboxes */
-        }
+      /* Style for each checkbox item */
+      .checkbox-container div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px; /* Space between checkboxes */
+      }
 
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 10px; /* Space between checkbox and label */
-        }
+      .checkbox-container input[type="checkbox"] {
+        margin-right: 10px; /* Space between checkbox and label */
+      }
 
-        .checkbox-container label {
-            font-size: 16px;
-            color: #333;
-        }
+      .checkbox-container label {
+        font-size: 16px;
+        color: #333;
+      }
 
-        /* Style for smooth scrolling */
-        .checkbox-container::-webkit-scrollbar {
-            width: 8px;
-        }
+      /* Style for smooth scrolling */
+      .checkbox-container::-webkit-scrollbar {
+        width: 8px;
+      }
 
-        .checkbox-container::-webkit-scrollbar-thumb {
-            background-color: #888; 
-            border-radius: 10px;
-        }
+      .checkbox-container::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 10px;
+      }
 
-        .checkbox-container::-webkit-scrollbar-track {
-            background-color: #f1f1f1; 
-        }
+      .checkbox-container::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+      }
 
-        /* Add More Tags button styling */
-        .add-more-btn {
-            margin-top: 15px;
-            background-color: #00AD68;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+      /* Button styling */
+      .add-more-btn {
+        margin-top: 15px;
+        background-color: #00ad68;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
 
-        .add-more-btn:hover {
-            background-color: #008E55;
-        }
+      .add-more-btn:hover {
+        background-color: #008e55;
+      }
+
+      /* Ensure the "Tags" label appears above the checkbox container */
+      .field label[for="tagsContainer"] {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      /* Ensure button is properly aligned and not behind anything */
+      .add-more-tags-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">Create Activity</div>
-        <form id="createActivityForm">
-            <div class="field">
-                <input type="text" name="creator" id="creator" placeholder=" " required>
-                <label for="creator">Creator Name/ID</label>
-            </div>
-            <div class="field">
-                <input type="text" name="name" id="name" placeholder=" " required>
-                <label for="name">Activity Name</label>
-            </div>
-            <div class="field">
-                <input type="date" name="date" id="date" placeholder=" " required>
-                <label for="date">Date</label>
-            </div>
-            <div class="field">
-                <input type="time" name="time" id="time" placeholder=" " required>
-                <label for="time">Time</label>
-            </div>
-            <div class="field">
-                <input type="text" name="location" id="location" placeholder="Enter coordinates (e.g., -74.0445, 40.6892)" required>
-                <label for="location">Location (Coordinates)</label>
-            </div>
-            <div class="field">
-                <input type="number" name="price" id="price" placeholder=" " required min="0" step="0.1">
-                <label for="price">Price</label>
-            </div>
-            <div class="field">
-                <select name="category" id="category" required>
-                    <option value="" disabled selected>Select Category</option>
-                </select>
-                <label for="category">Category</label>
-            </div>
-            
-            <div class="field">
-                <!-- Container to dynamically add tags checkboxes -->
-                <div class="checkbox-container" id="tagsContainer">
-                    <!-- No checkboxes initially; they will be added dynamically -->
-                </div>
-                <label for="tagsContainer">Tags</label>
-            </div>
-            
-            <!-- Button to add more tags -->
-            <div>
-                <button type="button" class="add-more-btn" id="addMoreTagsBtn">Add More Tags</button>
-            </div>
+      <div class="title">Create Activity</div>
+      <form id="createActivityForm">
+        <div class="field">
+          <input
+            type="text"
+            name="creator"
+            id="creator"
+            placeholder=" "
+            required
+          />
+          <label for="creator">Creator Name/ID</label>
+        </div>
+        <div class="field">
+          <input type="text" name="name" id="name" placeholder=" " required />
+          <label for="name">Activity Name</label>
+        </div>
+        <div class="field">
+          <input type="date" name="date" id="date" placeholder=" " required />
+          <label for="date">Date</label>
+        </div>
+        <div class="field">
+          <input type="time" name="time" id="time" placeholder=" " required />
+          <label for="time">Time</label>
+        </div>
+        <div class="field">
+          <input
+            type="text"
+            name="location"
+            id="location"
+            placeholder="Enter coordinates (e.g., -74.0445, 40.6892)"
+            required
+          />
+          <label for="location">Location (Coordinates)</label>
+        </div>
+        <div class="field">
+          <input
+            type="number"
+            name="price"
+            id="price"
+            placeholder=" "
+            required
+            min="0"
+            step="0.1"
+          />
+          <label for="price">Price</label>
+        </div>
+        <div class="field">
+          <select name="category" id="category" required>
+            <option value="" disabled selected>Select Category</option>
+          </select>
+          <label for="category">Category</label>
+        </div>
 
-            <div class="field">
-                <input type="text" name="discounts" id="discounts" placeholder="Enter discounts, comma-separated">
-                <label for="discounts">Discounts</label>
-            </div>
-            <div class="field">
-                <label for="isAvailable">Is Available?</label>
-                <input type="checkbox" name="isAvailable" id="isAvailable" checked>
-            </div>
-            <div class="field">
-                <input type="submit" value="Create Activity">
-            </div>
-        </form>
+        <!-- Place the "Tags" label outside the checkbox container -->
+        <div class="field">
+          <label for="tagsContainer">Tags</label>
+          <!-- Container to dynamically add tags checkboxes -->
+          <div class="checkbox-container" id="tagsContainer">
+            <!-- No checkboxes initially; they will be added dynamically -->
+          </div>
+        </div>
 
-        <div id="successMessage" style="color: green; display: none;"></div>
-        <div id="errorMessage" style="color: red; display: none;"></div>
+        <br />
+        <br />
+        <!-- Button to add more tags -->
+        <div class="add-more-tags-container">
+          <button type="button" class="add-more-btn" id="addMoreTagsBtn">
+            Add More Tags
+          </button>
+        </div>
+
+        <div class="field">
+          <input
+            type="text"
+            name="discounts"
+            id="discounts"
+            placeholder="Enter discounts, comma-separated"
+          />
+          <label for="discounts">Discounts</label>
+        </div>
+        <div class="field">
+          <label for="isAvailable">Is Available?</label>
+          <input type="checkbox" name="isAvailable" id="isAvailable" checked />
+        </div>
+        <div class="field">
+          <input type="submit" value="Create Activity" />
+        </div>
+      </form>
+
+      <div id="successMessage" style="color: green; display: none"></div>
+      <div id="errorMessage" style="color: red; display: none"></div>
     </div>
 
     <script>
-        // Fetch categories from the API and populate the dropdown
-        async function fetchCategories() {
-            const categorySelect = document.getElementById("category");
+      // Fetch categories from the API and populate the dropdown
+      async function fetchCategories() {
+        const categorySelect = document.getElementById("category");
 
-            try {
-                const response = await fetch("http://localhost:8000/getCategories");
+        try {
+          const response = await fetch("http://localhost:8000/getCategories");
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
 
-                const categories = await response.json();
+          const categories = await response.json();
 
-                // Populate the dropdown with fetched categories
-                categories.forEach((category) => {
-                    const option = document.createElement("option");
-                    option.value = category._id; // Use the category ID as the value
-                    option.textContent = category.Name; // Display the category name
-                    categorySelect.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-                alert("Could not load categories. Please try again later.");
-            }
+          // Populate the dropdown with fetched categories
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id; // Use the category ID as the value
+            option.textContent = category.Name; // Display the category name
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          alert("Could not load categories. Please try again later.");
         }
+      }
 
-        // Fetch tags from the API and populate the checkbox list
-        async function fetchTags(container) {
-            try {
-                const response = await fetch("http://localhost:8000/getTags");
+      // Fetch tags from the API and populate the checkbox list
+      async function fetchTags(container) {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/readPreferenceTags"
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const tags = await response.json();
+          tags.forEach((preferenceTags) => {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = preferenceTags._id;
+            checkbox.id = `tag_${preferenceTags._id}`;
+            checkbox.className = "tags-checkbox";
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
+            const label = document.createElement("label");
+            label.htmlFor = checkbox.id; // Set the for attribute to match the checkbox id
+            label.textContent = preferenceTags.Name;
 
-                const tags = await response.json();
-
-                // Populate the checkbox list with fetched tags
-                tags.forEach((tag) => {
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.value = tag._id;
-                    checkbox.id = `tag_${tag._id}`;
-                    checkbox.className = "tags-checkbox";
-
-                    const label = document.createElement("label");
-                    label.htmlFor = `tag_${tag._id}`;
-                    label.textContent = tag.Name;
-
-                    // Append the checkbox and label to the container in a new div
-                    const div = document.createElement('div');
-                    div.appendChild(checkbox);
-                    div.appendChild(label);
-
-                    container.appendChild(div);
-                });
-
-            } catch (error) {
-                console.error("Error fetching tags:", error);
-                alert("Could not load tags. Please try again later.");
-            }
+            const div = document.createElement("div");
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            container.appendChild(div); // Append the div to the checkbox-container
+          });
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+          alert("Could not load tags. Please try again later.");
         }
+      }
 
-        // Function to add a new tags checkbox container
-        function addMoreTags() {
-            const tagsContainer = document.createElement('div');
-            tagsContainer.classList.add('checkbox-container');
-            document.getElementById('createActivityForm').insertBefore(tagsContainer, document.getElementById('discounts').parentNode);
-            fetchTags(tagsContainer); // Fetch and add new tag checkboxes to the newly created container
+      // Function to add a new tags checkbox container
+      function addMoreTags() {
+        const tagsContainer = document.createElement("div");
+        tagsContainer.classList.add("checkbox-container");
+        document
+          .getElementById("createActivityForm")
+          .insertBefore(
+            tagsContainer,
+            document.getElementById("discounts").parentNode
+          );
+        fetchTags(tagsContainer); // Fetch and add new tag checkboxes to the newly created container
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchCategories();
+        fetchTags(document.getElementById("tagsContainer")); // Fetch tags for the first container
+
+        // Handle adding more tags
+        const addMoreTagsBtn = document.getElementById("addMoreTagsBtn");
+        addMoreTagsBtn.addEventListener("click", addMoreTags);
+      });
+
+      // Form submission logic
+      const form = document.getElementById("createActivityForm");
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const creator = document.getElementById("creator").value;
+        const name = document.getElementById("name").value;
+        const date = document.getElementById("date").value; // Date input (YYYY-MM-DD format)
+        const time = document.getElementById("time").value; // Time input (HH:MM format)
+        const location = document.getElementById("location").value; // This is the coordinates as text
+        const price = document.getElementById("price").value;
+        const category = document.getElementById("category").value;
+
+        // Get selected tags from all containers (multiple sets of checkboxes)
+        const selectedTags = [];
+        document
+          .querySelectorAll(".checkbox-container")
+          .forEach((container) => {
+            const selected = Array.from(
+              container.querySelectorAll(".tags-checkbox:checked")
+            ).map((checkbox) => checkbox.value);
+            selectedTags.push(...selected); // Spread into array
+          });
+
+        const discounts = document.getElementById("discounts").value
+          ? document
+              .getElementById("discounts")
+              .value.split(",")
+              .map((discount) => discount.trim())
+          : []; // Convert discounts to array
+        const isAvailable = document.getElementById("isAvailable").checked; // Get the checkbox value
+
+        // Split the location into latitude and longitude
+        const [lat, lng] = location
+          .split(", ")
+          .map((coord) => parseFloat(coord.trim()));
+
+        try {
+          const response = await fetch("http://localhost:8000/createActivity", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              Creator: creator,
+              Name: name,
+              DateString: date,
+              Time: time,
+              Location: {
+                type: "Point",
+                coordinates: [lng, lat], // Longitude, Latitude for GeoJSON
+              },
+              Price: price,
+              Category: category,
+              Tags: selectedTags, // Array of selected tag IDs
+              Discounts: discounts, // Array of discounts
+              IsAvailable: isAvailable,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            document.getElementById("errorMessage").innerText = errorData.error;
+            document.getElementById("errorMessage").style.display = "block";
+            document.getElementById("successMessage").style.display = "none";
+          } else {
+            const activityId = await response.json();
+            document.getElementById(
+              "successMessage"
+            ).innerText = `Activity created successfully with ID: ${activityId}`;
+            document.getElementById("successMessage").style.display = "block";
+            document.getElementById("errorMessage").style.display = "none";
+          }
+        } catch (error) {
+          document.getElementById("errorMessage").innerText =
+            "An error occurred while creating the activity.";
+          document.getElementById("errorMessage").style.display = "block";
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchCategories();
-            fetchTags(document.getElementById('tagsContainer')); // Fetch tags for the first container
-
-            // Handle adding more tags
-            const addMoreTagsBtn = document.getElementById('addMoreTagsBtn');
-            addMoreTagsBtn.addEventListener('click', addMoreTags);
-        });
-
-        // Form submission logic
-        const form = document.getElementById('createActivityForm');
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const creator = document.getElementById('creator').value;
-            const name = document.getElementById('name').value;
-            const date = document.getElementById('date').value; // Date input (YYYY-MM-DD format)
-            const time = document.getElementById('time').value; // Time input (HH:MM format)
-            const location = document.getElementById('location').value; // This is the coordinates as text
-            const price = document.getElementById('price').value;
-            const category = document.getElementById('category').value;
-
-            // Get selected tags from all containers (multiple sets of checkboxes)
-            const selectedTags = [];
-            document.querySelectorAll('.checkbox-container').forEach(container => {
-                const selected = Array.from(container.querySelectorAll('.tags-checkbox:checked')).map(checkbox => checkbox.value);
-                selectedTags.push(...selected); // Spread into array
-            });
-
-            const discounts = document.getElementById('discounts').value ? document.getElementById('discounts').value.split(',').map(discount => discount.trim()) : []; // Convert discounts to array
-            const isAvailable = document.getElementById('isAvailable').checked; // Get the checkbox value
-
-            // Split the location into latitude and longitude
-            const [lat, lng] = location.split(", ").map(coord => parseFloat(coord.trim()));
-
-            try {
-                const response = await fetch('http://localhost:8000/createActivity', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        Creator: creator,
-                        Name: name,
-                        DateString: date,
-                        Time: time,
-                        Location: {
-                            type: "Point",
-                            coordinates: [lng, lat] // Longitude, Latitude for GeoJSON
-                        },
-                        Price: price,
-                        Category: category,
-                        Tags: selectedTags, // Array of selected tag IDs
-                        Discounts: discounts, // Array of discounts
-                        IsAvailable: isAvailable
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    document.getElementById('errorMessage').innerText = errorData.error;
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('successMessage').style.display = 'none';
-                } else {
-                    const activityId = await response.json();
-                    document.getElementById('successMessage').innerText = `Activity created successfully with ID: ${activityId}`;
-                    document.getElementById('successMessage').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                }
-            } catch (error) {
-                document.getElementById('errorMessage').innerText = "An error occurred while creating the activity.";
-                document.getElementById('errorMessage').style.display = 'block';
-            }
-        });
+      });
     </script>
-</body>
+  </body>
 </html>
