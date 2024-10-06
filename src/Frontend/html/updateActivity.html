@@ -15,6 +15,10 @@
                 <label for="id">Activity ID*</label>
             </div>
             <div class="field">
+                <input type="text" name="creator" id="creator" placeholder=" " required>
+                <label for="creator">Creator Name/ID*</label>
+            </div>
+            <div class="field">
                 <input type="text" name="name" id="name" placeholder=" ">
                 <label for="name">Activity Name</label>
             </div>
@@ -42,6 +46,66 @@
                 <input type="submit" value="Update Activity">
             </div>
         </form>
+
+        <!-- Success/Error Messages -->
+        <div id="successMessage" style="color: green; display: none;"></div>
+        <div id="errorMessage" style="color: red; display: none;"></div>
     </div>
+
+    <script>
+        // Form submission logic
+        document.getElementById('updateActivityForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Collect form data
+            const id = document.getElementById('id').value;
+            const creator = document.getElementById('creator').value;
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const location = document.getElementById('location').value;
+            const price = document.getElementById('price').value;
+            const category = document.getElementById('category').value;
+
+            try {
+                // Send the data to the backend via a PUT request
+                const response = await fetch('http://localhost:8000/updateActivity', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        Creator: creator,
+                        Name: name,
+                        DateString: date,
+                        Time: time,
+                        Location: location,
+                        Price: price,
+                        Category: category,
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success case: Show success message
+                    document.getElementById('successMessage').innerText = result.message;
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                } else {
+                    // Error case: Show error message
+                    document.getElementById('errorMessage').innerText = result.message || 'Error updating activity';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').innerText = 'An error occurred while updating the activity.';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
