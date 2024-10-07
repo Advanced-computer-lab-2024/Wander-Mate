@@ -15,6 +15,7 @@
         <div id="placesContainer"></div>
 
         <script>
+            // Fetch and display all places
             async function getPlaces() {
                 try {
                     const response = await fetch("http://localhost:8000/getPlaces", {
@@ -39,32 +40,30 @@
                                 <p><strong>Location:</strong> ${place.Location}</p>
                                 <p><strong>Opening Hours:</strong> ${place.OpeningHours}</p>
                                 <p><strong>Ticket Prices:</strong> ${place.TicketPrices}</p>
-                                <button onclick="location.href='updatePlace.html?id=${place._id}'">Update</button>
-                                <button onclick="location.href='deletePlace.html?id=${place._id}'">Delete</button>
+                                <button onclick="location.href='updatePlace.html?placeId=${place._id}'">Update</button>
+                                <button onclick="deletePlace('${place._id}')">Delete</button>
                             `;
 
-                            // Fetch and display all images for this place
-                            const imageResponse = await fetch(
-                                `http://localhost:8000/getPlaceImage/${place._id}`
-                            );
+                            // Fetch and display images for this place
+                            const imageResponse = await fetch(`http://localhost:8000/getPlaceImage/${place._id}`);
                             if (imageResponse.ok) {
                                 const images = await imageResponse.json();
                                 const imageContainer = document.createElement("div");
 
                                 images.forEach((image) => {
                                     const imgElement = document.createElement("img");
-                                    imgElement.src = `data:${image.contentType};base64,${image.data}`; // Create a data URL
+                                    imgElement.src = `data:${image.contentType};base64,${image.data}`;
                                     imgElement.alt = `${place.Creator}'s image`;
                                     imgElement.style = "max-width: 100%; height: auto;";
                                     imageContainer.appendChild(imgElement);
                                 });
 
-                                placeElement.appendChild(imageContainer); // Append images to the place element
+                                placeElement.appendChild(imageContainer);
                             } else {
                                 console.error("Error fetching images for place:", place._id);
                             }
 
-                            placesContainer.appendChild(placeElement); // Append place details to the container
+                            placesContainer.appendChild(placeElement);
                         });
                     } else {
                         alert("Error fetching places.");
@@ -72,6 +71,30 @@
                 } catch (error) {
                     console.error("Error:", error);
                     alert("Failed to fetch places.");
+                }
+            }
+
+            // Delete place by ID
+            async function deletePlace(placeId) {
+                const confirmDelete = confirm("Are you sure you want to delete this place?");
+                if (!confirmDelete) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:8000/deletePlace/${placeId}`, {
+                        method: "DELETE",
+                    });
+
+                    if (response.ok) {
+                        alert("Place deleted successfully.");
+                        getPlaces(); // Refresh the list after deletion
+                    } else {
+                        alert("Error deleting place.");
+                    }
+                } catch (error) {
+                    console.error("Error deleting place:", error);
+                    alert("Failed to delete place.");
                 }
             }
         </script>
