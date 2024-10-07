@@ -7,60 +7,52 @@
     <title>View All Attractions and Itineraries</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
     <link rel="stylesheet" href="../styles/register.css">
+    <style>
+        /* Button styles */
+        .btn-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            background-color: #00ad68;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #008e55;
+        }
+    </style>
 </head>
 
 <body>
     <div class="wrapper">
         <h2>View All Attractions and Itineraries</h2>
-        <button id="fetchDataButton">Fetch Attractions and Itineraries</button>
+
+        <div class="btn-container">
+            <button class="btn" id="attractionsButton">Activities</button>
+            <button class="btn" id="itinerariesButton">Itineraries</button>
+        </div>
 
         <div id="results" class="results"></div>
     </div>
 
     <script>
-        document.getElementById('fetchDataButton').addEventListener('click', async () => {
-            try {
-                const response = await fetch('http://localhost:8000/viewAll0');
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`Error: ${errorData.message}`);
-                    return;
-                }
-
-                const data = await response.json();
-                displayResults(data);
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to fetch attractions and itineraries.');
-            }
+        // Redirect to Activities.html when Attractions button is clicked
+        document.getElementById('attractionsButton').addEventListener('click', () => {
+            window.location.href = 'Activities.html';
         });
 
-        function displayResults(data) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
-
-            if (data.attractions.length === 0 && data.itineraries.length === 0) {
-                resultsDiv.innerHTML = '<p>No attractions or itineraries found.</p>';
-                return;
-            }
-
-            if (data.attractions.length > 0) {
-                resultsDiv.innerHTML += '<h3>Attractions</h3><ul>';
-                data.attractions.forEach(attraction => {
-                    resultsDiv.innerHTML += `<li>${attraction.Name}: ${attraction.Description}</li>`;
-                });
-                resultsDiv.innerHTML += '</ul>';
-            }
-
-            if (data.itineraries.length > 0) {
-                resultsDiv.innerHTML += '<h3>Itineraries</h3><ul>';
-                data.itineraries.forEach(itinerary => {
-                    resultsDiv.innerHTML += `<li>${itinerary.Name}: ${itinerary.Description}</li>`;
-                });
-                resultsDiv.innerHTML += '</ul>';
-            }
-        }
+        // Redirect to Itineraries.html when Itineraries button is clicked
+        document.getElementById('itinerariesButton').addEventListener('click', () => {
+            window.location.href = 'Itineraries.html';
+        });
     </script>
 </body>
 

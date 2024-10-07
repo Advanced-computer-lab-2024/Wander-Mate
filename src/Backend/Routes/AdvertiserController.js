@@ -44,9 +44,6 @@ const createActivity = async (req, res) => {
   if (!Category) {
     return res.status(400).json({ error: "Category is required" });
   }
-  if (!IsAvailable) {
-    return res.status(400).json({ error: "Availability is required" });
-  }
 
   try {
     const activity = await attractionModel.create({
@@ -92,7 +89,6 @@ const readActivities = async (req, res) => {
     res.status(400).json({ error: "Error reading activities" });
   }
 };
-
 
 const updateActivity = async (req, res) => {
   const {
@@ -288,9 +284,9 @@ const viewAll2 = async (req, res) => {
     // Check if there are any attractions or itineraries
     if (attractions.length === 0 && itineraries.length === 0) {
       return res
-        
+
         .status(404)
-        
+
         .json({ message: "No attractions or itineraries found." });
     }
 

@@ -66,8 +66,11 @@ const createPlace = async (req, res) => {
       OpeningHours,
       TicketPrices,
       Category,
+      Tags, // Now handling Tags as an array
     } = req.body;
+
     const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378");
+
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "At least one image is required." });
@@ -79,19 +82,36 @@ const createPlace = async (req, res) => {
       contentType: file.mimetype, // Get content type of the image
     }));
 
-    const location = JSON.parse(req.body.Location); // Parse the JSON string
+    // Parse the location if passed as a JSON string
+    const location = JSON.parse(Location); // Parse the JSON string for GeoJSON Location
 
+    // Parse the Tags array (in case it's a stringified JSON array)
+    let parsedTags;
+    try {
+      parsedTags = JSON.parse(Tags);
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid tags format." });
+    }
+
+    // Ensure that the parsedTags is an array
+    if (!Array.isArray(parsedTags)) {
+      return res.status(400).json({ message: "Tags must be an array." });
+    }
+
+    // Create the new place in the database
     const newPlace = await attractionModel.create({
       Creator: Username,
       Name,
       Description,
       Pictures: pictures,
-      Location: location,
+      Location: location, // GeoJSON format
       OpeningHours,
       TicketPrices,
       Type: objectId,
       Category,
+      Tags: parsedTags, // Save the tags as an array
     });
+
     res.status(200).json(newPlace);
   } catch (error) {
     console.log(error.message);
@@ -103,17 +123,21 @@ const createPlace = async (req, res) => {
 const updatePlace = async (req, res) => {
   try {
     const {
-      Id,
       Name,
       Description,
-      Pictures,          // Pictures is being passed, ensure it's handled correctly
+      Pictures, // Pictures is being passed, ensure it's handled correctly
       Location,
-      OpeningHours,      // Ensure this field is allowed in your schema or use strict: false
-      TicketPrices,      // Ensure this field is allowed in your schema
+      OpeningHours, // Ensure this field is allowed in your schema or use strict: false
+      TicketPrices, // Ensure this field is allowed in your schema
+      Category,
+      Tag,
     } = req.body;
 
+    const { Id } = req.params;
+
     // Parse the location (ensure it's sent as a correct JSON string from the frontend)
-    const location = typeof Location === 'string' ? JSON.parse(Location) : Location;
+    const location =
+      typeof Location === "string" ? JSON.parse(Location) : Location;
 
     const updatedData = {
       Name,
@@ -125,13 +149,14 @@ const updatePlace = async (req, res) => {
     if (Pictures) updatedData.Pictures = Pictures;
     if (OpeningHours) updatedData.OpeningHours = OpeningHours;
     if (TicketPrices) updatedData.TicketPrices = TicketPrices;
+    if (Category) updatedData.Category = Category;
+    if (Tag) updatedData.Tag = Tag;
 
     // Update the place in the database
-    const place = await attractionModel.findByIdAndUpdate(
-      Id,
-      updatedData,
-      { new: true, runValidators: true }
-    );
+    const place = await attractionModel.findByIdAndUpdate(Id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!place) {
       return res.status(404).json({ message: "Place not found" });

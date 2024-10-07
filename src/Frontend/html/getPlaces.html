@@ -146,42 +146,73 @@
       }
 
       async function displayActivities(activities) {
-        const activityList = document.getElementById("activityList");
-        activityList.innerHTML = ""; // Clear existing Places
-        for (const activity of activities) {
-          const activityItem = document.createElement("div");
-          activityItem.className = "activity-item";
+  const activityList = document.getElementById("activityList");
+  activityList.innerHTML = ""; // Clear existing Places
 
-          // Fetch images for each place
-          const images = await fetchImages(activity._id);
+  for (const activity of activities) {
+    const activityItem = document.createElement("div");
+    activityItem.className = "activity-item";
 
-          // Create image container
-          const imageContainer = document.createElement("div");
-          imageContainer.className = "activity-images";
-          images.forEach((image) => {
-            const imgElement = document.createElement("img");
-            imgElement.src = `data:${image.contentType};base64,${image.data}`;
-            imgElement.alt = `${activity.Name} image`;
-            imageContainer.appendChild(imgElement);
-          });
+    // Fetch images for each place
+    const images = await fetchImages(activity._id);
 
-          activityItem.innerHTML = `
-                    <div class="activity-details">
-                        <h2 class="activity-name">${activity.Name}</h2>
-                    </div>
-                    <div class="map-container" id="map-${activity._id}"></div>
-                    <div class="button-container">
-                        <button class="delete-btn" onclick="deleteActivity('${activity._id}')">Delete</button>
-                        <button class="update-btn" onclick="updateActivity('${activity._id}')">Update</button>
-                    </div>
-                `;
+    // Create image container
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "activity-images";
+    images.forEach((image) => {
+      const imgElement = document.createElement("img");
+      imgElement.src = `data:${image.contentType};base64,${image.data}`;
+      imgElement.alt = `${activity.Name} image`;
+      imageContainer.appendChild(imgElement);
+    });
 
-          // Append image container to activity item
-          activityItem.appendChild(imageContainer);
-          activityList.appendChild(activityItem);
-          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this place
-        }
-      }
+    activityItem.innerHTML = `
+      <div class="activity-details">
+       <div class="field">
+           <label for="placeName">Place Name</label>
+          <input type="text" id="placeName-${activity._id}" name="placeName" placeholder="Place Name" value="${activity.Name}" readonly />
+        </div>
+        <div class="field">
+          <label for="newDescription">Description</label>
+          <input type="text" id="newDescription-${activity._id}" name="newDescription" placeholder="Description" value="${activity.Description || 'No description available'}" readonly />
+        </div>
+        <div class="field">
+          <label for="newLocation">Location</label>
+          <input type="text" id="newLocation-${activity._id}" name="newLocation" placeholder="Location" value="${activity.Location?.coordinates ? activity.Location.coordinates.join(', ') : 'Location not available'}" readonly />
+        </div>
+        <div class="field">
+          <label for="newOpeningHours">Opening Hours</label>
+          <input type="text" id="newOpeningHours-${activity._id}" name="newOpeningHours" placeholder="Opening Hours" value="${activity.OpeningHours || 'No hours available'}" readonly />
+        </div>
+        <div class="field">
+          <label for="newTicketPrices">Ticket Prices</label>
+          <input type="text" id="newTicketPrices-${activity._id}" name="newTicketPrices" placeholder="Ticket Prices" value="${activity.TicketPrices || 'Price not available'}" readonly />
+        </div>
+        <div class="field">
+          <label for="newPictures">Pictures</label>
+          <div id="pictures-${activity._id}" class="activity-images">${imageContainer.innerHTML}</div>
+        </div>
+      </div>
+
+      <div class="map-container" id="map-${activity._id}"></div>
+      <div class="button-container">
+        <button class="delete-btn" onclick="deleteActivity('${activity._id}')">Delete</button>
+        <button class="update-btn" onclick="updateActivity('${activity._id}')">Update</button>
+      </div>
+      <br>
+      <br>
+     <hr style="border: 3px solid blue; margin-top: 5px;">
+     <hr style="border: 3px solid red; margin-top: 5px;">
+      <hr style="border: 3px solid green; margin-top: 5px;">
+    `
+
+    ;
+
+    activityList.appendChild(activityItem);
+    initMap(activity.Location, `map-${activity._id}`); // Initialize map for this place
+  }
+}
+
 
       function initMap(location, elementId) {
         const map = new google.maps.Map(document.getElementById(elementId), {

@@ -145,7 +145,7 @@ app.put("/updateSeller", updateSeller);
 app.post("/createPlace", uploadMult, createPlace);
 app.get("/getPlace/:id", getPlace);
 app.get("/getPlaces", getPlaces);
-app.put("/updatePlace", updatePlace);
+app.put("/updatePlace/:Id", updatePlace);
 app.delete("/deleteplace/:Id", deletePlace);
 app.get("/getPlaceImage/:placeId", getPlaceImage);
 app.get("/viewAll0", viewAll0);

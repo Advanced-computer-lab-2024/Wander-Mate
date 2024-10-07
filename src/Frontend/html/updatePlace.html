@@ -12,6 +12,49 @@
         width: 100%;
         margin-top: 20px;
       }
+
+      /* Style for checkbox menu */
+      .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .checkbox-container div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        margin-right: 10px;
+      }
+
+      .checkbox-container label {
+        font-size: 16px;
+        color: #333;
+      }
+
+      /* Button styling */
+      .add-more-btn {
+        margin-top: 15px;
+        background-color: #00ad68;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .add-more-btn:hover {
+        background-color: #008e55;
+      }
     </style>
   </head>
 
@@ -73,8 +116,24 @@
           />
         </div>
         <div class="field">
-          <input type="file" id="newPictures" name="newPictures" accept="image/*" multiple />
+          <input
+            type="file"
+            id="newPictures"
+            name="newPictures"
+            accept="image/*"
+            multiple
+          />
         </div>
+
+        <!-- Placeholder for tags -->
+        <div id="tagFieldsContainer"></div>
+
+        <div class="add-more-tags-container">
+          <button type="button" class="add-more-btn" id="addMoreTagsBtn">
+            Add Tags
+          </button>
+        </div>
+
         <div class="field">
           <input type="submit" value="Update Place" />
         </div>
@@ -105,15 +164,18 @@
           map.addListener("click", (event) => {
             const clickedLocation = event.latLng;
             marker.setPosition(clickedLocation); // Move marker to clicked position
-            document.getElementById("newLocation").value =
-              `${clickedLocation.lat()}, ${clickedLocation.lng()}`; // Update hidden Location field
+            document.getElementById(
+              "newLocation"
+            ).value = `${clickedLocation.lat()}, ${clickedLocation.lng()}`; // Update hidden Location field
           });
         }
 
         // Fetch place details and populate form
         async function fetchPlaceDetails(placeId) {
           try {
-            const response = await fetch(`http://localhost:8000/getPlace/${placeId}`);
+            const response = await fetch(
+              `http://localhost:8000/getPlace/${placeId}`
+            );
             if (!response.ok) {
               throw new Error("Place not found");
             }
@@ -122,12 +184,15 @@
 
             // Populate form fields with the fetched data
             document.getElementById("placeId").value = place._id;
-            document.getElementById("placeName").value = place.Name; // Added line for place name
+            document.getElementById("placeName").value = place.Name;
             document.getElementById("newDescription").value = place.Description;
-            document.getElementById("newLocation").value =
-              `${place.Location.coordinates[1]}, ${place.Location.coordinates[0]}`; // Format as lat, lng
-            document.getElementById("newOpeningHours").value = place.OpeningHours;
-            document.getElementById("newTicketPrices").value = place.TicketPrices;
+            document.getElementById(
+              "newLocation"
+            ).value = `${place.Location.coordinates[1]}, ${place.Location.coordinates[0]}`;
+            document.getElementById("newOpeningHours").value =
+              place.OpeningHours;
+            document.getElementById("newTicketPrices").value =
+              place.TicketPrices;
 
             // Move the marker on the map to the stored location
             const placeLocation = {
@@ -136,77 +201,138 @@
             };
             map.setCenter(placeLocation);
             marker.setPosition(placeLocation);
+
+            // Preselect tags if present
+            preselectTags(place.Tags || []);
           } catch (error) {
             console.error("Error fetching place details:", error);
             alert("Could not fetch place details. Please try again later.");
           }
         }
 
+        // Function to fetch and populate available tags
+        async function fetchTags(container) {
+          try {
+            const response = await fetch(
+              "http://localhost:8000/readHistoricalTags"
+            );
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            const tags = await response.json();
+            tags.forEach((historicalTag) => {
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.value = historicalTag._id;
+              checkbox.id = `tag_${historicalTag._id}`;
+              checkbox.className = "tags-checkbox";
+
+              const label = document.createElement("label");
+              label.htmlFor = checkbox.id;
+              label.textContent = historicalTag.Name;
+
+              const div = document.createElement("div");
+              div.appendChild(checkbox);
+              div.appendChild(label);
+              container.appendChild(div);
+            });
+          } catch (error) {
+            console.error("Error fetching tags:", error);
+            alert("Could not load tags. Please try again later.");
+          }
+        }
+
+        // Preselect tags for the place
+        function preselectTags(selectedTags) {
+          selectedTags.forEach((tagId) => {
+            const tagCheckbox = document.getElementById(`tag_${tagId}`);
+            if (tagCheckbox) {
+              tagCheckbox.checked = true;
+            }
+          });
+        }
+
         async function updatePlace(event) {
-  event.preventDefault();
+          event.preventDefault();
 
-  const placeId = document.getElementById("placeId").value;
-  const placeName = document.getElementById("placeName").value;
-  const newDescription = document.getElementById("newDescription").value;
-  const newLocation = document.getElementById("newLocation").value;
-  const newOpeningHours = document.getElementById("newOpeningHours").value;
-  const newTicketPrices = document.getElementById("newTicketPrices").value;
-  const newPictures = document.getElementById("newPictures").files;
+          const placeId = document.getElementById("placeId").value;
+          const placeName = document.getElementById("placeName").value;
+          const newDescription =
+            document.getElementById("newDescription").value;
+          const newLocation = document.getElementById("newLocation").value;
+          const newOpeningHours =
+            document.getElementById("newOpeningHours").value;
+          const newTicketPrices =
+            document.getElementById("newTicketPrices").value;
+          const newPictures = document.getElementById("newPictures").files;
 
-  // Log the values to see what is being sent
-  console.log("Place ID:", placeId);
-  console.log("Place Name:", placeName);
-  console.log("New Description:", newDescription);
-  console.log("New Location:", newLocation);
-  console.log("New Opening Hours:", newOpeningHours);
-  console.log("New Ticket Prices:", newTicketPrices);
+          // Get the latitude and longitude from the New Location input
+          const [lat, lng] = newLocation.split(",").map(Number);
 
-  // Get the latitude and longitude from the New Location input
-  const [lat, lng] = newLocation.split(",").map(Number);
+          const locationObject = {
+            type: "Point",
+            coordinates: [lng, lat],
+          };
 
-  const locationObject = {
-    type: "Point",
-    coordinates: [lng, lat], // GeoJSON format expects [lng, lat]
-  };
+          const formData = new FormData();
+          formData.append("Id", placeId);
+          formData.append("Name", placeName);
+          formData.append("Description", newDescription);
+          formData.append("Location", JSON.stringify(locationObject));
+          formData.append("OpeningHours", newOpeningHours);
+          formData.append("TicketPrices", newTicketPrices);
 
-  const formData = new FormData();
-  formData.append("Id", placeId);
-  formData.append("Name", placeName);
-  formData.append("Description", newDescription);
-  formData.append("Location", JSON.stringify(locationObject)); // Append the location object as a JSON string
-  formData.append("OpeningHours", newOpeningHours);
-  formData.append("TicketPrices", newTicketPrices);
+          // Append all selected images (if any)
+          for (let i = 0; i < newPictures.length; i++) {
+            formData.append("Pictures", newPictures[i]);
+          }
 
-  // Append all selected images (if any)
-  for (let i = 0; i < newPictures.length; i++) {
-    formData.append("Pictures", newPictures[i]);
-  }
+          // Get the selected tags
+          const selectedTags = [];
+          document
+            .querySelectorAll(".checkbox-container .tags-checkbox:checked")
+            .forEach((checkbox) => {
+              selectedTags.push(checkbox.value);
+            });
 
-  // Log the FormData to inspect the structure being sent
-  for (const pair of formData.entries()) {
-    console.log(`${pair[0]}: ${pair[1]}`);
-  }
+          // Append the selected tags to the form data
+          formData.append("Tags", JSON.stringify(selectedTags));
 
-  try {
-    const response = await fetch(`http://localhost:8000/updatePlace/${placeId}`, {
-      method: "PUT",
-      body: formData,
-    });
+          try {
+            const response = await fetch(
+              `http://localhost:8000/updatePlace/${placeId}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
 
-    if (response.ok) {
-      alert("Place updated successfully!");
-      window.location.href = "view-places.html"; // Optionally redirect after successful update
-    } else {
-      const errorResponse = await response.json();
-      console.error("Update failed:", errorResponse); // Log error response for debugging
-      alert("Error updating place: " + errorResponse.message);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Failed to update place.");
-  }
-}
+            if (response.ok) {
+              alert("Place updated successfully!");
+              window.location.href = "getPlaces.html"; // Optionally redirect after successful update
+            } else {
+              const errorResponse = await response.json();
+              console.error("Update failed:", errorResponse);
+              alert("Error updating place: " + errorResponse.message);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to update place.");
+          }
+        }
 
+        // Add more tags button functionality
+        function addMoreTags() {
+          const tagsContainer = document.createElement("div");
+          tagsContainer.classList.add("checkbox-container");
+          document
+            .getElementById("tagFieldsContainer")
+            .appendChild(tagsContainer);
+          fetchTags(tagsContainer);
+
+          document.getElementById("addMoreTagsBtn").disabled = true;
+          document.getElementById("addMoreTagsBtn").style.opacity = 0.5;
+        }
 
         // Extract Place ID from URL and fetch details
         function getPlaceIdFromURL() {
@@ -214,22 +340,28 @@
           return params.get("placeId");
         }
 
-        // Load the place details when the page is loaded
+        // Load the place details and available tags when the page is loaded
         document.addEventListener("DOMContentLoaded", () => {
-          const placeId = getPlaceIdFromURL(); // Fetch Place ID from URL
+          const placeId = getPlaceIdFromURL();
           if (placeId) {
-            fetchPlaceDetails(placeId); // Fetch details for the specific place
+            fetchPlaceDetails(placeId);
           } else {
             alert("Place ID not found in URL.");
           }
+
+          const addMoreTagsBtn = document.getElementById("addMoreTagsBtn");
+          addMoreTagsBtn.addEventListener("click", addMoreTags);
+        });
+
+        // Load the Google Maps API asynchronously
+        document.addEventListener("DOMContentLoaded", () => {
+          const script = document.createElement("script");
+          script.src =
+            "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
+          script.async = true;
+          document.head.appendChild(script);
         });
       </script>
-
-      <script
-        async
-        defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
-      ></script>
     </div>
   </body>
 </html>

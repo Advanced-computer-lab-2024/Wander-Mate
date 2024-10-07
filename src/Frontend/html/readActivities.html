@@ -18,33 +18,33 @@
       }
 
       .activity-item button {
-          margin-right: 10px;
-          padding: 8px 12px;
-          border: none;
-          border-radius: 5px;
-          font-size: 14px;
-          cursor: pointer;
+        margin-right: 10px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
       }
 
       .delete-btn {
-          background-color: #e74c3c;
-          color: white;
+        background-color: #e74c3c;
+        color: white;
       }
 
       .update-btn {
-          background-color: #27ae60;
-          color: white;
+        background-color: #27ae60;
+        color: white;
       }
 
       .message {
-          margin-top: 20px;
-          color: green;
-          display: none;
+        margin-top: 20px;
+        color: green;
+        display: none;
       }
 
       .error {
-          color: red;
-          display: none;
+        color: red;
+        display: none;
       }
     </style>
   </head>
@@ -207,18 +207,19 @@
       }
 
       function initMap(location, elementId) {
+        console.log(location.coordinates);
         const map = new google.maps.Map(document.getElementById(elementId), {
           zoom: 10,
           center: {
-            lat: location.coordinates[1], // latitude
-            lng: location.coordinates[0], // longitude
+            lng: location.coordinates[1], // latitude
+            lat: location.coordinates[0], // longitude
           },
         });
 
         new google.maps.Marker({
           position: {
-            lat: location.coordinates[1],
-            lng: location.coordinates[0],
+            lng: location.coordinates[1],
+            lat: location.coordinates[0],
           },
           map: map,
         });
@@ -247,9 +248,6 @@
                           activity.Date
                         ).toLocaleDateString()}</p>
                     </div>
-                    <div class="edit-button">
-                        <a href="" class="buy-button" >Book</a>
-                    </div>
                     <div class="map-container" id="map-${
                       activity._id
                     }"></div> <!-- Container for Google Map -->
@@ -271,79 +269,89 @@
       // Delete an activity with creator check
       const deleteActivity = async (activityId, creatorId) => {
         try {
-          const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
+          const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
 
           // Fetch the creator ID for the logged-in user
-          const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
+          const creatorResponse = await fetch(
+            `http://localhost:8000/getID/${loggedInUsername}`
+          );
           if (!creatorResponse.ok) {
-              throw new Error('Could not fetch creator ID');
+            throw new Error("Could not fetch creator ID");
           }
 
           const { userID: loggedInUserID } = await creatorResponse.json();
 
           // Check if the logged-in user is the creator of the activity
           if (loggedInUserID !== creatorId) {
-              alert("You are not the creator of this activity. You cannot delete it.");
-              return;
+            alert(
+              "You are not the creator of this activity. You cannot delete it."
+            );
+            return;
           }
 
-          const response = await fetch('http://localhost:8000/deleteActivity', {
-              method: 'DELETE',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  id: activityId,
-                  Creator: loggedInUserID
-              })
+          const response = await fetch("http://localhost:8000/deleteActivity", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: activityId,
+              Creator: loggedInUserID,
+            }),
           });
 
           const result = await response.json();
 
           if (response.ok) {
-              // Success case: Remove the deleted activity from the DOM
-              document.getElementById(`activity-${activityId}`).remove();
-              document.getElementById('successMessage').innerText = result.message;
-              document.getElementById('successMessage').style.display = 'block';
-              document.getElementById('errorMessage').style.display = 'none';
+            // Success case: Remove the deleted activity from the DOM
+            document.getElementById(`activity-${activityId}`).remove();
+            document.getElementById("successMessage").innerText =
+              result.message;
+            document.getElementById("successMessage").style.display = "block";
+            document.getElementById("errorMessage").style.display = "none";
           } else {
-              // Error case: Show error message
-              document.getElementById('errorMessage').innerText = result.message || 'Error deleting activity';
-              document.getElementById('errorMessage').style.display = 'block';
-              document.getElementById('successMessage').style.display = 'none';
+            // Error case: Show error message
+            document.getElementById("errorMessage").innerText =
+              result.message || "Error deleting activity";
+            document.getElementById("errorMessage").style.display = "block";
+            document.getElementById("successMessage").style.display = "none";
           }
         } catch (error) {
-            console.error('Error:', error);
-            document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
+            // console.error('Error:', error);
+            // document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
+            // document.getElementById('errorMessage').style.display = 'block';
+            // document.getElementById('successMessage').style.display = 'none';
         }
       };
 
       // Redirect to updateActivity.html with the activity ID (with creator check)
       const redirectToUpdatePage = async (activityId, creatorId) => {
         try {
-          const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
+          const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
 
           // Fetch the creator ID for the logged-in user
-          const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
+          const creatorResponse = await fetch(
+            `http://localhost:8000/getID/${loggedInUsername}`
+          );
           if (!creatorResponse.ok) {
-              throw new Error('Could not fetch creator ID');
+            throw new Error("Could not fetch creator ID");
           }
 
           const { userID: loggedInUserID } = await creatorResponse.json();
 
           // Check if the logged-in user is the creator of the activity
           if (loggedInUserID !== creatorId) {
-              alert("You are not the creator of this activity. You cannot update it.");
-              return;
+            alert(
+              "You are not the creator of this activity. You cannot update it."
+            );
+            return;
           }
 
           // If the user is the creator, proceed to the update page
           window.location.href = `updateActivity.html?id=${activityId}`;
         } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred while fetching creator information.');
+          console.error("Error:", error);
+          alert("An error occurred while fetching creator information.");
         }
       };
 

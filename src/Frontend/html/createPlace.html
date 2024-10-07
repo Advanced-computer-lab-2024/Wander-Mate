@@ -16,6 +16,49 @@
         width: 100%; /* Set the width of the map */
         margin-top: 20px; /* Margin above the map */
       }
+
+      /* Style for checkbox menu */
+      .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .checkbox-container div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        margin-right: 10px;
+      }
+
+      .checkbox-container label {
+        font-size: 16px;
+        color: #333;
+      }
+
+      /* Button styling */
+      .add-more-btn {
+        margin-top: 15px;
+        background-color: #00ad68;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .add-more-btn:hover {
+        background-color: #008e55;
+      }
     </style>
   </head>
 
@@ -93,6 +136,16 @@
             required
           />
         </div>
+
+        <!-- Placeholder for tags -->
+        <div id="tagFieldsContainer"></div>
+
+        <div class="add-more-tags-container">
+          <button type="button" class="add-more-btn" id="addMoreTagsBtn">
+            Add Tags
+          </button>
+        </div>
+
         <div class="field">
           <input type="submit" value="Create Place" />
         </div>
@@ -104,6 +157,7 @@
       <script>
         let map;
         let marker;
+
         async function fetchCategories() {
           const CategorySelect = document.getElementById("Category");
 
@@ -126,6 +180,37 @@
           } catch (error) {
             console.error("Error fetching categories:", error);
             alert("Could not load categories. Please try again later.");
+          }
+        }
+
+        async function fetchTags(container) {
+          try {
+            const response = await fetch(
+              "http://localhost:8000/readHistoricalTags"
+            );
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            const tags = await response.json();
+            tags.forEach((historicaltgas) => {
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.value = historicaltgas._id;
+              checkbox.id = `tag_${historicaltgas._id}`;
+              checkbox.className = "tags-checkbox";
+
+              const label = document.createElement("label");
+              label.htmlFor = checkbox.id;
+              label.textContent = historicaltgas.Name;
+
+              const div = document.createElement("div");
+              div.appendChild(checkbox);
+              div.appendChild(label);
+              container.appendChild(div);
+            });
+          } catch (error) {
+            console.error("Error fetching tags:", error);
+            alert("Could not load tags. Please try again later.");
           }
         }
 
@@ -159,6 +244,7 @@
           const formData = new FormData(
             document.getElementById("createPlaceForm")
           );
+
           // Get the latitude and longitude from the Location input
           const locationString = document.getElementById("Location").value;
           const [lat, lng] = locationString.split(",").map(Number); // Split and convert to numbers
@@ -172,6 +258,18 @@
           };
 
           formData.append("Location", JSON.stringify(locationObject));
+
+          // Get the selected tags
+          const selectedTags = [];
+          document.querySelectorAll(".checkbox-container").forEach((container) => {
+            const selected = Array.from(
+              container.querySelectorAll(".tags-checkbox:checked")
+            ).map((checkbox) => checkbox.value);
+            selectedTags.push(...selected);
+          });
+
+          // Append the selected tags to the form data
+          formData.append("Tags", JSON.stringify(selectedTags));
 
           try {
             const response = await fetch("http://localhost:8000/createPlace", {
@@ -194,15 +292,37 @@
             alert("Failed to create place.");
           }
         }
-        document.addEventListener("DOMContentLoaded", async () => {
+
+        // Function to add a new tags checkbox container
+        function addMoreTags() {
+          const tagsContainer = document.createElement("div");
+          tagsContainer.classList.add("checkbox-container");
+          document
+            .getElementById("tagFieldsContainer")
+            .appendChild(tagsContainer);
+          fetchTags(tagsContainer);
+
+          document.getElementById("addMoreTagsBtn").disabled = true;
+          document.getElementById("addMoreTagsBtn").style.opacity = 0.5;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
           fetchCategories(); // Fetch categories
+
+          // Handle adding more tags
+          const addMoreTagsBtn = document.getElementById("addMoreTagsBtn");
+          addMoreTagsBtn.addEventListener("click", addMoreTags);
+        });
+
+        // Load the Google Maps API asynchronously
+        document.addEventListener("DOMContentLoaded", () => {
+          const script = document.createElement("script");
+          script.src =
+            "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
+          script.async = true;
+          document.head.appendChild(script);
         });
       </script>
-      <script
-        async
-        defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
-      ></script>
     </div>
   </body>
 </html>
