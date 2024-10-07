@@ -18,7 +18,6 @@
             border-radius: 5px;
         }
 
-        /* Style for each checkbox item */
         .checkbox-container div {
             display: flex;
             align-items: center;
@@ -32,20 +31,6 @@
         .checkbox-container label {
             font-size: 16px;
             color: #333;
-        }
-
-        /* Smooth scrolling for checkbox containers */
-        .checkbox-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .checkbox-container::-webkit-scrollbar-thumb {
-            background-color: #888;
-            border-radius: 10px;
-        }
-
-        .checkbox-container::-webkit-scrollbar-track {
-            background-color: #f1f1f1;
         }
 
         /* Button styling */
@@ -64,18 +49,10 @@
             background-color: #008e55;
         }
 
-        /* Ensure the "Tags" label appears above the checkbox container */
-        .field label[for="tagsContainer"] {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* Ensure button is properly aligned and not behind anything */
-        .add-more-tags-container {
-            display: flex;
-            justify-content: flex-start;
+        /* Map styling */
+        #map {
+            height: 400px;
+            width: 100%;
             margin-top: 20px;
         }
     </style>
@@ -101,9 +78,13 @@
                 <label for="time">Time</label>
             </div>
             <div class="field">
-                <input type="text" name="location" id="location" placeholder="Enter coordinates (e.g., -74.0445, 40.6892)" required>
+                <input type="text" name="location" id="location" placeholder="Location (auto-filled)" readonly required>
                 <label for="location">Location (Coordinates)</label>
             </div>
+
+            <!-- Google Maps Container -->
+            <div id="map"></div>
+
             <div class="field">
                 <input type="number" name="price" id="price" placeholder=" " required min="0" step="0.1">
                 <label for="price">Price</label>
@@ -115,10 +96,9 @@
                 <label for="category">Category</label>
             </div>
 
-            <!-- Placeholder where new tag checkbox containers will be added -->
+            <!-- Placeholder for tags -->
             <div id="tagFieldsContainer"></div>
 
-            <!-- Button to add more tags -->
             <div class="add-more-tags-container">
                 <button type="button" class="add-more-btn" id="addMoreTagsBtn">Add Tags</button>
             </div>
@@ -141,7 +121,49 @@
     </div>
 
     <script>
-        // Fetch categories from the API and populate the dropdown
+        let map;
+        let marker;
+
+        // Initialize Google Map
+        function initMap() {
+            const initialLocation = { lat: 40.6892, lng: -74.0445 }; // Default location (Statue of Liberty)
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: initialLocation,
+            });
+
+            // Marker to show the selected location
+            marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                title: "Selected Location",
+            });
+
+            // Add click event to map to allow user to choose location
+            map.addListener("click", (event) => {
+                const clickedLocation = event.latLng;
+                marker.setPosition(clickedLocation); // Move marker to clicked location
+                document.getElementById('location').value = clickedLocation.lat() + ', ' + clickedLocation.lng(); // Set location value in input
+            });
+        }
+
+        // Automatically populate the creator ID field based on logged-in username
+        async function fetchCreatorID(username) {
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get creator ID');
+                }
+
+                const { userID } = await response.json();
+                document.getElementById('creator').value = userID; // Automatically fill the creator field
+            } catch (error) {
+                console.error('Error fetching creator ID:', error);
+                alert('Could not load creator ID.');
+            }
+        }
+
+        // Fetch categories and populate dropdown
         async function fetchCategories() {
             const categorySelect = document.getElementById("category");
             try {
@@ -162,7 +184,7 @@
             }
         }
 
-        // Fetch tags from the API and populate the checkbox list
+        // Fetch tags and populate tag fields
         async function fetchTags(container) {
             try {
                 const response = await fetch("http://localhost:8000/readPreferenceTags");
@@ -192,38 +214,15 @@
             }
         }
 
-        // Automatically populate the creator ID field based on logged-in username
-        async function fetchCreatorID(username) {
-              try {
-                // Log the username and URL for debugging
-                event.preventDefault();
-                console.log(`Fetching creator ID for username: ${username}`);
-                const response = await fetch(`http://localhost:8000/getID/${username}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch creator ID: ${response.status}`);
-                }
-
-                const { userID } = await response.json();
-                const creatorField = document.getElementById("creator");
-                creatorField.value = userID;
-              } 
-              catch (error) {
-                console.error("Error fetching creator ID:", error);
-                alert("Could not load creator ID.");
-              }
-          }
-
         // Function to add a new tags checkbox container
         function addMoreTags() {
             const tagsContainer = document.createElement("div");
             tagsContainer.classList.add("checkbox-container");
-            document.getElementById("tagFieldsContainer").appendChild(tagsContainer); // Add new tags container
-            fetchTags(tagsContainer); // Fetch and add new tag checkboxes to the newly created container
+            document.getElementById("tagFieldsContainer").appendChild(tagsContainer);
+            fetchTags(tagsContainer);
 
-            // Disable the button after it is clicked
             document.getElementById("addMoreTagsBtn").disabled = true;
-            document.getElementById("addMoreTagsBtn").style.opacity = 0.5; // Optional: visually indicate it's disabled
+            document.getElementById("addMoreTagsBtn").style.opacity = 0.5;
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -231,13 +230,23 @@
             const loggedInUsername = sessionStorage.getItem('username');
 
             // Fetch creator ID automatically based on logged-in user
-            fetchCreatorID(loggedInUsername);
+            if (loggedInUsername) {
+                fetchCreatorID(loggedInUsername);
+            }
 
             fetchCategories();
 
             // Handle adding more tags
             const addMoreTagsBtn = document.getElementById("addMoreTagsBtn");
             addMoreTagsBtn.addEventListener("click", addMoreTags);
+        });
+
+        // Load the Google Maps API asynchronously
+        document.addEventListener("DOMContentLoaded", () => {
+            const script = document.createElement('script');
+            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
+            script.async = true;
+            document.head.appendChild(script);
         });
 
         // Form submission logic
@@ -262,8 +271,6 @@
             const discounts = document.getElementById("discounts").value ? document.getElementById("discounts").value.split(",").map(discount => discount.trim()) : [];
             const isAvailable = document.getElementById("isAvailable").checked;
 
-            const [lat, lng] = location.split(", ").map(coord => parseFloat(coord.trim()));
-
             try {
                 const response = await fetch("http://localhost:8000/createActivity", {
                     method: "POST",
@@ -277,7 +284,7 @@
                         Time: time,
                         Location: {
                             type: "Point",
-                            coordinates: [lng, lat]
+                            coordinates: location.split(',').map(coord => parseFloat(coord.trim()))
                         },
                         Price: price,
                         Category: category,

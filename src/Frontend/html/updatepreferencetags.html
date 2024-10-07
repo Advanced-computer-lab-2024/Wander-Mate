@@ -3,56 +3,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Update Preference Tag | Wander-Mate</title>
+    <title>Update Tag | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
-    <!-- Ensure the correct path -->
   </head>
   <body>
     <div class="wrapper">
       <div class="title">Update an Old Tag</div>
-      <form id="registerForm">
+      <form id="updateForm">
         <div class="field">
-          <input type="text" id="oldname" name="oldname" required />
-          <label for="username">Old Name</label>
+          <input type="text" id="newname" name="newname" required />
+          <label for="newname">New Name</label>
         </div>
         <div class="field">
-            <input type="text" id="newname" name="newname" required />
-            <label for="username">New Name</label>
-          </div>
-        <div class="field">
-            <input type="submit" value="Update Tag" />
-          </div>
+          <input type="submit" value="Update Category" />
+        </div>
       </form>
     </div>
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const OldName = document.getElementById('oldname').value;
-            const NewName = document.getElementById('newname').value;
-            
-            try {
-                const response = await fetch("http://localhost:8000/updateTags", {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ currentName : OldName, newName: NewName })
-                });
-                const responseData = await response.json();
-              console.log("Response from server:", responseData);
 
-          // Handle success or failure based on the server response
-          if (response.ok) {
-            alert("Tag successfully updated");
-            window.location.href = "preferencetags.html"; // Optional redirect on success
-          } else {
-            alert("Error: " + (responseData.message || "Unknown error"));
-          }
-            } catch (error) {
-                console.error("Error in fetch call:", error);
-                alert("An error occurred. Please try again.");
+    <script>
+      // Get the category ID from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryId = urlParams.get("id"); // Extract the 'id' query parameter
+
+      if (!categoryId) {
+        alert("No category ID provided. Cannot update the category.");
+        window.location.href = "viewpreferencetags.html"; // Redirect if no ID is provided
+      }
+
+      // Handle form submission for updating the category
+      document
+        .getElementById("updateForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault(); // Prevent default form submission behavior
+          const newName = document.getElementById("newname").value;
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/updatePreferenceTagsById/${categoryId}`,
+              {
+                method: "PATCh",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ newName }), // Sending the new name
+              }
+            );
+
+            const responseData = await response.json();
+            console.log("Response from server:", responseData);
+
+            // Handle success or failure based on the server response
+            if (response.ok) {
+              alert("Tag successfully updated");
+              window.location.href = "viewpreferencetags.html"; // Redirect on success
+            } else {
+              alert("Error: " + (responseData.message || "Unknown error"));
             }
+          } catch (error) {
+            console.error("Error in fetch call:", error);
+            alert("An error occurred. Please try again.");
+          }
         });
     </script>
-</body>
+  </body>
 </html>

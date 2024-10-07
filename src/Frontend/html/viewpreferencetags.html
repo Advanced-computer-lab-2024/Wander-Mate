@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preference Tags</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Preference Tags</div>
+      <div class="field">
+        <ul id="categories-list"></ul>
+        <!-- Changed from <li> to <ul> -->
+      </div>
+    </div>
+    <script>
+      fetch("http://localhost:8000/readPreferenceTags")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((categories) => {
+          const categoriesList = document.getElementById("categories-list");
+          categories.forEach((category) => {
+            const listItem = document.createElement("li");
+
+            // Display the category name
+            const categoryName = document.createElement("span");
+            categoryName.textContent = category.Name;
+
+            // Create Edit button
+            const editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.onclick = function () {
+              window.location.href = `updatepreferencetags.html?id=${category._id}`;
+            };
+
+            // Create Delete button
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = function () {
+              if (
+                confirm(`Are you sure you want to delete "${category.Name}"?`)
+              ) {
+                // Make a DELETE request to the server
+                fetch(
+                  `http://localhost:8000/deletePreferenceTagsById/${category._id}`,
+                  {
+                    method: "DELETE",
+                  }
+                )
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error("Failed to delete category");
+                    }
+                    // Remove the category from the list
+                    categoriesList.removeChild(listItem);
+                  })
+                  .catch((error) => {
+                    console.error("Error deleting category:", error);
+                    alert("Error deleting category.");
+                  });
+              }
+            };
+
+            // Append everything to the list item
+            listItem.appendChild(categoryName);
+            listItem.appendChild(editButton);
+            listItem.appendChild(deleteButton);
+
+            // Add the list item to the categories list
+            categoriesList.appendChild(listItem);
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching Tags:", error);
+          alert("Error fetching Tags.");
+        });
+    </script>
+  </body>
+</html>
