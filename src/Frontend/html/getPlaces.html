@@ -6,7 +6,6 @@
     <title>All Places | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
-    <!-- Replace with your API Key -->
     <style>
       .map-container {
         width: 100%;
@@ -48,11 +47,7 @@
 
       <div class="search-section">
         <label for="ActivityName">Search by Place Name:</label>
-        <input
-          type="text"
-          id="ActivityName"
-          placeholder="Enter activity name"
-        />
+        <input type="text" id="ActivityName" placeholder="Enter place name" />
         <button id="searchButton">Search</button>
       </div>
 
@@ -76,8 +71,6 @@
     <script>
       let allActivities = [];
       let displayedActivities = [];
-      let allAdvertisers = [];
-      let advertiserMap = {};
       let categories = [];
       let tags = [];
 
@@ -102,9 +95,7 @@
       async function fetchTags() {
         const tagsContainer = document.getElementById("tagsContainer");
         try {
-          const response = await fetch(
-            "http://localhost:8000/readHistoricalTags"
-          );
+          const response = await fetch("http://localhost:8000/readHistoricalTags");
           if (!response.ok) throw new Error("Network response was not ok");
           tags = await response.json();
           tags.forEach((tag) => {
@@ -131,24 +122,22 @@
             displayActivities(displayedActivities);
           } else {
             document.getElementById("activityList").innerHTML =
-              "<p>No Activities available</p>";
+              "<p>No Places available</p>";
           }
         } catch (error) {
-          console.error("Error fetching Activities:", error);
+          console.error("Error fetching Places:", error);
           document.getElementById("activityList").innerHTML =
-            "<p>An error occurred while fetching Activities.</p>";
+            "<p>An error occurred while fetching Places.</p>";
         }
       }
 
       async function fetchImages(activityId) {
         try {
-          const response = await fetch(
-            `http://localhost:8000/getPlaceImage/${activityId}`
-          );
+          const response = await fetch(`http://localhost:8000/getPlaceImage/${activityId}`);
           if (response.ok) {
             return await response.json();
           } else {
-            console.error("Error fetching images for activity:", activityId);
+            console.error("Error fetching images for place:", activityId);
           }
         } catch (error) {
           console.error("Error fetching images:", error);
@@ -158,12 +147,12 @@
 
       async function displayActivities(activities) {
         const activityList = document.getElementById("activityList");
-        activityList.innerHTML = ""; // Clear existing Activities
+        activityList.innerHTML = ""; // Clear existing Places
         for (const activity of activities) {
           const activityItem = document.createElement("div");
           activityItem.className = "activity-item";
 
-          // Fetch images for each activity
+          // Fetch images for each place
           const images = await fetchImages(activity._id);
 
           // Create image container
@@ -179,9 +168,6 @@
           activityItem.innerHTML = `
                     <div class="activity-details">
                         <h2 class="activity-name">${activity.Name}</h2>
-                        <p class="activity-creator">Advertiser: ${
-                          advertiserMap[activity.Creator] || "Unknown"
-                        }</p>
                     </div>
                     <div class="map-container" id="map-${activity._id}"></div>
                     <div class="button-container">
@@ -193,7 +179,7 @@
           // Append image container to activity item
           activityItem.appendChild(imageContainer);
           activityList.appendChild(activityItem);
-          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this activity
+          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this place
         }
       }
 
@@ -215,9 +201,9 @@
         });
       }
 
-      // Delete function to remove an activity from the database
+      // Delete function to remove a place from the database
       async function deleteActivity(activityId) {
-        const confirmDelete = confirm("Are you sure you want to delete this activity?");
+        const confirmDelete = confirm("Are you sure you want to delete this place?");
         if (!confirmDelete) return;
 
         try {
@@ -229,20 +215,20 @@
           });
 
           if (response.ok) {
-            alert("Activity deleted successfully.");
+            alert("Place deleted successfully.");
             fetchActivities(); // Refresh the list after deletion
           } else {
-            alert("Error deleting activity.");
+            alert("Error deleting place.");
           }
         } catch (error) {
-          console.error("Error deleting activity:", error);
-          alert("An error occurred while deleting the activity.");
+          console.error("Error deleting place:", error);
+          alert("An error occurred while deleting the place.");
         }
       }
 
-      // Redirect to update page
+      // Redirect to update page with the placeId in the URL
       function updateActivity(activityId) {
-        window.location.href = `updatePlace.html?id=${activityId}`;
+        window.location.href = `updatePlace.html?placeId=${activityId}`;
       }
 
       function applyFiltersAndSearch() {
@@ -270,11 +256,11 @@
           return matchesName && matchesCategory && matchesTags;
         });
 
-        displayActivities(displayedActivities); // Display filtered and searched Activities
+        displayActivities(displayedActivities); // Display filtered and searched Places
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
-        await fetchActivities(); // Then fetch Activities
+        await fetchActivities(); // Then fetch Places
         fetchCategories(); // Fetch categories
         fetchTags(); // Fetch tags
       });
@@ -295,7 +281,7 @@
         );
         tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
         displayedActivities = allActivities; // Reset displayed activities
-        displayActivities(displayedActivities); // Display all Activities
+        displayActivities(displayedActivities); // Display all Places
       });
     </script>
   </body>
