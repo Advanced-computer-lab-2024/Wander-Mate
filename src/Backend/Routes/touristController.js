@@ -481,6 +481,30 @@ const readPlaces = async (req, res) => {
   }
 };
 
+const calculateAge = (birthday) => {
+  const birthDate = new Date(birthday);
+  const ageDiff = Date.now() - birthDate.getTime();
+  const ageDate = new Date(ageDiff);
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
+const getAge = async (req, res) => {
+  const { Username } = req.body;
+  try {
+    const { DOB } = await userModel.findOne({ Username });
+    const age = calculateAge(DOB);
+
+    if (age < 18) {
+      return res.status(200).json({ eligible: false });
+    } else {
+      return res.status(200).json({ eligible: true });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: "Error getting age" });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -498,4 +522,5 @@ module.exports = {
   searchActivities,
   sortActivitiesByRatings,
   readPlaces,
+  getAge,
 };

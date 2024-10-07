@@ -214,7 +214,7 @@
                         ).toLocaleDateString()}</p>
                     </div>
                     <div class="edit-button">
-                        <a href="">Book</a>
+                        <a href="" class="buy-button" >Book</a>
                     </div>
                     <div class="map-container" id="map-${
                       activity._id
@@ -315,6 +315,39 @@
         tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
         displayedActivities = allActivities; // Reset displayed activities
         displayActivities(displayedActivities); // Display all Activities
+      });
+      document.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("buy-button")) {
+          event.preventDefault(); // Prevent default link behavior
+
+          const Username = sessionStorage.getItem("username");
+          console.log("haha");
+
+          // Call the backend to check age
+          try {
+            const body = JSON.stringify({ Username });
+            console.log(body);
+            const response = await fetch("http://localhost:8000/getAge", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set the Content-Type to application/json
+              },
+              body: body,
+            });
+
+            const data = await response.json();
+
+            if (!data.eligible) {
+              alert("You can't buy; you are under 18");
+            } else {
+              // Proceed to the next page or perform the buy action
+              window.location.href = "nextPage.html"; // Replace with your target page
+            }
+          } catch (error) {
+            console.error("Error checking age:", error);
+            alert("An error occurred while checking your age.");
+          }
+        }
       });
     </script>
   </body>

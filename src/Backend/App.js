@@ -29,6 +29,7 @@ const {
   searchActivities,
   sortActivitiesByRatings,
   readPlaces,
+  getAge,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -231,3 +232,4 @@ app.get("/searchActivities", searchActivities);
 app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
+app.post("/getAge", getAge);
