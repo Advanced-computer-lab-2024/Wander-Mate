@@ -1,81 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Tour Guide Profile</title>
-    <link rel="stylesheet" href="../styles/register.css" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="../styles/register.css" /> <!-- Connect your CSS file here -->
+</head>
+<body>
     <div class="wrapper">
-      <div class="title">Create Tour Guide Profile</div>
-      <form id="profileForm" onsubmit="return submitForm(event)">
-        <div class="field">
-          <input type="text" id="username" required />
-          <label>Username</label>
-        </div>
-        <div class="field">
-          <input type="text" id="mobileNumber" required />
-          <label>Mobile Number</label>
-        </div>
-        <div class="field">
-          <input type="number" id="yearsOfExperience" required />
-          <label>Years of Experience</label>
-        </div>
-        <div class="field">
-          <textarea id="previousWork" rows="4" placeholder="Describe previous work experience"></textarea>
-          <label>Previous Work</label>
-        </div>
-        <div class="content">
-          <div class="checkbox">
-            <input type="checkbox" id="remember-me" />
-            <label for="remember-me">Remember me</label>
-          </div>
-        </div>
-        <div class="field">
-          <input type="submit" value="Submit" />
-        </div>
-      </form>
+        <div class="title">Create Tour Guide Profile</div>
+        <form id="profileForm" onsubmit="return submitForm(event)">
+            <div id="errorMessage" style="color: red; display: none;"></div>
+
+            <div class="field">
+                <!-- The username field is now hidden as it will be auto-filled -->
+                <input type="text" id="username" required readonly style="display:none;" />
+            </div>
+
+            <div class="field">
+                <input type="text" id="mobileNumber" required />
+                <label>Mobile Number</label>
+            </div>
+
+            <div class="field">
+                <input type="number" id="yearsOfExperience" required />
+                <label>Years of Experience</label>
+            </div>
+
+            <div class="field">
+                <textarea id="previousWork" rows="4" placeholder="Describe previous work experience"></textarea>
+                <label>Previous Work</label>
+            </div>
+
+            <div class="content">
+                <div class="checkbox">
+                    <input type="checkbox" id="remember-me" />
+                    <label for="remember-me">Remember me</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <input type="submit" value="Submit" />
+            </div>
+        </form>
     </div>
 
     <script>
-      async function submitForm(event) {
+    // Automatically retrieve username from sessionStorage on page load
+    window.onload = function () {
+        const storedUsername = sessionStorage.getItem("username"); // Retrieve the username from sessionStorage
+
+        if (storedUsername) {
+            console.log("Username found in session storage:", storedUsername);
+            document.getElementById("username").value = storedUsername; // Set the username field value
+        } else {
+            console.error("Username not found in session storage.");
+            document.getElementById('errorMessage').innerText = "Username not found. Please log in or register.";
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    };
+
+    async function submitForm(event) {
         event.preventDefault(); // Prevent default form submission
 
         // Collect form data
         const formData = {
-          Username: document.getElementById("username").value,
-          MobileNumber: document.getElementById("mobileNumber").value,
-          YearsOfExperience: document.getElementById("yearsOfExperience").value,
-          PreviousWork: document.getElementById("previousWork").value,
+            Username: document.getElementById("username").value, // Already auto-filled
+            MobileNumber: document.getElementById("mobileNumber").value,
+            YearsOfExperience: document.getElementById("yearsOfExperience").value,
+            PreviousWork: document.getElementById("previousWork").value,
         };
 
         const URL = "http://localhost:8000/createProfileInformation";
 
         try {
-          const response = await fetch(URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
+            const response = await fetch(URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
 
-          const responseData = await response.json();
-          console.log("Response from server:", responseData);
+            const responseData = await response.json();
+            console.log("Response from server:", responseData);
 
-          if (response.ok) {
-            // Handle success, e.g., show success message or redirect
-            alert("Profile successfully created");
-          } else {
-            // Handle error, e.g., show error message
-            alert("Error: " + responseData.message || "Unknown error");
-          }
+            if (response.ok) {
+                // Handle success, e.g., show success message or redirect
+                alert("Profile successfully created");
+            } else {
+                // Handle error, e.g., show error message
+                document.getElementById('errorMessage').innerText = responseData.message || "Unknown error";
+                document.getElementById('errorMessage').style.display = 'block';
+            }
         } catch (error) {
-          console.error("Error in fetch call:", error);
-          alert("An error occurred. Please try again.");
+            console.error("Error in fetch call:", error);
+            document.getElementById('errorMessage').innerText = "An error occurred. Please try again.";
+            document.getElementById('errorMessage').style.display = 'block';
         }
-      }
+    }
     </script>
-  </body>
+</body>
 </html>

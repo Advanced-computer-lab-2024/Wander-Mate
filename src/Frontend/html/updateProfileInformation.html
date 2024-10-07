@@ -10,10 +10,13 @@
     <div class="wrapper">
       <div class="title">Update Tour Guide Profile</div>
       <form id="updateProfileForm" onsubmit="return submitForm(event)">
-        <div class="field">
-          <input type="text" id="username" required />
-          <label>Username</label>
+        <div id="errorMessage" style="color: red; display: none;"></div>
+
+        <!-- The username field will be hidden as it is fetched from sessionStorage -->
+        <div class="field" style="display:none;">
+          <input type="text" id="username" readonly required />
         </div>
+
         <div class="field">
           <input type="text" id="mobileNumber" />
           <label>Mobile Number</label>
@@ -26,6 +29,7 @@
           <textarea id="previousWork" rows="4" placeholder="Describe previous work experience"></textarea>
           <label>Previous Work</label>
         </div>
+
         <div class="content">
           <div class="checkbox">
             <input type="checkbox" id="remember-me" />
@@ -39,22 +43,36 @@
     </div>
 
     <script>
+      // Automatically retrieve username from sessionStorage on page load
+      window.onload = function () {
+        const storedUsername = sessionStorage.getItem("username"); // Retrieve the username from sessionStorage
+
+        if (storedUsername) {
+          console.log("Username found in session storage:", storedUsername);
+          document.getElementById("username").value = storedUsername; // Set the username field value
+        } else {
+          console.error("Username not found in session storage.");
+          document.getElementById('errorMessage').innerText = "Username not found. Please log in or register.";
+          document.getElementById('errorMessage').style.display = 'block';
+        }
+      };
+
       async function submitForm(event) {
         event.preventDefault(); // Prevent default form submission
 
         // Collect form data
         const formData = {
-          Username: document.getElementById("username").value,
+          Username: document.getElementById("username").value, // Auto-filled username
           MobileNumber: document.getElementById("mobileNumber").value,
           YearsOfExperience: document.getElementById("yearsOfExperience").value,
           PreviousWork: document.getElementById("previousWork").value,
         };
 
-        const URL = "http://localhost:8000/updateProfileInformation";
+        const URL = "http://localhost:8000/updateProfileInformation"; // Your API endpoint
 
         try {
           const response = await fetch(URL, {
-            method: "PUT",
+            method: "PUT", // Use PUT for updating
             headers: {
               "Content-Type": "application/json",
             },
@@ -65,15 +83,17 @@
           console.log("Response from server:", responseData);
 
           if (response.ok) {
-            // Handle success, e.g., show success message or redirect
+            // Handle success, e.g., show success message
             alert("Profile successfully updated");
           } else {
             // Handle error, e.g., show error message
-            alert("Error: " + responseData.message || "Unknown error");
+            document.getElementById('errorMessage').innerText = responseData.message || "Unknown error";
+            document.getElementById('errorMessage').style.display = 'block';
           }
         } catch (error) {
           console.error("Error in fetch call:", error);
-          alert("An error occurred. Please try again.");
+          document.getElementById('errorMessage').innerText = "An error occurred. Please try again.";
+          document.getElementById('errorMessage').style.display = 'block';
         }
       }
     </script>
