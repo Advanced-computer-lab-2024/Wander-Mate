@@ -3,61 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All Activities | Wander-Mate</title>
+    <title>All Itineraries | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
-    <!-- Include Google Maps API -->
     <style>
-      .map-container {
-        width: 100%;
-        height: 200px; /* Adjust height as needed */
-        margin-top: 10px;
-      }
       .activity-item {
         margin-bottom: 20px;
-      }
-
-      .activity-item button {
-        margin-right: 10px;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-
-      .delete-btn {
-        background-color: #e74c3c;
-        color: white;
-      }
-
-      .update-btn {
-        background-color: #27ae60;
-        color: white;
-      }
-
-      .message {
-        margin-top: 20px;
-        color: green;
-        display: none;
-      }
-
-      .error {
-        color: red;
-        display: none;
       }
     </style>
   </head>
   <body>
     <div class="wrapper">
-      <div class="title">All Activities</div>
+      <div class="title">All Itineraries</div>
 
       <div class="search-section">
-        <label for="ActivityName">Search by Activity Name:</label>
+        <label for="ActivityName">Search by Itineraries Name:</label>
         <input
           type="text"
           id="ActivityName"
-          placeholder="Enter activity name"
+          placeholder="Enter itinerary name"
         />
         <button id="searchButton">Search</button>
       </div>
@@ -93,10 +56,6 @@
       <div class="activity-list" id="activityList">
         <!-- Activities will be dynamically inserted here -->
       </div>
-
-      <!-- Success/Error Messages -->
-      <div id="successMessage" class="message"></div>
-      <div id="errorMessage" class="error"></div>
     </div>
 
     <script>
@@ -141,20 +100,24 @@
           const response = await fetch(
             "http://localhost:8000/readPreferenceTags"
           );
-
-          if (!response.ok) {
+          const response1 = await fetch(
+            "http://localhost:8000/readHistoricalTags"
+          );
+          if (!response.ok || !response1.ok) {
             throw new Error("Network response was not ok");
           }
 
-          tags = await response.json();
+          tags1 = await response.json();
+          tags2 = await response1.json();
+          tags = tags1.concat(tags2);
 
           // Populate the checkboxes with fetched tags
           tags.forEach((tag) => {
             const tagCheckbox = document.createElement("div");
             tagCheckbox.innerHTML = `
-                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
-                        <label for="tag-${tag._id}">${tag.Name}</label>
-                    `;
+                              <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                              <label for="tag-${tag._id}">${tag.Name}</label>
+                          `;
             tagsContainer.appendChild(tagCheckbox);
           });
         } catch (error) {
@@ -165,7 +128,7 @@
 
       async function fetchAdvertisers() {
         try {
-          const response = await fetch("http://localhost:8000/getAdvertisers");
+          const response = await fetch("http://localhost:8000/getTourguides");
           if (response.ok) {
             const data = await response.json();
             allAdvertisers = data.Creator; // Access the Creator array directly from the response
@@ -188,7 +151,7 @@
 
       async function fetchActivities() {
         try {
-          const response = await fetch("http://localhost:8000/readActivities");
+          const response = await fetch("http://localhost:8000/viewItineraries");
           const Activities = await response.json();
 
           if (response.ok) {
@@ -197,32 +160,13 @@
             displayActivities(displayedActivities); // Display all Activities initially
           } else {
             document.getElementById("activityList").innerHTML =
-              "<p>No Activities available</p>";
+              "<p>No Itineraries available</p>";
           }
         } catch (error) {
-          console.error("Error fetching Activities:", error);
+          console.error("Error fetching Itineraries:", error);
           document.getElementById("activityList").innerHTML =
-            "<p>An error occurred while fetching Activities.</p>";
+            "<p>An error occurred while fetching Itineraries.</p>";
         }
-      }
-
-      function initMap(location, elementId) {
-        console.log(location.coordinates);
-        const map = new google.maps.Map(document.getElementById(elementId), {
-          zoom: 10,
-          center: {
-            lng: location.coordinates[1], // latitude
-            lat: location.coordinates[0], // longitude
-          },
-        });
-
-        new google.maps.Marker({
-          position: {
-            lng: location.coordinates[1],
-            lat: location.coordinates[0],
-          },
-          map: map,
-        });
       }
 
       async function displayActivities(activities) {
@@ -244,135 +188,47 @@
 
           let { userID } = await response.json();
 
+          console.log(userID);
           activities.forEach((activity) => {
             if (activity.Creator === userID) {
               const activityItem = document.createElement("div");
               activityItem.className = "activity-item";
 
               activityItem.innerHTML = `
-                    <div class="activity-details">
-                        <h2 class="activity-name">${activity.Name}</h2>
-                        <p class="activity-price">Price: $${activity.Price}</p>
-                        <p class="activity-creator">Advertiser: ${
-                          advertiserMap[activity.Creator] || "Unknown"
-                        }</p> <!-- Use seller's name from map -->
-                        <p class="activity-ratings">Ratings: ${"★".repeat(
-                          activity.Ratings
-                        )}${"☆".repeat(5 - activity.Ratings)} (${
+                          <div class="activity-details">
+                              <h2 class="activity-name">${activity.Name}</h2>
+                              <p class="activity-price">Price: $${
+                                activity.Price
+                              }</p>
+                              <p class="activity-creator">Advertiser: ${
+                                advertiserMap[activity.Creator] || "Unknown"
+                              }</p> <!-- Use seller's name from map -->
+                              <p class="activity-ratings">Ratings: ${"★".repeat(
+                                activity.Ratings
+                              )}${"☆".repeat(5 - activity.Ratings)} (${
                 activity.Ratings
               })</p>
-                        <p class="activity-date">Date: ${new Date(
-                          activity.Date
-                        ).toLocaleDateString()}</p>
-                    </div>
-                    <div class="map-container" id="map-${
-                      activity._id
-                    }"></div> <!-- Container for Google Map -->
-
-                    <!-- Delete and Update Buttons -->
-                    <button class="delete-btn" onclick="deleteActivity('${
-                      activity._id
-                    }', '${activity.Creator}')">Delete</button>
-                    <button class="update-btn" onclick="redirectToUpdatePage('${
-                      activity._id
-                    }', '${activity.Creator}')">Update</button>
-                `;
+                              <p class="activity-date">Nearest Date: ${new Date(
+                                activity.AvailableDates[0]
+                              ).toLocaleDateString()}</p>
+                          </div>
+                          <div class="edit-button">
+                              <a href="updateItinerary.html?id=${
+                                activity._id
+                              }">Edit</a>
+                          </div>
+                          <div class="edit-button">
+                            <button onclick="deleteItinerary('${
+                              activity._id
+                            }', '${activity.Creator}')">Delete</button>
+                          </div>
+                                         `;
 
               activityList.appendChild(activityItem);
-              initMap(activity.Location, `map-${activity._id}`); // Initialize map for this activity
             }
           });
         } catch {}
       }
-
-      // Delete an activity with creator check
-      const deleteActivity = async (activityId, creatorId) => {
-        try {
-          const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
-
-          // Fetch the creator ID for the logged-in user
-          const creatorResponse = await fetch(
-            `http://localhost:8000/getID/${loggedInUsername}`
-          );
-          if (!creatorResponse.ok) {
-            throw new Error("Could not fetch creator ID");
-          }
-
-          const { userID: loggedInUserID } = await creatorResponse.json();
-
-          // Check if the logged-in user is the creator of the activity
-          if (loggedInUserID !== creatorId) {
-            alert(
-              "You are not the creator of this activity. You cannot delete it."
-            );
-            return;
-          }
-
-          const response = await fetch("http://localhost:8000/deleteActivity", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: activityId,
-              Creator: loggedInUserID,
-            }),
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            // Success case: Remove the deleted activity from the DOM
-            document.getElementById(`activity-${activityId}`).remove();
-            document.getElementById("successMessage").innerText =
-              result.message;
-            document.getElementById("successMessage").style.display = "block";
-            document.getElementById("errorMessage").style.display = "none";
-          } else {
-            // Error case: Show error message
-            document.getElementById("errorMessage").innerText =
-              result.message || "Error deleting activity";
-            document.getElementById("errorMessage").style.display = "block";
-            document.getElementById("successMessage").style.display = "none";
-          }
-        } catch (error) {
-          // console.error('Error:', error);
-          // document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
-          // document.getElementById('errorMessage').style.display = 'block';
-          // document.getElementById('successMessage').style.display = 'none';
-        }
-      };
-
-      // Redirect to updateActivity.html with the activity ID (with creator check)
-      const redirectToUpdatePage = async (activityId, creatorId) => {
-        try {
-          const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
-
-          // Fetch the creator ID for the logged-in user
-          const creatorResponse = await fetch(
-            `http://localhost:8000/getID/${loggedInUsername}`
-          );
-          if (!creatorResponse.ok) {
-            throw new Error("Could not fetch creator ID");
-          }
-
-          const { userID: loggedInUserID } = await creatorResponse.json();
-
-          // Check if the logged-in user is the creator of the activity
-          if (loggedInUserID !== creatorId) {
-            alert(
-              "You are not the creator of this activity. You cannot update it."
-            );
-            return;
-          }
-
-          // If the user is the creator, proceed to the update page
-          window.location.href = `updateActivity.html?id=${activityId}`;
-        } catch (error) {
-          console.error("Error:", error);
-          alert("An error occurred while fetching creator information.");
-        }
-      };
 
       // Combined method for filtering and searching
       function applyFiltersAndSearch() {
@@ -398,19 +254,45 @@
         displayedActivities = allActivities.filter((activity) => {
           const withinPriceRange =
             activity.Price >= minPrice && activity.Price <= maxPrice;
+
           const matchesName =
             activity.Name && activity.Name.toLowerCase().includes(activityName);
+
           const matchesCategory =
             selectedCategory === "all" ||
-            (selectedCategory ? activity.Category === selectedCategory : true);
+            (selectedCategory &&
+              (activity.Activities.some(
+                (activit) => activit.Category === selectedCategory
+              ) ||
+                activity.LocationsToVisit.some(
+                  (loc) => loc.Category === selectedCategory
+                )));
+
           const matchesTags =
             selectedTags.length === 0 ||
-            (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false); // Use optional chaining
+            (activity.Activities?.some((activityItem) =>
+              activityItem.Tags?.some((tag) => selectedTags.includes(tag))
+            ) ??
+              false) ||
+            (activity.LocationsToVisit?.some((locationItem) =>
+              locationItem.Tags?.some((tag) => selectedTags.includes(tag))
+            ) ??
+              false);
 
           const activityDate = new Date(activity.Date);
           const withinDateRange =
-            (!minDate || activityDate >= new Date(minDate)) &&
-            (!maxDate || activityDate <= new Date(maxDate));
+            activity.AvailableDates?.some((date) => {
+              const availableDate = new Date(date);
+              const minDateUTC = minDate ? new Date(minDate) : null;
+              const maxDateUTC = maxDate ? new Date(maxDate) : null;
+
+              const availableDateUTC = availableDate.getTime();
+
+              return (
+                (!minDateUTC || availableDateUTC >= minDateUTC) &&
+                (!maxDateUTC || availableDateUTC <= maxDateUTC)
+              );
+            }) ?? false;
 
           return (
             withinPriceRange &&
@@ -422,6 +304,29 @@
         });
 
         displayActivities(displayedActivities); // Display filtered and searched Activities
+      }
+      async function deleteItinerary(id, creator) {
+        if (confirm("Are you sure you want to delete this itinerary?")) {
+          try {
+            const response = await fetch(
+              `http://localhost:8000/deleteItinerary`,
+              {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, Creator: creator }),
+              }
+            );
+            const result = await response.json();
+            if (response.ok) {
+              alert("Itinerary deleted successfully!");
+            } else {
+              alert(`Error: ${result.message}`);
+            }
+          } catch (error) {
+            console.log(error.message);
+            alert("An error occurred while deleting the itinerary.");
+          }
+        }
       }
 
       // Fetch Activities and Creator when the page loads
@@ -463,40 +368,6 @@
         tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
         displayedActivities = allActivities; // Reset displayed activities
         displayActivities(displayedActivities); // Display all Activities
-      });
-
-      document.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("buy-button")) {
-          event.preventDefault(); // Prevent default link behavior
-
-          const Username = sessionStorage.getItem("username");
-          console.log("haha");
-
-          // Call the backend to check age
-          try {
-            const body = JSON.stringify({ Username });
-            console.log(body);
-            const response = await fetch("http://localhost:8000/getAge", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json", // Set the Content-Type to application/json
-              },
-              body: body,
-            });
-
-            const data = await response.json();
-
-            if (!data.eligible) {
-              alert("You can't buy; you are under 18");
-            } else {
-              // Proceed to the next page or perform the buy action
-              window.location.href = "nextPage.html"; // Replace with your target page
-            }
-          } catch (error) {
-            console.error("Error checking age:", error);
-            alert("An error occurred while checking your age.");
-          }
-        }
       });
     </script>
   </body>

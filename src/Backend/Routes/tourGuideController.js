@@ -131,82 +131,57 @@ const deleteItinerary = async (req, res) => {
 };
 
 const updateItinerary = async (req, res) => {
+  const {
+    Creator,
+    Name,
+    Activities,
+    LocationsToVisit,
+    TimeLine,
+    Language,
+    Price,
+    AvailableDates,
+    PickUpLocation,
+    DropOffLocation,
+  } = req.body;
+  const { id } = req.params;
   try {
-    const {
-      Creator,
-      Name,
-      id,
-      Activities,
-      LocationsToVisit,
-      TimeLine,
-      Language,
-      Price,
-      AvailableDates,
-      PickUpLocation,
-      DropOffLocation,
-    } = req.body;
-    try {
-      let itinerary = await Itinerary.findById(id);
-      if (!itinerary) {
-        return res.status(400).json({ message: "Itinerary not found." });
-      }
-      if (itinerary.Creator !== Creator) {
-        return res.status(400).json({ message: "You are not the creator." });
-      }
-      itinerary = await Itinerary.findByIdAndUpdate(
-        id,
-        {
-          Activities,
-          Name,
-          LocationsToVisit,
-          TimeLine,
-          Language,
-          Price,
-          AvailableDates,
-          PickUpLocation,
-          DropOffLocation,
-        },
-        { new: true, runValidators: true }
-      );
-      return res
-        .status(200)
-        .json({ message: "Itinerary updated successfully.", itinerary });
-    } catch {}
-
-    const updateFields = {};
-    if (Activities) updateFields.Activities = Activities;
-    if (LocationsToVisit) updateFields.LocationsToVisit = LocationsToVisit;
-    if (TimeLine) updateFields.TimeLine = TimeLine;
-    if (Language) updateFields.Language = Language;
-    if (Price) updateFields.Price = Price;
-    if (AvailableDates) updateFields.AvailableDates = AvailableDates;
-    if (PickUpLocation) updateFields.PickUpLocation = PickUpLocation;
-    if (DropOffLocation) updateFields.DropOffLocation = DropOffLocation;
-
-    // Perform the update
-    const updatedItinerary = await Itinerary.findOneAndReplace(
-      id,
-      updateFields,
-      { new: true }
-    );
-
-    // Check if the itinerary was found
-    if (!updatedItinerary) {
-      return res.status(404).json({ message: "Itinerary not found" });
+    let itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(400).json({ message: "Itinerary not found." });
     }
-
-    // Respond with the updated itinerary
-    return res.status(200).json(updatedItinerary);
+    // if (itinerary.Creator !== Creator) {
+    //   return res.status(400).json({ message: "You are not the creator." });
+    // }
+    itinerary = await Itinerary.findByIdAndUpdate(
+      id,
+      {
+        Activities,
+        Name,
+        LocationsToVisit,
+        TimeLine,
+        Language,
+        Price,
+        AvailableDates,
+        PickUpLocation,
+        DropOffLocation,
+      },
+      { new: true, runValidators: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Itinerary updated successfully.", itinerary });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error updating itinerary" });
+    console.log(error.message);
+    return res.status(400).json({ message: "ERROR" });
   }
 };
 
 const readItinerary = async (req, res) => {
   const { id } = req.params; // Correct extraction of id from req.params
   try {
-    const itinerary = await Itinerary.findById(id).populate("Activities").populate("LocationsToVisit");
+    const itinerary = await Itinerary.findById(id)
+      .populate("Activities")
+      .populate("LocationsToVisit");
     if (!itinerary) {
       return res.status(404).json({ error: "itinerary not found" });
     }
