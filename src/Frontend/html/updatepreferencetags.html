@@ -15,7 +15,7 @@
           <label for="newname">New Name</label>
         </div>
         <div class="field">
-          <input type="submit" value="Update Category" />
+          <input type="submit" value="Update Tag" />
         </div>
       </form>
     </div>
@@ -41,7 +41,7 @@
             const response = await fetch(
               `http://localhost:8000/updatePreferenceTagsById/${categoryId}`,
               {
-                method: "PATCh",
+                method: "PATCH",
                 headers: {
                   "Content-Type": "application/json",
                 },
