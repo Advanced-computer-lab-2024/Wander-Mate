@@ -1,233 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Update Activity | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
+    <link rel="stylesheet" href="../styles/register.css" />
     <style>
-        /* Google Map styling */
-        #map {
-            height: 400px;
-            width: 100%;
-            margin-top: 20px;
-        }
+      /* Google Map styling */
+      #map {
+        height: 400px;
+        width: 100%;
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">Update Activity</div>
-        <form id="updateActivityForm">
-            <div class="field">
-                <input type="text" name="id" id="id" placeholder=" " required readonly>
-                <label for="id">Activity ID*</label>
-            </div>
-            <div class="field">
-                <input type="text" name="name" id="name" placeholder=" " required>
-                <label for="name">Activity Name</label>
-            </div>
-            <div class="field">
-                <input type="date" name="date" id="date" placeholder=" " required>
-                <label for="date">Date</label>
-            </div>
-            <div class="field">
-                <input type="time" name="time" id="time" placeholder=" " required>
-                <label for="time">Time</label>
-            </div>
-            <div class="field">
-                <input type="text" name="location" id="location" placeholder="Click on the map to select location" readonly required>
-                <label for="location">Location (Coordinates)</label>
-            </div>
+      <div class="title">Update Activity</div>
+      <form id="updateActivityForm">
+        <div class="field">
+          <input
+            type="text"
+            name="id"
+            id="id"
+            placeholder=" "
+            required
+            readonly
+          />
+          <label for="id">Activity ID*</label>
+        </div>
+        <div class="field">
+          <input type="text" name="name" id="name" placeholder=" " required />
+          <label for="name">Activity Name</label>
+        </div>
+        <div class="field">
+          <input type="date" name="date" id="date" placeholder=" " required />
+          <label for="date">Date</label>
+        </div>
+        <div class="field">
+          <input type="time" name="time" id="time" placeholder=" " required />
+          <label for="time">Time</label>
+        </div>
+        <div class="field">
+          <input
+            type="text"
+            name="location"
+            id="location"
+            placeholder="Click on the map to select location"
+            readonly
+            required
+          />
+          <label for="location">Location (Coordinates)</label>
+        </div>
 
-            <!-- Google Maps Container -->
-            <div id="map"></div>
+        <!-- Google Maps Container -->
+        <div id="map"></div>
 
-            <div class="field">
-                <input type="number" name="price" id="price" placeholder=" " min="0" step="0.01" required>
-                <label for="price">Price</label>
-            </div>
-            <div class="field">
-                <select name="category" id="category" required>
-                    <option value="" disabled selected>Select Category</option>
-                </select>
-                <label for="category">Category</label>
-            </div>
-            <div class="field">
-                <input type="submit" value="Update Activity">
-            </div>
-        </form>
+        <div class="field">
+          <input
+            type="number"
+            name="price"
+            id="price"
+            placeholder=" "
+            min="0"
+            step="0.01"
+            required
+          />
+          <label for="price">Price</label>
+        </div>
+        <div class="field">
+          <select name="category" id="category" required>
+            <option value="" disabled selected>Select Category</option>
+          </select>
+          <label for="category">Category</label>
+        </div>
+        <div class="field">
+          <input type="submit" value="Update Activity" />
+        </div>
+      </form>
 
-        <!-- Success/Error Messages -->
-        <div id="successMessage" style="color: green; display: none;"></div>
-        <div id="errorMessage" style="color: red; display: none;"></div>
+      <!-- Success/Error Messages -->
+      <div id="successMessage" style="color: green; display: none"></div>
+      <div id="errorMessage" style="color: red; display: none"></div>
     </div>
 
     <script>
-        let map;
-        let marker;
+      let map;
+      let marker;
 
-        // Initialize Google Map
-        function initMap() {
-            const defaultLocation = { lat: 40.6892, lng: -74.0445 }; // Default location (Statue of Liberty)
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: defaultLocation,
-            });
-
-            marker = new google.maps.Marker({
-                position: defaultLocation,
-                map: map,
-                title: "Selected Location",
-            });
-
-            // Add click event to map to allow user to choose location
-            map.addListener("click", (event) => {
-                const clickedLocation = event.latLng;
-                marker.setPosition(clickedLocation); // Move marker to clicked location
-                document.getElementById('location').value = clickedLocation.lat() + ', ' + clickedLocation.lng(); // Set location value in input
-            });
-        }
-
-        // Function to get the query parameter from the URL
-        function getQueryParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        // Fetch categories and populate the dropdown
-        async function fetchCategories() {
-            const categorySelect = document.getElementById("category");
-            try {
-                const response = await fetch("http://localhost:8000/getCategories");
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const categories = await response.json();
-                categories.forEach(category => {
-                    const option = document.createElement("option");
-                    option.value = category._id; // Use _id as value
-                    option.textContent = category.Name; // Display Name in the dropdown
-                    categorySelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-                alert("Could not load categories. Please try again later.");
-            }
-        }
-
-        // Fetch and prefill activity details on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            const activityId = getQueryParameter('id');
-            const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
-
-            if (activityId) {
-                document.getElementById('id').value = activityId;
-                
-                try {
-                    // Fetch the activity details
-                    const activityResponse = await fetch(`http://localhost:8000/activity/${activityId}`);
-                    const activity = await activityResponse.json();
-
-                    // Fetch the creator ID of the logged-in user
-                    const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
-                    const { userID } = await creatorResponse.json();
-
-                    // Check if the logged-in user is the creator
-                    if (activity.Creator !== userID) {
-                        document.getElementById('errorMessage').innerText = "You are not the creator of this activity. You cannot update it.";
-                        document.getElementById('errorMessage').style.display = 'block';
-                        document.getElementById('updateActivityForm').style.display = 'none'; // Hide the form
-                    } else {
-                        // Pre-fill the form fields with the activity data
-                        document.getElementById('name').value = activity.Name;
-                        document.getElementById('date').value = activity.DateString;
-                        document.getElementById('time').value = activity.Time;
-                        document.getElementById('location').value = activity.Location.coordinates.join(', ');
-                        document.getElementById('price').value = activity.Price;
-
-                        // Fetch categories and pre-select the current category
-                        await fetchCategories();
-                        document.getElementById("category").value = activity.Category;
-                    }
-
-                    // Update the map and marker to the current activity location
-                    const activityLocation = {
-                        lat: activity.Location.coordinates[1],
-                        lng: activity.Location.coordinates[0]
-                    };
-                    map.setCenter(activityLocation);
-                    marker.setPosition(activityLocation);
-
-                } catch (error) {
-                    console.error('Error fetching activity or creator details:', error);
-                    document.getElementById('errorMessage').innerText = 'An error occurred while fetching activity details.';
-                    document.getElementById('errorMessage').style.display = 'block';
-                }
-            }
+      // Initialize Google Map
+      function initMap() {
+        const defaultLocation = { lat: 40.6892, lng: -74.0445 }; // Default location (Statue of Liberty)
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 12,
+          center: defaultLocation,
         });
 
-        // Form submission logic
-        document.getElementById('updateActivityForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent the default form submission
+        marker = new google.maps.Marker({
+          position: defaultLocation,
+          map: map,
+          title: "Selected Location",
+        });
 
-            // Collect form data
-            const id = document.getElementById('id').value;
-            const name = document.getElementById('name').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const location = document.getElementById('location').value;
-            const price = document.getElementById('price').value;
-            const category = document.getElementById('category').value;
+        // Add click event to map to allow user to choose location
+        map.addListener("click", (event) => {
+          const clickedLocation = event.latLng;
+          marker.setPosition(clickedLocation); // Move marker to clicked location
+          document.getElementById("location").value =
+            clickedLocation.lat() + ", " + clickedLocation.lng(); // Set location value in input
+        });
+      }
 
-            try {
-                // Send the data to the backend via a PUT request
-                const response = await fetch('http://localhost:8000/updateActivity', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: id,
-                        Name: name,
-                        DateString: date,
-                        Time: time,
-                        Location: {
-                            type: "Point",
-                            coordinates: location.split(',').map(coord => parseFloat(coord.trim()))
-                        },
-                        Price: price,
-                        Category: category,
-                    })
-                });
+      // Function to get the query parameter from the URL
+      function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
 
-                const result = await response.json();
+      // Fetch categories and populate the dropdown
+      async function fetchCategories() {
+        const categorySelect = document.getElementById("category");
+        try {
+          const response = await fetch("http://localhost:8000/getCategories");
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const categories = await response.json();
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id; // Use _id as value
+            option.textContent = category.Name; // Display Name in the dropdown
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          alert("Could not load categories. Please try again later.");
+        }
+      }
 
-                if (response.ok) {
-                    // Success case: Show success message
-                    document.getElementById('successMessage').innerText = result.message;
-                    document.getElementById('successMessage').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                } else {
-                    // Error case: Show error message
-                    document.getElementById('errorMessage').innerText = result.message || 'Error updating activity';
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('successMessage').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('errorMessage').innerText = 'An error occurred while updating the activity.';
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('successMessage').style.display = 'none';
+      // Fetch and prefill activity details on page load
+      document.addEventListener("DOMContentLoaded", async () => {
+        const activityId = getQueryParameter("id");
+        const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
+
+        if (activityId) {
+          document.getElementById("id").value = activityId;
+
+          try {
+            // Fetch the activity details
+            const activityResponse = await fetch(
+              `http://localhost:8000/activity/${activityId}`
+            );
+            const activity = await activityResponse.json();
+
+            // Fetch the creator ID of the logged-in user
+            const creatorResponse = await fetch(
+              `http://localhost:8000/getID/${loggedInUsername}`
+            );
+            const { userID } = await creatorResponse.json();
+
+            // Check if the logged-in user is the creator
+            if (activity.Creator !== userID) {
+              document.getElementById("errorMessage").innerText =
+                "You are not the creator of this activity. You cannot update it.";
+              document.getElementById("errorMessage").style.display = "block";
+              document.getElementById("updateActivityForm").style.display =
+                "none"; // Hide the form
+            } else {
+              // Pre-fill the form fields with the activity data
+              document.getElementById("name").value = activity.Name;
+              document.getElementById("date").value = activity.DateString;
+              document.getElementById("time").value = activity.Time;
+              document.getElementById("location").value =
+                activity.Location.coordinates.join(", ");
+              document.getElementById("price").value = activity.Price;
+
+              // Fetch categories and pre-select the current category
+              await fetchCategories();
+              document.getElementById("category").value = activity.Category;
             }
+
+            // Update the map and marker to the current activity location
+            const activityLocation = {
+              lat: activity.Location.coordinates[1],
+              lng: activity.Location.coordinates[0],
+            };
+            map.setCenter(activityLocation);
+            marker.setPosition(activityLocation);
+          } catch (error) {
+            console.error("Error fetching activity or creator details:", error);
+            document.getElementById("errorMessage").innerText =
+              "An error occurred while fetching activity details.";
+            document.getElementById("errorMessage").style.display = "block";
+          }
+        }
+      });
+
+      // Form submission logic
+      document
+        .getElementById("updateActivityForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Collect form data
+          const id = document.getElementById("id").value;
+          const name = document.getElementById("name").value;
+          const date = document.getElementById("date").value;
+          const time = document.getElementById("time").value;
+          const location = document.getElementById("location").value;
+          const price = document.getElementById("price").value;
+          const category = document.getElementById("category").value;
+
+          try {
+            // Send the data to the backend via a PUT request
+            const response = await fetch(
+              "http://localhost:8000/updateActivity",
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  id: id,
+                  Name: name,
+                  DateString: date,
+                  Time: time,
+                  Location: {
+                    type: "Point",
+                    coordinates: location
+                      .split(",")
+                      .map((coord) => parseFloat(coord.trim())),
+                  },
+                  Price: price,
+                  Category: category,
+                }),
+              }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Success case: Show success message
+              document.getElementById("successMessage").innerText =
+                result.message;
+              document.getElementById("successMessage").style.display = "block";
+              document.getElementById("errorMessage").style.display = "none";
+            } else {
+              // Error case: Show error message
+              document.getElementById("errorMessage").innerText =
+                result.message || "Error updating activity";
+              document.getElementById("errorMessage").style.display = "block";
+              document.getElementById("successMessage").style.display = "none";
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("errorMessage").innerText =
+              "An error occurred while updating the activity.";
+            document.getElementById("errorMessage").style.display = "block";
+            document.getElementById("successMessage").style.display = "none";
+          }
         });
 
-        // Load the Google Maps API asynchronously
-        document.addEventListener("DOMContentLoaded", () => {
-            const script = document.createElement('script');
-            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
-            script.async = true;
-            document.head.appendChild(script);
-        });
+      // Load the Google Maps API asynchronously
+      document.addEventListener("DOMContentLoaded", () => {
+        const script = document.createElement("script");
+        script.src =
+          "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
+        script.async = true;
+        document.head.appendChild(script);
+        fetchCategories();
+      });
     </script>
-</body>
+  </body>
 </html>
