@@ -194,7 +194,9 @@
       // Fetch tags and populate tag fields
       async function fetchTags(container) {
         try {
-          const response = await fetch("http://localhost:8000/readPreferenceTags");
+          const response = await fetch(
+            "http://localhost:8000/readPreferenceTags"
+          );
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -232,13 +234,15 @@
           try {
             // Fetch the activity details
             const activityResponse = await fetch(
-              `http://localhost:8000/activity/${activityId}`
+              `http://localhost:8000/readActivity/${activityId}`
             );
             if (!activityResponse.ok) {
-              throw new Error("Failed to fetch activity details. Response Status: " + activityResponse.status);
+              throw new Error(
+                "Failed to fetch activity details. Response Status: " +
+                  activityResponse.status
+              );
             }
             const activity = await activityResponse.json();
-            console.log("Fetched activity:", activity); // Debugging log
 
             if (!activity || !activity.Creator) {
               throw new Error("Activity or Creator is missing in the response");
@@ -249,10 +253,12 @@
               `http://localhost:8000/getID/${loggedInUsername}`
             );
             if (!creatorResponse.ok) {
-              throw new Error("Failed to fetch creator ID. Response Status: " + creatorResponse.status);
+              throw new Error(
+                "Failed to fetch creator ID. Response Status: " +
+                  creatorResponse.status
+              );
             }
             const { userID } = await creatorResponse.json();
-            console.log("Fetched userID:", userID); // Debugging log
 
             if (!userID) {
               throw new Error("Logged-in userID is missing");
@@ -260,7 +266,6 @@
 
             // Check if the logged-in user is the creator
             if (activity.Creator !== userID) {
-              console.log("Creator mismatch:", activity.Creator, userID); // Debugging log
               document.getElementById("errorMessage").innerText =
                 "You are not the creator of this activity. You cannot update it.";
               document.getElementById("errorMessage").style.display = "block";
@@ -268,16 +273,17 @@
                 "none"; // Hide the form
             } else {
               // Pre-fill the form fields with the activity data
-              document.getElementById("name").value = activity.Name || '';
-              document.getElementById("date").value = activity.DateString || '';
-              document.getElementById("time").value = activity.Time || '';
+              document.getElementById("name").value = activity.Name || "";
+              document.getElementById("date").value = activity.DateString || "";
+              document.getElementById("time").value = activity.Time || "";
               document.getElementById("location").value =
-                activity.Location?.coordinates?.join(", ") || '';
-              document.getElementById("price").value = activity.Price || '';
+                activity.Location?.coordinates?.join(", ") || "";
+              document.getElementById("price").value = activity.Price || "";
 
               // Fetch categories and pre-select the current category
               await fetchCategories();
-              document.getElementById("category").value = activity.Category || '';
+              document.getElementById("category").value =
+                activity.Category || "";
             }
 
             // Update the map and marker to the current activity location
@@ -290,7 +296,8 @@
           } catch (error) {
             console.error("Error fetching activity or creator details:", error);
             document.getElementById("errorMessage").innerText =
-              "An error occurred while fetching activity details: " + error.message;
+              "An error occurred while fetching activity details: " +
+              error.message;
             document.getElementById("errorMessage").style.display = "block";
           }
         }
@@ -365,7 +372,9 @@
       function addMoreTags() {
         const tagsContainer = document.createElement("div");
         tagsContainer.classList.add("checkbox-container");
-        document.getElementById("tagFieldsContainer").appendChild(tagsContainer);
+        document
+          .getElementById("tagFieldsContainer")
+          .appendChild(tagsContainer);
         fetchTags(tagsContainer);
 
         document.getElementById("addMoreTagsBtn").disabled = true;
