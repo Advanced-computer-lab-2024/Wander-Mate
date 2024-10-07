@@ -122,49 +122,58 @@ const createPlace = async (req, res) => {
 //Update
 const updatePlace = async (req, res) => {
   try {
+    const { Id } = req.params;
     const {
       Name,
       Description,
-      Pictures, // Pictures is being passed, ensure it's handled correctly
+      Pictures,
       Location,
-      OpeningHours, // Ensure this field is allowed in your schema or use strict: false
-      TicketPrices, // Ensure this field is allowed in your schema
+      OpeningHours,
+      TicketPrices,
       Category,
       Tag,
     } = req.body;
+    console.log(`Id received: '${Id}'`);
+    console.log(`Name received: '${Name}'`);
 
-    const { Id } = req.params;
+    // Validate the ObjectId
+    if (!mongoose.Types.ObjectId.isValid(Id)) {
+      return res.status(400).json({ message: "Invalid Place ID" });
+    }
 
-    // Parse the location (ensure it's sent as a correct JSON string from the frontend)
+    // Parse the location if it's a string
     const location =
       typeof Location === "string" ? JSON.parse(Location) : Location;
 
-    const updatedData = {
-      Name,
-      Description,
-      Location: location,
-    };
-
-    // Add optional fields only if they are provided
+    // Build the updatedData object
+    const updatedData = {};
+    if (Name) updatedData.Name = Name;
+    if (Description) updatedData.Description = Description;
     if (Pictures) updatedData.Pictures = Pictures;
+    if (Location) updatedData.Location = location;
     if (OpeningHours) updatedData.OpeningHours = OpeningHours;
     if (TicketPrices) updatedData.TicketPrices = TicketPrices;
     if (Category) updatedData.Category = Category;
     if (Tag) updatedData.Tag = Tag;
 
-    // Update the place in the database
+    // Log the ID and updatedData for debugging
+    console.log("Updating place with ID:", Id);
+    console.log("Updated data:", updatedData);
+
+    // Perform the update
     const place = await attractionModel.findByIdAndUpdate(Id, updatedData, {
       new: true,
       runValidators: true,
     });
 
     if (!place) {
-      return res.status(404).json({ message: "Place not found" });
+      return res.status(404).json({ message: "No place found with this ID" });
     }
 
-    res.status(200).json(place);
+    return res.status(200).json(place);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error updating place:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
