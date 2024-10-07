@@ -284,7 +284,7 @@
 
           // Append all selected images (if any)
           for (let i = 0; i < newPictures.length; i++) {
-            formData.append("Pictures", newPictures[i]);
+            formData.append("pictures", newPictures[i]);
           }
 
           // Get the selected tags
@@ -297,12 +297,15 @@
 
           // Append the selected tags to the form data
           formData.append("Tags", JSON.stringify(selectedTags));
+          for (const [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+          }
 
           try {
             const response = await fetch(
               `http://localhost:8000/updatePlace/${placeId}`,
               {
-                method: "PUT",
+                method: "PATCH",
                 body: formData,
               }
             );
