@@ -534,11 +534,11 @@ const updatePreferenceTags = async (req, res) => {
     }
 
     // Check if the new category name already exists
-    const tagWithSameName = await Category.findOne({ Name: newName });
+    const tagWithSameName = await PreferenceTags.findOne({ Name: newName });
     if (tagWithSameName) {
       return res
         .status(400)
-        .json({ message: "Category with this new name already exists" });
+        .json({ message: "Tag with this new name already exists" });
     }
 
     // Update the category name
@@ -546,6 +546,35 @@ const updatePreferenceTags = async (req, res) => {
     await existingTag.save();
 
     res.status(200).json(existingTag);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Can't update the Tag" });
+  }
+};
+const updatePreferenceTagById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the category ID from the URL parameters
+    const { newName } = req.body; // Get the new category name from the request body
+    // Check if the ID and new name are provided
+    if (!id || !newName) {
+      return res.status(400).json("Id, name are required");
+    }
+    // Check if the category with the given ID exists
+    const category = await PreferenceTags.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    // Check if the new category name already exists
+    const categoryWithSameName = await PreferenceTags.findOne({ Name: newName });
+    if (categoryWithSameName) {
+      return res
+        .status(400)
+        .json({ message: "Category with this new name already exists" });
+    }
+    // Update the category name
+    category.Name = newName;
+    await category.save();
+    res.status(200).json(category);
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "Can't update the category" });
@@ -574,6 +603,26 @@ const deletePreferenceTags = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "Tag delete the category" });
+  }
+};
+
+const deletPreferenceTagsById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the category ID from the URL parameters
+    // Check if the category ID is provided
+    if (!id) {
+      return res.status(400).json({ message: "Tag ID is required" });
+    }
+    // Check if the category exists
+    const existingCategory = await PreferenceTags.findById(id);
+    if (!existingCategory) {
+      return res.status(404).json({ message: "Tag not found" });
+    }
+    // Delete the category
+    await PreferenceTags.deleteOne({ _id: id });
+    res.status(200).json("Deleted");
+  } catch {
+    res.status(400).json({ message: "Can't delete the Tag" });
   }
 };
 
@@ -670,4 +719,6 @@ module.exports = {
   getTags,
   deleteCategoryById,
   updateCategoryById,
+  updatePreferenceTagById,
+  deletPreferenceTagsById
 };

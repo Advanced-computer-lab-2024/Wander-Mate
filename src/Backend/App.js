@@ -68,6 +68,8 @@ const {
   getTags,
   deleteCategoryById,
   updateCategoryById,
+  updatePreferenceTagById,
+  deletPreferenceTagsById
 } = require("./Routes/adminController.js");
 
 const {
@@ -174,8 +176,10 @@ app.delete("/deleteCategory", deleteCategory);
 app.delete("/deleteCategoryById/:id", deleteCategoryById);
 app.post("/createPreferenceTags", createPreferenceTags);
 app.get("/readCategory", readCategory);
-app.put("/updatePreferenceTags", updatePreferenceTags);
+app.patch("/updatePreferenceTags", updatePreferenceTags);
+app.patch("/updatePreferenceTagById/:id",updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
+app.delete("/deletPreferenceTagsById/:id",deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 
 //CRUD activity
