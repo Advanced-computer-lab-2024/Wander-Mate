@@ -25,7 +25,7 @@
       <div class="title">Create Itinerary</div>
       <form id="createItineraryForm">
         <div class="field">
-          <input type="text" id="creator" name="Creator" required />
+          <input type="text" id="creator" name="Creator" required readonly/>
           <label for="creator">Creator</label>
         </div>
 
@@ -110,6 +110,45 @@
       let map;
       let pickupMarker, dropoffMarker;
       let selectedDates = [];
+
+      async function fetchCreatorID() {
+            const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+            if (!username) {
+                console.error('No username found in session storage.');
+                return; // Exit if no username is found
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get creator ID');
+                }
+
+                const { userID } = await response.json();
+                // Store the creator ID in session storage
+                sessionStorage.setItem('creatorID', userID);
+                console.log('Fetched Creator ID:', userID); // Debugging log
+                const creatorInput = document.getElementById('creator');
+                creatorInput.value = userID; // Automatically fill the creator field
+                creatorInput.readOnly = true; // Make the input field read-only
+            } catch (error) {
+                console.error('Error fetching creator ID:', error);
+                alert('Could not load creator ID.');
+            }
+        }
+
+        // Retrieve the creator ID from session storage when the page loads
+        window.onload = () => {
+            const creatorID = sessionStorage.getItem('creatorID');
+            console.log('Session Storage Creator ID:', creatorID); // Debugging log
+            if (creatorID) {
+                document.getElementById('creator').value = creatorID; // Automatically set the creator field
+            } else {
+                fetchCreatorID(); // Fetch and store the creator ID if not already in session storage
+            }
+        };
+
+
 
       function initMap() {
         const defaultLocation = { lat: -34.397, lng: 150.644 };
@@ -327,7 +366,13 @@
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
       async
-      defer
-    ></script>
+      defer>
+      window.onload = () => {
+            fetchActivities(); // Fetch and display activities
+            fetchPlaces(); // Fetch and display places
+            fetchCreatorID(); // Automatically populate the creator ID field
+            loadMap(); // Load the Google Map
+        };
+    </script>
   </body>
 </html>
