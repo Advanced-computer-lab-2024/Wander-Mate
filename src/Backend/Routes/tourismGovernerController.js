@@ -79,12 +79,14 @@ const createPlace = async (req, res) => {
       contentType: file.mimetype, // Get content type of the image
     }));
 
+    const location = JSON.parse(req.body.Location); // Parse the JSON string
+
     const newPlace = await attractionModel.create({
       Creator: Username,
       Name,
       Description,
       Pictures: pictures,
-      Location,
+      Location: location,
       OpeningHours,
       TicketPrices,
       Type: objectId,
@@ -92,6 +94,7 @@ const createPlace = async (req, res) => {
     });
     res.status(200).json(newPlace);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -108,13 +111,15 @@ const updatePlace = async (req, res) => {
       OpeningHours,
       TicketPrices,
     } = req.body;
+    const location = JSON.parse(Location); // Parse the JSON string
+
     const place = await attractionModel.findByIdAndUpdate(
       Id,
       {
         Description: Description,
         Name: Name,
         Pictures: Pictures,
-        Location: Location,
+        Location: location,
         OpeningHours: OpeningHours,
         TicketPrices: TicketPrices,
       },
