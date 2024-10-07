@@ -22,6 +22,10 @@
             <label for="picture">Product Picture</label>
         </div>
         <div class="field">
+            <input type="text" name="userName" id="userName" required />
+            <label for="userName">Seller Name</label>
+        </div>
+        <div class="field">
             <input type="text" name="Name" id="Name" required />
             <label for="Name">Product Name</label>
         </div>
@@ -59,7 +63,8 @@
           const formData = new FormData(this); // Create a FormData object
 
           // Get the username from sessionStorage
-         
+               const username = document.getElementById("userName").value; // Get the username from the textbox
+
 
           try {
             // Call the backend to get the user ID based on the username
@@ -71,6 +76,7 @@
             }
 
             const { userID } = await idResponse.json();
+            console.log(userID);
 
             // Add the user ID to the form data
             formData.append("Seller", userID);
