@@ -7,6 +7,14 @@
     <title>Create Place</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
     <link rel="stylesheet" href="../styles/register.css">
+    <style>
+        /* Basic styles for the map */
+        #map {
+            height: 400px; /* Set the height of the map */
+            width: 100%; /* Set the width of the map */
+            margin-top: 20px; /* Margin above the map */
+        }
+    </style>
 </head>
 
 <body>
@@ -20,7 +28,7 @@
                 <input type="text" id="Description" name="Description" placeholder="Place Description" required>
             </div>
             <div class="field">
-                <input type="text" id="Location" name="Location" placeholder="Location" required>
+                <input type="text" id="Location" name="Location" placeholder="Location" required readonly>
             </div>
             <div class="field">
                 <input type="text" id="OpeningHours" name="OpeningHours" placeholder="Opening Hours" required>
@@ -36,7 +44,36 @@
             </div>
         </form>
 
+        <!-- Google Maps Container -->
+        <div id="map"></div>
+
         <script>
+            let map;
+            let marker;
+
+            function initMap() {
+                // Initial map setup
+                const initialLocation = { lat: 37.7749, lng: -122.4194 }; // Default location (San Francisco)
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 12,
+                    center: initialLocation,
+                });
+
+                // Marker to show the selected location
+                marker = new google.maps.Marker({
+                    position: initialLocation,
+                    map: map,
+                    title: "Selected Location",
+                });
+
+                // Add click event to map
+                map.addListener("click", (event) => {
+                    const clickedLocation = event.latLng;
+                    marker.setPosition(clickedLocation); // Move marker
+                    document.getElementById('Location').value = clickedLocation.lat() + ', ' + clickedLocation.lng(); // Store coordinates
+                });
+            }
+
             async function createPlace(event) {
                 event.preventDefault();
 
@@ -58,6 +95,9 @@
                     alert('Failed to create place.');
                 }
             }
+        </script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap">
         </script>
     </div>
 </body>
