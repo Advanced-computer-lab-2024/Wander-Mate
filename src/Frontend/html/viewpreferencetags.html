@@ -43,11 +43,13 @@
             deleteButton.textContent = "Delete";
             deleteButton.onclick = function () {
               if (
-                confirm(`Are you sure you want to delete "${preferencetag.Name}"?`)
+                confirm(
+                  `Are you sure you want to delete "${preferencetag.Name}"?`
+                )
               ) {
                 // Make a DELETE request to the server
                 fetch(
-                  `http://localhost:8000/deletePreferenceTagsById/${preferencetag._id}`,
+                  `http://localhost:8000/deletPreferenceTagsById/${preferencetag._id}`,
                   {
                     method: "DELETE",
                   }
