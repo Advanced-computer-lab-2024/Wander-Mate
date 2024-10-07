@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guides List</title>
+    <link rel="stylesheet" href="../styles/register.css"> <!-- Optional: Connect a CSS file for styling -->
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Tour Guides</div>
+
+        <!-- Container to display the list of tour guides -->
+        <div id="tourGuidesList" class="tour-guides-list"></div>
+
+        <!-- Error message div -->
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        // Function to fetch tour guides and display them
+        async function getTourGuides() {
+            const URL = "http://localhost:8000/getTourguides"; // Your API endpoint for fetching tour guides
+
+            try {
+                const response = await fetch(URL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to fetch tour guides");
+                }
+
+                const data = await response.json();
+                console.log("Tour guides data:", data);
+
+                // Check if we have data to display
+                if (data.Creator && data.Creator.length > 0) {
+                    displayTourGuides(data.Creator); // Pass tour guides data to the display function
+                } else {
+                    document.getElementById("tourGuidesList").innerHTML = "<p>No tour guides available at the moment.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching tour guides:", error);
+                document.getElementById("errorMessage").innerText = "An error occurred while fetching the tour guides.";
+                document.getElementById("errorMessage").style.display = "block";
+            }
+        }
+
+        // Function to display the list of tour guides
+        function displayTourGuides(tourGuides) {
+            const tourGuidesContainer = document.getElementById("tourGuidesList");
+            tourGuidesContainer.innerHTML = ""; // Clear the container before appending new data
+
+            tourGuides.forEach(guide => {
+                // Create a card for each tour guide
+                const guideCard = document.createElement("div");
+                guideCard.classList.add("guide-card");
+
+                // Dynamically fill in tour guide information
+                guideCard.innerHTML = `
+                    <h3>${guide.Username || "N/A"}</h3>
+                    <p><strong>Email:</strong> ${guide.Email || "N/A"}</p>
+                    <p><strong>Mobile Number:</strong> ${guide.MobileNumber || "N/A"}</p>
+                    <p><strong>Years of Experience:</strong> ${guide.YearsOfExperience || "N/A"}</p>
+                    <p><strong>Previous Work:</strong> ${guide.PreviousWork || "N/A"}</p>
+                `;
+
+                // Append the guide card to the container
+                tourGuidesContainer.appendChild(guideCard);
+            });
+        }
+
+        // Call the function to fetch and display tour guides when the page loads
+        window.onload = getTourGuides;
+    </script>
+</body>
+</html>
