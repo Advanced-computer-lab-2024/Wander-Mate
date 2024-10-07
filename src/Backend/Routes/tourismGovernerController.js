@@ -133,8 +133,7 @@ const updatePlace = async (req, res) => {
       Category,
       Tag,
     } = req.body;
-    console.log(`Id received: '${Id}'`);
-    console.log(`Name received: '${Name}'`);
+
 
     // Validate the ObjectId
     if (!mongoose.Types.ObjectId.isValid(Id)) {
@@ -156,9 +155,7 @@ const updatePlace = async (req, res) => {
     if (Category) updatedData.Category = Category;
     if (Tag) updatedData.Tag = Tag;
 
-    // Log the ID and updatedData for debugging
-    console.log("Updating place with ID:", Id);
-    console.log("Updated data:", updatedData);
+
 
     // Perform the update
     const place = await attractionModel.findByIdAndUpdate(Id, updatedData, {
