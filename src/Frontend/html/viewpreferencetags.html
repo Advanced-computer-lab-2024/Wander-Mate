@@ -22,20 +22,20 @@
           }
           return response.json();
         })
-        .then((categories) => {
+        .then((preferencetags) => {
           const categoriesList = document.getElementById("categories-list");
-          categories.forEach((category) => {
+          preferencetags.forEach((preferencetag) => {
             const listItem = document.createElement("li");
 
             // Display the category name
             const categoryName = document.createElement("span");
-            categoryName.textContent = category.Name;
+            categoryName.textContent = preferencetag.Name;
 
             // Create Edit button
             const editButton = document.createElement("button");
             editButton.textContent = "Edit";
             editButton.onclick = function () {
-              window.location.href = `updatepreferencetags.html?id=${category._id}`;
+              window.location.href = `updatepreferencetags.html?id=${preferencetag._id}`;
             };
 
             // Create Delete button
@@ -43,25 +43,25 @@
             deleteButton.textContent = "Delete";
             deleteButton.onclick = function () {
               if (
-                confirm(`Are you sure you want to delete "${category.Name}"?`)
+                confirm(`Are you sure you want to delete "${preferencetag.Name}"?`)
               ) {
                 // Make a DELETE request to the server
                 fetch(
-                  `http://localhost:8000/deletePreferenceTagsById/${category._id}`,
+                  `http://localhost:8000/deletePreferenceTagsById/${preferencetag._id}`,
                   {
                     method: "DELETE",
                   }
                 )
                   .then((response) => {
                     if (!response.ok) {
-                      throw new Error("Failed to delete category");
+                      throw new Error("Failed to delete Tag");
                     }
                     // Remove the category from the list
                     categoriesList.removeChild(listItem);
                   })
                   .catch((error) => {
-                    console.error("Error deleting category:", error);
-                    alert("Error deleting category.");
+                    console.error("Error deleting Tag:", error);
+                    alert("Error deleting Tag.");
                   });
               }
             };
