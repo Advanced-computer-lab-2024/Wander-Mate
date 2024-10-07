@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attractions and Itineraries</title>
-    
-    <!-- Link to the CSS file -->
     <link rel="stylesheet" href="../styles/register.css">
 
     <script>
@@ -26,6 +24,11 @@
                             <h3>${attraction.Name}</h3>
                             <p><strong>Creator:</strong> ${attraction.Creator}</p>
                             <p><strong>Location:</strong> ${attraction.Location.coordinates.join(', ')}</p>
+                            
+                            <!-- Buttons for actions -->
+                            <button onclick="window.location.href='viewItinerary.html?id=${attraction._id}'">View</button>
+                            <button onclick="window.location.href='updateItinerary.html?id=${attraction._id}&creator=${attraction.Creator}'">Update</button>
+                            <button onclick="deleteAttraction('${attraction._id}', '${attraction.Creator}')">Delete</button>
                         </div>`;
                     });
 
@@ -40,6 +43,11 @@
                             <p><strong>Available Dates:</strong> ${itinerary.AvailableDates.join(', ')}</p>
                             <p><strong>Pickup Location:</strong> ${itinerary.PickUpLocation.coordinates.join(', ')}</p>
                             <p><strong>Drop-off Location:</strong> ${itinerary.DropOffLocation.coordinates.join(', ')}</p>
+                            
+                            <!-- Buttons for actions -->
+                            <button onclick="window.location.href='viewItinerary.html?id=${itinerary._id}'">View</button>
+                            <button onclick="window.location.href='updateItinerary.html?id=${itinerary._id}&creator=${itinerary.Creator}'">Update</button>
+                            <button onclick="deleteItinerary('${itinerary._id}', '${itinerary.Creator}')">Delete</button>
                         </div>`;
                     });
                 } else {
@@ -48,6 +56,48 @@
             } catch (error) {
                 console.error('Error fetching data:', error);
                 document.getElementById('message').textContent = 'An error occurred while fetching data.';
+            }
+        }
+
+        async function deleteAttraction(id, creator) {
+            if (confirm('Are you sure you want to delete this attraction?')) {
+                try {
+                    const response = await fetch(`http://localhost:8000/deleteAttraction`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id, Creator: creator })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Attraction deleted successfully!');
+                        fetchAttractionsAndItineraries(); // Reload the list
+                    } else {
+                        alert(`Error: ${result.message}`);
+                    }
+                } catch (error) {
+                    alert('An error occurred while deleting the attraction.');
+                }
+            }
+        }
+
+        async function deleteItinerary(id, creator) {
+            if (confirm('Are you sure you want to delete this itinerary?')) {
+                try {
+                    const response = await fetch(`http://localhost:8000/deleteItinerary`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id, Creator: creator })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Itinerary deleted successfully!');
+                        fetchAttractionsAndItineraries(); // Reload the list
+                    } else {
+                        alert(`Error: ${result.message}`);
+                    }
+                } catch (error) {
+                    alert('An error occurred while deleting the itinerary.');
+                }
             }
         }
 

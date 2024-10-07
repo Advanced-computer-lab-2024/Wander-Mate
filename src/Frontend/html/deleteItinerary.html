@@ -3,56 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/register.css"> <!-- Ensure this path is correct -->
     <title>Delete Itinerary</title>
+    <link rel="stylesheet" href="../styles/register.css"> <!-- Link to your external CSS file -->
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Delete Itinerary</div>
+        <h1 class="title">Delete Itinerary</h1>
+
         <form id="deleteItineraryForm">
-            <div class="field">
-                <label for="itineraryId">Itinerary ID:</label>
-                <input type="text" id="itineraryId" required>
-            </div>
-            <div class="field">
-                <label for="creator">Your Name (Creator):</label>
-                <input type="text" id="creator" required>
-            </div>
-            <div class="field">
-                <input type="submit" value="Delete Itinerary">
-            </div>
+            <input type="hidden" id="itineraryId" name="itineraryId" required> <!-- Hidden Itinerary ID -->
+            <input type="hidden" id="creatorId" name="creatorId" required> <!-- Hidden Creator ID -->
+
+            <p>Are you sure you want to delete the itinerary with ID <span id="itineraryIdDisplay"></span>?</p>
+            <input type="submit" value="Delete Itinerary">
         </form>
-        <div id="responseMessage"></div>
+
+        <div id="errorMessage" style="color: red; display: none;"></div>
     </div>
 
     <script>
-        document.getElementById('deleteItineraryForm').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+        document.addEventListener("DOMContentLoaded", () => {
+            // Fetch Itinerary ID and Creator ID from sessionStorage or localStorage
+            const storedItineraryId = sessionStorage.getItem('selectedItineraryId') || localStorage.getItem('selectedItineraryId');
+            const storedCreatorId = sessionStorage.getItem('creatorId') || localStorage.getItem('creatorId');
 
-            const id = document.getElementById('itineraryId').value;
-            const Creator = document.getElementById('creator').value; // Use 'Creator' as the key
-
-            try {
-                const response = await fetch('http://localhost:8000/deleteItinerary', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id, Creator }), // Ensure the keys match your backend
-                });
-
-                if (!response.ok) {
-                    // Handle non-200 response
-                    const errorResult = await response.json();
-                    throw new Error(errorResult.message || "Something went wrong");
-                }
-
-                const result = await response.json();
-                document.getElementById('responseMessage').innerText = result.message;
-
-            } catch (error) {
-                document.getElementById('responseMessage').innerText = 'Error deleting itinerary: ' + error.message;
+            if (!storedItineraryId || !storedCreatorId) {
+                document.getElementById('errorMessage').innerText = "No Itinerary or Creator ID found.";
+                document.getElementById('errorMessage').style.display = 'block';
+                return; // Stop the script if no ID is found
             }
+
+            // Auto-populate the hidden fields
+            document.getElementById('itineraryId').value = storedItineraryId;
+            document.getElementById('creatorId').value = storedCreatorId;
+            document.getElementById('itineraryIdDisplay').innerText = storedItineraryId; // Display Itinerary ID
+
+            const form = document.getElementById('deleteItineraryForm');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const itineraryId = document.getElementById('itineraryId').value;
+                const creatorId = document.getElementById('creatorId').value;
+
+                try {
+                    const response = await fetch(`http://localhost:8000/deleteItinerary/${encodeURIComponent(itineraryId)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ creatorId }) // Send creator ID for verification
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to delete the itinerary');
+                    }
+
+                    const result = await response.json();
+                    alert('Itinerary deleted successfully: ' + result.message);
+                    // Optionally redirect or clear the form
+                } catch (error) {
+                    document.getElementById('errorMessage').innerText = error.message;
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            });
         });
     </script>
 </body>
