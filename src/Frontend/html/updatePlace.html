@@ -3,398 +3,233 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Update Activity | Wander-Mate</title>
+    <title>Update Place</title>
     <link rel="stylesheet" href="../styles/register.css" />
     <style>
-      /* Google Map styling */
+      /* Basic styles for the map */
       #map {
         height: 400px;
         width: 100%;
         margin-top: 20px;
       }
-
-      /* Style for checkbox menu */
-      .checkbox-container {
-        display: flex;
-        flex-direction: column;
-        margin-top: 10px;
-        max-height: 150px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 5px;
-      }
-
-      .checkbox-container div {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
-      }
-
-      .checkbox-container input[type="checkbox"] {
-        margin-right: 10px;
-      }
-
-      .checkbox-container label {
-        font-size: 16px;
-        color: #333;
-      }
-
-      /* Button styling */
-      .add-more-btn {
-        margin-top: 15px;
-        background-color: #00ad68;
-        color: white;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-
-      .add-more-btn:hover {
-        background-color: #008e55;
-      }
     </style>
   </head>
+
   <body>
     <div class="wrapper">
-      <div class="title">Update Activity</div>
-      <form id="updateActivityForm">
+      <h2>Update Place Information</h2>
+      <form id="updatePlaceForm" onsubmit="return updatePlace(event);">
         <div class="field">
           <input
             type="text"
-            name="id"
-            id="id"
-            placeholder=" "
+            id="placeId"
+            name="placeId"
+            placeholder="Place ID"
             required
             readonly
           />
-          <label for="id">Activity ID*</label>
-        </div>
-        <div class="field">
-          <input type="text" name="name" id="name" placeholder=" " required />
-          <label for="name">Activity Name</label>
-        </div>
-        <div class="field">
-          <input type="date" name="date" id="date" placeholder=" " required />
-          <label for="date">Date</label>
-        </div>
-        <div class="field">
-          <input type="time" name="time" id="time" placeholder=" " required />
-          <label for="time">Time</label>
         </div>
         <div class="field">
           <input
             type="text"
-            name="location"
-            id="location"
-            placeholder="Click on the map to select location"
-            readonly
+            id="placeName"
+            name="placeName"
+            placeholder="Place Name"
             required
           />
-          <label for="location">Location (Coordinates)</label>
         </div>
-
-        <!-- Google Maps Container -->
-        <div id="map"></div>
-
         <div class="field">
           <input
-            type="number"
-            name="price"
-            id="price"
-            placeholder=" "
-            min="0"
-            step="0.01"
+            type="text"
+            id="newDescription"
+            name="newDescription"
+            placeholder="New Description"
             required
           />
-          <label for="price">Price</label>
         </div>
         <div class="field">
-          <select name="category" id="category" required>
-            <option value="" disabled selected>Select Category</option>
-          </select>
-          <label for="category">Category</label>
+          <input
+            type="text"
+            id="newLocation"
+            name="newLocation"
+            placeholder="New Location"
+            readonly
+          />
         </div>
-
-        <!-- Placeholder for tags -->
-        <div id="tagFieldsContainer"></div>
-
-        <div class="add-more-tags-container">
-          <button type="button" class="add-more-btn" id="addMoreTagsBtn">
-            Add Tags
-          </button>
-        </div>
-
         <div class="field">
-          <input type="submit" value="Update Activity" />
+          <input
+            type="text"
+            id="newOpeningHours"
+            name="newOpeningHours"
+            placeholder="New Opening Hours"
+          />
+        </div>
+        <div class="field">
+          <input
+            type="text"
+            id="newTicketPrices"
+            name="newTicketPrices"
+            placeholder="New Ticket Prices"
+          />
+        </div>
+        <div class="field">
+          <input type="file" id="newPictures" name="newPictures" accept="image/*" multiple />
+        </div>
+        <div class="field">
+          <input type="submit" value="Update Place" />
         </div>
       </form>
 
-      <!-- Success/Error Messages -->
-      <div id="successMessage" style="color: green; display: none"></div>
-      <div id="errorMessage" style="color: red; display: none"></div>
-    </div>
+      <!-- Google Maps Container -->
+      <div id="map"></div>
 
-    <script>
-      let map;
-      let marker;
+      <script>
+        let map;
+        let marker;
 
-      // Initialize Google Map
-      function initMap() {
-        const defaultLocation = { lat: 40.6892, lng: -74.0445 }; // Default location (Statue of Liberty)
-        map = new google.maps.Map(document.getElementById("map"), {
-          zoom: 12,
-          center: defaultLocation,
-        });
-
-        marker = new google.maps.Marker({
-          position: defaultLocation,
-          map: map,
-          title: "Selected Location",
-        });
-
-        // Add click event to map to allow user to choose location
-        map.addListener("click", (event) => {
-          const clickedLocation = event.latLng;
-          marker.setPosition(clickedLocation); // Move marker to clicked location
-          document.getElementById("location").value =
-            clickedLocation.lat() + ", " + clickedLocation.lng(); // Set location value in input
-        });
-      }
-
-      // Function to get the query parameter from the URL
-      function getQueryParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-      }
-
-      // Fetch categories and populate the dropdown
-      async function fetchCategories() {
-        const categorySelect = document.getElementById("category");
-        try {
-          const response = await fetch("http://localhost:8000/getCategories");
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const categories = await response.json();
-          categories.forEach((category) => {
-            const option = document.createElement("option");
-            option.value = category._id; // Use _id as value
-            option.textContent = category.Name; // Display Name in the dropdown
-            categorySelect.appendChild(option);
+        // Initialize the map and marker
+        function initMap() {
+          const initialLocation = { lat: 37.7749, lng: -122.4194 }; // Default location (San Francisco)
+          map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: initialLocation,
           });
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-          alert("Could not load categories. Please try again later.");
-        }
-      }
 
-      // Fetch tags and populate tag fields
-      async function fetchTags(container) {
-        try {
-          const response = await fetch(
-            "http://localhost:8000/readPreferenceTags"
-          );
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const tags = await response.json();
-          tags.forEach((preferenceTags) => {
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.value = preferenceTags._id;
-            checkbox.id = `tag_${preferenceTags._id}`;
-            checkbox.className = "tags-checkbox";
-
-            const label = document.createElement("label");
-            label.htmlFor = checkbox.id;
-            label.textContent = preferenceTags.Name;
-
-            const div = document.createElement("div");
-            div.appendChild(checkbox);
-            div.appendChild(label);
-            container.appendChild(div);
+          marker = new google.maps.Marker({
+            position: initialLocation,
+            map: map,
+            title: "Selected Location",
           });
-        } catch (error) {
-          console.error("Error fetching tags:", error);
-          alert("Could not load tags. Please try again later.");
+
+          // Add click event listener to map
+          map.addListener("click", (event) => {
+            const clickedLocation = event.latLng;
+            marker.setPosition(clickedLocation); // Move marker to clicked position
+            document.getElementById("newLocation").value =
+              `${clickedLocation.lat()}, ${clickedLocation.lng()}`; // Update hidden Location field
+          });
         }
-      }
 
-      // Fetch and prefill activity details on page load
-      document.addEventListener("DOMContentLoaded", async () => {
-        const activityId = getQueryParameter("id");
-        const loggedInUsername = sessionStorage.getItem("username"); // Fetch the logged-in username
-
-        if (activityId) {
-          document.getElementById("id").value = activityId;
-
+        // Fetch place details and populate form
+        async function fetchPlaceDetails(placeId) {
           try {
-            // Fetch the activity details
-            const activityResponse = await fetch(
-              `http://localhost:8000/readActivity/${activityId}`
-            );
-            if (!activityResponse.ok) {
-              throw new Error(
-                "Failed to fetch activity details. Response Status: " +
-                  activityResponse.status
-              );
-            }
-            const activity = await activityResponse.json();
-
-            if (!activity || !activity.Creator) {
-              throw new Error("Activity or Creator is missing in the response");
+            const response = await fetch(`http://localhost:8000/getPlace/${placeId}`);
+            if (!response.ok) {
+              throw new Error("Place not found");
             }
 
-            // Fetch the creator ID of the logged-in user
-            const creatorResponse = await fetch(
-              `http://localhost:8000/getID/${loggedInUsername}`
-            );
-            if (!creatorResponse.ok) {
-              throw new Error(
-                "Failed to fetch creator ID. Response Status: " +
-                  creatorResponse.status
-              );
-            }
-            const { userID } = await creatorResponse.json();
+            const place = await response.json();
 
-            if (!userID) {
-              throw new Error("Logged-in userID is missing");
-            }
+            // Populate form fields with the fetched data
+            document.getElementById("placeId").value = place._id;
+            document.getElementById("placeName").value = place.Name; // Added line for place name
+            document.getElementById("newDescription").value = place.Description;
+            document.getElementById("newLocation").value =
+              `${place.Location.coordinates[1]}, ${place.Location.coordinates[0]}`; // Format as lat, lng
+            document.getElementById("newOpeningHours").value = place.OpeningHours;
+            document.getElementById("newTicketPrices").value = place.TicketPrices;
 
-            // Check if the logged-in user is the creator
-            if (activity.Creator !== userID) {
-              document.getElementById("errorMessage").innerText =
-                "You are not the creator of this activity. You cannot update it.";
-              document.getElementById("errorMessage").style.display = "block";
-              document.getElementById("updateActivityForm").style.display =
-                "none"; // Hide the form
-            } else {
-              // Pre-fill the form fields with the activity data
-              document.getElementById("name").value = activity.Name || "";
-              document.getElementById("date").value = activity.DateString || "";
-              document.getElementById("time").value = activity.Time || "";
-              document.getElementById("location").value =
-                activity.Location?.coordinates?.join(", ") || "";
-              document.getElementById("price").value = activity.Price || "";
-
-              // Fetch categories and pre-select the current category
-              await fetchCategories();
-              document.getElementById("category").value =
-                activity.Category || "";
-            }
-
-            // Update the map and marker to the current activity location
-            const activityLocation = {
-              lat: activity.Location.coordinates[1],
-              lng: activity.Location.coordinates[0],
+            // Move the marker on the map to the stored location
+            const placeLocation = {
+              lat: place.Location.coordinates[1],
+              lng: place.Location.coordinates[0],
             };
-            map.setCenter(activityLocation);
-            marker.setPosition(activityLocation);
+            map.setCenter(placeLocation);
+            marker.setPosition(placeLocation);
           } catch (error) {
-            console.error("Error fetching activity or creator details:", error);
-            document.getElementById("errorMessage").innerText =
-              "An error occurred while fetching activity details: " +
-              error.message;
-            document.getElementById("errorMessage").style.display = "block";
+            console.error("Error fetching place details:", error);
+            alert("Could not fetch place details. Please try again later.");
           }
         }
-      });
 
-      // Form submission logic
-      document
-        .getElementById("updateActivityForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault(); // Prevent the default form submission
+        async function updatePlace(event) {
+  event.preventDefault();
 
-          // Collect form data
-          const id = document.getElementById("id").value;
-          const name = document.getElementById("name").value;
-          const date = document.getElementById("date").value;
-          const time = document.getElementById("time").value;
-          const location = document.getElementById("location").value;
-          const price = document.getElementById("price").value;
-          const category = document.getElementById("category").value;
+  const placeId = document.getElementById("placeId").value;
+  const placeName = document.getElementById("placeName").value;
+  const newDescription = document.getElementById("newDescription").value;
+  const newLocation = document.getElementById("newLocation").value;
+  const newOpeningHours = document.getElementById("newOpeningHours").value;
+  const newTicketPrices = document.getElementById("newTicketPrices").value;
+  const newPictures = document.getElementById("newPictures").files;
 
-          try {
-            // Send the data to the backend via a PUT request
-            const response = await fetch(
-              "http://localhost:8000/updateActivity",
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  id: id,
-                  Name: name,
-                  DateString: date,
-                  Time: time,
-                  Location: {
-                    type: "Point",
-                    coordinates: location
-                      .split(",")
-                      .map((coord) => parseFloat(coord.trim())),
-                  },
-                  Price: price,
-                  Category: category,
-                }),
-              }
-            );
+  // Log the values to see what is being sent
+  console.log("Place ID:", placeId);
+  console.log("Place Name:", placeName);
+  console.log("New Description:", newDescription);
+  console.log("New Location:", newLocation);
+  console.log("New Opening Hours:", newOpeningHours);
+  console.log("New Ticket Prices:", newTicketPrices);
 
-            const result = await response.json();
+  // Get the latitude and longitude from the New Location input
+  const [lat, lng] = newLocation.split(",").map(Number);
 
-            if (response.ok) {
-              // Success case: Show success message
-              document.getElementById("successMessage").innerText =
-                result.message;
-              document.getElementById("successMessage").style.display = "block";
-              document.getElementById("errorMessage").style.display = "none";
-            } else {
-              // Error case: Show error message
-              document.getElementById("errorMessage").innerText =
-                result.message || "Error updating activity";
-              document.getElementById("errorMessage").style.display = "block";
-              document.getElementById("successMessage").style.display = "none";
-            }
-          } catch (error) {
-            console.error("Error:", error);
-            document.getElementById("errorMessage").innerText =
-              "An error occurred while updating the activity.";
-            document.getElementById("errorMessage").style.display = "block";
-            document.getElementById("successMessage").style.display = "none";
+  const locationObject = {
+    type: "Point",
+    coordinates: [lng, lat], // GeoJSON format expects [lng, lat]
+  };
+
+  const formData = new FormData();
+  formData.append("Id", placeId);
+  formData.append("Name", placeName);
+  formData.append("Description", newDescription);
+  formData.append("Location", JSON.stringify(locationObject)); // Append the location object as a JSON string
+  formData.append("OpeningHours", newOpeningHours);
+  formData.append("TicketPrices", newTicketPrices);
+
+  // Append all selected images (if any)
+  for (let i = 0; i < newPictures.length; i++) {
+    formData.append("Pictures", newPictures[i]);
+  }
+
+  // Log the FormData to inspect the structure being sent
+  for (const pair of formData.entries()) {
+    console.log(`${pair[0]}: ${pair[1]}`);
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8000/updatePlace/${placeId}`, {
+      method: "PUT",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("Place updated successfully!");
+      window.location.href = "view-places.html"; // Optionally redirect after successful update
+    } else {
+      const errorResponse = await response.json();
+      console.error("Update failed:", errorResponse); // Log error response for debugging
+      alert("Error updating place: " + errorResponse.message);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Failed to update place.");
+  }
+}
+
+
+        // Extract Place ID from URL and fetch details
+        function getPlaceIdFromURL() {
+          const params = new URLSearchParams(window.location.search);
+          return params.get("placeId");
+        }
+
+        // Load the place details when the page is loaded
+        document.addEventListener("DOMContentLoaded", () => {
+          const placeId = getPlaceIdFromURL(); // Fetch Place ID from URL
+          if (placeId) {
+            fetchPlaceDetails(placeId); // Fetch details for the specific place
+          } else {
+            alert("Place ID not found in URL.");
           }
         });
+      </script>
 
-      // Add the "Add Tags" button functionality
-      function addMoreTags() {
-        const tagsContainer = document.createElement("div");
-        tagsContainer.classList.add("checkbox-container");
-        document
-          .getElementById("tagFieldsContainer")
-          .appendChild(tagsContainer);
-        fetchTags(tagsContainer);
-
-        document.getElementById("addMoreTagsBtn").disabled = true;
-        document.getElementById("addMoreTagsBtn").style.opacity = 0.5;
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const addMoreTagsBtn = document.getElementById("addMoreTagsBtn");
-        addMoreTagsBtn.addEventListener("click", addMoreTags);
-      });
-
-      // Load the Google Maps API asynchronously
-      document.addEventListener("DOMContentLoaded", () => {
-        const script = document.createElement("script");
-        script.src =
-          "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
-        script.async = true;
-        document.head.appendChild(script);
-        fetchCategories();
-      });
-    </script>
+      <script
+        async
+        defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
+      ></script>
+    </div>
   </body>
 </html>

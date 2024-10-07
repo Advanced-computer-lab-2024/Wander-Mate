@@ -106,30 +106,38 @@ const updatePlace = async (req, res) => {
       Id,
       Name,
       Description,
-      Pictures,
+      Pictures,          // Pictures is being passed, ensure it's handled correctly
       Location,
-      OpeningHours,
-      TicketPrices,
+      OpeningHours,      // Ensure this field is allowed in your schema or use strict: false
+      TicketPrices,      // Ensure this field is allowed in your schema
     } = req.body;
-    const location = JSON.parse(Location); // Parse the JSON string
 
+    // Parse the location (ensure it's sent as a correct JSON string from the frontend)
+    const location = typeof Location === 'string' ? JSON.parse(Location) : Location;
+
+    const updatedData = {
+      Name,
+      Description,
+      Location: location,
+    };
+
+    // Add optional fields only if they are provided
+    if (Pictures) updatedData.Pictures = Pictures;
+    if (OpeningHours) updatedData.OpeningHours = OpeningHours;
+    if (TicketPrices) updatedData.TicketPrices = TicketPrices;
+
+    // Update the place in the database
     const place = await attractionModel.findByIdAndUpdate(
       Id,
-      {
-        Description: Description,
-        Name: Name,
-        Pictures: Pictures,
-        Location: location,
-        OpeningHours: OpeningHours,
-        TicketPrices: TicketPrices,
-      },
+      updatedData,
       { new: true, runValidators: true }
     );
+
     if (!place) {
       return res.status(404).json({ message: "Place not found" });
-    } else {
-      res.status(200).json(place);
     }
+
+    res.status(200).json(place);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
