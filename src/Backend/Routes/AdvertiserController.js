@@ -94,7 +94,6 @@ const readActivities = async (req, res) => {
 };
 
 
-
 const updateActivity = async (req, res) => {
   const {
     Creator,
@@ -252,7 +251,6 @@ const readAdvertiserInfo = async (req, res) => {
     res.status(400).json({ error: "Error reading Advertiser" });
   }
 };
-
 
 const updateAdvertiserInfo = async (req, res) => {
   try {
