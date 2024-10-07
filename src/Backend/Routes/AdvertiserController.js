@@ -86,18 +86,13 @@ const readActivity = async (req, res) => {
 
 const readActivities = async (req, res) => {
   try {
-    const objectId = new mongoose.Types.ObjectId("67025cb6bb14549b7e29f376");
-    const currentDate = new Date();
-
-    const activities = await attractionModel.find({
-      Type: objectId,
-      Date: { $gte: currentDate },
-    });
+    const activities = await attractionModel.find(); // Fetch all activities
     res.status(200).json(activities);
   } catch (error) {
     res.status(400).json({ error: "Error reading activities" });
   }
 };
+
 
 
 const updateActivity = async (req, res) => {
