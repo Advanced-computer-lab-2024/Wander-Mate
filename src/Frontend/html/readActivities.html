@@ -247,9 +247,6 @@
                           activity.Date
                         ).toLocaleDateString()}</p>
                     </div>
-                    <div class="edit-button">
-                        <a href="" class="buy-button" >Book</a>
-                    </div>
                     <div class="map-container" id="map-${
                       activity._id
                     }"></div> <!-- Container for Google Map -->
@@ -314,9 +311,9 @@
           }
         } catch (error) {
             console.error('Error:', error);
-            document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
+            // document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
+            // document.getElementById('errorMessage').style.display = 'block';
+            // document.getElementById('successMessage').style.display = 'none';
         }
       };
 
