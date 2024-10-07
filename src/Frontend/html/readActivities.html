@@ -1,192 +1,476 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Read All Activities | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Activities | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
+    <!-- Include Google Maps API -->
     <style>
-        .activity-item {
-            margin-bottom: 15px;
-        }
+      .map-container {
+        width: 100%;
+        height: 200px; /* Adjust height as needed */
+        margin-top: 10px;
+      }
+      .activity-item {
+        margin-bottom: 20px;
+      }
 
-        .activity-item button {
-            margin-right: 10px;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+      .activity-item button {
+          margin-right: 10px;
+          padding: 8px 12px;
+          border: none;
+          border-radius: 5px;
+          font-size: 14px;
+          cursor: pointer;
+      }
 
-        .delete-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
+      .delete-btn {
+          background-color: #e74c3c;
+          color: white;
+      }
 
-        .update-btn {
-            background-color: #27ae60;
-            color: white;
-        }
+      .update-btn {
+          background-color: #27ae60;
+          color: white;
+      }
 
-        .message {
-            margin-top: 20px;
-            color: green;
-            display: none;
-        }
+      .message {
+          margin-top: 20px;
+          color: green;
+          display: none;
+      }
 
-        .error {
-            color: red;
-            display: none;
-        }
+      .error {
+          color: red;
+          display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">Read All Activities</div>
-        <form id="readActivitiesForm" onsubmit="return submitForm(event)">
-            <div class="field">
-                <input type="submit" value="Read All Activities">
-            </div>
-        </form>
+      <div class="title">All Activities</div>
 
-        <!-- Placeholder for displaying fetched activities -->
-        <div id="activitiesList" class="activities-list"></div>
+      <div class="search-section">
+        <label for="ActivityName">Search by Activity Name:</label>
+        <input
+          type="text"
+          id="ActivityName"
+          placeholder="Enter activity name"
+        />
+        <button id="searchButton">Search</button>
+      </div>
 
-        <!-- Success/Error Messages -->
-        <div id="successMessage" class="message"></div>
-        <div id="errorMessage" class="error"></div>
+      <div class="filter-section">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" placeholder="0" />
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" placeholder="1000" />
+
+        <!-- Added Date Filters -->
+        <label for="minDate">Min Date:</label>
+        <input type="date" id="minDate" />
+        <label for="maxDate">Max Date:</label>
+        <input type="date" id="maxDate" />
+
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+          <option value="all">All Categories</option>
+        </select>
+
+        <div id="tagsSection">
+          <label>Tags:</label>
+          <div id="tagsContainer">
+            <!-- Tags will be dynamically inserted here -->
+          </div>
+        </div>
+        <button id="filterButton">Apply Filter</button>
+        <button id="resetButton">Reset</button>
+        <button id="sortButton">Sort by Ratings</button>
+      </div>
+
+      <div class="activity-list" id="activityList">
+        <!-- Activities will be dynamically inserted here -->
+      </div>
+
+      <!-- Success/Error Messages -->
+      <div id="successMessage" class="message"></div>
+      <div id="errorMessage" class="error"></div>
     </div>
 
     <script>
-        // Fetch all activities from the correct URL
-        const submitForm = async (event) => {
-            event.preventDefault(); // Prevent the form from submitting normally
+      let allActivities = []; // Variable to store all fetched Activities
+      let displayedActivities = []; // Variable to store currently displayed activities
+      let allAdvertisers = []; // Variable to store all fetched Creator
+      let advertiserMap = {}; // Map to associate seller IDs with names
+      let categories = []; // Variable to store categories
+      let tags = []; // Variable to store tags
 
-            const URL = 'http://localhost:8000/readActivities'; // Correct URL based on your backend route
+      // Fetch categories from the API and populate the dropdown
+      async function fetchCategories() {
+        const categorySelect = document.getElementById("category");
 
-            try {
-                const response = await fetch(URL, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+        try {
+          const response = await fetch("http://localhost:8000/getCategories");
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert("Error: " + (errorData.message || "Unknown error"));
-                    return;
-                }
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
 
-                const activitiesData = await response.json();
-                console.log("Response from server:", activitiesData);
+          categories = await response.json();
 
-                displayActivities(activitiesData);
-            } catch (error) {
-                console.error("Error in fetch call:", error); // Log the detailed error to the console
-                alert("An error occurred. Please try again.");
-            }
-        };
+          // Populate the dropdown with fetched categories
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id; // Use the category ID as the value
+            option.textContent = category.Name; // Display the category name
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          alert("Could not load categories. Please try again later.");
+        }
+      }
 
-        // Function to display the activities data on the page
-        const displayActivities = (data) => {
-            const activitiesListDiv = document.getElementById("activitiesList");
-            activitiesListDiv.style.display = "block";
-            activitiesListDiv.innerHTML = `<h3>All Activities:</h3>`;
+      // Fetch tags from the API and populate the tags section
+      async function fetchTags() {
+        const tagsContainer = document.getElementById("tagsContainer");
 
-            if (data.length === 0) {
-                activitiesListDiv.innerHTML += `<p>No activities found.</p>`;
-            } else {
-                data.forEach(activity => {
-                    const tags = activity.Tags && activity.Tags.length 
-                      ? activity.Tags.map(tag => tag.name).join(", ") 
-                      : "No tags available";
+        try {
+          const response = await fetch(
+            "http://localhost:8000/readPreferenceTags"
+          );
 
-                    activitiesListDiv.innerHTML += `
-                        <div class="activity-item" id="activity-${activity._id}">
-                            <h3>${activity.Name || "N/A"}</h3>
-                            <p><strong>Creator:</strong> ${activity.Creator || "N/A"}</p>
-                            <p><strong>Date:</strong> ${new Date(activity.Date).toLocaleDateString()}</p>
-                            <p><strong>Time:</strong> ${activity.Time || "N/A"}</p>
-                            <p><strong>Location:</strong> ${activity.Location ? activity.Location.coordinates.join(", ") : "N/A"}</p>
-                            <p><strong>Price:</strong> $${activity.Price || "N/A"}</p>
-                            <p><strong>Category:</strong> ${activity.Category || "N/A"}</p>
-                            <p><strong>Tags:</strong> ${tags}</p>
-                            <p><strong>Ratings:</strong> ${activity.Ratings || 0}</p>
-                            
-                            <!-- Delete Button -->
-                            <button class="delete-btn" onclick="deleteActivity('${activity._id}', '${activity.Creator}')">Delete</button>
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
 
-                            <!-- Update Button -->
-                            <button class="update-btn" onclick="redirectToUpdatePage('${activity._id}')">Update</button>
-                        </div>
-                        <hr>
+          tags = await response.json();
+
+          // Populate the checkboxes with fetched tags
+          tags.forEach((tag) => {
+            const tagCheckbox = document.createElement("div");
+            tagCheckbox.innerHTML = `
+                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                        <label for="tag-${tag._id}">${tag.Name}</label>
                     `;
-                });
+            tagsContainer.appendChild(tagCheckbox);
+          });
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+          alert("Could not load tags. Please try again later.");
+        }
+      }
+
+      async function fetchAdvertisers() {
+        try {
+          const response = await fetch("http://localhost:8000/getAdvertisers");
+          if (response.ok) {
+            const data = await response.json();
+            allAdvertisers = data.Creator; // Access the Creator array directly from the response
+
+            if (Array.isArray(allAdvertisers)) {
+              advertiserMap = allAdvertisers.reduce((map, Creator) => {
+                map[Creator._id] = Creator.Username; // Adjust according to your seller object structure
+                return map;
+              }, {});
+            } else {
+              console.error("Expected an array but got:", allAdvertisers);
             }
-        };
+          } else {
+            console.error("Failed to fetch Creator:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching Creator:", error);
+        }
+      }
 
-        // Function to delete an activity (with creator check)
-        const deleteActivity = async (activityId, creatorId) => {
-            try {
-                const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
+      async function fetchActivities() {
+        try {
+          const response = await fetch("http://localhost:8000/readActivities");
+          const Activities = await response.json();
 
-                // Fetch the creator ID for the logged-in user
-                const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
-                if (!creatorResponse.ok) {
-                    throw new Error('Could not fetch creator ID');
-                }
+          if (response.ok) {
+            allActivities = Activities; // Store all Activities
+            displayedActivities = allActivities; // Initialize displayed activities
+            displayActivities(displayedActivities); // Display all Activities initially
+          } else {
+            document.getElementById("activityList").innerHTML =
+              "<p>No Activities available</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching Activities:", error);
+          document.getElementById("activityList").innerHTML =
+            "<p>An error occurred while fetching Activities.</p>";
+        }
+      }
 
-                const { userID: loggedInUserID } = await creatorResponse.json();
-
-                // Check if the logged-in user is the creator of the activity
-                if (loggedInUserID !== creatorId) {
-                    alert("You are not the creator of this activity. You cannot delete it.");
-                    return;
-                }
-
-                const response = await fetch('http://localhost:8000/deleteActivity', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: activityId,
-                        Creator: loggedInUserID
-                    })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Success case: Remove the deleted activity from the DOM
-                    document.getElementById(`activity-${activityId}`).remove();
-                    document.getElementById('successMessage').innerText = result.message;
-                    document.getElementById('successMessage').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                } else {
-                    // Error case: Show error message
-                    document.getElementById('errorMessage').innerText = result.message || 'Error deleting activity';
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('successMessage').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('successMessage').style.display = 'none';
-            }
-        };
-
-        // Redirect to updateActivity.html with the activity ID
-        const redirectToUpdatePage = (activityId) => {
-            window.location.href = `updateActivity.html?id=${activityId}`;
-        };
-
-        document.addEventListener("DOMContentLoaded", () => {
-            submitForm(); // Auto-fetch activities on page load
+      function initMap(location, elementId) {
+        const map = new google.maps.Map(document.getElementById(elementId), {
+          zoom: 10,
+          center: {
+            lat: location.coordinates[1], // latitude
+            lng: location.coordinates[0], // longitude
+          },
         });
+
+        new google.maps.Marker({
+          position: {
+            lat: location.coordinates[1],
+            lng: location.coordinates[0],
+          },
+          map: map,
+        });
+      }
+
+      function displayActivities(activities) {
+        const activityList = document.getElementById("activityList");
+        activityList.innerHTML = ""; // Clear existing Activities
+        activities.forEach((activity) => {
+          const activityItem = document.createElement("div");
+          activityItem.className = "activity-item";
+
+          activityItem.innerHTML = `
+                    <div class="activity-details">
+                        <h2 class="activity-name">${activity.Name}</h2>
+                        <p class="activity-price">Price: $${activity.Price}</p>
+                        <p class="activity-creator">Advertiser: ${
+                          advertiserMap[activity.Creator] || "Unknown"
+                        }</p> <!-- Use seller's name from map -->
+                        <p class="activity-ratings">Ratings: ${"★".repeat(
+                          activity.Ratings
+                        )}${"☆".repeat(5 - activity.Ratings)} (${
+            activity.Ratings
+          })</p>
+                        <p class="activity-date">Date: ${new Date(
+                          activity.Date
+                        ).toLocaleDateString()}</p>
+                    </div>
+                    <div class="edit-button">
+                        <a href="" class="buy-button" >Book</a>
+                    </div>
+                    <div class="map-container" id="map-${
+                      activity._id
+                    }"></div> <!-- Container for Google Map -->
+
+                    <!-- Delete and Update Buttons -->
+                    <button class="delete-btn" onclick="deleteActivity('${
+                      activity._id
+                    }', '${activity.Creator}')">Delete</button>
+                    <button class="update-btn" onclick="redirectToUpdatePage('${
+                      activity._id
+                    }', '${activity.Creator}')">Update</button>
+                `;
+
+          activityList.appendChild(activityItem);
+          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this activity
+        });
+      }
+
+      // Delete an activity with creator check
+      const deleteActivity = async (activityId, creatorId) => {
+        try {
+          const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
+
+          // Fetch the creator ID for the logged-in user
+          const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
+          if (!creatorResponse.ok) {
+              throw new Error('Could not fetch creator ID');
+          }
+
+          const { userID: loggedInUserID } = await creatorResponse.json();
+
+          // Check if the logged-in user is the creator of the activity
+          if (loggedInUserID !== creatorId) {
+              alert("You are not the creator of this activity. You cannot delete it.");
+              return;
+          }
+
+          const response = await fetch('http://localhost:8000/deleteActivity', {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  id: activityId,
+                  Creator: loggedInUserID
+              })
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+              // Success case: Remove the deleted activity from the DOM
+              document.getElementById(`activity-${activityId}`).remove();
+              document.getElementById('successMessage').innerText = result.message;
+              document.getElementById('successMessage').style.display = 'block';
+              document.getElementById('errorMessage').style.display = 'none';
+          } else {
+              // Error case: Show error message
+              document.getElementById('errorMessage').innerText = result.message || 'Error deleting activity';
+              document.getElementById('errorMessage').style.display = 'block';
+              document.getElementById('successMessage').style.display = 'none';
+          }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').innerText = 'An error occurred while deleting the activity.';
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+      };
+
+      // Redirect to updateActivity.html with the activity ID (with creator check)
+      const redirectToUpdatePage = async (activityId, creatorId) => {
+        try {
+          const loggedInUsername = sessionStorage.getItem('username'); // Fetch the logged-in username
+
+          // Fetch the creator ID for the logged-in user
+          const creatorResponse = await fetch(`http://localhost:8000/getID/${loggedInUsername}`);
+          if (!creatorResponse.ok) {
+              throw new Error('Could not fetch creator ID');
+          }
+
+          const { userID: loggedInUserID } = await creatorResponse.json();
+
+          // Check if the logged-in user is the creator of the activity
+          if (loggedInUserID !== creatorId) {
+              alert("You are not the creator of this activity. You cannot update it.");
+              return;
+          }
+
+          // If the user is the creator, proceed to the update page
+          window.location.href = `updateActivity.html?id=${activityId}`;
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while fetching creator information.');
+        }
+      };
+
+      // Combined method for filtering and searching
+      function applyFiltersAndSearch() {
+        const minPrice =
+          parseFloat(document.getElementById("minPrice").value) || 0;
+        const maxPrice =
+          parseFloat(document.getElementById("maxPrice").value) || Infinity;
+        const minDate = document.getElementById("minDate").value;
+        const maxDate = document.getElementById("maxDate").value;
+        const activityName = document
+          .getElementById("ActivityName")
+          .value.trim()
+          .toLowerCase();
+        const selectedCategory = document.getElementById("category").value;
+
+        // Get selected tags
+        const selectedTags = Array.from(
+          document.querySelectorAll(
+            "#tagsContainer input[type='checkbox']:checked"
+          )
+        ).map((checkbox) => checkbox.value);
+
+        displayedActivities = allActivities.filter((activity) => {
+          const withinPriceRange =
+            activity.Price >= minPrice && activity.Price <= maxPrice;
+          const matchesName =
+            activity.Name && activity.Name.toLowerCase().includes(activityName);
+          const matchesCategory =
+            selectedCategory === "all" ||
+            (selectedCategory ? activity.Category === selectedCategory : true);
+          const matchesTags =
+            selectedTags.length === 0 ||
+            (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false); // Use optional chaining
+
+          const activityDate = new Date(activity.Date);
+          const withinDateRange =
+            (!minDate || activityDate >= new Date(minDate)) &&
+            (!maxDate || activityDate <= new Date(maxDate));
+
+          return (
+            withinPriceRange &&
+            matchesName &&
+            matchesCategory &&
+            matchesTags &&
+            withinDateRange
+          );
+        });
+
+        displayActivities(displayedActivities); // Display filtered and searched Activities
+      }
+
+      // Fetch Activities and Creator when the page loads
+      document.addEventListener("DOMContentLoaded", async () => {
+        await fetchAdvertisers(); // Fetch Creator first
+        await fetchActivities(); // Then fetch Activities
+        fetchCategories(); // Fetch categories
+        fetchTags(); // Fetch tags
+      });
+
+      // Event listener for the search button
+      document
+        .getElementById("searchButton")
+        .addEventListener("click", applyFiltersAndSearch);
+
+      // Event listener for the filter button
+      document
+        .getElementById("filterButton")
+        .addEventListener("click", applyFiltersAndSearch);
+
+      // Sort activities by ratings
+      document.getElementById("sortButton").addEventListener("click", () => {
+        displayedActivities.sort((a, b) => b.Ratings - a.Ratings); // Sort by ratings (highest first)
+        displayActivities(displayedActivities); // Display sorted Activities
+      });
+
+      // Reset button functionality
+      document.getElementById("resetButton").addEventListener("click", () => {
+        document.getElementById("minPrice").value = "";
+        document.getElementById("maxPrice").value = "";
+        document.getElementById("ActivityName").value = ""; // Clear the search input
+        document.getElementById("minDate").value = ""; // Clear min date
+        document.getElementById("maxDate").value = ""; // Clear max date
+        document.getElementById("category").selectedIndex = 0; // Reset the category dropdown
+        // Uncheck all tag checkboxes
+        const tagCheckboxes = document.querySelectorAll(
+          "#tagsContainer input[type='checkbox']"
+        );
+        tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
+        displayedActivities = allActivities; // Reset displayed activities
+        displayActivities(displayedActivities); // Display all Activities
+      });
+
+      document.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("buy-button")) {
+          event.preventDefault(); // Prevent default link behavior
+
+          const Username = sessionStorage.getItem("username");
+          console.log("haha");
+
+          // Call the backend to check age
+          try {
+            const body = JSON.stringify({ Username });
+            console.log(body);
+            const response = await fetch("http://localhost:8000/getAge", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set the Content-Type to application/json
+              },
+              body: body,
+            });
+
+            const data = await response.json();
+
+            if (!data.eligible) {
+              alert("You can't buy; you are under 18");
+            } else {
+              // Proceed to the next page or perform the buy action
+              window.location.href = "nextPage.html"; // Replace with your target page
+            }
+          } catch (error) {
+            console.error("Error checking age:", error);
+            alert("An error occurred while checking your age.");
+          }
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
