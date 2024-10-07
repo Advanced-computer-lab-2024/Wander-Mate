@@ -296,60 +296,76 @@
 
       // Function to create the itinerary
       async function createItinerary(event) {
-        event.preventDefault(); // Prevent default form submission
+  event.preventDefault(); // Prevent default form submission
 
-        const formData = new FormData(event.target);
-        const itineraryData = {};
+  const formData = new FormData(event.target);
+  const itineraryData = {};
 
-        formData.forEach((value, key) => {
-          if (key === "AvailableDates") {
-            // Convert AvailableDates to an array of Date objects
-            const availableDatesArray = value
-              .split(",")
-              .map((date) => new Date(date.trim()));
-            itineraryData[key] = availableDatesArray;
-          } else if (key === "Price") {
-            // Convert Price to a number
-            itineraryData[key] = parseFloat(value);
-          } else if (key === "PickUpLocation" || key === "DropOffLocation") {
-            // Extract latitude and longitude
-            const coordinates = value
-              .split(",")
-              .map((coord) => parseFloat(coord.trim()));
-            itineraryData[key] = {
-              type: "Point",
-              coordinates: coordinates,
-            };
-          } else {
-            itineraryData[key] = value;
-          }
-        });
+  // Handle multiple selected checkboxes for "Activities" and "LocationsToVisit"
+  const activities = [];
+  const locations = [];
 
-        try {
-          const response = await fetch(
-            "http://localhost:8000/createItinerary",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(itineraryData),
-            }
-          );
+  // Collect all checked activities
+  document.querySelectorAll('input[name="Activities"]:checked').forEach((checkbox) => {
+    activities.push(checkbox.value); // Store the value of each selected checkbox
+  });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+  // Collect all checked locations
+  document.querySelectorAll('input[name="LocationsToVisit"]:checked').forEach((checkbox) => {
+    locations.push(checkbox.value); // Store the value of each selected checkbox
+  });
 
-          const result = await response.json();
-          console.log("Itinerary created successfully:", result);
-          alert("Itinerary created successfully!");
-          this.reset();
-        } catch (error) {
-          console.error("Error creating itinerary:", error);
-          alert("Failed to create itinerary");
-        }
-      }
+  formData.forEach((value, key) => {
+    if (key === "AvailableDates") {
+      // Convert AvailableDates to an array of Date objects
+      const availableDatesArray = value
+        .split(",")
+        .map((date) => new Date(date.trim()));
+      itineraryData[key] = availableDatesArray;
+    } else if (key === "Price") {
+      // Convert Price to a number
+      itineraryData[key] = parseFloat(value);
+    } else if (key === "PickUpLocation" || key === "DropOffLocation") {
+      // Extract latitude and longitude
+      const coordinates = value
+        .split(",")
+        .map((coord) => parseFloat(coord.trim()));
+      itineraryData[key] = {
+        type: "Point",
+        coordinates: coordinates,
+      };
+    } else {
+      itineraryData[key] = value;
+    }
+  });
+
+  // Add the collected "Activities" and "LocationsToVisit" as arrays
+  itineraryData["Activities"] = activities;
+  itineraryData["LocationsToVisit"] = locations;
+
+  try {
+    const response = await fetch("http://localhost:8000/createItinerary", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(itineraryData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Itinerary created successfully:", result);
+    alert("Itinerary created successfully!");
+    event.target.reset();
+  } catch (error) {
+    console.error("Error creating itinerary:", error);
+    alert("Failed to create itinerary");
+  }
+}
+
 
       // Attach the form submission event listener
       const createItineraryForm = document.getElementById(
