@@ -119,24 +119,25 @@ const createPlace = async (req, res) => {
   }
 };
 
-
 //Update
 const updatePlace = async (req, res) => {
   try {
     const {
-      Id,
       Name,
       Description,
-      Pictures,          // Pictures is being passed, ensure it's handled correctly
+      Pictures, // Pictures is being passed, ensure it's handled correctly
       Location,
-      OpeningHours,      // Ensure this field is allowed in your schema or use strict: false
-      TicketPrices,      // Ensure this field is allowed in your schema
+      OpeningHours, // Ensure this field is allowed in your schema or use strict: false
+      TicketPrices, // Ensure this field is allowed in your schema
       Category,
       Tag,
     } = req.body;
 
+    const { Id } = req.params;
+
     // Parse the location (ensure it's sent as a correct JSON string from the frontend)
-    const location = typeof Location === 'string' ? JSON.parse(Location) : Location;
+    const location =
+      typeof Location === "string" ? JSON.parse(Location) : Location;
 
     const updatedData = {
       Name,
@@ -152,11 +153,10 @@ const updatePlace = async (req, res) => {
     if (Tag) updatedData.Tag = Tag;
 
     // Update the place in the database
-    const place = await attractionModel.findByIdAndUpdate(
-      Id,
-      updatedData,
-      { new: true, runValidators: true }
-    );
+    const place = await attractionModel.findByIdAndUpdate(Id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!place) {
       return res.status(404).json({ message: "Place not found" });

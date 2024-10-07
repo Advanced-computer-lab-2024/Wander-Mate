@@ -116,14 +116,22 @@
           />
         </div>
         <div class="field">
-          <input type="file" id="newPictures" name="newPictures" accept="image/*" multiple />
+          <input
+            type="file"
+            id="newPictures"
+            name="newPictures"
+            accept="image/*"
+            multiple
+          />
         </div>
 
         <!-- Placeholder for tags -->
         <div id="tagFieldsContainer"></div>
 
         <div class="add-more-tags-container">
-          <button type="button" class="add-more-btn" id="addMoreTagsBtn">Add Tags</button>
+          <button type="button" class="add-more-btn" id="addMoreTagsBtn">
+            Add Tags
+          </button>
         </div>
 
         <div class="field">
@@ -156,15 +164,18 @@
           map.addListener("click", (event) => {
             const clickedLocation = event.latLng;
             marker.setPosition(clickedLocation); // Move marker to clicked position
-            document.getElementById("newLocation").value =
-              `${clickedLocation.lat()}, ${clickedLocation.lng()}`; // Update hidden Location field
+            document.getElementById(
+              "newLocation"
+            ).value = `${clickedLocation.lat()}, ${clickedLocation.lng()}`; // Update hidden Location field
           });
         }
 
         // Fetch place details and populate form
         async function fetchPlaceDetails(placeId) {
           try {
-            const response = await fetch(`http://localhost:8000/getPlace/${placeId}`);
+            const response = await fetch(
+              `http://localhost:8000/getPlace/${placeId}`
+            );
             if (!response.ok) {
               throw new Error("Place not found");
             }
@@ -175,10 +186,13 @@
             document.getElementById("placeId").value = place._id;
             document.getElementById("placeName").value = place.Name;
             document.getElementById("newDescription").value = place.Description;
-            document.getElementById("newLocation").value =
-              `${place.Location.coordinates[1]}, ${place.Location.coordinates[0]}`;
-            document.getElementById("newOpeningHours").value = place.OpeningHours;
-            document.getElementById("newTicketPrices").value = place.TicketPrices;
+            document.getElementById(
+              "newLocation"
+            ).value = `${place.Location.coordinates[1]}, ${place.Location.coordinates[0]}`;
+            document.getElementById("newOpeningHours").value =
+              place.OpeningHours;
+            document.getElementById("newTicketPrices").value =
+              place.TicketPrices;
 
             // Move the marker on the map to the stored location
             const placeLocation = {
@@ -199,7 +213,9 @@
         // Function to fetch and populate available tags
         async function fetchTags(container) {
           try {
-            const response = await fetch("http://localhost:8000/readHistoricalTags");
+            const response = await fetch(
+              "http://localhost:8000/readHistoricalTags"
+            );
             if (!response.ok) {
               throw new Error("Network response was not ok");
             }
@@ -241,10 +257,13 @@
 
           const placeId = document.getElementById("placeId").value;
           const placeName = document.getElementById("placeName").value;
-          const newDescription = document.getElementById("newDescription").value;
+          const newDescription =
+            document.getElementById("newDescription").value;
           const newLocation = document.getElementById("newLocation").value;
-          const newOpeningHours = document.getElementById("newOpeningHours").value;
-          const newTicketPrices = document.getElementById("newTicketPrices").value;
+          const newOpeningHours =
+            document.getElementById("newOpeningHours").value;
+          const newTicketPrices =
+            document.getElementById("newTicketPrices").value;
           const newPictures = document.getElementById("newPictures").files;
 
           // Get the latitude and longitude from the New Location input
@@ -270,22 +289,27 @@
 
           // Get the selected tags
           const selectedTags = [];
-          document.querySelectorAll(".checkbox-container .tags-checkbox:checked").forEach((checkbox) => {
-            selectedTags.push(checkbox.value);
-          });
+          document
+            .querySelectorAll(".checkbox-container .tags-checkbox:checked")
+            .forEach((checkbox) => {
+              selectedTags.push(checkbox.value);
+            });
 
           // Append the selected tags to the form data
           formData.append("Tags", JSON.stringify(selectedTags));
 
           try {
-            const response = await fetch(`http://localhost:8000/updatePlace/${placeId}`, {
-              method: "PUT",
-              body: formData,
-            });
+            const response = await fetch(
+              `http://localhost:8000/updatePlace/${placeId}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
 
             if (response.ok) {
               alert("Place updated successfully!");
-              window.location.href = "view-places.html"; // Optionally redirect after successful update
+              window.location.href = "getPlaces.html"; // Optionally redirect after successful update
             } else {
               const errorResponse = await response.json();
               console.error("Update failed:", errorResponse);
@@ -301,7 +325,9 @@
         function addMoreTags() {
           const tagsContainer = document.createElement("div");
           tagsContainer.classList.add("checkbox-container");
-          document.getElementById("tagFieldsContainer").appendChild(tagsContainer);
+          document
+            .getElementById("tagFieldsContainer")
+            .appendChild(tagsContainer);
           fetchTags(tagsContainer);
 
           document.getElementById("addMoreTagsBtn").disabled = true;
@@ -330,7 +356,8 @@
         // Load the Google Maps API asynchronously
         document.addEventListener("DOMContentLoaded", () => {
           const script = document.createElement("script");
-          script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
+          script.src =
+            "https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap";
           script.async = true;
           document.head.appendChild(script);
         });
