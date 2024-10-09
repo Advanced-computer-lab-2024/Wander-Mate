@@ -169,6 +169,20 @@
             imgElement.alt = `${activity.Name} image`;
             imageContainer.appendChild(imgElement);
           });
+          const category = activity.Category
+            ? categories.find((cat) => cat._id === activity.Category)
+            : null;
+          const categoryName = category ? category.Name : "No category"; // Fallback if no category
+          let tagNames = "No tags"; // Default message if no tags
+          if (Array.isArray(activity.Tags) && activity.Tags.length > 0) {
+            const matchedTags = activity.Tags.map((tagId) => {
+              const tag = tags.find((t) => t._id === tagId); // Find tag by ID
+              return tag ? tag.Name : null; // Return the tag name if found
+            }).filter((name) => name !== null); // Remove nulls for missing tags
+
+            tagNames =
+              matchedTags.length > 0 ? matchedTags.join(", ") : "No tags"; // Join tag names with commas
+          }
 
           activityItem.innerHTML = `
       <div class="activity-details">
@@ -180,6 +194,8 @@
             activity.Name
           }" readonly />
         </div>
+        <p class="activity-category">Category: ${categoryName}</p>
+          <p class="activity-tags">Tags: ${tagNames}</p>
         <div class="field">
           <label for="newDescription">Description</label>
           <input type="text" id="newDescription-${
@@ -315,9 +331,9 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
-        await fetchActivities(); // Then fetch Places
         fetchCategories(); // Fetch categories
         fetchTags(); // Fetch tags
+        await fetchActivities(); // Then fetch Places
       });
 
       document

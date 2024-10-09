@@ -118,9 +118,9 @@
           tags.forEach((tag) => {
             const tagCheckbox = document.createElement("div");
             tagCheckbox.innerHTML = `
-                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
-                        <label for="tag-${tag._id}">${tag.Name}</label>
-                    `;
+                          <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                          <label for="tag-${tag._id}">${tag.Name}</label>
+                      `;
             tagsContainer.appendChild(tagCheckbox);
           });
         } catch (error) {
@@ -193,33 +193,49 @@
       function displayActivities(activities) {
         const activityList = document.getElementById("activityList");
         activityList.innerHTML = ""; // Clear existing Activities
+
         activities.forEach((activity) => {
           const activityItem = document.createElement("div");
           activityItem.className = "activity-item";
 
+          const category = activity.Category
+            ? categories.find((cat) => cat._id === activity.Category)
+            : null;
+          const categoryName = category ? category.Name : "No category"; // Fallback if no category
+          let tagNames = "No tags"; // Default message if no tags
+          if (Array.isArray(activity.Tags) && activity.Tags.length > 0) {
+            const matchedTags = activity.Tags.map((tagId) => {
+              const tag = tags.find((t) => t._id === tagId); // Find tag by ID
+              return tag ? tag.Name : null; // Return the tag name if found
+            }).filter((name) => name !== null); // Remove nulls for missing tags
+
+            tagNames =
+              matchedTags.length > 0 ? matchedTags.join(", ") : "No tags"; // Join tag names with commas
+          }
+
           activityItem.innerHTML = `
-                    <div class="activity-details">
-                        <h2 class="activity-name">${activity.Name}</h2>
-                        <p class="activity-price">Price: $${activity.Price}</p>
-                        <p class="activity-creator">Advertiser: ${
-                          advertiserMap[activity.Creator] || "Unknown"
-                        }</p> <!-- Use seller's name from map -->
-                        <p class="activity-ratings">Ratings: ${"★".repeat(
-                          activity.Ratings
-                        )}${"☆".repeat(5 - activity.Ratings)} (${
+        <div class="activity-details">
+          <h2 class="activity-name">${activity.Name}</h2>
+          <p class="activity-price">Price: $${activity.Price}</p>
+          <p class="activity-category">Category: ${categoryName}</p>
+          <p class="activity-tags">Tags: ${tagNames}</p>
+          <p class="activity-creator">Advertiser: ${
+            advertiserMap[activity.Creator] || "Unknown"
+          }</p> <!-- Use seller's name from map -->
+          <p class="activity-ratings">Ratings: ${"★".repeat(
             activity.Ratings
-          })</p>
-                        <p class="activity-date">Date: ${new Date(
-                          activity.Date
-                        ).toLocaleDateString()}</p>
-                    </div>
-                    <div class="edit-button">
-                        <a href="" class="buy-button" >Book</a>
-                    </div>
-                    <div class="map-container" id="map-${
-                      activity._id
-                    }"></div> <!-- Container for Google Map -->
-                `;
+          )}${"☆".repeat(5 - activity.Ratings)} (${activity.Ratings})</p>
+          <p class="activity-date">Date: ${new Date(
+            activity.Date
+          ).toLocaleDateString()}</p>
+        </div>
+        <div class="edit-button">
+          <a href="" class="buy-button">Book</a>
+        </div>
+        <div class="map-container" id="map-${
+          activity._id
+        }"></div> <!-- Container for Google Map -->
+      `;
 
           activityList.appendChild(activityItem);
           initMap(activity.Location, `map-${activity._id}`); // Initialize map for this activity
@@ -279,9 +295,9 @@
       // Fetch Activities and Creator when the page loads
       document.addEventListener("DOMContentLoaded", async () => {
         await fetchAdvertisers(); // Fetch Creator first
-        await fetchActivities(); // Then fetch Activities
         fetchCategories(); // Fetch categories
         fetchTags(); // Fetch tags
+        await fetchActivities(); // Then fetch Activities
       });
 
       // Event listener for the search button
