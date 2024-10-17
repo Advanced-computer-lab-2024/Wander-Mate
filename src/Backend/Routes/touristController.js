@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
+const axios = require('axios');
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -505,6 +506,110 @@ const getAge = async (req, res) => {
   }
 };
 
+// Get OAuth token from Amadeus
+const getAmadeusToken = async () => {
+  const apiKey = 'DoIUa8fmCDsZiacWJB3up5U5rg0iIrT3'; // Replace with your Amadeus API key
+  const apiSecret = 'QkndHmfmxPgUlPDU'; // Replace with your Amadeus API secret
+
+  try {
+    const tokenResponse = await axios.post('https://test.api.amadeus.com/v1/security/oauth2/token', 
+      'grant_type=client_credentials&client_id=' + apiKey + '&client_secret=' + apiSecret,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    return tokenResponse.data.access_token;
+  } catch (error) {
+    console.error('Error fetching access token:', error.response ? error.response.data : error.message);
+    throw new Error('Failed to fetch access token');
+  }
+};
+
+
+// Search for flights
+const SearchFlights = async (req, res) => {
+  const { origin, destination, departureDate, returnDate, travelers } = req.body;
+
+  // Validate input
+  if (!origin || !destination || !departureDate || !travelers) {
+    return res.status(400).json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Call the flight search API with the access token
+    const response = await axios.get('https://test.api.amadeus.com/v2/shopping/flight-offers', {
+      params: {
+        originLocationCode: origin,
+        destinationLocationCode: destination,
+        departureDate,
+        returnDate,
+        adults: travelers
+      },
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    // Log the response for debugging
+    console.log('Flight search response:', response.data);
+
+    // Return the available flights
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error fetching flights:", error.response ? error.response.data : error.message);
+    res.status(500).json({ message: "Failed to search flights", error: error.message });
+  }
+};
+
+// Book Flight Function
+const BookFlight = async (req, res) => {
+  const { selectedFlightOffer, travelersInfo, paymentInfo } = req.body;
+
+  // Validate input
+  if (!selectedFlightOffer || !travelersInfo || !paymentInfo) {
+    return res.status(400).json({ message: "Please provide the selected flight offer, travelers info, and payment info." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Book the flight by calling the flight-orders API
+    const response = await axios.post(
+      'https://test.api.amadeus.com/v1/booking/flight-orders',
+      {
+        "data": {
+          "type": "flight-order",
+          "flightOffers": [selectedFlightOffer], // Selected flight offer from the search result
+          "travelers": travelersInfo,            // Traveler info array
+          "payment": paymentInfo                 // Payment information object
+        }
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // Return the booking confirmation
+    const bookingConfirmation = response.data;
+    res.status(200).json(bookingConfirmation);
+    res.send('Flight Booked');
+  } catch (error) {
+    console.error("Error booking flight:", error.response ? error.response.data : error.message);
+    res.status(500).json({ message: "Failed to book flight", error: error.message });
+  }
+};
+
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -523,4 +628,6 @@ module.exports = {
   sortActivitiesByRatings,
   readPlaces,
   getAge,
+  SearchFlights,
+  BookFlight,
 };

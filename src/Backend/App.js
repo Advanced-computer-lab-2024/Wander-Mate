@@ -30,6 +30,8 @@ const {
   sortActivitiesByRatings,
   readPlaces,
   getAge,
+  SearchFlights,
+  BookFlight,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -237,3 +239,5 @@ app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
+app.post('/search-flights', SearchFlights);
+app.post('/book-flight',BookFlight);
