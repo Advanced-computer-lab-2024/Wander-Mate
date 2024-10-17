@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
+const CommentModel = require("../Models/comments.js");
 const axios = require('axios');
 
 // Registration function
@@ -608,6 +609,36 @@ const BookFlight = async (req, res) => {
     res.status(500).json({ message: "Failed to book flight", error: error.message });
   }
 };
+const commentOnGuide = async (req, res) => {
+  try {
+    const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
+    const touristID = req.params; // Assuming you have user info stored in req.user
+
+    // Validate input
+    if (!guideID || !text) {
+      return res.status(400).json({ message: "Guide ID and comment text are required." });
+    }
+
+    // Validate that the guide exists (optional but recommended)
+    const guide = await TourGuide.findById(guideID);
+    if (!guide) {
+      return res.status(404).json({ message: "Guide not found." });
+    }
+
+    // Create a new comment
+    const newComment = await CommentModel.create({
+      touristId: touristID, // Change to match your schema (use `touristId`)
+      guideId: guideID, // Change to match your schema (use `guideId`)
+      text, // Assuming `text` is a field in your comment schema
+    });
+
+    res.status(201).json({ message: "Comment posted successfully", comment: newComment });
+  } catch (error) {
+    console.error("Error posting comment:", error); // Log error for debugging
+    res.status(500).json({ message: "Error posting comment", error: error.message });
+  }
+};
+
 
 
 module.exports = {
@@ -630,4 +661,5 @@ module.exports = {
   getAge,
   SearchFlights,
   BookFlight,
+  commentOnGuide,
 };
