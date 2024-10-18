@@ -37,6 +37,7 @@ const {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  RateGuide,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -93,6 +94,7 @@ const {
   readItinerary,
   getTourguides,
   uploadTourGuideDocuments,
+  updateGuideRatings,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -254,3 +256,5 @@ app.post("/comment-on-guide/:id", commentOnGuide);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
+app.put("/updateGuideRatings/:guideID", updateGuideRatings);
+app.post("/RateGuide", RateGuide);

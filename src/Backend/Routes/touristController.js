@@ -7,7 +7,8 @@ const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
 const CommentModel = require("../Models/comments.js");
 const TourGuide = require("../Models/tourGuide.js");
-const axios = require('axios');
+const axios = require("axios");
+const RatingModel = require("../Models/rating.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -512,34 +513,43 @@ const getAge = async (req, res) => {
 
 // Get OAuth token from Amadeus
 const getAmadeusToken = async () => {
-  const apiKey = 'DoIUa8fmCDsZiacWJB3up5U5rg0iIrT3'; // Replace with your Amadeus API key
-  const apiSecret = 'QkndHmfmxPgUlPDU'; // Replace with your Amadeus API secret
+  const apiKey = "DoIUa8fmCDsZiacWJB3up5U5rg0iIrT3"; // Replace with your Amadeus API key
+  const apiSecret = "QkndHmfmxPgUlPDU"; // Replace with your Amadeus API secret
 
   try {
-    const tokenResponse = await axios.post('https://test.api.amadeus.com/v1/security/oauth2/token', 
-      'grant_type=client_credentials&client_id=' + apiKey + '&client_secret=' + apiSecret,
+    const tokenResponse = await axios.post(
+      "https://test.api.amadeus.com/v1/security/oauth2/token",
+      "grant_type=client_credentials&client_id=" +
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
 
     return tokenResponse.data.access_token;
   } catch (error) {
-    console.error('Error fetching access token:', error.response ? error.response.data : error.message);
-    throw new Error('Failed to fetch access token');
+    console.error(
+      "Error fetching access token:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Failed to fetch access token");
   }
 };
 
-
 // Search for flights
 const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate, travelers } = req.body;
+  const { origin, destination, departureDate, returnDate, travelers } =
+    req.body;
 
   // Validate input
   if (!origin || !destination || !departureDate || !travelers) {
-    return res.status(400).json({ message: "Please provide all required fields." });
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
   }
 
   try {
@@ -547,27 +557,35 @@ const SearchFlights = async (req, res) => {
     const accessToken = await getAmadeusToken();
 
     // Call the flight search API with the access token
-    const response = await axios.get('https://test.api.amadeus.com/v2/shopping/flight-offers', {
-      params: {
-        originLocationCode: origin,
-        destinationLocationCode: destination,
-        departureDate,
-        returnDate,
-        adults: travelers
-      },
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      {
+        params: {
+          originLocationCode: origin,
+          destinationLocationCode: destination,
+          departureDate,
+          returnDate,
+          adults: travelers,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
     // Log the response for debugging
-    console.log('Flight search response:', response.data);
+    console.log("Flight search response:", response.data);
 
     // Return the available flights
     res.status(200).json(response.data);
   } catch (error) {
-    console.error("Error fetching flights:", error.response ? error.response.data : error.message);
-    res.status(500).json({ message: "Failed to search flights", error: error.message });
+    console.error(
+      "Error fetching flights:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to search flights", error: error.message });
   }
 };
 
@@ -577,7 +595,10 @@ const BookFlight = async (req, res) => {
 
   // Validate input
   if (!selectedFlightOffer || !travelersInfo || !paymentInfo) {
-    return res.status(400).json({ message: "Please provide the selected flight offer, travelers info, and payment info." });
+    return res.status(400).json({
+      message:
+        "Please provide the selected flight offer, travelers info, and payment info.",
+    });
   }
 
   try {
@@ -586,19 +607,19 @@ const BookFlight = async (req, res) => {
 
     // Book the flight by calling the flight-orders API
     const response = await axios.post(
-      'https://test.api.amadeus.com/v1/booking/flight-orders',
+      "https://test.api.amadeus.com/v1/booking/flight-orders",
       {
-        "data": {
-          "type": "flight-order",
-          "flightOffers": [selectedFlightOffer], // Selected flight offer from the search result
-          "travelers": travelersInfo,            // Traveler info array
-          "payment": paymentInfo                 // Payment information object
-        }
+        data: {
+          type: "flight-order",
+          flightOffers: [selectedFlightOffer], // Selected flight offer from the search result
+          travelers: travelersInfo, // Traveler info array
+          payment: paymentInfo, // Payment information object
+        },
       },
       {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       }
     );
@@ -606,10 +627,15 @@ const BookFlight = async (req, res) => {
     // Return the booking confirmation
     const bookingConfirmation = response.data;
     res.status(200).json(bookingConfirmation);
-    res.send('Flight Booked');
+    res.send("Flight Booked");
   } catch (error) {
-    console.error("Error booking flight:", error.response ? error.response.data : error.message);
-    res.status(500).json({ message: "Failed to book flight", error: error.message });
+    console.error(
+      "Error booking flight:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to book flight", error: error.message });
   }
 };
 const commentOnGuide = async (req, res) => {
@@ -619,7 +645,9 @@ const commentOnGuide = async (req, res) => {
 
     // Validate input
     if (!guideID || !text) {
-      return res.status(400).json({ message: "Guide ID and comment text are required." });
+      return res
+        .status(400)
+        .json({ message: "Guide ID and comment text are required." });
     }
 
     // Validate that the guide exists (optional but recommended)
@@ -630,21 +658,43 @@ const commentOnGuide = async (req, res) => {
 
     // Create a new comment
     const newComment = await CommentModel.create({
-      touristID, // Change to match your schema (use `touristId`)
-      guideID, // Change to match your schema (use `guideId`)
+      touristID, // Change to match your schema
+      guideID, // Change to match your schema
       text, // Assuming `text` is a field in your comment schema
     });
 
-    res.status(201).json({ message: "Comment posted successfully", comment: newComment });
+    res
+      .status(201)
+      .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
-    res.status(500).json({ message: "Error posting comment", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error posting comment", error: error.message });
+  }
+};
+
+const RateGuide = async (req, res) => {
+  const { touristId, guideId, rating } = req.body;
+  try {
+    const newRating = await RatingModel.create({
+      itemId: guideId,
+      userId: touristId,
+      rating,
+    });
+    await axios.put(`http://localhost:8000/updateGuideRatings/${guideId}`);
+    res
+      .status(200)
+      .json({ message: "Rating posted successfully", rating: newRating });
+  } catch (error) {
+    console.error("Error posting rating:", error.message); // Log error for debugging
+    res
+      .status(400)
+      .json({ message: "Error posting rating", error: error.message });
   }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 module.exports = {
   touristRegister,
@@ -667,4 +717,5 @@ module.exports = {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  RateGuide,
 };

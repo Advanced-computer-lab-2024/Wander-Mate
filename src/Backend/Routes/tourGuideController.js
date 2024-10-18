@@ -5,6 +5,8 @@ const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
 const Attraction = require("../Models/attractions.js");
 const PdfDetails = require("../Models/pdfDetails.js");
+const TourGuide = require("../Models/tourGuide.js");
+const RatingsModel = require("../Models/rating.js");
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
   try {
@@ -335,6 +337,45 @@ const uploadTourGuideDocuments = async (req, res) => {
   }
 };
 
+const updateGuideRatings = async (req, res) => {
+  const { guideID } = req.params;
+  try {
+    const averageRating = await RatingsModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(guideID) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      // Await the findByIdAndUpdate call to get the updated document
+      const updatedTourGuide = await TourGuide.findByIdAndUpdate(
+        { _id: guideID },
+        {
+          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          totalRatings: averageRating[0].totalRatings,
+        },
+        { new: true } // Return the updated document
+      );
+
+      return res.status(200).json({
+        tourGuide: updatedTourGuide, // Return the updated tour guide data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this item." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -347,4 +388,5 @@ module.exports = {
   readItinerary,
   getTourguides,
   uploadTourGuideDocuments,
+  updateGuideRatings,
 };
