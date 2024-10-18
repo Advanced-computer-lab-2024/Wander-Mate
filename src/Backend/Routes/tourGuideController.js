@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
 const Attraction = require("../Models/attractions.js");
-
+const PdfDetails = require("../Models/pdfDetails.js");
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
   try {
@@ -303,6 +303,38 @@ const getTourguides = async (req, res) => {
   }
 };
 
+const uploadTourGuideDocuments = async (req, res) => {
+  if (!req.files) {
+    return res.status(400).send("Files are required.");
+  }
+
+  try {
+    const ownerId = req.body.ownerId;
+    const ownerModel = "TourGuide";
+    const idPdf = new PdfDetails({
+      Title: "ID",
+      pdf: req.files.ID[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    const certPdf = new PdfDetails({
+      Title: "Certificates",
+      pdf: req.files.docs[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    await idPdf.save();
+    await certPdf.save();
+
+    return res.status(200).json({
+      message: "Both ID and Certificates uploaded successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error to upload documents" });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -314,4 +346,5 @@ module.exports = {
   viewAll1,
   readItinerary,
   getTourguides,
+  uploadTourGuideDocuments,
 };
