@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
 const CommentModel = require("../Models/comments.js");
 const TourGuide = require("../Models/tourGuide.js");
+const Complaints = require('../Models/complaints.js'); // Correctly import the model
 const axios = require('axios');
 
 // Registration function
@@ -21,6 +22,7 @@ const touristRegister = async (req, res) => {
       Nationality,
       DOB,
       Role,
+      Points
     } = req.body;
 
     const Wallet = 0.0;
@@ -59,7 +61,29 @@ const touristRegister = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    // 4. Create new user
+
+    // 4. Ensure Points is an integer and validate the input
+    let parsedPoints = parseInt(Points); // Convert Points to an integer
+    if (isNaN(parsedPoints) || parsedPoints < 0) {
+      // Check if the input is not a number or if it's negative
+      parsedPoints = 0; // Default to 0 points if invalid input
+    }
+
+    // Badge assignment logic based on points
+    const assignBadge = (points) => {
+      if (points <= 100000) {
+        return "level 1"; // Up to 100K points
+      } else if (points <= 500000) {
+        return "level 2"; // Up to 500K points
+      } else {
+        return "level 3"; // More than 500K points
+      }
+    };
+
+    // Call the assignBadge function to get the badge based on Points
+    let badge = assignBadge(parsedPoints);
+
+    // 5. Create new user
     const newUser = await userModel.create({
       Email,
       FullName,
@@ -70,10 +94,12 @@ const touristRegister = async (req, res) => {
       DOB,
       Role,
       Wallet,
+      Points:parsedPoints,
+      Badge:badge,
     });
     const userID = newUser._id;
     await Usernames.create({ Username: Username, userID });
-    // 6. Send success response
+    // 7. Send success response
     res
       .status(200)
       .json({ message: "User registered successfully", userID: newUser._id });
@@ -109,6 +135,7 @@ const handleTourist = async (req, res) => {
         MobileNumber,
         Nationality,
         Role,
+        Points
       } = req.body;
 
       // Check if user is trying to update Username or DOB
@@ -138,6 +165,22 @@ const handleTourist = async (req, res) => {
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
       if (FullName) tourist.FullName = FullName;
+      if (Points){
+        tourist.Points = Points;
+        console.log(tourist.Points);
+        // Update Badge according to the Points
+        const assignBadge = (points) => {
+          if (points <= 100000) {
+            return "level 1"; // Up to 100K points
+          } else if (points <= 500000) {
+            return "level 2"; // Up to 500K points
+          } else {
+            return "level 3"; // More than 500K points
+          }
+    };
+        tourist.Badge = assignBadge(tourist.Points);
+        console.log(tourist.Badge);
+      }
 
       // Save the updated tourist
       const updatedTourist = await tourist.save();
@@ -644,6 +687,33 @@ const commentOnGuide = async (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+const makeComplaint = async (req, res) => {
+    const { Title, Body } = req.body; // Extract title and body from the request
+
+    // Validation: ensure the required fields are present
+    if (!Title || !Body) {
+        return res.status(400).json({ message: "Title and Body are required" });
+    }
+
+    try {
+        // Create a new complaint object
+        const newComplaint = new Complaints({
+            Title,
+            Body,
+            Date: Date.now(), // This will default to the current date, can be omitted since schema has a default
+        });
+
+        // Save the complaint to the database
+        const savedComplaint = await newComplaint.save();
+
+        // Send a response with the saved complaint
+        return res.status(201).json({ message: "Complaint created successfully", complaint: savedComplaint });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 
 
 module.exports = {
@@ -667,4 +737,5 @@ module.exports = {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  makeComplaint
 };

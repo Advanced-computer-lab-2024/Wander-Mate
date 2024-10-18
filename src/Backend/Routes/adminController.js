@@ -10,6 +10,7 @@ const TourismGoverner = require("../Models/tourismGoverner.js");
 const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
+const Complaints = require("../Models/complaints.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -691,6 +692,49 @@ const getTags = async (req, res) => {
   }
 };
 
+/////////////////////Sprint 2 Nadeem/////////////////////////////////
+const replytoComplaints = async (req, res) => {
+  const { complaintId } = req.params; 
+  const { Body } = req.body; 
+
+  if (!Body) {
+      return res.status(400).json({ message: "Body is required for the reply" });
+  }
+
+  try {
+      // Find the complaint by its ID
+      const complaint = await Complaints.findById(complaintId);
+      if (!complaint) {
+          return res.status(404).json({ message: "Complaint not found" });
+      }
+
+      // Ensure replies array exists
+      if (!complaint.replies) {
+          complaint.replies = [];
+      }
+
+      // Create a new reply object
+      const reply = {
+          Body,
+          Date: Date.now(),
+      };
+
+      // Push the reply to the replies array
+      complaint.replies.push(reply);
+
+      // Save the updated complaint with the reply
+      await complaint.save();
+
+      return res.status(200).json({ message: "Reply added successfully", complaint });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+///////////////////////////////////////////////////////////////////////
 
 
 
@@ -720,5 +764,6 @@ module.exports = {
   deleteCategoryById,
   updateCategoryById,
   updatePreferenceTagById,
-  deletPreferenceTagsById
+  deletPreferenceTagsById,
+  replytoComplaints
 };
