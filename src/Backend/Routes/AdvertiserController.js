@@ -306,6 +306,38 @@ const getAdvertisers = async (req, res) => {
   }
 };
 
+const uploadAdvertiserDocuments = async (req, res) => {
+  if (!req.files) {
+    return res.status(400).send("Files are required.");
+  }
+
+  try {
+    const ownerId = req.body.ownerId;
+    const ownerModel = "Advertiser";
+    const idPdf = new PdfDetails({
+      Title: "ID",
+      pdf: req.files.ID[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    const certPdf = new PdfDetails({
+      Title: "Taxation Registery",
+      pdf: req.files.docs[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    await idPdf.save();
+    await certPdf.save();
+
+    return res.status(200).json({
+      message: "Docs are uploaded successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error to upload documents" });
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -319,4 +351,5 @@ module.exports = {
   updateAdvertiserInfo,
   getAdvertisers,
   getAdvertisers,
+  uploadAdvertiserDocuments,
 };

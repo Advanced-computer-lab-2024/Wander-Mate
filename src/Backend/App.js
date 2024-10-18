@@ -10,6 +10,10 @@ const uploadMult = multer({
 }).array("pictures", 10);
 mongoose.set("strictQuery", false);
 require("dotenv").config({ path: "../.env" });
+const uploadPdfs = upload.fields([
+  { name: "ID", maxCount: 1 },
+  { name: "docs", maxCount: 1 },
+]);
 
 //Requiring functions from Controllers
 const {
@@ -33,6 +37,7 @@ const {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  RateGuide,
   makeComplaint,
 } = require("./Routes/touristController");
 const {
@@ -46,6 +51,7 @@ const {
   UpdateProductseller,
   getProduct,
   getSellers,
+  uploadSellerDocuments,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -89,6 +95,8 @@ const {
   viewAll1,
   readItinerary,
   getTourguides,
+  uploadTourGuideDocuments,
+  updateGuideRatings,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -103,6 +111,7 @@ const {
   readAdvertiserInfo,
   updateAdvertiserInfo,
   getAdvertisers,
+  uploadAdvertiserDocuments,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -243,7 +252,13 @@ app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
-app.post('/search-flights', SearchFlights);
-app.post('/book-flight',BookFlight);
-app.post('/comment-on-guide/:id',commentOnGuide);
+app.post("/search-flights", SearchFlights);
+app.post("/book-flight", BookFlight);
+app.post("/comment-on-guide/:id", commentOnGuide);
 app.post('/complaints', makeComplaint);
+//upload docs
+app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
+app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
+app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
+app.put("/updateGuideRatings/:guideID", updateGuideRatings);
+app.post("/RateGuide", RateGuide);
