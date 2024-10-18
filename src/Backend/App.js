@@ -39,6 +39,7 @@ const {
   commentOnGuide,
   RateGuide,
   makeComplaint,
+  addCommentONEvent,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -81,7 +82,7 @@ const {
   updateCategoryById,
   updatePreferenceTagById,
   deletPreferenceTagsById,
-  replytoComplaints 
+  replytoComplaints,
 } = require("./Routes/adminController.js");
 
 const {
@@ -196,7 +197,7 @@ app.patch("/updatePreferenceTagById/:id", updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
-app.post("/complaints/:complaintId/reply",replytoComplaints);
+app.post("/complaints/:complaintId/reply", replytoComplaints);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -255,10 +256,12 @@ app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/comment-on-guide/:id", commentOnGuide);
-app.post('/complaints', makeComplaint);
+app.post("/complaints", makeComplaint);
 //upload docs
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
+//////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
+app.post("/addCommentONEvent", addCommentONEvent);

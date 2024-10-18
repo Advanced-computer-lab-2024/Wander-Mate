@@ -9,7 +9,7 @@ const CommentModel = require("../Models/comments.js");
 const TourGuide = require("../Models/tourGuide.js");
 const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
-const Complaints = require('../Models/complaints.js'); // Correctly import the model
+const Complaints = require("../Models/complaints.js"); // Correctly import the model
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -23,7 +23,7 @@ const touristRegister = async (req, res) => {
       Nationality,
       DOB,
       Role,
-      Points
+      Points,
     } = req.body;
 
     const Wallet = 0.0;
@@ -62,7 +62,6 @@ const touristRegister = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-
     // 4. Ensure Points is an integer and validate the input
     let parsedPoints = parseInt(Points); // Convert Points to an integer
     if (isNaN(parsedPoints) || parsedPoints < 0) {
@@ -95,8 +94,8 @@ const touristRegister = async (req, res) => {
       DOB,
       Role,
       Wallet,
-      Points:parsedPoints,
-      Badge:badge,
+      Points: parsedPoints,
+      Badge: badge,
     });
     const userID = newUser._id;
     await Usernames.create({ Username: Username, userID });
@@ -136,7 +135,7 @@ const handleTourist = async (req, res) => {
         MobileNumber,
         Nationality,
         Role,
-        Points
+        Points,
       } = req.body;
 
       // Check if user is trying to update Username or DOB
@@ -166,7 +165,7 @@ const handleTourist = async (req, res) => {
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
       if (FullName) tourist.FullName = FullName;
-      if (Points){
+      if (Points) {
         tourist.Points = Points;
         console.log(tourist.Points);
         // Update Badge according to the Points
@@ -178,7 +177,7 @@ const handleTourist = async (req, res) => {
           } else {
             return "level 3"; // More than 500K points
           }
-    };
+        };
         tourist.Badge = assignBadge(tourist.Points);
         console.log(tourist.Badge);
       }
@@ -702,7 +701,7 @@ const commentOnGuide = async (req, res) => {
     // Create a new comment
     const newComment = await CommentModel.create({
       touristID, // Change to match your schema
-      guideID, // Change to match your schema
+      aboutId: guideID, // Change to match your schema
       text, // Assuming `text` is a field in your comment schema
     });
 
@@ -742,25 +741,44 @@ const makeComplaint = async (req, res) => {
 
   // Validation: ensure the required fields are present
   if (!Title || !Body) {
-      return res.status(400).json({ message: "Title and Body are required" });
+    return res.status(400).json({ message: "Title and Body are required" });
   }
 
   try {
-      // Create a new complaint object
-      const newComplaint = new Complaints({
-          Title,
-          Body,
-          Date: Date.now(), // This will default to the current date, can be omitted since schema has a default
-      });
+    // Create a new complaint object
+    const newComplaint = new Complaints({
+      Title,
+      Body,
+      Date: Date.now(), // This will default to the current date, can be omitted since schema has a default
+    });
 
-      // Save the complaint to the database
-      const savedComplaint = await newComplaint.save();
+    // Save the complaint to the database
+    const savedComplaint = await newComplaint.save();
 
-      // Send a response with the saved complaint
-      return res.status(201).json({ message: "Complaint created successfully", complaint: savedComplaint });
+    // Send a response with the saved complaint
+    return res.status(201).json({
+      message: "Complaint created successfully",
+      complaint: savedComplaint,
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Internal server error" });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const addCommentONEvent = async (req, res) => {
+  const { comment, eventId, touristID } = req.body;
+  try {
+    const newComment = await CommentModel.create({
+      touristID,
+      comment,
+      aboutId: eventId,
+    });
+    res
+      .status(200)
+      .json({ message: "Comment posted successfully", comment: newComment });
+  } catch {
+    res.status(400).json({ message: "Error posting comment" });
   }
 };
 
@@ -788,5 +806,6 @@ module.exports = {
   BookFlight,
   commentOnGuide,
   RateGuide,
-  makeComplaint
+  makeComplaint,
+  addCommentONEvent,
 };
