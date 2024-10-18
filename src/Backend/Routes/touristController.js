@@ -6,6 +6,7 @@ const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
 const CommentModel = require("../Models/comments.js");
+const TourGuide = require("../Models/tourGuide.js");
 const axios = require('axios');
 
 // Registration function
@@ -507,6 +508,8 @@ const getAge = async (req, res) => {
   }
 };
 
+///////////////////Sprint 2 Nadeem///////////////////////////////////////////////////
+
 // Get OAuth token from Amadeus
 const getAmadeusToken = async () => {
   const apiKey = 'DoIUa8fmCDsZiacWJB3up5U5rg0iIrT3'; // Replace with your Amadeus API key
@@ -612,7 +615,7 @@ const BookFlight = async (req, res) => {
 const commentOnGuide = async (req, res) => {
   try {
     const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
-    const touristID = req.params; // Assuming you have user info stored in req.user
+    const touristID = req.params.id; // Assuming you have user info stored in req.user
 
     // Validate input
     if (!guideID || !text) {
@@ -627,8 +630,8 @@ const commentOnGuide = async (req, res) => {
 
     // Create a new comment
     const newComment = await CommentModel.create({
-      touristId: touristID, // Change to match your schema (use `touristId`)
-      guideId: guideID, // Change to match your schema (use `guideId`)
+      touristID, // Change to match your schema (use `touristId`)
+      guideID, // Change to match your schema (use `guideId`)
       text, // Assuming `text` is a field in your comment schema
     });
 
@@ -638,6 +641,8 @@ const commentOnGuide = async (req, res) => {
     res.status(500).json({ message: "Error posting comment", error: error.message });
   }
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
