@@ -15,6 +15,7 @@ const tourGuideSchema = new Schema(
       type: String, //to check correct format in the front end
       required: true,
     },
+    status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' }
   },
   { timestamps: true, strict: false }
 );

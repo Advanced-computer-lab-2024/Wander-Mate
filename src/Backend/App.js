@@ -83,6 +83,7 @@ const {
   updatePreferenceTagById,
   deletPreferenceTagsById,
   replytoComplaints,
+  acceptRejectUser,
 } = require("./Routes/adminController.js");
 
 const {
@@ -265,3 +266,4 @@ app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
+app.post("/acceptRejectUser",acceptRejectUser);

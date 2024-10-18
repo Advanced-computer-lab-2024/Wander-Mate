@@ -736,7 +736,48 @@ const replytoComplaints = async (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////
 
+//////////////////Sprint 2 Donny
+const acceptRejectUser  = async (req, res) => {
+  try {
+    const { userId, userType, decision } = req.body; // userType can be 'tourGuide', 'advertiser', or 'seller'
+    let user;
+    // Find the user based on userType
+    switch (userType) {
+      case 'tourGuide':
+        user = await tourGuide.findById(userId);
+        break;
+      case 'advertiser':
+        user = await Advertiser.findById(userId);
+        break;
+      case 'seller':
+        user = await Seller.findById(userId);
+        break;
+      default:
+        return res.status(400).json({ message: 'Invalid user type' });
+    }
 
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: `${userType} not found` });
+    }
+
+    // Update the user status based on decision
+    if (decision === 'accept') {
+      user.status = 'accepted';
+    } else if (decision === 'reject') {
+      user.status = 'rejected';
+    } else {
+      return res.status(400).json({ message: 'Invalid decision' });
+    }
+
+    // Save the updated user
+    await user.save();
+    res.status(200).json({ message: `${userType} status updated successfully`, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating user status' });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -765,5 +806,6 @@ module.exports = {
   updateCategoryById,
   updatePreferenceTagById,
   deletPreferenceTagsById,
-  replytoComplaints
+  replytoComplaints,
+  acceptRejectUser,
 };
