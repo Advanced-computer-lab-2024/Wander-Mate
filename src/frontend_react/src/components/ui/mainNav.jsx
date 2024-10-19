@@ -1,9 +1,41 @@
 import React from "react";
 import "../../assets/css/mainNav.css";
+import { useState, useEffect } from "react";
 
-const MainNav = () => {
+const MainNav = ({ targetId1, targetId2 }) => {
+  const handleClick = (event) => {
+    event.preventDefault();
+    const target = document.getElementById(targetId1);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const [isVisible, setIsVisible] = useState(true);
+  const [color, setColor] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 100);
+      lastScrollY = currentScrollY;
+
+      // Change color based on scroll position
+      setColor(currentScrollY >= 400);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   return (
-    <nav className="main-nav">
+    <div
+      className={`main-nav ${color ? "main-nav-bg" : ""} ${
+        isVisible ? "visible" : "hidden"
+      }`}
+    >
       <div className="wandermate-logo">
         <svg
           width="30"
@@ -31,7 +63,11 @@ const MainNav = () => {
       </div>
 
       <div className="nav">
-        <a href="#about" className="nav-link about">
+        <a
+          href={`#${targetId1}`}
+          className="nav-link about"
+          onClick={handleClick}
+        >
           About
         </a>
         <a href="#process" className="nav-link process">
@@ -41,7 +77,6 @@ const MainNav = () => {
           Explore
         </a>
       </div>
-
       <div className="user-profile">
         <svg
           width="30"
@@ -64,7 +99,7 @@ const MainNav = () => {
           />
         </svg>
       </div>
-    </nav>
+    </div>
   );
 };
 

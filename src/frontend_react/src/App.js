@@ -6,10 +6,10 @@ import OurAcheivementsBlock from "./components/blocks/OurAcheivementsBlock";
 function App() {
   return (
     <div className="container">
-      <MainNav />
+      <MainNav targetId1="ourServiceSection" />
       <StartPage />
-      <OurService/>
-      <OurAcheivementsBlock/>
+      <OurService id="ourServiceSection" />
+      <OurAcheivementsBlock />
     </div>
   );
 }

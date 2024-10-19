@@ -5,11 +5,29 @@
   justify-content: space-between;
   align-items: center;
   padding: 51px;
-  gap: 35vw;
+  padding-left: 0px;
+  gap: 20vw;
   position: fixed;
-  width: 70vw;
+  width: 100vw;
   top: 0;
   z-index: 1000;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.main-nav-bg {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.main-nav.hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.main-nav.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Wandermate Logo */
@@ -151,12 +169,17 @@
     line-height: 120%; /* Adjust line height for better readability */
   }
 
-  .wandermate-logo, .user-profile {
+  .wandermate-logo,
+  .user-profile {
     width: 24px; /* Smaller logo and user profile icon */
     height: 24px;
   }
 
-  .vector-1, .vector-2, .vector-3, .vector-4, .vector-5 {
+  .vector-1,
+  .vector-2,
+  .vector-3,
+  .vector-4,
+  .vector-5 {
     /* Adjust positioning for mobile if needed */
     position: relative;
     width: 100%;

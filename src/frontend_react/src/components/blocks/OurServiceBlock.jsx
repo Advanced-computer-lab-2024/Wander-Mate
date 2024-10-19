@@ -1,9 +1,9 @@
 import React from "react";
 import ServiceCard from "../ui/serviceCard";
 
-const OurService = () => {
+const OurService = ({ id }) => {
   return (
-    <div style={{ paddingBottom: "60px" }}>
+    <div id={id} style={{ paddingBottom: "60px" }}>
       <h2
         style={{
           textAlign: "center", // Center the text

@@ -38,7 +38,25 @@
 }
 
 .container {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    overflow-x: hidden;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  overflow-x: hidden;
+}
+
+/* app.css or global.css */
+
+/* Global styles for scrollbar 6 */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: #95a5a6; /* Track color */
+  border: 1px solid #cacaca; /* Track border */
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #282829; /* Thumb color */
 }
