@@ -376,7 +376,7 @@ const updateGuideRatings = async (req, res) => {
   }
 };
 
-const changePassword = async (req, res) => {
+const changePasswordTourGuide = async (req, res) => {
   try {
     const { id, oldPassword, newPassword } = req.body;
 
@@ -421,5 +421,5 @@ module.exports = {
   getTourguides,
   uploadTourGuideDocuments,
   updateGuideRatings,
-  changePassword,
+  changePasswordTourGuide,
 };

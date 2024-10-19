@@ -89,6 +89,7 @@ const {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
+  changePasswordAdmin,
 } = require("./Routes/adminController.js");
 
 const {
@@ -104,7 +105,7 @@ const {
   getTourguides,
   uploadTourGuideDocuments,
   updateGuideRatings,
-  changePassword,
+  changePasswordTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -277,9 +278,8 @@ app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser",acceptRejectUser);
-app.post("/changePassword", changePassword);
-
-///////////////
+app.post("/changePasswordTourGuide", changePasswordTourGuide);
+app.post("/changePasswordAdmin", changePasswordAdmin);
 app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
 app.post("/rateItinerary",rateItinerary);
 app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
