@@ -864,6 +864,36 @@ const viewDocuments = async (req, res) => {
   }
 };
 
+const viewAllComplaints = async (req, res) => {
+  try {
+    // Step 1: Fetch all complaints from the database
+    const complaints = await Complaints.find(); // Fetches all complaints
+
+    // Step 2: Check if there are no complaints
+    if (!complaints || complaints.length === 0) {
+      return res.status(404).json({ message: "No complaints found." });
+    }
+
+    // Step 3: Map through the complaints to prepare the response
+    const complaintList = complaints.map(complaint => ({
+      id: complaint._id,        // Unique complaint ID
+      Title: complaint.Title,   // Complaint title
+      Body: complaint.Body,     // Complaint body text
+      Date: complaint.Date,     // Date when the complaint was made
+      Status: complaint.Status, // Status (pending/resolved)
+    }));
+
+    // Step 4: Return the list of complaints with their statuses
+    return res.status(200).json({
+      message: "Complaints retrieved successfully.",
+      complaints: complaintList
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 
 module.exports = {
@@ -896,7 +926,7 @@ module.exports = {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
-  changePasswordAdmin,
   AdminarchiveProduct,
   viewDocuments,
+  viewAllComplaints,
 };
