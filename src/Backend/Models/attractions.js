@@ -4,7 +4,13 @@ const { ObjectId } = require("mongodb");
 
 const attractionSchema = new Schema(
   {
-    Creator: { type: String, required: true },
+    Creator: { type: String, required: true, refPath: "CreatorModel" },
+    CreatorModel: {
+      type: String,
+      required: true,
+      default: "Advertiser",
+      enum: ["Advertiser", "TourismGoverner"],
+    },
     Name: { type: String, required: true },
     Location: {
       type: {

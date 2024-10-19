@@ -4,6 +4,10 @@ const { ObjectId } = require("mongodb");
 
 const itinerarySchema = new Schema(
   {
+    Creator: {
+      type: ObjectId,
+      ref: "TourGuide",
+    },
     Activities: {
       type: [ObjectId],
       ref: "Attraction",

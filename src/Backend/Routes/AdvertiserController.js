@@ -44,10 +44,12 @@ const createActivity = async (req, res) => {
   if (!Category) {
     return res.status(400).json({ error: "Category is required" });
   }
+  const model = "Advertiser";
 
   try {
     const activity = await attractionModel.create({
       Creator,
+      CreatorModel: model,
       Name,
       Date: dateObject,
       Time,

@@ -10,7 +10,7 @@ const TourGuide = require("../Models/tourGuide.js");
 const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
-const Itinerary = require("../Models/itinerary.js");
+const bookingSchema = require("../Models/bookings.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -784,16 +784,17 @@ const addCommentONEvent = async (req, res) => {
   }
 };
 
-
 const rateItinerary = async (req, res) => {
-  const { touristId, itineraryId , rating } = req.body;
+  const { touristId, itineraryId, rating } = req.body;
   try {
     const newRating = await RatingModel.create({
       itemId: itineraryId,
       userId: touristId,
       rating,
     });
-    await axios.put(`http://localhost:8000/updateItineraryRatings/${itineraryId}`);
+    await axios.put(
+      `http://localhost:8000/updateItineraryRatings/${itineraryId}`
+    );
     res
       .status(200)
       .json({ message: "Rating posted successfully", rating: newRating });
@@ -821,7 +822,7 @@ const updateItineraryRatings = async (req, res) => {
 
     if (averageRating.length > 0) {
       // Await the findByIdAndUpdate call to get the updated document
-      const updatedItinerary = await Itinerary.findByIdAndUpdate(
+      const updatedItinerary = await itineraryModel.findByIdAndUpdate(
         { _id: itineraryId },
         {
           averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
@@ -841,8 +842,9 @@ const updateItineraryRatings = async (req, res) => {
   } catch (error) {
     console.error("Error calculating average rating:", error);
     return res.status(500).json({ message: "Internal server error." });
-  }};
-  
+  }
+};
+
 const commentOnItinerary = async (req, res) => {
   try {
     const { guideID, itineraryID, text } = req.body; // Expecting guide ID, itinerary ID, and comment text in the request body
@@ -850,7 +852,9 @@ const commentOnItinerary = async (req, res) => {
 
     // Validate input
     if (!guideID || !itineraryID || !text) {
-      return res.status(400).json({ message: "Guide ID, Itinerary ID, and comment text are required." });
+      return res.status(400).json({
+        message: "Guide ID, Itinerary ID, and comment text are required.",
+      });
     }
 
     // Validate that the guide exists
@@ -860,9 +864,14 @@ const commentOnItinerary = async (req, res) => {
     }
 
     // Validate that the itinerary exists and was created by the specified guide
-    const itinerary = await itineraryModel.findOne({ _id: itineraryID, Creator: guideID }); // Assuming 'Creator' field references the guide
+    const itinerary = await itineraryModel.findOne({
+      _id: itineraryID,
+      Creator: guideID,
+    }); // Assuming 'Creator' field references the guide
     if (!itinerary) {
-      return res.status(404).json({ message: "Itinerary not found for the given guide." });
+      return res
+        .status(404)
+        .json({ message: "Itinerary not found for the given guide." });
     }
 
     // Validate that the tourist exists
@@ -873,32 +882,98 @@ const commentOnItinerary = async (req, res) => {
 
     // Validate that the tourist follows the guide
     if (!tourist.followedGuides.includes(guideID)) {
-      return res.status(403).json({ message: "You must follow the tour guide to comment on their itinerary." });
+      return res.status(403).json({
+        message:
+          "You must follow the tour guide to comment on their itinerary.",
+      });
     }
 
     // You might need a way to check if the tourist followed the itinerary
     if (!tourist.followedItineraries.includes(itineraryID)) {
-      return res.status(403).json({ message: "Tourist has not followed this itinerary." });
+      return res
+        .status(403)
+        .json({ message: "Tourist has not followed this itinerary." });
     }
 
     // Create a new comment
     const newComment = await CommentModel.create({
-      touristID,  // ID of the tourist commenting
-      guideID,    // ID of the tour guide
+      touristID, // ID of the tourist commenting
+      guideID, // ID of the tour guide
       itineraryID, // ID of the itinerary
-      text,        // Comment text
+      text, // Comment text
     });
 
     // Send the response with the created comment
-    res.status(201).json({ message: "Comment posted successfully", comment: newComment });
+    res
+      .status(201)
+      .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log the error for debugging
-    res.status(500).json({ message: "Error posting comment", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error posting comment", error: error.message });
   }
 };
 
+const viewAttendedActivities = async (req, res) => {
+  const touristId = req.params.touristId; // Get the touristId from params
+  const model = "Attraction";
 
+  try {
+    // Fetch activities using the filter
+    const activities = await bookingSchema
+      .find({ itemModel: model })
+      .populate("itemId")
+      .populate({ path: "itemId", populate: { path: "Creator" } });
+    const currentDate = new Date();
+    // Check if any activities were found
+    if (activities.length === 0) {
+      return res.status(404).json({ message: "No past activities found." });
+    }
+    const id = new mongoose.Types.ObjectId(touristId);
+    const attended = activities.filter((activity) => {
+      return (
+        activity.itemId._id.toString() === id.toString() &&
+        activity.bookedDate < currentDate
+      );
+    });
 
+    res.status(200).json(attended); // Return filtered past activities
+  } catch (error) {
+    console.error("Error fetching activities:", error); // Log the error
+    return res.status(400).json({ message: "Error fetching activities" });
+  }
+};
+
+const viewAttendedItineraries = async (req, res) => {
+  const touristId = req.params.touristId; // Get the touristId from params
+  const model = "Itinerary";
+
+  try {
+    // Fetch activities using the filter
+    const itineraries = await bookingSchema
+      .find({ itemModel: model })
+      .populate("itemId")
+      .populate({ path: "itemId", populate: { path: "Creator" } });
+    const currentDate = new Date();
+    // Check if any itineraries were found
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No past itineraries found." });
+    }
+    const id = new mongoose.Types.ObjectId(touristId);
+    const attended = itineraries.filter((itinerary) => {
+      return (
+        itinerary.itemId._id.toString() === id.toString() &&
+        itinerary.bookedDate < currentDate
+      );
+    });
+
+    res.status(200).json(attended); // Return filtered past itineraries
+  } catch (error) {
+    console.error("Error fetching itineraries:", error); // Log the error
+    return res.status(400).json({ message: "Error fetching itineraries" });
+  }
+};
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -928,4 +1003,6 @@ module.exports = {
   addCommentONEvent,
   rateItinerary,
   updateItineraryRatings,
+  viewAttendedActivities,
+  viewAttendedItineraries,
 };

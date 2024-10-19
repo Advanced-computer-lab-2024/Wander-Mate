@@ -98,9 +98,11 @@ const createPlace = async (req, res) => {
       return res.status(400).json({ message: "Tags must be an array." });
     }
 
+    const model = "TourismGoverner";
     // Create the new place in the database
     const newPlace = await attractionModel.create({
       Creator: Username,
+      CreatorModel: model,
       Name,
       Description,
       Pictures: pictures,
@@ -134,7 +136,6 @@ const updatePlace = async (req, res) => {
       Tag,
     } = req.body;
 
-
     // Validate the ObjectId
     if (!mongoose.Types.ObjectId.isValid(Id)) {
       return res.status(400).json({ message: "Invalid Place ID" });
@@ -154,8 +155,6 @@ const updatePlace = async (req, res) => {
     if (TicketPrices) updatedData.TicketPrices = TicketPrices;
     if (Category) updatedData.Category = Category;
     if (Tag) updatedData.Tag = Tag;
-
-
 
     // Perform the update
     const place = await attractionModel.findByIdAndUpdate(Id, updatedData, {

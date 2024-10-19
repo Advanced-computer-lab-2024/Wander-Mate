@@ -43,6 +43,8 @@ const {
   addCommentONEvent,
   rateItinerary,
   updateItineraryRatings,
+  viewAttendedActivities,
+  viewAttendedItineraries,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -259,10 +261,10 @@ app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
-app.post('/search-flights', SearchFlights);
-app.post('/book-flight',BookFlight);
-app.post('/comment-on-guide/:id',commentOnGuide);
-app.post('/comment-on-itinerary/:id',commentOnItinerary);
+app.post("/search-flights", SearchFlights);
+app.post("/book-flight", BookFlight);
+app.post("/comment-on-guide/:id", commentOnGuide);
+app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/comment-on-guide/:id", commentOnGuide);
@@ -275,10 +277,22 @@ app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
-app.post("/acceptRejectUser",acceptRejectUser);
+app.post("/acceptRejectUser", acceptRejectUser);
 
 ///////////////
-app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
-app.post("/rateItinerary",rateItinerary);
-app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
-app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);
+app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
+app.post("/rateItinerary", rateItinerary);
+app.put(
+  "/uploadProductImage/:productId",
+  upload.single("image"),
+  uploadProductImage
+);
+app.put(
+  "/uploadProductImageSeller/:productId",
+  upload.single("image"),
+  uploadProductImageSeller
+);
+
+//get attended activities, itenaries, and with whom
+app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
+app.get("/viewAttendedItineraries/:touristId", viewAttendedItineraries);
