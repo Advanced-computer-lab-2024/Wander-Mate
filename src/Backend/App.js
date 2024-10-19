@@ -60,6 +60,7 @@ const {
   uploadSellerDocuments,
   uploadProductImageSeller,
   SellerarchiveProduct,
+  changePasswordSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -287,8 +288,9 @@ app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
 app.post("/changePasswordTourGuide", changePasswordTourGuide);
-app.post("/changePasswordAdmin", changePasswordAdmin); //changePasswordAdvertiser
-app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
+app.post("/changePasswordAdmin", changePasswordAdmin); 
+app.post("/changePasswordAdvertiser", changePasswordAdvertiser); // changePasswordSeller
+app.post("/changePasswordSeller", changePasswordSeller);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.put(
