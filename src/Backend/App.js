@@ -95,6 +95,7 @@ const {
   AdminarchiveProduct,
   viewDocuments,
   viewAllComplaints,
+  changePasswordAdmin
 } = require("./Routes/adminController.js");
 
 const {
