@@ -33,6 +33,7 @@ const {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  commentOnItinerary,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -243,3 +244,4 @@ app.post("/getAge", getAge);
 app.post('/search-flights', SearchFlights);
 app.post('/book-flight',BookFlight);
 app.post('/comment-on-guide/:id',commentOnGuide);
+app.post('/comment-on-itinerary/:id',commentOnItinerary);
