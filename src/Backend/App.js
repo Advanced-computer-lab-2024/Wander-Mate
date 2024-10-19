@@ -57,6 +57,7 @@ const {
   getSellers,
   uploadSellerDocuments,
   uploadProductImageSeller,
+  SellerarchiveProduct,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -89,6 +90,7 @@ const {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
+  AdminarchiveProduct,
 } = require("./Routes/adminController.js");
 
 const {
@@ -104,7 +106,6 @@ const {
   getTourguides,
   uploadTourGuideDocuments,
   updateGuideRatings,
-  changePassword,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -277,10 +278,12 @@ app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser",acceptRejectUser);
-app.post("/changePassword", changePassword);
+
 
 ///////////////
 app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
 app.post("/rateItinerary",rateItinerary);
 app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
 app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);
+app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
+app.patch("/SellerarchiveProduct/:productId",SellerarchiveProduct);

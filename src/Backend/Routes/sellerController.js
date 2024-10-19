@@ -312,6 +312,30 @@ const uploadProductImageSeller = async (req, res) => {
   }
 };
 
+const SellerarchiveProduct = async (req, res) => {
+  try {
+    const { productId } = req.params; // Get product ID from request parameters
+    const { isArchived } = req.body;  // Get the new archive status from request body
+
+    // Find the product by ID and update its isArchived status
+    const product = await ProductModel.findByIdAndUpdate(
+      productId,
+      { isArchived },
+      { new: true } // Return the updated document
+    );
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    const status = isArchived ? "archived" : "unarchived";
+    res.status(200).json({ message: `Product ${status} successfully!`, product });
+  } catch (err) {
+    console.error("Error archiving/unarchiving product:", err);
+    res.status(400).json({ error: "Failed to archive/unarchive product." });
+  }
+};
+
 
 module.exports = {
   createSeller,
@@ -325,5 +349,6 @@ module.exports = {
   getProduct,
   getSellers,
   uploadSellerDocuments,
-  uploadProductImageSeller
+  uploadProductImageSeller,
+  SellerarchiveProduct,
 };

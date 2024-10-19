@@ -778,6 +778,30 @@ const acceptRejectUser  = async (req, res) => {
     res.status(500).json({ message: 'Error updating user status' });
   }
 };
+const AdminarchiveProduct = async (req, res) => {
+  try {
+    const { productId } = req.params; // Get product ID from request parameters
+    const { isArchived } = req.body;  // Get the new archive status from request body
+
+    // Find the product by ID and update its isArchived status
+    const product = await productModel.findByIdAndUpdate(
+      productId,
+      { isArchived },
+      { new: true } // Return the updated document
+    );
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    const status = isArchived ? "archived" : "unarchived";
+    res.status(200).json({ message: `Product ${status} successfully!`, product });
+  } catch (err) {
+    console.error("Error archiving/unarchiving product:", err);
+    res.status(400).json({ error: "Failed to archive/unarchive product." });
+  }
+};
+/////////////////////////////////////////////////////
 
 const uploadProductImage = async (req, res) => {
   try {
@@ -811,6 +835,7 @@ const uploadProductImage = async (req, res) => {
 };
 
 
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -841,4 +866,5 @@ module.exports = {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
+  AdminarchiveProduct,
 };

@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema(
       max: 5,
     },
     reviews: [String],
+    isArchived: { type: Boolean, default: false },
   },
   { timestamps: true, strict: false }
 );
