@@ -362,7 +362,7 @@ const changePasswordAdvertiser = async (req, res) => {
 
     // Update the password
     advertiser.Password = hashedNewPassword;
-    await admin.save();
+    await advertiser.save();
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {

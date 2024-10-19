@@ -45,6 +45,7 @@ const {
   updateItineraryRatings,
   viewAttendedActivities,
   viewAttendedItineraries,
+  changePasswordTourist,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -290,9 +291,10 @@ app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
 app.post("/changePasswordTourGuide", changePasswordTourGuide);
 app.post("/changePasswordAdmin", changePasswordAdmin); 
-app.post("/changePasswordAdvertiser", changePasswordAdvertiser); //changePasswordTourismGoverner
+app.post("/changePasswordAdvertiser", changePasswordAdvertiser); //changePasswordTourist
 app.post("/changePasswordTourismGoverner", changePasswordTourismGoverner);
 app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
+app.post("/changePasswordTourist", changePasswordTourist);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.put(

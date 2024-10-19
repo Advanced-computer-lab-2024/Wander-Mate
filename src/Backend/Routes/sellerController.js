@@ -358,7 +358,7 @@ const changePasswordSeller = async (req, res) => {
 
     // Update the password
     seller.Password = hashedNewPassword;
-    await admin.save();
+    await seller.save();
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {

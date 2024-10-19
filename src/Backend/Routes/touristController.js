@@ -977,6 +977,38 @@ const viewAttendedItineraries = async (req, res) => {
     return res.status(400).json({ message: "Error fetching itineraries" });
   }
 };
+
+const changePasswordTourist = async (req, res) => {
+  try {
+    const { id, oldPassword, newPassword } = req.body;
+
+    // Find the tour guide by id
+    const tourist = await userModel.findById(id);
+    if (!tourist) {
+      return res.status(404).json({ message: "tourist not found" });
+    }
+
+    // Compare the old password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(oldPassword, tourist.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password
+    tourist.Password = hashedNewPassword;
+    await tourist.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -1008,4 +1040,5 @@ module.exports = {
   updateItineraryRatings,
   viewAttendedActivities,
   viewAttendedItineraries,
+  changePasswordTourist,
 };
