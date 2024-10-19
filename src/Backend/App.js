@@ -59,6 +59,7 @@ const {
   getSellers,
   uploadSellerDocuments,
   uploadProductImageSeller,
+  SellerarchiveProduct,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -91,6 +92,9 @@ const {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
+  changePasswordAdmin,
+  AdminarchiveProduct,
+  viewDocuments,
 } = require("./Routes/adminController.js");
 
 const {
@@ -106,6 +110,7 @@ const {
   getTourguides,
   uploadTourGuideDocuments,
   updateGuideRatings,
+  changePasswordTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -273,13 +278,14 @@ app.post("/complaints", makeComplaint);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
+app.get("/viewDocuments/:ownerId",viewDocuments);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
-
-///////////////
+app.post("/changePasswordTourGuide", changePasswordTourGuide);
+app.post("/changePasswordAdmin", changePasswordAdmin);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.put(
@@ -296,3 +302,6 @@ app.put(
 //get attended activities, itenaries, and with whom
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
 app.get("/viewAttendedItineraries/:touristId", viewAttendedItineraries);
+///////////////////////////////////////////////////////////////////////////
+app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
+app.patch("/SellerarchiveProduct/:productId",SellerarchiveProduct);
