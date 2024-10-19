@@ -56,6 +56,7 @@ const {
   getProduct,
   getSellers,
   uploadSellerDocuments,
+  uploadProductImageSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -87,6 +88,7 @@ const {
   deletPreferenceTagsById,
   replytoComplaints,
   acceptRejectUser,
+  uploadProductImage,
 } = require("./Routes/adminController.js");
 
 const {
@@ -278,3 +280,5 @@ app.post("/acceptRejectUser",acceptRejectUser);
 ///////////////
 app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
 app.post("/rateItinerary",rateItinerary);
+app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
+app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);

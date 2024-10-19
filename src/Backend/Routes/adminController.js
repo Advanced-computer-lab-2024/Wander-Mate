@@ -779,6 +779,38 @@ const acceptRejectUser  = async (req, res) => {
   }
 };
 
+const uploadProductImage = async (req, res) => {
+  try {
+    const { productId } = req.params; // Extract the product ID from the URL params
+
+    // Check if the image is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required." });
+    }
+
+    // Find the product by ID
+    const product = await productModel.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    // Update the product's image
+    product.picture = {
+      data: req.file.buffer, // Store the uploaded image as a buffer
+      contentType: req.file.mimetype, // Set the content type (e.g., image/png)
+    };
+
+    // Save the updated product
+    await product.save();
+
+    res.status(200).json({ message: "Product image uploaded successfully!", product });
+  } catch (err) {
+    console.error("Error uploading product image:", err);
+    res.status(500).json({ error: "Failed to upload product image." });
+  }
+};
+
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -808,4 +840,5 @@ module.exports = {
   deletPreferenceTagsById,
   replytoComplaints,
   acceptRejectUser,
+  uploadProductImage,
 };
