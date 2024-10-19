@@ -10,6 +10,7 @@ const TourGuide = require("../Models/tourGuide.js");
 const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
+const Itinerary = require("../Models/itinerary.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -782,6 +783,68 @@ const addCommentONEvent = async (req, res) => {
   }
 };
 
+
+const rateItinerary = async (req, res) => {
+  const { touristId, itineraryId , rating } = req.body;
+  try {
+    const newRating = await RatingModel.create({
+      itemId: itineraryId,
+      userId: touristId,
+      rating,
+    });
+    await axios.put(`http://localhost:8000/updateItineraryRatings/${itineraryId}`);
+    res
+      .status(200)
+      .json({ message: "Rating posted successfully", rating: newRating });
+  } catch (error) {
+    console.error("Error posting rating:", error.message); // Log error for debugging
+    res
+      .status(400)
+      .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+const updateItineraryRatings = async (req, res) => {
+  const { itineraryId } = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(itineraryId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      // Await the findByIdAndUpdate call to get the updated document
+      const updatedItinerary = await Itinerary.findByIdAndUpdate(
+        { _id: itineraryId },
+        {
+          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          totalRatings: averageRating[0].totalRatings,
+        },
+        { new: true } // Return the updated document
+      );
+
+      return res.status(200).json({
+        itinerary: updatedItinerary, // Return the updated tour guide data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this item." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -808,4 +871,6 @@ module.exports = {
   RateGuide,
   makeComplaint,
   addCommentONEvent,
+  rateItinerary,
+  updateItineraryRatings,
 };

@@ -40,6 +40,8 @@ const {
   RateGuide,
   makeComplaint,
   addCommentONEvent,
+  rateItinerary,
+  updateItineraryRatings,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -267,3 +269,7 @@ app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser",acceptRejectUser);
+
+///////////////
+app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
+app.post("/rateItinerary",rateItinerary);
