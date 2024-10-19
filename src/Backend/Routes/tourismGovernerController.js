@@ -252,6 +252,37 @@ const viewAll0 = async (req, res) => {
   }
 };
 
+const changePasswordTourismGoverner = async (req, res) => {
+  try {
+    const { id, oldPassword, newPassword } = req.body;
+
+    // Find the tour guide by id
+    const tourismGov = await tourismGovernerModel.findById(id);
+    if (!tourismGov) {
+      return res.status(404).json({ message: "tourismGov not found" });
+    }
+
+    // Compare the old password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(oldPassword, tourismGov.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password
+    tourismGov.Password = hashedNewPassword;
+    await admin.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getPlaces,
   createPlace,
@@ -263,4 +294,5 @@ module.exports = {
   updateHistoricalTags,
   viewAll0,
   getPlaceImage,
+  changePasswordTourismGoverner,
 };

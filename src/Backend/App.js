@@ -142,6 +142,7 @@ const {
   getPlaceImage,
   readHistoricalTags,
   updateHistoricalTags,
+  changePasswordTourismGoverner,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -289,8 +290,9 @@ app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
 app.post("/changePasswordTourGuide", changePasswordTourGuide);
 app.post("/changePasswordAdmin", changePasswordAdmin); 
-app.post("/changePasswordAdvertiser", changePasswordAdvertiser); // changePasswordSeller
-app.post("/changePasswordSeller", changePasswordSeller);
+app.post("/changePasswordAdvertiser", changePasswordAdvertiser); //changePasswordTourismGoverner
+app.post("/changePasswordTourismGoverner", changePasswordTourismGoverner);
+app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.put(
