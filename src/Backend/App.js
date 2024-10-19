@@ -37,9 +37,12 @@ const {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  commentOnItinerary,
   RateGuide,
   makeComplaint,
   addCommentONEvent,
+  rateItinerary,
+  updateItineraryRatings,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -53,6 +56,7 @@ const {
   getProduct,
   getSellers,
   uploadSellerDocuments,
+  uploadProductImageSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -84,6 +88,7 @@ const {
   deletPreferenceTagsById,
   replytoComplaints,
   acceptRejectUser,
+  uploadProductImage,
 } = require("./Routes/adminController.js");
 
 const {
@@ -255,6 +260,10 @@ app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
+app.post('/search-flights', SearchFlights);
+app.post('/book-flight',BookFlight);
+app.post('/comment-on-guide/:id',commentOnGuide);
+app.post('/comment-on-itinerary/:id',commentOnItinerary);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/comment-on-guide/:id", commentOnGuide);
@@ -269,3 +278,9 @@ app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser",acceptRejectUser);
 app.post("/changePassword", changePassword);
+
+///////////////
+app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
+app.post("/rateItinerary",rateItinerary);
+app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
+app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);

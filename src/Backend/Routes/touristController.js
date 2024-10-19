@@ -10,6 +10,7 @@ const TourGuide = require("../Models/tourGuide.js");
 const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
+const Itinerary = require("../Models/itinerary.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -680,6 +681,7 @@ const BookFlight = async (req, res) => {
       .json({ message: "Failed to book flight", error: error.message });
   }
 };
+
 const commentOnGuide = async (req, res) => {
   try {
     const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
@@ -782,6 +784,121 @@ const addCommentONEvent = async (req, res) => {
   }
 };
 
+
+const rateItinerary = async (req, res) => {
+  const { touristId, itineraryId , rating } = req.body;
+  try {
+    const newRating = await RatingModel.create({
+      itemId: itineraryId,
+      userId: touristId,
+      rating,
+    });
+    await axios.put(`http://localhost:8000/updateItineraryRatings/${itineraryId}`);
+    res
+      .status(200)
+      .json({ message: "Rating posted successfully", rating: newRating });
+  } catch (error) {
+    console.error("Error posting rating:", error.message); // Log error for debugging
+    res
+      .status(400)
+      .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+const updateItineraryRatings = async (req, res) => {
+  const { itineraryId } = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(itineraryId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      // Await the findByIdAndUpdate call to get the updated document
+      const updatedItinerary = await Itinerary.findByIdAndUpdate(
+        { _id: itineraryId },
+        {
+          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          totalRatings: averageRating[0].totalRatings,
+        },
+        { new: true } // Return the updated document
+      );
+
+      return res.status(200).json({
+        itinerary: updatedItinerary, // Return the updated tour guide data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this item." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }};
+  
+const commentOnItinerary = async (req, res) => {
+  try {
+    const { guideID, itineraryID, text } = req.body; // Expecting guide ID, itinerary ID, and comment text in the request body
+    const touristID = req.params.id; // Assuming the tourist ID is passed as a parameter
+
+    // Validate input
+    if (!guideID || !itineraryID || !text) {
+      return res.status(400).json({ message: "Guide ID, Itinerary ID, and comment text are required." });
+    }
+
+    // Validate that the guide exists
+    const guide = await TourGuide.findById(guideID); // Assuming TourGuide is your guide model
+    if (!guide) {
+      return res.status(404).json({ message: "Guide not found." });
+    }
+
+    // Validate that the itinerary exists and was created by the specified guide
+    const itinerary = await itineraryModel.findOne({ _id: itineraryID, Creator: guideID }); // Assuming 'Creator' field references the guide
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found for the given guide." });
+    }
+
+    // Validate that the tourist exists
+    const tourist = await userModel.findById(touristID); // Assuming 'userModel' is your tourist model
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Validate that the tourist follows the guide
+    if (!tourist.followedGuides.includes(guideID)) {
+      return res.status(403).json({ message: "You must follow the tour guide to comment on their itinerary." });
+    }
+
+    // You might need a way to check if the tourist followed the itinerary
+    if (!tourist.followedItineraries.includes(itineraryID)) {
+      return res.status(403).json({ message: "Tourist has not followed this itinerary." });
+    }
+
+    // Create a new comment
+    const newComment = await CommentModel.create({
+      touristID,  // ID of the tourist commenting
+      guideID,    // ID of the tour guide
+      itineraryID, // ID of the itinerary
+      text,        // Comment text
+    });
+
+    // Send the response with the created comment
+    res.status(201).json({ message: "Comment posted successfully", comment: newComment });
+  } catch (error) {
+    console.error("Error posting comment:", error); // Log the error for debugging
+    res.status(500).json({ message: "Error posting comment", error: error.message });
+  }
+};
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -805,7 +922,10 @@ module.exports = {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  commentOnItinerary,
   RateGuide,
   makeComplaint,
   addCommentONEvent,
+  rateItinerary,
+  updateItineraryRatings,
 };
