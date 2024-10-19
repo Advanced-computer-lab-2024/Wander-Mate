@@ -279,7 +279,7 @@ app.post("/complaints", makeComplaint);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
-app.get("/viewDocuments/:ownerId",viewDocuments);
+app.get("/viewDocuments/:ownerId", viewDocuments);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
@@ -304,10 +304,18 @@ app.put(
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
 app.get("/viewAttendedItineraries/:touristId", viewAttendedItineraries);
 ///////////////////////////////////////////////////////////////////////////
-app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
-app.post("/rateItinerary",rateItinerary);
-app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
-app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);
+app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
+app.post("/rateItinerary", rateItinerary);
+app.put(
+  "/uploadProductImage/:productId",
+  upload.single("image"),
+  uploadProductImage
+);
+app.put(
+  "/uploadProductImageSeller/:productId",
+  upload.single("image"),
+  uploadProductImageSeller
+);
 app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
-app.patch("/SellerarchiveProduct/:productId",SellerarchiveProduct);
-app.get("/viewAllComplaints",viewAllComplaints);
+app.patch("/SellerarchiveProduct/:productId", SellerarchiveProduct);
+app.get("/viewAllComplaints", viewAllComplaints);
