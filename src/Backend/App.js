@@ -92,9 +92,9 @@ const {
   replytoComplaints,
   acceptRejectUser,
   uploadProductImage,
-  changePasswordAdmin,
   AdminarchiveProduct,
   viewDocuments,
+  viewAllComplaints,
 } = require("./Routes/adminController.js");
 
 const {
@@ -303,5 +303,10 @@ app.put(
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
 app.get("/viewAttendedItineraries/:touristId", viewAttendedItineraries);
 ///////////////////////////////////////////////////////////////////////////
+app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
+app.post("/rateItinerary",rateItinerary);
+app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
+app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);
 app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
 app.patch("/SellerarchiveProduct/:productId",SellerarchiveProduct);
+app.get("/viewAllComplaints",viewAllComplaints);
