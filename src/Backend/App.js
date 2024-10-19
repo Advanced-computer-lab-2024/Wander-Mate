@@ -92,6 +92,7 @@ const {
   uploadProductImage,
   changePasswordAdmin,
   AdminarchiveProduct,
+  viewDocuments,
 } = require("./Routes/adminController.js");
 
 const {
@@ -275,6 +276,7 @@ app.post("/complaints", makeComplaint);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
+app.get("/viewDocuments/:ownerId",viewDocuments);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);

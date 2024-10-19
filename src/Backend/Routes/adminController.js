@@ -11,6 +11,7 @@ const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const Complaints = require("../Models/complaints.js");
+const PdfDetails = require("../Models/pdfDetails.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -833,6 +834,36 @@ const uploadProductImage = async (req, res) => {
     res.status(500).json({ error: "Failed to upload product image." });
   }
 };
+const viewDocuments = async (req, res) => {
+  const ownerId = req.params.ownerId;  // Fetch ownerId from request params
+
+  try {
+    // Step 1: Fetch all documents for the specific owner based on ownerId
+    const documents = await PdfDetails.find({ Owner: ownerId });
+
+    // Step 2: Check if any documents are found
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ message: `No documents found for user with ID: ${ownerId}.` });
+    }
+
+    // Step 3: Prepare and return the documents in the response
+    const responseDocs = documents.map(doc => ({
+      Title: doc.Title,
+      pdf: doc.pdf, // This contains the base64 string of the PDF
+    }));
+
+    // Step 4: Send the list of documents back to the client
+    return res.status(200).json({
+      message: "Documents retrieved successfully.",
+      documents: responseDocs,  // Send back the documents as JSON
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error retrieving documents." });
+  }
+};
+
 
 
 module.exports = {
@@ -867,4 +898,5 @@ module.exports = {
   uploadProductImage,
   changePasswordAdmin,
   AdminarchiveProduct,
+  viewDocuments,
 };
