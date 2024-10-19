@@ -1,0 +1,69 @@
+/* Container for the group */
+.group-593 {
+  position: relative; /* Change to relative to contain absolute children */
+  max-width: 100%; /* Ensure it doesn't exceed viewport width */
+  margin: 0 auto; /* Center the group */
+  padding: 20px; /* Optional padding for responsiveness */
+  padding-top: 40px;
+}
+
+/* Rectangle 5 */
+.rectangle-5 {
+  position: relative; /* Change to relative for responsive layout */
+  width: 100%; /* Full width of the parent */
+  max-width: 416px; /* Maximum width */
+  height: auto; /* Height should adjust based on content */
+  aspect-ratio: 416 / 232; /* Maintain aspect ratio */
+  background: #ffffff;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+  margin: 0 auto; /* Center the rectangle */
+}
+
+/* Frame 7 */
+.frame-7 {
+  width: 100%; /* Full width */
+  height: auto; /* Allow height to adjust */
+  margin: 0 auto; /* Center the frame */
+  padding: 15px; /* Optional padding for responsiveness */
+  display: flex; /* Use Flexbox for alignment */
+  justify-content: center; /* Center the content */
+  align-items: center; /* Vertically center the content */
+  flex-direction: column;
+
+}
+
+/* carbon:hotel */
+.carbon-hotel {
+  align-items: flex-start;
+  padding-left: 30px;
+  padding-top: 15px;
+}
+
+/* Hotel Booking */
+.hotel-booking {
+  width: 100%; /* Full width */
+  max-width: 319px; /* Maximum width */
+  height: auto; /* Adjust height based on content */
+  margin: 0 auto; /* Center the text */
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  font-size: 2rem; /* Responsive font size */
+  line-height: 1.375; /* Responsive line height */
+  color: #000000;
+  margin-bottom: 15px; /* Increase vertical distance (adjust as needed) */
+}
+
+/* Description Text */
+.description {
+  width: 100%; /* Full width */
+  max-width: 319px; /* Maximum width */
+  height: auto; /* Adjust height based on content */
+  margin: 0 auto; /* Center the text */
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-size: 1rem; /* Responsive font size */
+  line-height: 1.375; /* Responsive line height */
+  color: #000000;
+  padding-bottom: 20px;
+}
