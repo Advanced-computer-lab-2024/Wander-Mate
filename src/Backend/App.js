@@ -37,6 +37,7 @@ const {
   SearchFlights,
   BookFlight,
   commentOnGuide,
+  commentOnItinerary,
   RateGuide,
   makeComplaint,
   addCommentONEvent,
@@ -256,6 +257,10 @@ app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
+app.post('/search-flights', SearchFlights);
+app.post('/book-flight',BookFlight);
+app.post('/comment-on-guide/:id',commentOnGuide);
+app.post('/comment-on-itinerary/:id',commentOnItinerary);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/comment-on-guide/:id", commentOnGuide);
