@@ -10,6 +10,7 @@ const TourismGoverner = require("../Models/tourismGoverner.js");
 const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
+const Complaints = require("../Models/complaints.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -691,8 +692,92 @@ const getTags = async (req, res) => {
   }
 };
 
+/////////////////////Sprint 2 Nadeem/////////////////////////////////
+const replytoComplaints = async (req, res) => {
+  const { complaintId } = req.params; 
+  const { Body } = req.body; 
+
+  if (!Body) {
+      return res.status(400).json({ message: "Body is required for the reply" });
+  }
+
+  try {
+      // Find the complaint by its ID
+      const complaint = await Complaints.findById(complaintId);
+      if (!complaint) {
+          return res.status(404).json({ message: "Complaint not found" });
+      }
+
+      // Ensure replies array exists
+      if (!complaint.replies) {
+          complaint.replies = [];
+      }
+
+      // Create a new reply object
+      const reply = {
+          Body,
+          Date: Date.now(),
+      };
+
+      // Push the reply to the replies array
+      complaint.replies.push(reply);
+
+      // Save the updated complaint with the reply
+      await complaint.save();
+
+      return res.status(200).json({ message: "Reply added successfully", complaint });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
+
+///////////////////////////////////////////////////////////////////////
+
+//////////////////Sprint 2 Donny
+const acceptRejectUser  = async (req, res) => {
+  try {
+    const { userId, userType, decision } = req.body; // userType can be 'tourGuide', 'advertiser', or 'seller'
+    let user;
+    // Find the user based on userType
+    switch (userType) {
+      case 'tourGuide':
+        user = await tourGuide.findById(userId);
+        break;
+      case 'advertiser':
+        user = await Advertiser.findById(userId);
+        break;
+      case 'seller':
+        user = await Seller.findById(userId);
+        break;
+      default:
+        return res.status(400).json({ message: 'Invalid user type' });
+    }
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: `${userType} not found` });
+    }
+
+    // Update the user status based on decision
+    if (decision === 'accept') {
+      user.status = 'accepted';
+    } else if (decision === 'reject') {
+      user.status = 'rejected';
+    } else {
+      return res.status(400).json({ message: 'Invalid decision' });
+    }
+
+    // Save the updated user
+    await user.save();
+    res.status(200).json({ message: `${userType} status updated successfully`, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating user status' });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -720,5 +805,7 @@ module.exports = {
   deleteCategoryById,
   updateCategoryById,
   updatePreferenceTagById,
-  deletPreferenceTagsById
+  deletPreferenceTagsById,
+  replytoComplaints,
+  acceptRejectUser,
 };

@@ -1,0 +1,50 @@
+.card {
+  width: auto; /* Adjust width to be responsive */
+  max-width: 215.88px; /* Maximum width */
+  min-width: 200px;
+  height: auto; /* Fixed height */
+  margin: 20px auto; /* Center the card */
+  background: #FFFFFF;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+  padding: 16px; /* Padding inside the card */
+}
+
+.icon {
+  width: 37.13px;
+  height: 43px;
+}
+
+.header {
+  width: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 49px;
+  text-align: center;
+  color: #000000;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.subheader {
+  width: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 27px;
+  text-align: center;
+  color: #000000;
+}
+
+.vector {
+  width: 100%; /* Adjust width to fill the container */
+  height: auto; /* Keep the aspect ratio */
+  background: #005F15;
+  padding: 15% 0; /* Add padding to create space */
+  margin-bottom: 16px; /* Space below the vector */
+}

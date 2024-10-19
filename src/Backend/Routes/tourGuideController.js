@@ -4,7 +4,9 @@ const bcrypt = require("bcrypt");
 const Itinerary = require("../Models/itinerary.js");
 const userModel = require("../Models/users.js"); // Adjust the path based on your folder structure
 const Attraction = require("../Models/attractions.js");
-
+const PdfDetails = require("../Models/pdfDetails.js");
+const TourGuide = require("../Models/tourGuide.js");
+const RatingsModel = require("../Models/rating.js");
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
   try {
@@ -303,6 +305,77 @@ const getTourguides = async (req, res) => {
   }
 };
 
+const uploadTourGuideDocuments = async (req, res) => {
+  if (!req.files) {
+    return res.status(400).send("Files are required.");
+  }
+
+  try {
+    const ownerId = req.body.ownerId;
+    const ownerModel = "TourGuide";
+    const idPdf = new PdfDetails({
+      Title: "ID",
+      pdf: req.files.ID[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    const certPdf = new PdfDetails({
+      Title: "Certificates",
+      pdf: req.files.docs[0].buffer.toString("base64"),
+      Owner: ownerId, // Dynamic owner ID
+      ownerModel: ownerModel, // Dynamic owner model
+    });
+    await idPdf.save();
+    await certPdf.save();
+
+    return res.status(200).json({
+      message: "Both ID and Certificates uploaded successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error to upload documents" });
+  }
+};
+
+const updateGuideRatings = async (req, res) => {
+  const { guideID } = req.params;
+  try {
+    const averageRating = await RatingsModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(guideID) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      // Await the findByIdAndUpdate call to get the updated document
+      const updatedTourGuide = await TourGuide.findByIdAndUpdate(
+        { _id: guideID },
+        {
+          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          totalRatings: averageRating[0].totalRatings,
+        },
+        { new: true } // Return the updated document
+      );
+
+      return res.status(200).json({
+        tourGuide: updatedTourGuide, // Return the updated tour guide data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this item." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -314,4 +387,6 @@ module.exports = {
   viewAll1,
   readItinerary,
   getTourguides,
+  uploadTourGuideDocuments,
+  updateGuideRatings,
 };
