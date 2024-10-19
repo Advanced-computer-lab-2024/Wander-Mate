@@ -57,6 +57,7 @@ const {
   getSellers,
   uploadSellerDocuments,
   uploadProductImageSeller,
+  SellerarchiveProduct,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -90,6 +91,7 @@ const {
   acceptRejectUser,
   uploadProductImage,
   changePasswordAdmin,
+  AdminarchiveProduct,
 } = require("./Routes/adminController.js");
 
 const {
@@ -284,3 +286,5 @@ app.put("/updateItineraryRatings/:itineraryId",updateItineraryRatings);
 app.post("/rateItinerary",rateItinerary);
 app.put("/uploadProductImage/:productId", upload.single('image'),uploadProductImage);
 app.put("/uploadProductImageSeller/:productId",upload.single('image'),uploadProductImageSeller);
+app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
+app.patch("/SellerarchiveProduct/:productId",SellerarchiveProduct);

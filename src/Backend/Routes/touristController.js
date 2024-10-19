@@ -266,22 +266,25 @@ const filterPlaces = async (req, res) => {
   }
 };
 
+//3adelt fiha f sprint 2 3alashan a7ot lw heya archived wla l2
 const viewTouristProducts = async (req, res) => {
   try {
-    // Find all products with the relevant fields
-    const products = await ProductModel.find({}); // Populate seller info if needed
+    // Find all products that are not archived
+    const products = await ProductModel.find({ isArchived: false }); // Populate seller info if needed
 
     // Check if products exist
-    if (!products) {
-      return res.status(400).json({ message: "No products available" });
+    if (!products || products.length === 0) { // Check if the products array is empty
+      return res.status(404).json({ message: "No products available" });
     }
 
     // Return the list of products
     res.status(200).json(products);
   } catch (err) {
-    res.status(400).json({ message: "Unable to fetch products" });
+    console.error("Error fetching products:", err);
+    res.status(500).json({ message: "Unable to fetch products" });
   }
 };
+/////////////////////////////////////////////////
 
 const TouristsearchProductByName = async (req, res) => {
   try {

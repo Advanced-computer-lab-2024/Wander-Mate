@@ -778,6 +778,30 @@ const acceptRejectUser  = async (req, res) => {
     res.status(500).json({ message: 'Error updating user status' });
   }
 };
+const AdminarchiveProduct = async (req, res) => {
+  try {
+    const { productId } = req.params; // Get product ID from request parameters
+    const { isArchived } = req.body;  // Get the new archive status from request body
+
+    // Find the product by ID and update its isArchived status
+    const product = await productModel.findByIdAndUpdate(
+      productId,
+      { isArchived },
+      { new: true } // Return the updated document
+    );
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    const status = isArchived ? "archived" : "unarchived";
+    res.status(200).json({ message: `Product ${status} successfully!`, product });
+  } catch (err) {
+    console.error("Error archiving/unarchiving product:", err);
+    res.status(400).json({ error: "Failed to archive/unarchive product." });
+  }
+};
+/////////////////////////////////////////////////////
 
 const uploadProductImage = async (req, res) => {
   try {
@@ -807,39 +831,6 @@ const uploadProductImage = async (req, res) => {
   } catch (err) {
     console.error("Error uploading product image:", err);
     res.status(500).json({ error: "Failed to upload product image." });
-  }
-};
-
-////////////////////////SPRINT 2 MARIO /////////////////////////////////////
-
-const changePasswordAdmin = async (req, res) => {
-  try {
-    const { id, oldPassword, newPassword } = req.body;
-
-    // Find the tour guide by id
-    const admin = await adminModel.findById(id);
-    if (!admin) {
-      return res.status(404).json({ message: "admin not found" });
-    }
-
-    // Compare the old password with the hashed password stored in the database
-    const isMatch = await bcrypt.compare(oldPassword, admin.Password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Old password is incorrect" });
-    }
-
-    // Hash the new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update the password
-    admin.Password = hashedNewPassword;
-    await admin.save();
-
-    return res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -875,4 +866,5 @@ module.exports = {
   acceptRejectUser,
   uploadProductImage,
   changePasswordAdmin,
+  AdminarchiveProduct,
 };
