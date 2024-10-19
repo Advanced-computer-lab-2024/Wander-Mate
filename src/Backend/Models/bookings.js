@@ -10,7 +10,7 @@ const bookingSchmea = new Schema({
   itemModel: {
     type: String,
     required: true, // This will contain the model name
-    enum: ["Attraction", "Itinerary"], // Limit to valid model names
+    enum: ["Attraction", "Itinerary" ,"Transportation"], // Limit to valid model names
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
