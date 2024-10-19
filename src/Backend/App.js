@@ -99,6 +99,7 @@ const {
   getTourguides,
   uploadTourGuideDocuments,
   updateGuideRatings,
+  changePassword,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -267,3 +268,4 @@ app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser",acceptRejectUser);
+app.post("/changePassword", changePassword);
