@@ -340,6 +340,37 @@ const uploadAdvertiserDocuments = async (req, res) => {
   }
 };
 
+const changePasswordAdvertiser = async (req, res) => {
+  try {
+    const { id, oldPassword, newPassword } = req.body;
+
+    // Find the tour guide by id
+    const advertiser = await advertiserModel.findById(id);
+    if (!advertiser) {
+      return res.status(404).json({ message: "advertiser not found" });
+    }
+
+    // Compare the old password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(oldPassword, advertiser.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password
+    advertiser.Password = hashedNewPassword;
+    await admin.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -354,4 +385,5 @@ module.exports = {
   getAdvertisers,
   getAdvertisers,
   uploadAdvertiserDocuments,
+  changePasswordAdvertiser,
 };

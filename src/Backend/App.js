@@ -127,6 +127,7 @@ const {
   updateAdvertiserInfo,
   getAdvertisers,
   uploadAdvertiserDocuments,
+  changePasswordAdvertiser,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -286,7 +287,8 @@ app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
 app.post("/changePasswordTourGuide", changePasswordTourGuide);
-app.post("/changePasswordAdmin", changePasswordAdmin);
+app.post("/changePasswordAdmin", changePasswordAdmin); //changePasswordAdvertiser
+app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.put(
