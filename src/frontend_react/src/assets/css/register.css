@@ -1,0 +1,183 @@
+/* General layout */
+.home-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url("../images/register.jpg") no-repeat center center/cover;
+}
+
+/* Blur effect with fallback */
+.content {
+  position: relative;
+  width: 80%;
+  max-width: 800px;
+  margin: auto;
+  top: 10%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.frame226 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.frame8 h1 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  color: #fff;
+  margin: 0;
+}
+
+.login-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center button within this container */
+  justify-content: center; /* Center vertically within container */
+}
+
+.login-text {
+  color: #fff;
+  font-size: 16px;
+}
+
+.login-link {
+  color: #ff7a00;
+  cursor: pointer;
+}
+
+/* Button */
+.signup-btn {
+  background: #ff7a00;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  width: 45vw;
+}
+
+.signup-btn:hover {
+  background: #ff9a33;
+}
+
+.signup-btn:disabled {
+  opacity: 0.2;
+}
+
+/* Text field container */
+.text-field-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 4px;
+  width: 100%; /* Full width for responsiveness */
+  max-width: 750px; /* Max width for larger screens */
+  height: auto; /* Automatic height */
+  position: relative; /* Add this */
+}
+
+/* Frame */
+.frameT {
+  width: 100%;
+  height: 27px; /* Can adjust if necessary */
+}
+
+/* Label */
+.labelT {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  position: absolute; /* Add this */
+  left: 7%; /* Align to the left */
+  padding-top: 10px;
+}
+
+/* Password toggle visibility */
+.password-toggle {
+  visibility: hidden; /* Manage visibility with JavaScript */
+  width: 73px;
+  height: 27px;
+}
+
+/* Icon */
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-left: auto; /* Push to the right */
+}
+
+/* Input field */
+.input-field {
+  box-sizing: border-box;
+  width: 100%; /* Full width for responsiveness */
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px; /* Space on left and right */
+}
+
+/* Input text */
+.input-text {
+  box-sizing: border-box;
+  width: 100%; /* Full width for responsiveness */
+  height: 56px;
+  border: 1px solid rgba(133, 132, 132, 0.35);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px; /* Space on left and right */
+  flex: 1; /* Allow input to grow */
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  margin-top: 10px;
+}
+
+/* Error message */
+.error-message {
+  display: block; /* Control visibility with JavaScript */
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #ff0000;
+  z-index: 1000;
+  left: 10%;
+}
+
+.input-error {
+  border: 1px solid red; /* Change border color to red */
+}
+
+/* Adjustments for responsiveness */
+@media (max-width: 768px) {
+  .text-field-container {
+    padding: 10px; /* Add padding for smaller screens */
+  }
+  .labelT {
+    font-size: 14px; /* Slightly smaller font for mobile */
+    left: 12%;
+  }
+  .input-text {
+    font-size: 14px; /* Slightly smaller font for mobile */
+  }
+}
