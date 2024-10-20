@@ -1032,7 +1032,7 @@ const bookTransportation = async (req, res) => {
     await newBooking.save();
 
     // Optionally update the transportation availability if required
-    transportation.availability = false; // Mark it as not available after booking
+    // transportation.availability = false; // Mark it as not available after booking
     await transportation.save();
 
     // Respond back with success message and booking details
