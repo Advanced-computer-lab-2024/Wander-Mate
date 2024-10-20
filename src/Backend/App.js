@@ -46,6 +46,7 @@ const {
   viewAttendedActivities,
   viewAttendedItineraries,
   changePasswordTourist,
+  bookTransportation,
 } = require("./Routes/touristController");
 const {
   createSeller,
@@ -130,6 +131,7 @@ const {
   getAdvertisers,
   uploadAdvertiserDocuments,
   changePasswordAdvertiser,
+  addTransportation,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -327,3 +329,5 @@ app.put(
 app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
 app.patch("/SellerarchiveProduct/:productId", SellerarchiveProduct);
 app.get("/viewAllComplaints", viewAllComplaints);
+app.post("/bookTransportation",bookTransportation);
+app.post("/addTransportation",addTransportation);

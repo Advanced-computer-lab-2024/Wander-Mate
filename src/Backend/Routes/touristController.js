@@ -11,6 +11,7 @@ const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
 const bookingSchema = require("../Models/bookings.js");
+const TransportationModel = require('../Models/transportation.js');
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -1009,6 +1010,40 @@ const changePasswordTourist = async (req, res) => {
   }
 };
 
+
+const bookTransportation = async (req, res) => {
+  try {
+    const { itemId,itemModel ,userId,bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
+
+    // Check if the transportation option exists and is available
+    const transportation = await TransportationModel.findById(itemId);
+    if (!transportation || !transportation.availability) {
+      return res.status(404).json({ message: "Transportation option not found or not available." });
+    }
+
+    // Create a new booking record
+    const newBooking = new bookingSchema({
+      itemId,
+      itemModel,
+      userId,
+      bookedDate
+      // You can add more details if needed
+    });
+    await newBooking.save();
+
+    // Optionally update the transportation availability if required
+    transportation.availability = false; // Mark it as not available after booking
+    await transportation.save();
+
+    // Respond back with success message and booking details
+    res.status(200).json({ message: "Transportation booked successfully!", booking: newBooking });
+  } catch (err) {
+    console.error("Error booking transportation:", err);
+    res.status(500).json({ message: "Unable to book transportation." });
+  }
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -1041,4 +1076,5 @@ module.exports = {
   viewAttendedActivities,
   viewAttendedItineraries,
   changePasswordTourist,
+  bookTransportation,
 };

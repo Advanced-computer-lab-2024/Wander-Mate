@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const ObjectId = require("mongoose").Types.ObjectId;
 const Itinerary = require("../Models/itinerary.js");
 const Attraction = require("../Models/attractions.js");
+const TransportationModel = require("../Models/transportation.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -371,6 +372,39 @@ const changePasswordAdvertiser = async (req, res) => {
   }
 };
 
+const addTransportation = async (req, res) => {
+  try {
+    // Destructure transportation fields from the request body
+    const { advertiserId, availability } = req.body;
+
+    // Basic validation
+    if (!advertiserId) {
+      return res.status(400).json({ error: "Advertiser ID is required." });
+    }
+
+    // Check if the advertiser exists
+    const advertiser = await advertiserModel.findById(advertiserId);
+    if (!advertiser) {
+      return res.status(404).json({ error: "Advertiser not found." });
+    }
+
+    // Create a new transportation instance
+    const transportation = await TransportationModel.create({
+      advertiserId, // Link transportation to the advertiser
+      availability: availability !== undefined ? availability : true, // Default to true if not provided
+    });
+
+    // Respond with success and the transportation data
+    res.status(200).json({
+      message: "Transportation added successfully!",
+      transportation,
+    });
+  } catch (err) {
+    console.error("Error adding transportation:", err);
+    res.status(400).json({ error: "Failed to add transportation." });
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -386,4 +420,5 @@ module.exports = {
   getAdvertisers,
   uploadAdvertiserDocuments,
   changePasswordAdvertiser,
+  addTransportation,
 };
