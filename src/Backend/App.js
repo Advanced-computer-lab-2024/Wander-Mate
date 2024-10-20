@@ -47,7 +47,10 @@ const {
   viewAttendedItineraries,
   changePasswordTourist,
   bookTransportation,
+  rateProduct,
+  updateProductRatings,
 } = require("./Routes/touristController");
+
 const {
   createSeller,
   readSeller,
@@ -299,6 +302,8 @@ app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
 app.post("/changePasswordTourist", changePasswordTourist);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
+app.post("/rateProduct", rateProduct);
+app.put("/updateProductRatings/:productId", updateProductRatings);
 app.put(
   "/uploadProductImage/:productId",
   upload.single("image"),

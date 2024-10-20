@@ -1043,6 +1043,65 @@ const bookTransportation = async (req, res) => {
   }
 };
 
+const rateProduct = async (req, res) => {
+  const { userId, productId, rating } = req.body;
+  try {
+    const newRating = await RatingModel.create({
+      itemId: productId, // Refers to the product being rated
+      userId, // Refers to the user rating the product
+      rating,
+    });
+    await axios.put(
+      `http://localhost:8000/updateProductRatings/${productId}`
+    );
+    res
+      .status(200)
+      .json({ message: "Rating posted successfully", rating: newRating });
+  } catch (error) {
+    console.error("Error posting rating:", error.message);
+    res
+      .status(400)
+      .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+const updateProductRatings = async (req, res) => {
+  const { productId } = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(productId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      const updatedProduct = await Product.findByIdAndUpdate(
+        { _id: productId },
+        {
+          ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        product: updatedProduct, // Return the updated product data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this product." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1077,4 +1136,6 @@ module.exports = {
   viewAttendedItineraries,
   changePasswordTourist,
   bookTransportation,
+  rateProduct,
+  updateProductRatings,
 };
