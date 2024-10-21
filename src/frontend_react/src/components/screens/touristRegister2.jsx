@@ -2,107 +2,56 @@ import React from "react";
 import Stepper from "../ui/stepper";
 import "../../assets/css/register.css";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-const TouristRegister = () => {
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons for visibility toggle
+
+const TouristRegister2 = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [fullname, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobilenumber, setMobileNumber] = useState("");
-  const [nationality, setNationality] =  useState("");
-  const [dob, setDOB] = useState("");
-  const [role, setRole] = useState("");
-  const [points,setPoints] = useState("");
-
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [username, setUsername] = useState(sessionStorage.getItem("username"));
+  const [fullname, setFullName] = useState(sessionStorage.getItem("fullname"));
+  const [email, setEmail] = useState(sessionStorage.getItem("email"));
+  const [mobilenumber, setMobileNumber] = useState(sessionStorage.getItem("mobilenumber"));
+  const [nationality, setNationality] = useState(sessionStorage.getItem("nationality"));
+  const [dob, setDOB] = useState(sessionStorage.getItem("dob"));
+  const [role, setRole] = useState(sessionStorage.getItem("role"));
+  const [points, setPoints] = useState(sessionStorage.getItem("points"));
 
-  useEffect(() => {
-    const u = sessionStorage.getItem("username");
-    if (u) {
-      setUsername(u);
-    }
-  }, []);
 
-  useEffect(() => {
-    const e = sessionStorage.getItem("email");
-    if (e) {
-      setEmail(e);
-    }
-  }, []);
-
-  useEffect(() => {
-    const f = sessionStorage.getItem("fullname");
-    if (f) {
-      setFullName(f);
-    }
-  }, []);
-
-  useEffect(() => {
-    const m = sessionStorage.getItem("mobilenumber");
-    if (m) {
-      setMobileNumber(m);
-    }
-  }, []);
-
-  useEffect(() => {
-    const n = sessionStorage.getItem("nationality");
-    if (n) {
-      setNationality(n);
-    }
-  }, []);
-
-  useEffect(() => {
-    const d = sessionStorage.getItem("dob");
-    if (d) {
-      setDOB(d);
-    }
-  }, []); 
-
-  useEffect(() => {
-    const r = sessionStorage.getItem("role");
-    if (r) {
-      setRole(r);
-    }
-  }, []);
-
-  useEffect(() => {
-    const p = sessionStorage.getItem("points");
-    if (p) {
-      setPoints(p);
-    }
-  }, []);
 
   const handleNextClick = async () => {
     try {
-      const response = await axios.put("http://localhost:8000/checkUserName", {
-        username,
+      const response = await axios.post("http://localhost:8000/touristRegister", {
+        Username: username,
+        FullName: fullname,
+        Password: password,
+        Email: email,
+        MobileNumber: mobilenumber,
+        Nationality: nationality,
+        DOB: dob,
+        Role: role,
+        Points: points,
       });
       if (response.status === 200) {
-        sessionStorage.setItem("username", username); // Store the username in session storage
-        sessionStorage.setItem("email", email);
-        sessionStorage.setItem("fullname", fullname);
-        sessionStorage.setItem("mobilenumber", mobilenumber);
-        sessionStorage.setItem("nationality", nationality);
-        sessionStorage.setItem("dob", dob);
-        sessionStorage.setItem("role", role);
-        sessionStorage.setItem("points", points);
-        navigate("/touristPassword"); // Navigate to the next page
+        sessionStorage.setItem("password", password); // Store the password in session storage
+        navigate("/touristHome"); // Navigate to the next page
       } else {
-        // Handle the case where the request was not successful
-        setErrorMessage("Username is taken, please try anotherone");
+        setErrorMessage("Password is not valid, please try again.");
       }
     } catch (error) {
-      // Handle any error that occurred during the request
       setErrorMessage(
         "Error: " + (error.response?.data?.message || "Please try again later.")
       );
     }
   };
-  const isNextDisabled = username.trim() === "" ||fullname.trim() === ""|| email.trim() === "" ||mobilenumber.trim() === "" || 
-  nationality.trim() === "" || dob.trim() === "" || role.trim() === "" || points.trim() === "";
 
-  const step = 2;
+  const isNextDisabled = password.trim() === "";
+
+  const step = 3;
+
   return (
     <div className="home-page">
       <div className="background"></div>
@@ -138,163 +87,51 @@ const TouristRegister = () => {
                 Already have an account?{" "}
                 <span className="login-link">Log in</span>
               </p>
-              <Stepper thisStep={step} page={"/touristRegister"} />
+              <Stepper thisStep={step} page={"/sellerRegister"} />
               <div className="text-field-container">
                 <div className="frameT">
-                  <label className="labelT">Username</label>
+                  <label className="labelT">Password</label>
                 </div>
                 <div className="input-field">
                   <input
-                    type="text"
+                    type={showPassword ? "text" : "password"} // Toggle between text and password
                     className={`input-text ${
                       errorMessage ? "input-error" : ""
                     }`}
-                    value={username}
-                    placeholder="Your username"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
                     style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setUsername(e.target.value)}
+                    required
                   />
-                  {/* <div className="icon"> /* Icon goes here */}
+                  <div className="icon-field">
+                    <span
+                      className="icon"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                      {/* Toggle icon */}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Email</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className="input-text"
-                    value={email}
-                    placeholder="Your email"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Full Name</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={fullname}
-                    placeholder="Your name"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Mobile Number</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={mobilenumber}
-                    placeholder="Your mobile number"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Nationality</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={nationality}
-                    placeholder="Your mobile number"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setNationality(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Date of birth</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="date"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={dob}
-                    placeholder="Select your date of birth"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setDOB(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Role</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={role}
-                    placeholder="Your role"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setRole(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Points</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={role}
-                    placeholder="Your points"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setPoints(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
+                {errorMessage && (
+                  <div className="error-message">{errorMessage}</div>
+                )}
+                <button
+                  className="signup-btn"
+                  onClick={handleNextClick}
+                  disabled={isNextDisabled}
+                >
+                  Regsiter
+                </button>
               </div>
             </div>
           </div>
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
-          <button
-            className="signup-btn"
-            onClick={handleNextClick}
-            disabled={isNextDisabled}
-          >
-            Next
-          </button>
         </div>
       </div>
     </div>
   );
+
 };
 
-export default TouristRegister;
+export default TouristRegister2;

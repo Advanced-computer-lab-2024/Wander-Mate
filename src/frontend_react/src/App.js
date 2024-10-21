@@ -7,6 +7,8 @@ import SellerRegister from "./components/screens/sellerRegister";
 import TourGuideRegister from "./components/screens/tourGuideRegister";
 import AdvertiserRegister from "./components/screens/advertiserRegister";
 import SellerRegister2 from "./components/screens/sellerRegister2";
+import  TouristRegister2 from "./components/screens/touristRegister2";
+
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
           <Route path="/guideRegister" element={<TourGuideRegister />} />
           <Route path="/advertiserRegister" element={<AdvertiserRegister />} />
           <Route path="/sellerPassword" element={<SellerRegister2 />} />
+          <Route path="/touristPassword" element={<TouristRegister2 />} />
         </Routes>
       </Router>
     </div>
