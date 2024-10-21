@@ -7,7 +7,7 @@ import axios from "axios";
 const SellerRegister = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -18,12 +18,12 @@ const SellerRegister = () => {
     }
   }, []);
 
-    useEffect(() => {
-      const e = sessionStorage.getItem("email");
-      if (e) {
-        setEmail(e);
-      }
-    }, []);
+  useEffect(() => {
+    const e = sessionStorage.getItem("email");
+    if (e) {
+      setEmail(e);
+    }
+  }, []);
 
   const handleNextClick = async () => {
     try {
@@ -46,7 +46,7 @@ const SellerRegister = () => {
     }
   };
 
-  const isNextDisabled = username.trim() === "";
+  const isNextDisabled = username.trim() === "" || email.trim() === "";
 
   const step = 2;
   return (

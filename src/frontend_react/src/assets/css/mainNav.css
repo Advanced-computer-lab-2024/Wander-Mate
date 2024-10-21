@@ -17,6 +17,7 @@
 
 .main-nav-bg {
   background-color: rgba(0, 0, 0, 0.7);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .main-nav.hidden {
@@ -130,6 +131,7 @@
   top: 8.33%;
   bottom: 8.33%;
 }
+
 
 /* Additional Vectors */
 .vector-4 {

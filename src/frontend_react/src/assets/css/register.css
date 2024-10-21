@@ -76,6 +76,11 @@
 
 .signup-btn:disabled {
   opacity: 0.2;
+  cursor: default;
+}
+
+.signup-btn:disabled:hover {
+    background: #ff7a00;
 }
 
 /* Text field container */
