@@ -96,6 +96,54 @@
   position: relative; /* Add this */
 }
 
+/* Dropdown container to hold select and custom arrow */
+.dropdown-container {
+  position: relative; /* Relative positioning for the arrow */
+  width: 100%; /* Full width */
+}
+
+/* Dropdown styling */
+.dropdown {
+  width: 100%; /* Full width */
+  padding: 12px 30px 12px 10px; /* Top, Right, Bottom, Left padding */
+  font-size: 16px; /* Font size to match text field */
+  border: 1px solid #ccc; /* Border styling */
+  border-radius: 4px; /* Rounded corners */
+  background-color: #fff; /* Background color */
+  appearance: none; /* Remove default dropdown arrow */
+  cursor: pointer; /* Pointer cursor */
+  height: 48px; /* Set height to match text field */
+  box-sizing: border-box; /* Include padding and border in width and height */
+}
+
+/* Custom arrow styling */
+.custom-arrow {
+  position: absolute; /* Absolute positioning */
+  top: 50%; /* Center vertically */
+  right: 10px; /* Position from the right */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+  pointer-events: none; /* Prevent interaction with the arrow */
+  font-size: 16px; /* Font size for the arrow */
+  color: #666; /* Color for the arrow */
+}
+
+/* Ensure dropdown maintains rounded edges */
+.dropdown-container::after {
+  content: ''; /* Create a pseudo-element */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 4px; /* Match the border radius */
+  border: 1px solid #ccc; /* Match the border */
+  pointer-events: none; /* Prevent interaction */
+  z-index: -1; /* Send to back */
+}
+
+
+
+
 /* Frame */
 .frameT {
   width: 100%;

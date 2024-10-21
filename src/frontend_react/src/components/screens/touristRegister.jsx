@@ -17,6 +17,27 @@ const TouristRegister = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [nations, setNations] = useState([]); // State to store fetched nations
+
+  useEffect(() => {
+    // Fetch nations when the component mounts
+    const fetchNations = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/getNations");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const nations = await response.json();
+        setNations(nations); // Set the fetched nations to state
+      } catch (error) {
+        console.error("Error fetching nations:", error);
+        alert("Could not load nationalities. Please try again later.");
+      }
+    };
+
+    fetchNations();
+  }, []);
+
   useEffect(() => {
     const u = sessionStorage.getItem("username");
     if (u) {
@@ -213,18 +234,24 @@ const TouristRegister = () => {
                 <div className="frameT">
                   <label className="labelT">Nationality</label>
                 </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className={`input-text ${
-                      errorMessage ? "input-error" : ""
-                    }`}
-                    value={nationality}
-                    placeholder="Your mobile number"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setNationality(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
+                <div  className="dropdown-container">
+                <select
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                className="dropdown "
+              >
+                <option value="" disabled>
+                  Select your nationality
+                </option>
+                {nations.map((nation) => (
+                  <option key={nation._id} value={nation._id}>
+                    {nation.country_name}
+                  </option>
+                ))}
+              </select>
+              <div className="custom-arrow">▼</div> {/* Custom arrow */}
+              {/* <div className="icon"> /* Icon goes here */}
+                  </div>   
                 </div>
               </div>
               <div className="text-field-container">
@@ -293,7 +320,7 @@ const TouristRegister = () => {
           </button>
         </div>
       </div>
-    </div>
+    
   );
 };
 

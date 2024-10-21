@@ -2,41 +2,31 @@ import React from "react";
 import Stepper from "../ui/stepper";
 import "../../assets/css/register.css";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-const AdvertiserRegister = () => {
-    const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons for visibility toggle
 
+const TourGuideRegister2 = () => {
+  const navigate = useNavigate();
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const r = sessionStorage.getItem("username");
-    if (r) {
-      setUsername(r);
-    }
-  }, []);
-
-  useEffect(() => {
-    const e = sessionStorage.getItem("email");
-    if (e) {
-      setEmail(e);
-    }
-  }, []);
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [username, setUsername] = useState(sessionStorage.getItem("username"));
+  const [email, setEmail] = useState(sessionStorage.getItem("email"));
 
   const handleNextClick = async () => {
     try {
-      const response = await axios.put("http://localhost:8000/checkUserName", {
-        username,
+      const response = await axios.post("http://localhost:8000/createTourGuide", {
+        Username: username,
+        Password: password,
+        Email: email,
       });
       if (response.status === 200) {
-        sessionStorage.setItem("username", username); // Store the username in session storage
-        sessionStorage.setItem("email", email);
-        navigate("/advertiserPassword"); // Navigate to the next page
+        sessionStorage.setItem("password", password); // Store the password in session storage
+        navigate("/tourguideHome"); // Navigate to the next page
       } else {
         // Handle the case where the request was not successful
-        setErrorMessage("Username is taken, please try anotherone");
+        setErrorMessage("Password is not valid, please try again.");
       }
     } catch (error) {
       // Handle any error that occurred during the request
@@ -46,9 +36,10 @@ const AdvertiserRegister = () => {
     }
   };
 
-  const isNextDisabled = username.trim() === "" || email.trim() === "";
+  const isNextDisabled = password.trim() === "";
 
-  const step = 2;
+  const step = 3;
+
   return (
     <div className="home-page">
       <div className="background"></div>
@@ -87,53 +78,47 @@ const AdvertiserRegister = () => {
               <Stepper thisStep={step} page={"/sellerRegister"} />
               <div className="text-field-container">
                 <div className="frameT">
-                  <label className="labelT">Username</label>
+                  <label className="labelT">Password</label>
                 </div>
                 <div className="input-field">
                   <input
-                    type="text"
+                    type={showPassword ? "text" : "password"} // Toggle between text and password
                     className={`input-text ${
                       errorMessage ? "input-error" : ""
                     }`}
-                    value={username}
-                    placeholder="Your username"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
                     style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setUsername(e.target.value)}
+                    required
                   />
-                  {/* <div className="icon"> /* Icon goes here */}
+                  <div className="icon-field">
+                    <span
+                      className="icon"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+                      {/* Toggle icon */}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="text-field-container">
-                <div className="frameT">
-                  <label className="labelT">Email</label>
-                </div>
-                <div className="input-field">
-                  <input
-                    type="text"
-                    className="input-text"
-                    value={email}
-                    placeholder="Your email"
-                    style={{ backgroundColor: "transparent" }}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {/* <div className="icon"> /* Icon goes here */}
-                </div>
+                {errorMessage && (
+                  <div className="error-message">{errorMessage}</div>
+                )}
+                <button
+                  className="signup-btn"
+                  onClick={handleNextClick}
+                  disabled={isNextDisabled}
+                >
+                  Regsiter
+                </button>
               </div>
             </div>
           </div>
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
-          <button
-            className="signup-btn"
-            onClick={handleNextClick}
-            disabled={isNextDisabled}
-          >
-            Next
-          </button>
         </div>
       </div>
     </div>
   );
-
 };
- 
-export default AdvertiserRegister;
+
+export default TourGuideRegister2;
