@@ -1,6 +1,8 @@
 import React from "react";
 import "../../assets/css/mainNav.css";
+import "../../assets/css/smallButton.css";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MainNav = ({ targetId1, targetId2 }) => {
   const handleClick = (event) => {
@@ -9,6 +11,11 @@ const MainNav = ({ targetId1, targetId2 }) => {
     if (target) {
       target.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const navigate = useNavigate();
+  const handleRegister = () => {
+    navigate("/registerStart");
   };
 
   const [isVisible, setIsVisible] = useState(true);
@@ -78,7 +85,20 @@ const MainNav = ({ targetId1, targetId2 }) => {
         </a>
       </div>
       <div className="user-profile">
-        <svg
+        <span
+          className="smallButton"
+          style={{ left: "82.5%" }}
+          onClick={handleRegister}
+        >
+          <span className="smallButton-label">Signup</span>
+        </span>
+        <span
+          className="smallButton smallButton-secondary"
+          style={{ left: "88%" }}
+        >
+          <span className="smallButton-label">Login</span>
+        </span>
+        {/* <svg
           width="30"
           height="30"
           viewBox="0 0 30 30"
@@ -97,7 +117,7 @@ const MainNav = ({ targetId1, targetId2 }) => {
             d="M15 26.25C21.2131 26.25 26.25 21.2131 26.25 15C26.25 8.78687 21.2131 3.75 15 3.75C8.78687 3.75 3.75 8.78687 3.75 15C3.75 21.2131 8.78687 26.25 15 26.25ZM15 27.5C21.9037 27.5 27.5 21.9037 27.5 15C27.5 8.09625 21.9037 2.5 15 2.5C8.09625 2.5 2.5 8.09625 2.5 15C2.5 21.9037 8.09625 27.5 15 27.5Z"
             fill="white"
           />
-        </svg>
+        </svg> */}
       </div>
     </div>
   );

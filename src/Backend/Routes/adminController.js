@@ -567,7 +567,9 @@ const updatePreferenceTagById = async (req, res) => {
       return res.status(404).json({ message: "Category not found" });
     }
     // Check if the new category name already exists
-    const categoryWithSameName = await PreferenceTags.findOne({ Name: newName });
+    const categoryWithSameName = await PreferenceTags.findOne({
+      Name: newName,
+    });
     if (categoryWithSameName) {
       return res
         .status(400)
@@ -668,7 +670,6 @@ const getID = async (req, res) => {
   }
 };
 
-
 const getCategories = async (req, res) => {
   try {
     const db = mongoose.connection;
@@ -695,66 +696,66 @@ const getTags = async (req, res) => {
 
 /////////////////////Sprint 2 Nadeem/////////////////////////////////
 const replytoComplaints = async (req, res) => {
-  const { complaintId } = req.params; 
-  const { Body } = req.body; 
+  const { complaintId } = req.params;
+  const { Body } = req.body;
 
   if (!Body) {
-      return res.status(400).json({ message: "Body is required for the reply" });
+    return res.status(400).json({ message: "Body is required for the reply" });
   }
 
   try {
-      // Find the complaint by its ID
-      const complaint = await Complaints.findById(complaintId);
-      if (!complaint) {
-          return res.status(404).json({ message: "Complaint not found" });
-      }
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
 
-      // Ensure replies array exists
-      if (!complaint.replies) {
-          complaint.replies = [];
-      }
+    // Ensure replies array exists
+    if (!complaint.replies) {
+      complaint.replies = [];
+    }
 
-      // Create a new reply object
-      const reply = {
-          Body,
-          Date: Date.now(),
-      };
+    // Create a new reply object
+    const reply = {
+      Body,
+      Date: Date.now(),
+    };
 
-      // Push the reply to the replies array
-      complaint.replies.push(reply);
+    // Push the reply to the replies array
+    complaint.replies.push(reply);
 
-      // Save the updated complaint with the reply
-      await complaint.save();
+    // Save the updated complaint with the reply
+    await complaint.save();
 
-      return res.status(200).json({ message: "Reply added successfully", complaint });
+    return res
+      .status(200)
+      .json({ message: "Reply added successfully", complaint });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Internal server error" });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 ///////////////////////////////////////////////////////////////////////
 
 //////////////////Sprint 2 Donny
-const acceptRejectUser  = async (req, res) => {
+const acceptRejectUser = async (req, res) => {
   try {
     const { userId, userType, decision } = req.body; // userType can be 'tourGuide', 'advertiser', or 'seller'
     let user;
     // Find the user based on userType
     switch (userType) {
-      case 'tourGuide':
+      case "tourGuide":
         user = await tourGuide.findById(userId);
         break;
-      case 'advertiser':
+      case "advertiser":
         user = await Advertiser.findById(userId);
         break;
-      case 'seller':
+      case "seller":
         user = await Seller.findById(userId);
         break;
       default:
-        return res.status(400).json({ message: 'Invalid user type' });
+        return res.status(400).json({ message: "Invalid user type" });
     }
 
     // Check if the user exists
@@ -763,26 +764,28 @@ const acceptRejectUser  = async (req, res) => {
     }
 
     // Update the user status based on decision
-    if (decision === 'accept') {
-      user.status = 'accepted';
-    } else if (decision === 'reject') {
-      user.status = 'rejected';
+    if (decision === "accept") {
+      user.status = "accepted";
+    } else if (decision === "reject") {
+      user.status = "rejected";
     } else {
-      return res.status(400).json({ message: 'Invalid decision' });
+      return res.status(400).json({ message: "Invalid decision" });
     }
 
     // Save the updated user
     await user.save();
-    res.status(200).json({ message: `${userType} status updated successfully`, user });
+    res
+      .status(200)
+      .json({ message: `${userType} status updated successfully`, user });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error updating user status' });
+    res.status(500).json({ message: "Error updating user status" });
   }
 };
 const AdminarchiveProduct = async (req, res) => {
   try {
     const { productId } = req.params; // Get product ID from request parameters
-    const { isArchived } = req.body;  // Get the new archive status from request body
+    const { isArchived } = req.body; // Get the new archive status from request body
 
     // Find the product by ID and update its isArchived status
     const product = await productModel.findByIdAndUpdate(
@@ -796,7 +799,9 @@ const AdminarchiveProduct = async (req, res) => {
     }
 
     const status = isArchived ? "archived" : "unarchived";
-    res.status(200).json({ message: `Product ${status} successfully!`, product });
+    res
+      .status(200)
+      .json({ message: `Product ${status} successfully!`, product });
   } catch (err) {
     console.error("Error archiving/unarchiving product:", err);
     res.status(400).json({ error: "Failed to archive/unarchive product." });
@@ -828,14 +833,16 @@ const uploadProductImage = async (req, res) => {
     // Save the updated product
     await product.save();
 
-    res.status(200).json({ message: "Product image uploaded successfully!", product });
+    res
+      .status(200)
+      .json({ message: "Product image uploaded successfully!", product });
   } catch (err) {
     console.error("Error uploading product image:", err);
     res.status(500).json({ error: "Failed to upload product image." });
   }
 };
 const viewDocuments = async (req, res) => {
-  const ownerId = req.params.ownerId;  // Fetch ownerId from request params
+  const ownerId = req.params.ownerId; // Fetch ownerId from request params
 
   try {
     // Step 1: Fetch all documents for the specific owner based on ownerId
@@ -843,11 +850,13 @@ const viewDocuments = async (req, res) => {
 
     // Step 2: Check if any documents are found
     if (!documents || documents.length === 0) {
-      return res.status(404).json({ message: `No documents found for user with ID: ${ownerId}.` });
+      return res
+        .status(404)
+        .json({ message: `No documents found for user with ID: ${ownerId}.` });
     }
 
     // Step 3: Prepare and return the documents in the response
-    const responseDocs = documents.map(doc => ({
+    const responseDocs = documents.map((doc) => ({
       Title: doc.Title,
       pdf: doc.pdf, // This contains the base64 string of the PDF
     }));
@@ -855,9 +864,8 @@ const viewDocuments = async (req, res) => {
     // Step 4: Send the list of documents back to the client
     return res.status(200).json({
       message: "Documents retrieved successfully.",
-      documents: responseDocs,  // Send back the documents as JSON
+      documents: responseDocs, // Send back the documents as JSON
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error retrieving documents." });
@@ -875,20 +883,19 @@ const viewAllComplaints = async (req, res) => {
     }
 
     // Step 3: Map through the complaints to prepare the response
-    const complaintList = complaints.map(complaint => ({
-      id: complaint._id,        // Unique complaint ID
-      Title: complaint.Title,   // Complaint title
-      Body: complaint.Body,     // Complaint body text
-      Date: complaint.Date,     // Date when the complaint was made
+    const complaintList = complaints.map((complaint) => ({
+      id: complaint._id, // Unique complaint ID
+      Title: complaint.Title, // Complaint title
+      Body: complaint.Body, // Complaint body text
+      Date: complaint.Date, // Date when the complaint was made
       Status: complaint.Status, // Status (pending/resolved)
     }));
 
     // Step 4: Return the list of complaints with their statuses
     return res.status(200).json({
       message: "Complaints retrieved successfully.",
-      complaints: complaintList
+      complaints: complaintList,
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error." });
@@ -926,6 +933,18 @@ const changePasswordAdmin = async (req, res) => {
   }
 };
 
+const checkUserName = async (req, res) => {
+  const { username } = req.body;
+  try {
+    const user = await userModel.findOne({ Username: username });
+    if (user) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+    return res.status(200).json({ message: "Username is available" });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -961,4 +980,5 @@ module.exports = {
   viewDocuments,
   viewAllComplaints,
   changePasswordAdmin,
+  checkUserName,
 };

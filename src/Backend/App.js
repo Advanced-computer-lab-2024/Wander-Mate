@@ -47,7 +47,10 @@ const {
   viewAttendedItineraries,
   changePasswordTourist,
   bookTransportation,
+  rateProduct,
+  updateProductRatings,
 } = require("./Routes/touristController");
+
 const {
   createSeller,
   readSeller,
@@ -98,7 +101,8 @@ const {
   AdminarchiveProduct,
   viewDocuments,
   viewAllComplaints,
-  changePasswordAdmin
+  changePasswordAdmin,
+  checkUserName,
 } = require("./Routes/adminController.js");
 
 const {
@@ -292,13 +296,15 @@ app.post("/RateGuide", RateGuide);
 app.post("/addCommentONEvent", addCommentONEvent);
 app.post("/acceptRejectUser", acceptRejectUser);
 app.post("/changePasswordTourGuide", changePasswordTourGuide);
-app.post("/changePasswordAdmin", changePasswordAdmin); 
+app.post("/changePasswordAdmin", changePasswordAdmin);
 app.post("/changePasswordAdvertiser", changePasswordAdvertiser); //changePasswordTourist
 app.post("/changePasswordTourismGoverner", changePasswordTourismGoverner);
 app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
 app.post("/changePasswordTourist", changePasswordTourist);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
+app.post("/rateProduct", rateProduct);
+app.put("/updateProductRatings/:productId", updateProductRatings);
 app.put(
   "/uploadProductImage/:productId",
   upload.single("image"),
@@ -329,5 +335,7 @@ app.put(
 app.patch("/AdminarchiveProduct/:productId", AdminarchiveProduct);
 app.patch("/SellerarchiveProduct/:productId", SellerarchiveProduct);
 app.get("/viewAllComplaints", viewAllComplaints);
+
+app.put("/checkUserName", checkUserName);
 app.post("/bookTransportation",bookTransportation);
 app.post("/addTransportation",addTransportation);
