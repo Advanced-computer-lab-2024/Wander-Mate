@@ -49,6 +49,8 @@ const {
   bookTransportation,
   rateProduct,
   updateProductRatings,
+  selectPreferences,
+  rateEvent
 } = require("./Routes/touristController");
 
 const {
@@ -119,6 +121,7 @@ const {
   uploadTourGuideDocuments,
   updateGuideRatings,
   changePasswordTourGuide,
+  deactivateItinerary
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -339,3 +342,6 @@ app.get("/viewAllComplaints", viewAllComplaints);
 app.put("/checkUserName", checkUserName);
 app.post("/bookTransportation",bookTransportation);
 app.post("/addTransportation",addTransportation);
+app.put("/deactivateItinerary", deactivateItinerary);
+app.put("/selectPreferences", selectPreferences);
+app.put("/rateEvent", rateEvent);

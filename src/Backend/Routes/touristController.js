@@ -12,6 +12,8 @@ const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
 const bookingSchema = require("../Models/bookings.js");
 const TransportationModel = require('../Models/transportation.js');
+const PreferenceTags = require('../Models/preferenceTags.js');
+
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -1101,8 +1103,85 @@ const updateProductRatings = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const selectPreferences = async (req, res) => {
+  try {
+    const { userId, historicAreas, beaches, familyFriendly, shopping, budget } = req.body; // Retrieve preferences from request body
 
+    // Check if preferences already exist for the user
 
+    let preferences = await PreferenceTags.findOne({ userId });
+    if (preferences) {
+      // Update existing preferences
+      preferences.historicAreas = historicAreas;
+      preferences.beaches = beaches;
+      preferences.familyFriendly = familyFriendly;
+      preferences.shopping = shopping;
+      preferences.budget = budget;
+      await preferences.save();
+    } else {
+      // Create new preferences if not existing
+      preferences = new PreferenceTags({
+        userId,
+        historicAreas,
+        beaches,
+        familyFriendly,
+        shopping,
+        budget,
+      });
+      await preferences.save();
+    }
+
+    res.status(200).json({
+      message: "Preferences saved successfully!",
+      preferences,
+    });
+  } catch (error) {
+    console.error("Error saving preferences:", error);
+    res.status(500).json({ message: "Unable to save preferences." });
+  }
+};
+// const rateEvent = async (req, res) => {
+//   try {
+//     const { userId, eventId, rating, review } = req.body; // Retrieve data from the request body
+
+//     // Check if the event exists
+//     const event = await attractionModel.findById(eventId);
+//     if (!event) {
+//       return res.status(404).json({ message: "Event not found." });
+//     }
+
+//     // Check if the user has already rated this event
+//     let existingRating = await RatingModel.findOne({ userId, eventId });
+//     if (existingRating) {
+//       // Update the existing rating
+//       existingRating.rating = rating;
+//       existingRating.review = review;
+//       await existingRating.save();
+      
+//       return res.status(200).json({
+//         message: "Event rating updated successfully!",
+//         rating: existingRating,
+//       });
+//     } else {
+//       // Create a new rating
+//       const newRating = new RatingModel({
+//         userId,
+//         eventId,
+//         rating,
+//         review,
+//       });
+//       await newRating.save();
+
+//       return res.status(201).json({
+//         message: "Event rated successfully!",
+//         rating: newRating,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error rating event:", error);
+//     res.status(500).json({ message: "Unable to rate event." });
+//   }
+// };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
@@ -1138,4 +1217,6 @@ module.exports = {
   bookTransportation,
   rateProduct,
   updateProductRatings,
+  selectPreferences,
+  rateEvent
 };

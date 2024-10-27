@@ -406,6 +406,33 @@ const changePasswordTourGuide = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+const deactivateItinerary = async (req, res) => {
+  try {
+    const { itineraryId } = req.body; // Get the itinerary ID from the request body
+
+    const itinerary = await Itinerary.findById(itineraryId);
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found." });
+    }
+
+    if (itinerary.bookings > 0) {
+      itinerary.isActive = false; // Deactivate the itinerary
+      await itinerary.save();
+      
+      return res.status(200).json({
+        message: "Itinerary deactivated successfully. Existing bookings remain active, but the itinerary is hidden for new bookings.",
+      });
+    } else {
+      return res.status(400).json({
+        message: "Itinerary cannot be deactivated as there are no bookings.",
+      });
+    }
+  } catch (error) {
+    console.error("Error deactivating itinerary:", error);
+    res.status(500).json({ message: "Unable to deactivate itinerary." });
+  }
+};
+
 
 
 module.exports = {
@@ -422,4 +449,5 @@ module.exports = {
   uploadTourGuideDocuments,
   updateGuideRatings,
   changePasswordTourGuide,
+  deactivateItinerary
 };
