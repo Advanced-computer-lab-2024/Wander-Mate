@@ -1130,7 +1130,6 @@ const selectPreferences = async (req, res) => {
       });
       await preferences.save();
     }
-
     res.status(200).json({
       message: "Preferences saved successfully!",
       preferences,
@@ -1218,5 +1217,5 @@ module.exports = {
   rateProduct,
   updateProductRatings,
   selectPreferences,
-  rateEvent
+  
 };

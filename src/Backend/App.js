@@ -50,7 +50,7 @@ const {
   rateProduct,
   updateProductRatings,
   selectPreferences,
-  rateEvent
+  // rateEvent
 } = require("./Routes/touristController");
 
 const {
@@ -344,4 +344,4 @@ app.post("/bookTransportation",bookTransportation);
 app.post("/addTransportation",addTransportation);
 app.put("/deactivateItinerary", deactivateItinerary);
 app.put("/selectPreferences", selectPreferences);
-app.put("/rateEvent", rateEvent);
+// app.put("/rateEvent", rateEvent);
