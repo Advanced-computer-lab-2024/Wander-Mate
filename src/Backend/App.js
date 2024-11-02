@@ -50,6 +50,7 @@ const {
   rateProduct,
   updateProductRatings,
   selectPreferences,
+  requestTouristAccountDeletion,
   // rateEvent
 } = require("./Routes/touristController");
 
@@ -68,6 +69,7 @@ const {
   uploadProductImageSeller,
   SellerarchiveProduct,
   changePasswordSeller,
+  requestSellerAccountDeletion,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -105,6 +107,7 @@ const {
   viewAllComplaints,
   changePasswordAdmin,
   checkUserName,
+  viewComplaintDetails,
 } = require("./Routes/adminController.js");
 
 const {
@@ -121,7 +124,8 @@ const {
   uploadTourGuideDocuments,
   updateGuideRatings,
   changePasswordTourGuide,
-  deactivateItinerary
+  deactivateItinerary,
+  requestTourGuideAccountDeletion,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -139,6 +143,7 @@ const {
   uploadAdvertiserDocuments,
   changePasswordAdvertiser,
   addTransportation,
+  requestAdvertiserAccountDeletion,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -344,4 +349,8 @@ app.post("/bookTransportation",bookTransportation);
 app.post("/addTransportation",addTransportation);
 app.put("/deactivateItinerary", deactivateItinerary);
 app.put("/selectPreferences", selectPreferences);
+app.delete("/requestTouristAccountDeletion/:touristID", requestTouristAccountDeletion);
+app.delete("/requestTourGuideAccountDeletion/:guideID", requestTourGuideAccountDeletion);
+app.delete("/requestAdvertiserAccountDeletion/:advertiserID",requestAdvertiserAccountDeletion);
+app.delete("/requestSellerAccountDeletion/:sellerID",requestSellerAccountDeletion);
 // app.put("/rateEvent", rateEvent);

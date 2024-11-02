@@ -7,6 +7,7 @@ const Attraction = require("../Models/attractions.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const TourGuide = require("../Models/tourGuide.js");
 const RatingsModel = require("../Models/rating.js");
+const bookingSchema = require("../Models/bookings.js");
 // Creating a tourGuide
 const createTourGuide = async (req, res) => {
   try {
@@ -432,6 +433,49 @@ const deactivateItinerary = async (req, res) => {
     res.status(500).json({ message: "Unable to deactivate itinerary." });
   }
 };
+const requestTourGuideAccountDeletion = async (req, res) => {
+  const { guideID } = req.params;
+
+  try {
+    console.log("Received request for tour guide ID:", guideID); // Debug log
+
+    // Ensure the tour guide exists and is not already marked as deleted
+    const tourGuide = await tourGuideModel.findById(guideID);
+    if (!tourGuide || tourGuide.isDeleted) {
+      return res.status(404).json({ message: "Tour Guide not found or already deleted" });
+    }
+
+    // Check for upcoming bookings related to the tour guide's itineraries or attractions
+    const currentDate = new Date();
+    const upcomingBookings = await bookingSchema.find({
+      userId: guideID,
+      paid: true,
+      bookedDate: { $gte: currentDate } // Filter for future bookings
+    });
+
+    if (upcomingBookings.length > 0) {
+      return res.status(400).json({
+        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+      });
+    }
+
+    // Mark the account as deleted (soft delete)
+    await tourGuideModel.findByIdAndUpdate(guideID, { isDeleted: true }, { new: true });
+
+    // Optionally hide all associated events, activities, and itineraries
+    await Promise.all([
+      Itinerary.updateMany({ Creator: guideID }, { isVisible: false }),
+      Attraction.updateMany({ Creator: guideID }, { isVisible: false })
+    ]);
+
+    res.status(200).json({
+      message: "Account deletion requested successfully. Profile and associated data will no longer be visible."
+    });
+  } catch (error) {
+    console.error("Error processing account deletion request:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 
 
@@ -449,5 +493,6 @@ module.exports = {
   uploadTourGuideDocuments,
   updateGuideRatings,
   changePasswordTourGuide,
-  deactivateItinerary
+  deactivateItinerary,
+  requestTourGuideAccountDeletion,
 };

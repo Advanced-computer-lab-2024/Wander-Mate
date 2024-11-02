@@ -1101,6 +1101,53 @@ const selectPreferences = async (req, res) => {
     res.status(500).json({ message: "Unable to save preferences." });
   }
 };
+
+const requestTouristAccountDeletion = async (req, res) => {
+  const { touristID } = req.params;
+
+  try {
+    console.log("Received request for tourist ID:", touristID); // Debug log
+
+    // Ensure the tourist exists without altering other fields
+    const tourist = await userModel.findById(touristID);
+    if (!tourist || tourist.isDeleted) {
+      return res.status(404).json({ message: "Tourist not found or already deleted" });
+    }
+
+    // Check for upcoming bookings for events, activities, or itineraries
+    const currentDate = new Date();
+    const upcomingBookings = await bookingSchema.find({
+      userId: touristID,
+      paid: true,
+      bookedDate: { $gte: currentDate }
+    });
+
+    if (upcomingBookings.length > 0) {
+      return res.status(400).json({
+        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+      });
+    }
+
+    // Mark the account as deleted (soft delete) using `findByIdAndUpdate`
+    await userModel.findByIdAndUpdate(touristID, { isDeleted: true }, { new: true });
+
+    // Optionally hide all associated events, activities, and itineraries
+    await Promise.all([
+      attractionModel.updateMany({ Creator: touristID }, { isVisible: false }),
+      itineraryModel.updateMany({ Creator: touristID }, { isVisible: false })
+    ]);
+
+    res.status(200).json({
+      message: "Account deletion requested successfully. Profile and associated data will no longer be visible."
+    });
+  } catch (error) {
+    console.error("Error processing account deletion request:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+
+
 // const rateEvent = async (req, res) => {
 //   try {
 //     const { userId, eventId, rating, review } = req.body; // Retrieve data from the request body
@@ -1179,5 +1226,6 @@ module.exports = {
   rateProduct,
   updateProductRatings,
   selectPreferences,
+  requestTouristAccountDeletion,
   
 };

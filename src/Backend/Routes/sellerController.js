@@ -7,6 +7,8 @@ const { query } = require("express");
 const multer = require("multer");
 const storage = multer.memoryStorage(); // Use memory storage for simplicity
 const upload = multer({ storage: storage });
+const bookingSchema = require("../Models/bookings.js"); 
+
 
 
 // Creating a seller
@@ -367,6 +369,46 @@ const changePasswordSeller = async (req, res) => {
   }
 };
 
+const requestSellerAccountDeletion = async (req, res) => {
+  const { sellerID } = req.params;
+
+  try {
+    // Ensure the seller exists
+    const seller = await sellerModel.findById(sellerID);
+    if (!seller || seller.isDeleted) {
+      return res.status(404).json({ message: "Seller not found or already deleted" });
+    }
+
+    // Check for upcoming paid bookings
+    const currentDate = new Date();
+    const upcomingBookings = await bookingSchema.find({
+      userId: sellerID,
+      paid: true,
+      bookedDate: { $gte: currentDate }
+    });
+
+    if (upcomingBookings.length > 0) {
+      return res.status(400).json({
+        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+      });
+    }
+
+    // Mark the account as deleted (soft delete)
+    seller.isDeleted = true;
+    await seller.save();
+
+    // Hide all associated products
+    await ProductModel.updateMany({ Seller: sellerID }, { isVisible: false });
+
+    res.status(200).json({
+      message: "Account deletion requested successfully. Profile and associated products will no longer be visible."
+    });
+  } catch (error) {
+    console.error("Error processing account deletion request:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 module.exports = {
   createSeller,
   updateSeller,
@@ -382,4 +424,5 @@ module.exports = {
   uploadProductImageSeller,
   SellerarchiveProduct,
   changePasswordSeller,
+  requestSellerAccountDeletion,
 };

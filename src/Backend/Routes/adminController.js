@@ -946,6 +946,30 @@ const checkUserName = async (req, res) => {
   }
 };
 
+
+const viewComplaintDetails = async (req, res) => {
+  const { complaintId } = req.params; // Extract complaint ID from request parameters
+
+  try {
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
+
+    // Check if the complaint exists
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    // Return the complaint details
+    return res.status(200).json({
+      message: "Complaint details retrieved successfully",
+      complaint,
+    });
+  } catch (error) {
+    console.error("Error retrieving complaint details:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -981,4 +1005,5 @@ module.exports = {
   viewAllComplaints,
   changePasswordAdmin,
   checkUserName,
+  viewComplaintDetails,
 };
