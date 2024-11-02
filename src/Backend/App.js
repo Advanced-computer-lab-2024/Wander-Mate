@@ -71,6 +71,7 @@ const {
   SellerarchiveProduct,
   changePasswordSeller,
   requestSellerAccountDeletion,
+  uploadPictureseller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -127,6 +128,7 @@ const {
   changePasswordTourGuide,
   deactivateItinerary,
   requestTourGuideAccountDeletion,
+  uploadPicturetourguide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -145,6 +147,7 @@ const {
   changePasswordAdvertiser,
   addTransportation,
   requestAdvertiserAccountDeletion,
+  uploadPictureadvertiser,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -324,6 +327,12 @@ app.put(
   upload.single("image"),
   uploadProductImageSeller
 );
+
+app.put("/uploadPicturetourguide/:guideID",upload.single("image"),uploadPicturetourguide);
+
+app.put("/uploadPictureadvertiser/:advertiserID",upload.single("image"),uploadPictureadvertiser);
+
+app.put("/uploadPictureseller/:sellerID",upload.single("image"),uploadPictureseller);
 
 //get attended activities, itenaries, and with whom
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);

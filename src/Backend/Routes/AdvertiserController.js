@@ -447,6 +447,39 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
   }
 };
 
+const uploadPictureadvertiser = async (req, res) => {
+  try {
+    const { advertiserID } = req.params; // Extract the product ID from the URL params
+
+    // Check if the image is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required." });
+    }
+
+    // Find the product by ID
+    const advertiser = await advertiserModel.findById(advertiserID);
+    if (!advertiser) {
+      return res.status(404).json({ error: "Adveriser not found." });
+    }
+
+    // Update the product's image
+    advertiser.picture = {
+      data: req.file.buffer, // Store the uploaded image as a buffer
+      contentType: req.file.mimetype, // Set the content type (e.g., image/png)
+    };
+
+    // Save the updated product
+    await advertiser.save();
+
+    res
+      .status(200)
+      .json({ message: "Advertiser image uploaded successfully!", advertiser });
+  } catch (err) {
+    console.error("Error uploading Advertiser image:", err);
+    res.status(500).json({ error: "Failed to upload Advertiser image." });
+  }
+};
+
 
 module.exports = {
   createActivity,
@@ -465,4 +498,5 @@ module.exports = {
   changePasswordAdvertiser,
   addTransportation,
   requestAdvertiserAccountDeletion,
+  uploadPictureadvertiser,
 };

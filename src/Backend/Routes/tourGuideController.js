@@ -477,6 +477,39 @@ const requestTourGuideAccountDeletion = async (req, res) => {
   }
 };
 
+const uploadPicturetourguide = async (req, res) => {
+  try {
+    const { guideID } = req.params; // Extract the product ID from the URL params
+
+    // Check if the image is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required." });
+    }
+
+    // Find the product by ID
+    const tourguide = await tourGuideModel.findById(guideID);
+    if (!tourguide) {
+      return res.status(404).json({ error: "tourguide not found." });
+    }
+
+    // Update the product's image
+    tourguide.picture = {
+      data: req.file.buffer, // Store the uploaded image as a buffer
+      contentType: req.file.mimetype, // Set the content type (e.g., image/png)
+    };
+
+    // Save the updated product
+    await tourguide.save();
+
+    res
+      .status(200)
+      .json({ message: "Tourguide image uploaded successfully!", tourguide });
+  } catch (err) {
+    console.error("Error uploading Tourguide image:", err);
+    res.status(500).json({ error: "Failed to upload Tourguide image." });
+  }
+};
+
 
 
 module.exports = {
@@ -495,4 +528,5 @@ module.exports = {
   changePasswordTourGuide,
   deactivateItinerary,
   requestTourGuideAccountDeletion,
+  uploadPicturetourguide,
 };
