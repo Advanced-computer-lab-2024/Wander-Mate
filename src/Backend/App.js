@@ -353,4 +353,5 @@ app.delete("/requestTouristAccountDeletion/:touristID", requestTouristAccountDel
 app.delete("/requestTourGuideAccountDeletion/:guideID", requestTourGuideAccountDeletion);
 app.delete("/requestAdvertiserAccountDeletion/:advertiserID",requestAdvertiserAccountDeletion);
 app.delete("/requestSellerAccountDeletion/:sellerID",requestSellerAccountDeletion);
+app.get('/viewComplaintDetails/:complaintId', viewComplaintDetails);
 // app.put("/rateEvent", rateEvent);
