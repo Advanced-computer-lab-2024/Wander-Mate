@@ -52,6 +52,7 @@ const {
   selectPreferences,
   requestTouristAccountDeletion,
   // rateEvent
+  calculateLoyaltyPoints,
 } = require("./Routes/touristController");
 
 const {
@@ -355,3 +356,4 @@ app.delete("/requestAdvertiserAccountDeletion/:advertiserID",requestAdvertiserAc
 app.delete("/requestSellerAccountDeletion/:sellerID",requestSellerAccountDeletion);
 app.get('/viewComplaintDetails/:complaintId', viewComplaintDetails);
 // app.put("/rateEvent", rateEvent);
+app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);

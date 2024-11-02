@@ -1192,6 +1192,62 @@ const requestTouristAccountDeletion = async (req, res) => {
 // };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+const calculateLoyaltyPoints = async (req, res) => {
+  const { amountPaid, touristID } = req.body;
+
+  try {
+    console.log("Calculating loyalty points for tourist ID:", touristID);
+
+    // Fetch the tourist's current points from the database (assuming you have a `userModel`).
+    const tourist = await userModel.findById(touristID);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Determine the level based on existing points
+    const totalPoints = tourist.Points;
+    let level;
+    if (totalPoints <= 100000) {
+      level = 1;
+    } else if (totalPoints <= 500000) {
+      level = 2;
+    } else {
+      level = 3;
+    }
+
+    // Calculate loyalty points based on level
+    let pointsEarned;
+    switch (level) {
+      case 1:
+        pointsEarned = amountPaid * 0.5;
+        break;
+      case 2:
+        pointsEarned = amountPaid * 1;
+        break;
+      case 3:
+        pointsEarned = amountPaid * 1.5;
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid level" });
+    }
+
+    // Update the user's total points in the database
+    const updatedPoints = totalPoints + pointsEarned;
+    await userModel.findByIdAndUpdate(touristID, { Points: updatedPoints }, { new: true });
+
+    res.status(200).json({
+      message: "Loyalty points calculated successfully",
+      pointsEarned,
+      updatedPoints,
+    });
+  } catch (error) {
+    console.error("Error calculating loyalty points:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -1227,5 +1283,5 @@ module.exports = {
   updateProductRatings,
   selectPreferences,
   requestTouristAccountDeletion,
-  
+  calculateLoyaltyPoints,
 };
