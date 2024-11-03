@@ -912,7 +912,12 @@ const changePasswordAdmin = async (req, res) => {
   try {
     const { id, oldPassword, newPassword } = req.body;
 
-    // Find the tour guide by id
+    // Validate inputs
+    if (!id || !oldPassword || !newPassword) {
+      return res.status(400).json({ message: "All fields (id, oldPassword, newPassword) are required" });
+    }
+
+    // Find the admin by id
     const admin = await adminModel.findById(id);
     if (!admin) {
       return res.status(404).json({ message: "admin not found" });
@@ -926,6 +931,12 @@ const changePasswordAdmin = async (req, res) => {
 
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
+    if (!salt || !newPassword) {
+      console.error("Salt or newPassword is not defined");
+      return res.status(500).json({ message: "Server error during password hashing" });
+    }
+    console.log("Hashing new password with salt:", salt);
+
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
     // Update the password
@@ -934,10 +945,11 @@ const changePasswordAdmin = async (req, res) => {
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error in changePasswordAdmin:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 const checkUserName = async (req, res) => {
   const { username } = req.body;
