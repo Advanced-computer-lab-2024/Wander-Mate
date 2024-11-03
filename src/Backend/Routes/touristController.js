@@ -1051,7 +1051,7 @@ const updateProductRatings = async (req, res) => {
     ]);
 
     if (averageRating.length > 0) {
-      const updatedProduct = await Product.findByIdAndUpdate(
+      const updatedProduct = await ProductModel.findByIdAndUpdate(
         { _id: productId },
         {
           ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
