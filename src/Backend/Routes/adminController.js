@@ -727,6 +727,7 @@ const replytoComplaints = async (req, res) => {
 
     // Push the reply to the replies array
     complaint.replies.push(reply);
+    complaint.Status = "Resolved";
 
     // Save the updated complaint with the reply
     await complaint.save();
@@ -961,7 +962,7 @@ const viewComplaintDetails = async (req, res) => {
 
     // Check if the complaint exists
     if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
+      return res.status(400).json({ message: "Complaint not found" });
     }
 
     // Return the complaint details
@@ -971,7 +972,7 @@ const viewComplaintDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving complaint details:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(400).json({ message: "Internal server error" });
   }
 };
 
