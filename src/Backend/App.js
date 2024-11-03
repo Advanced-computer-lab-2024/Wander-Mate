@@ -293,13 +293,13 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
-app.post("/BookHotel",BookHotel);
+app.post("/BookHotel", BookHotel);
 app.post("/comment-on-guide/:id", commentOnGuide);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/comment-on-guide/:id", commentOnGuide);
-app.post("/complaints", makeComplaint);
+app.post("/makeComplaint", makeComplaint);
 //upload docs
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
@@ -332,11 +332,23 @@ app.put(
   uploadProductImageSeller
 );
 
-app.put("/uploadPicturetourguide/:guideID",upload.single("image"),uploadPicturetourguide);
+app.put(
+  "/uploadPicturetourguide/:guideID",
+  upload.single("image"),
+  uploadPicturetourguide
+);
 
-app.put("/uploadPictureadvertiser/:advertiserID",upload.single("image"),uploadPictureadvertiser);
+app.put(
+  "/uploadPictureadvertiser/:advertiserID",
+  upload.single("image"),
+  uploadPictureadvertiser
+);
 
-app.put("/uploadPictureseller/:sellerID",upload.single("image"),uploadPictureseller);
+app.put(
+  "/uploadPictureseller/:sellerID",
+  upload.single("image"),
+  uploadPictureseller
+);
 
 //get attended activities, itenaries, and with whom
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
@@ -359,16 +371,28 @@ app.patch("/SellerarchiveProduct/:productId", SellerarchiveProduct);
 app.get("/viewAllComplaints", viewAllComplaints);
 
 app.put("/checkUserName", checkUserName);
-app.post("/bookTransportation",bookTransportation);
-app.post("/addTransportation",addTransportation);
+app.post("/bookTransportation", bookTransportation);
+app.post("/addTransportation", addTransportation);
 app.put("/deactivateItinerary", deactivateItinerary);
 app.put("/selectPreferences", selectPreferences);
-app.delete("/requestTouristAccountDeletion/:touristID", requestTouristAccountDeletion);
-app.delete("/requestTourGuideAccountDeletion/:guideID", requestTourGuideAccountDeletion);
-app.delete("/requestAdvertiserAccountDeletion/:advertiserID",requestAdvertiserAccountDeletion);
-app.delete("/requestSellerAccountDeletion/:sellerID",requestSellerAccountDeletion);
-app.get('/viewComplaintDetails/:complaintId', viewComplaintDetails);
+app.delete(
+  "/requestTouristAccountDeletion/:touristID",
+  requestTouristAccountDeletion
+);
+app.delete(
+  "/requestTourGuideAccountDeletion/:guideID",
+  requestTourGuideAccountDeletion
+);
+app.delete(
+  "/requestAdvertiserAccountDeletion/:advertiserID",
+  requestAdvertiserAccountDeletion
+);
+app.delete(
+  "/requestSellerAccountDeletion/:sellerID",
+  requestSellerAccountDeletion
+);
+app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 // app.put("/rateEvent", rateEvent);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 
-app.get("/viewMyComplaints",viewMyComplaints);
+app.get("/viewMyComplaints", viewMyComplaints);
