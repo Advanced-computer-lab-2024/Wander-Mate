@@ -54,9 +54,11 @@ const {
   // rateEvent
   calculateLoyaltyPoints,
   viewMyComplaints,
-  BookHotel,
+  // updateProductReviews,
+  // BookHotel,
   redeemPoints,
   searchHotel,
+  reviewProduct,
 } = require("./Routes/touristController");
 
 const {
@@ -301,7 +303,7 @@ app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/searchHotel",searchHotel);
-app.post("/BookHotel", BookHotel);
+// app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
 app.post("/makeComplaint", makeComplaint);
@@ -325,7 +327,9 @@ app.post("/changePasswordSeller", changePasswordSeller);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
+app.post("/reviewProduct",reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
+// app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
   upload.single("image"),
