@@ -316,6 +316,7 @@ app.post("/changePasswordAdvertiser", changePasswordAdvertiser); //changePasswor
 app.post("/changePasswordTourismGoverner", changePasswordTourismGoverner);
 app.post("/changePasswordAdvertiser", changePasswordAdvertiser);
 app.post("/changePasswordTourist", changePasswordTourist);
+app.post("/changePasswordSeller", changePasswordSeller);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
