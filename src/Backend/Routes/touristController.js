@@ -1784,6 +1784,6 @@ module.exports = {
   shareActivity,
   bookItinerary,
   rateEvent,
-  updateEventRatings
+  updateEventRatings,
   currencyConverter,
 };

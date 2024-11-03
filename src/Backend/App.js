@@ -62,7 +62,7 @@ const {
   shareActivity,
   rateEvent,
   bookItinerary,
-  updateEventRatings
+  updateEventRatings,
   currencyConverter,
 } = require("./Routes/touristController");
 
