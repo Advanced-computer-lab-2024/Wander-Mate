@@ -1319,15 +1319,18 @@ const calculateLoyaltyPoints = async (req, res) => {
 
 const viewMyComplaints = async (req, res) => {
   try {
-    // Step 1: Fetch all complaints from the database
-    const complaints = await Complaints.find(); // Fetches all complaints
+    // Step 1: Extract the tourist ID from the request parameters
+    const { touristID } = req.params;
 
-    // Step 2: Check if there are no complaints
+    // Step 2: Fetch complaints for the specific tourist from the database
+    const complaints = await Complaints.find({ Maker: touristID }); // Filter by Maker field
+
+    // Step 3: Check if there are no complaints for this tourist
     if (!complaints || complaints.length === 0) {
-      return res.status(404).json({ message: "No complaints found." });
+      return res.status(404).json({ message: "No complaints found for this tourist." });
     }
 
-    // Step 3: Map through the complaints to prepare the response
+    // Step 4: Map through the complaints to prepare the response
     const complaintList = complaints.map((complaint) => ({
       id: complaint._id, // Unique complaint ID
       Title: complaint.Title, // Complaint title
@@ -1336,7 +1339,7 @@ const viewMyComplaints = async (req, res) => {
       Status: complaint.Status, // Status (pending/resolved)
     }));
 
-    // Step 4: Return the list of complaints with their statuses
+    // Step 5: Return the list of complaints for the specific tourist
     return res.status(200).json({
       message: "Complaints retrieved successfully.",
       complaints: complaintList,
@@ -1346,6 +1349,50 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const redeemPoints = async (req, res) => {
+  const { touristID, pointsToRedeem } = req.body;
+
+  try {
+    //const pointsToRedeem=tourist.points;
+    // Validate input
+    if (!touristID || !pointsToRedeem) {
+      return res.status(400).json({ message: "Tourist ID and points to redeem are required." });
+    }
+
+    // Fetch the tourist's current points and wallet balance
+    const tourist = await userModel.findById(touristID);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Check if the tourist has enough points to redeem
+    if (pointsToRedeem <= 0 || pointsToRedeem > tourist.Points) {
+      return res.status(400).json({ message: "Insufficient points to redeem." });
+    }
+
+    // Calculate the cash equivalent of the points
+    const cashEquivalent = (pointsToRedeem / 1000) * 100; // 1000 points = 100 EGP
+
+    // Update the tourist's wallet balance and points
+    tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
+    tourist.Points -= pointsToRedeem; // Deduct the redeemed points
+
+    // Save the changes
+    await tourist.save();
+
+    // Respond with success message and updated balance
+    res.status(200).json({
+      message: "Points redeemed successfully.",
+      cashEquivalent,
+      updatedWalletBalance: tourist.Wallet,
+      remainingPoints: tourist.Points,
+    });
+  } catch (error) {
+    console.error("Error redeeming points:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 module.exports = {
   touristRegister,

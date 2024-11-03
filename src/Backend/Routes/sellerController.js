@@ -442,6 +442,32 @@ const uploadPictureseller = async (req, res) => {
     res.status(500).json({ error: "Failed to upload Seller image." });
   }
 };
+const viewSellerProductSalesAndQuantity = async (req, res) => {
+  try {
+    const { sellerID } = req.params; // Get the seller ID from the request parameters
+
+    // Fetch all products for the specific seller with their available quantity and sales information
+    const products = await ProductModel.find({ Seller: sellerID }, 'name quantity sales'); // Adjust the fields as necessary
+
+    // Check if products exist
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for this seller." });
+    }
+
+    // Prepare the response to include only relevant information
+    const productDetails = products.map(product => ({
+      name: product.name,
+      availableQuantity: product.quantity,
+      sales: product.sales // Assuming 'sales' is a field in your product schema
+    }));
+
+    // Return the product details
+    res.status(200).json(productDetails);
+  } catch (error) {
+    console.error("Error fetching seller product sales and quantity:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = {
   createSeller,
@@ -460,4 +486,5 @@ module.exports = {
   changePasswordSeller,
   requestSellerAccountDeletion,
   uploadPictureseller,
+  viewSellerProductSalesAndQuantity,
 };

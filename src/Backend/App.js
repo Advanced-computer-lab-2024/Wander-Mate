@@ -55,6 +55,7 @@ const {
   calculateLoyaltyPoints,
   viewMyComplaints,
   BookHotel,
+  redeemPoints,
 } = require("./Routes/touristController");
 
 const {
@@ -74,6 +75,7 @@ const {
   changePasswordSeller,
   requestSellerAccountDeletion,
   uploadPictureseller,
+  viewSellerProductSalesAndQuantity,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -237,6 +239,7 @@ app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
+app.get('/sellers/:sellerID/products/sales-and-quantity', viewSellerProductSalesAndQuantity);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -331,17 +334,9 @@ app.put(
   uploadProductImageSeller
 );
 
-app.put(
-  "/uploadPicturetourguide/:guideID",
-  upload.single("image"),
-  uploadPicturetourguide
-);
+app.put("/uploadPicturetourguide/:guideID",upload.single("image"),uploadPicturetourguide);
 
-app.put(
-  "/uploadPictureadvertiser/:advertiserID",
-  upload.single("image"),
-  uploadPictureadvertiser
-);
+app.put("/uploadPictureadvertiser/:advertiserID",upload.single("image"),uploadPictureadvertiser);
 
 app.put(
   "/uploadPictureseller/:sellerID",
@@ -394,5 +389,5 @@ app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 // app.put("/rateEvent", rateEvent);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 
-app.get("/viewMyComplaints", viewMyComplaints);
-app.patch("/markComplaintAsResolved", markComplaintAsResolved);
+app.get("/viewMyComplaints/:touristID", viewMyComplaints);
+app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);

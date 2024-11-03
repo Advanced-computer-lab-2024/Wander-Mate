@@ -882,17 +882,19 @@ const markComplaintAsResolved = async (req, res) => {
   const { complaintId } = req.params; // Extract complaint ID from the request parameters
 
   try {
-    // Find the complaint by its ID and update the status to "Resolved"
-    const updatedComplaint = await Complaints.findByIdAndUpdate(
-      complaintId,
-      { Status: "Resolved" },
-      { new: true } // Return the updated document
-    );
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
 
-    // Check if the complaint was found and updated
-    if (!updatedComplaint) {
+    // Check if the complaint was found
+    if (!complaint) {
       return res.status(404).json({ message: "Complaint not found" });
     }
+
+    // Update the status to "Resolved"
+    complaint.Status = "Resolved";
+    
+    // Save the updated complaint
+    const updatedComplaint = await complaint.save();
 
     // Send a response with the updated complaint
     return res.status(200).json({
@@ -900,10 +902,11 @@ const markComplaintAsResolved = async (req, res) => {
       complaint: updatedComplaint,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating complaint status:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 const viewAllComplaints = async (req, res) => {
@@ -1019,6 +1022,30 @@ const viewComplaintDetails = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
+const viewProductSalesAndQuantity = async (req, res) => {
+  try {
+    // Fetch all products with their available quantity and sales information
+    const products = await productModel.find({}, 'name quantity sales'); // Adjust the fields as necessary
+
+    // Check if products exist
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found." });
+    }
+
+    // Prepare the response to include only relevant information
+    const productDetails = products.map(product => ({
+      name: product.name,
+      availableQuantity: product.quantity,
+      sales: product.sales // Assuming 'sales' is a field in your product schema
+    }));
+
+    // Return the product details
+    res.status(200).json(productDetails);
+  } catch (error) {
+    console.error("Error fetching product sales and quantity:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -1057,4 +1084,5 @@ module.exports = {
   checkUserName,
   viewComplaintDetails,
   markComplaintAsResolved,
+  viewProductSalesAndQuantity,
 };
