@@ -54,6 +54,7 @@ const {
   // rateEvent
   calculateLoyaltyPoints,
   viewMyComplaints,
+  redeemPoints,
 } = require("./Routes/touristController");
 
 const {
@@ -73,6 +74,7 @@ const {
   changePasswordSeller,
   requestSellerAccountDeletion,
   uploadPictureseller,
+  viewSellerProductSalesAndQuantity,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -111,6 +113,7 @@ const {
   changePasswordAdmin,
   checkUserName,
   viewComplaintDetails,
+  viewProductSalesAndQuantity,
 } = require("./Routes/adminController.js");
 
 const {
@@ -235,6 +238,7 @@ app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
+app.get('/sellers/:sellerID/products/sales-and-quantity', viewSellerProductSalesAndQuantity);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -328,9 +332,9 @@ app.put(
   upload.single("image"),
   uploadProductImageSeller
 );
-
+app.get('/products/sales-and-quantity', viewProductSalesAndQuantity);
 app.put("/uploadPicturetourguide/:guideID",upload.single("image"),uploadPicturetourguide);
-
+app.post('/redeemPoints', redeemPoints);
 app.put("/uploadPictureadvertiser/:advertiserID",upload.single("image"),uploadPictureadvertiser);
 
 app.put("/uploadPictureseller/:sellerID",upload.single("image"),uploadPictureseller);

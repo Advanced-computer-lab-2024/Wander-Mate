@@ -1275,7 +1275,49 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const redeemPoints = async (req, res) => {
+  const { touristID, pointsToRedeem } = req.body;
 
+  try {
+    //const pointsToRedeem=tourist.points;
+    // Validate input
+    if (!touristID || !pointsToRedeem) {
+      return res.status(400).json({ message: "Tourist ID and points to redeem are required." });
+    }
+
+    // Fetch the tourist's current points and wallet balance
+    const tourist = await userModel.findById(touristID);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Check if the tourist has enough points to redeem
+    if (pointsToRedeem <= 0 || pointsToRedeem > tourist.Points) {
+      return res.status(400).json({ message: "Insufficient points to redeem." });
+    }
+
+    // Calculate the cash equivalent of the points
+    const cashEquivalent = (pointsToRedeem / 1000) * 100; // 1000 points = 100 EGP
+
+    // Update the tourist's wallet balance and points
+    tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
+    tourist.Points -= pointsToRedeem; // Deduct the redeemed points
+
+    // Save the changes
+    await tourist.save();
+
+    // Respond with success message and updated balance
+    res.status(200).json({
+      message: "Points redeemed successfully.",
+      cashEquivalent,
+      updatedWalletBalance: tourist.Wallet,
+      remainingPoints: tourist.Points,
+    });
+  } catch (error) {
+    console.error("Error redeeming points:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 
 module.exports = {
@@ -1315,4 +1357,5 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
+  redeemPoints,
 };
