@@ -54,6 +54,7 @@ const {
   // rateEvent
   calculateLoyaltyPoints,
   viewMyComplaints,
+  BookHotel,
 } = require("./Routes/touristController");
 
 const {
@@ -292,6 +293,7 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
+app.post("/BookHotel",BookHotel);
 app.post("/comment-on-guide/:id", commentOnGuide);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/search-flights", SearchFlights);
