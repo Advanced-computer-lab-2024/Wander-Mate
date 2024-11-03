@@ -1053,7 +1053,7 @@ const flagEventOrItinerary = async (req, res) => {
 
     // Determine which model to use based on the type
     if (type === "event") {
-      item = await attractionModel.findById(id); // Assuming events are stored in attractionModel
+      item = await attractions.findById(id); // Assuming events are stored in attractionModel
     } else if (type === "itinerary") {
       item = await itinerary.findById(id);
     } else {
