@@ -878,6 +878,34 @@ const viewDocuments = async (req, res) => {
   }
 };
 
+const markComplaintAsResolved = async (req, res) => {
+  const { complaintId } = req.params; // Extract complaint ID from the request parameters
+
+  try {
+    // Find the complaint by its ID and update the status to "Resolved"
+    const updatedComplaint = await Complaints.findByIdAndUpdate(
+      complaintId,
+      { Status: "Resolved" },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the complaint was found and updated
+    if (!updatedComplaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    // Send a response with the updated complaint
+    return res.status(200).json({
+      message: "Complaint status updated to resolved",
+      complaint: updatedComplaint,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 const viewAllComplaints = async (req, res) => {
   try {
     // Step 1: Fetch all complaints from the database
@@ -912,7 +940,16 @@ const changePasswordAdmin = async (req, res) => {
   try {
     const { id, oldPassword, newPassword } = req.body;
 
-    // Find the tour guide by id
+    // Validate inputs
+    if (!id || !oldPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({
+          message: "All fields (id, oldPassword, newPassword) are required",
+        });
+    }
+
+    // Find the admin by id
     const admin = await adminModel.findById(id);
     if (!admin) {
       return res.status(404).json({ message: "admin not found" });
@@ -926,6 +963,14 @@ const changePasswordAdmin = async (req, res) => {
 
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
+    if (!salt || !newPassword) {
+      console.error("Salt or newPassword is not defined");
+      return res
+        .status(500)
+        .json({ message: "Server error during password hashing" });
+    }
+    console.log("Hashing new password with salt:", salt);
+
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
     // Update the password
@@ -934,7 +979,7 @@ const changePasswordAdmin = async (req, res) => {
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error in changePasswordAdmin:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -961,7 +1006,7 @@ const viewComplaintDetails = async (req, res) => {
 
     // Check if the complaint exists
     if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
+      return res.status(400).json({ message: "Complaint not found" });
     }
 
     // Return the complaint details
@@ -971,7 +1016,7 @@ const viewComplaintDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving complaint details:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(400).json({ message: "Internal server error" });
   }
 };
 const viewProductSalesAndQuantity = async (req, res) => {
@@ -1035,5 +1080,6 @@ module.exports = {
   changePasswordAdmin,
   checkUserName,
   viewComplaintDetails,
+  markComplaintAsResolved,
   viewProductSalesAndQuantity,
 };
