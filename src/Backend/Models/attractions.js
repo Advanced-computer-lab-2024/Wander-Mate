@@ -30,6 +30,12 @@ const attractionSchema = new Schema(
     Tags: {
       type: [ObjectId],
     },
+    TicketPrices: {
+      type: [[String, Number]],
+    },
+    Price: {
+      type: Number
+    }
   },
   { timestamps: true, strict: false }
 );

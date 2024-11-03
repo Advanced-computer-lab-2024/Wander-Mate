@@ -61,6 +61,7 @@ const {
   reviewProduct,
   cancelBooking,
   shareActivity,
+  currencyConverter,
 } = require("./Routes/touristController");
 
 const {
@@ -407,3 +408,4 @@ app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAnd
 app.delete("/cancelBooking/:bookingID",cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
+app.put("/currencyConverter", currencyConverter);

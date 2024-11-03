@@ -15,6 +15,9 @@ const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
+const apiKey = 'b485c7b5c42a8362ccedd69ab6fe973e';
+const baseUrl = 'http://data.fixer.io/api/latest';
+
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -1614,6 +1617,63 @@ const shareActivity = async (req, res) => {
   }
 };
 
+const currencyConverter = async (req, res) => {
+  const baseCurrency = req.body.base || 'EGP'; // Default base currency
+  const targetCurrency = req.body.target;
+
+  if (!targetCurrency) {
+    return res.status(400).json({
+      success: false,
+      message: 'Target currency is required',
+    });
+  }
+
+  try {
+    // Fetch rates with 'EUR' as the base (due to the limitation of the free plan)
+    const response = await fetch(`${baseUrl}?access_key=${apiKey}&symbols=${baseCurrency},${targetCurrency}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch currency data');
+    }
+
+    const data = await response.json();
+
+    // Check for API success and handle potential errors
+    if (!data.success) {
+      return res.status(500).json({
+        success: false,
+        message: data.error.info || 'Error fetching data from Fixer',
+      });
+    }
+
+    const rateToEGP = data.rates[baseCurrency]; // EUR to EGP rate
+    const rateToTarget = data.rates[targetCurrency]; // EUR to target currency rate
+
+    if (!rateToEGP || !rateToTarget) {
+      return res.status(404).json({
+        success: false,
+        message: `Conversion rate for ${baseCurrency} or ${targetCurrency} not found`,
+      });
+    }
+
+    // Calculate the conversion rate from EGP to target currency
+    const conversionRate = rateToTarget / rateToEGP;
+
+    res.status(200).json({
+      success: true,
+      baseCurrency,
+      targetCurrency,
+      conversionRate,
+    });
+  } catch (error) {
+    console.error('Error fetching currency data:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while fetching currency data',
+    });
+  }
+};
+
+
 
 module.exports = {
   touristRegister,
@@ -1658,4 +1718,5 @@ module.exports = {
   reviewProduct,
   cancelBooking,
   shareActivity,
+  currencyConverter,
 };
