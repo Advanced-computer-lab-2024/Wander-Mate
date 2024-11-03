@@ -878,6 +878,34 @@ const viewDocuments = async (req, res) => {
   }
 };
 
+const markComplaintAsResolved = async (req, res) => {
+  const { complaintId } = req.params; // Extract complaint ID from the request parameters
+
+  try {
+    // Find the complaint by its ID and update the status to "Resolved"
+    const updatedComplaint = await Complaints.findByIdAndUpdate(
+      complaintId,
+      { Status: "Resolved" },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the complaint was found and updated
+    if (!updatedComplaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    // Send a response with the updated complaint
+    return res.status(200).json({
+      message: "Complaint status updated to resolved",
+      complaint: updatedComplaint,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 const viewAllComplaints = async (req, res) => {
   try {
     // Step 1: Fetch all complaints from the database
@@ -1028,4 +1056,5 @@ module.exports = {
   changePasswordAdmin,
   checkUserName,
   viewComplaintDetails,
+  markComplaintAsResolved,
 };

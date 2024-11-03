@@ -112,6 +112,7 @@ const {
   changePasswordAdmin,
   checkUserName,
   viewComplaintDetails,
+  markComplaintAsResolved,
 } = require("./Routes/adminController.js");
 
 const {
@@ -396,3 +397,4 @@ app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 
 app.get("/viewMyComplaints", viewMyComplaints);
+app.patch("/markComplaintAsResolved", markComplaintAsResolved);
