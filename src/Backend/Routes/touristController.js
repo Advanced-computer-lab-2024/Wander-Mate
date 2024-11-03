@@ -1542,6 +1542,57 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+const shareActivity = async (req, res) => {
+  const { activityId, shareMethod, email } = req.body; // Expecting activity ID and sharing method
+
+  try {
+    // Validate input
+    if (!activityId || !shareMethod) {
+      return res.status(400).json({ message: "Activity ID and sharing method are required." });
+    }
+
+    // Find the activity by ID
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found." });
+    }
+
+    // Create the shareable link (you might want to adjust the URL based on your app's routing)
+    const shareableLink = `https://yourapp.com/activities/${activityId}`;
+
+    // Handle sharing method
+    if (shareMethod === "email" && email) {
+      // Send an email (You will need to integrate an email service like Nodemailer)
+      // Example using Nodemailer (make sure to install it and configure it)
+      const nodemailer = require("nodemailer");
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // You can use any email service
+        auth: {
+          user: 'your-email@gmail.com',
+          pass: 'your-email-password',
+        },
+      });
+
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'Check out this activity!',
+        text: `I thought you might be interested in this activity: ${shareableLink}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+      return res.status(200).json({ message: "Activity shared via email successfully!" });
+    } else if (shareMethod === "link") {
+      // If sharing via link, just return the link
+      return res.status(200).json({ message: "Activity shared successfully!", link: shareableLink });
+    } else {
+      return res.status(400).json({ message: "Invalid sharing method." });
+    }
+  } catch (error) {
+    console.error("Error sharing activity:", error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 
 module.exports = {
@@ -1586,4 +1637,5 @@ module.exports = {
   redeemPoints,
   reviewProduct,
   cancelBooking,
+  shareActivity,
 };

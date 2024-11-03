@@ -60,6 +60,7 @@ const {
   searchHotel,
   reviewProduct,
   cancelBooking,
+  shareActivity,
 } = require("./Routes/touristController");
 
 const {
@@ -120,6 +121,7 @@ const {
   viewComplaintDetails,
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
+  flagEventOrItinerary,
 } = require("./Routes/adminController.js");
 
 const {
@@ -403,3 +405,5 @@ app.get("/viewProductSalesAndQuantity",viewProductSalesAndQuantity);
 app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAndQuantity);
 
 app.delete("/cancelBooking/:bookingID",cancelBooking);
+app.post("/shareActivity", shareActivity);
+app.post("/flag-event-or-itinerary", flagEventOrItinerary);
