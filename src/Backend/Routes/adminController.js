@@ -727,7 +727,6 @@ const replytoComplaints = async (req, res) => {
 
     // Push the reply to the replies array
     complaint.replies.push(reply);
-    complaint.Status = "Resolved";
 
     // Save the updated complaint with the reply
     await complaint.save();
@@ -915,7 +914,11 @@ const changePasswordAdmin = async (req, res) => {
 
     // Validate inputs
     if (!id || !oldPassword || !newPassword) {
-      return res.status(400).json({ message: "All fields (id, oldPassword, newPassword) are required" });
+      return res
+        .status(400)
+        .json({
+          message: "All fields (id, oldPassword, newPassword) are required",
+        });
     }
 
     // Find the admin by id
@@ -934,7 +937,9 @@ const changePasswordAdmin = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     if (!salt || !newPassword) {
       console.error("Salt or newPassword is not defined");
-      return res.status(500).json({ message: "Server error during password hashing" });
+      return res
+        .status(500)
+        .json({ message: "Server error during password hashing" });
     }
     console.log("Hashing new password with salt:", salt);
 
@@ -950,7 +955,6 @@ const changePasswordAdmin = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 const checkUserName = async (req, res) => {
   const { username } = req.body;
