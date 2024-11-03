@@ -11,9 +11,8 @@ const axios = require("axios");
 const RatingModel = require("../Models/rating.js");
 const Complaints = require("../Models/complaints.js"); // Correctly import the model
 const bookingSchema = require("../Models/bookings.js");
-const TransportationModel = require('../Models/transportation.js');
-const PreferenceTags = require('../Models/preferenceTags.js');
-
+const TransportationModel = require("../Models/transportation.js");
+const PreferenceTags = require("../Models/preferenceTags.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -276,7 +275,8 @@ const viewTouristProducts = async (req, res) => {
     const products = await ProductModel.find({ isArchived: false }); // Populate seller info if needed
 
     // Check if products exist
-    if (!products || products.length === 0) { // Check if the products array is empty
+    if (!products || products.length === 0) {
+      // Check if the products array is empty
       return res.status(404).json({ message: "No products available" });
     }
 
@@ -683,7 +683,7 @@ const BookFlight = async (req, res) => {
       error.response ? error.response.data : error.message
     );
     res
-      .status(500)
+      .status(400)
       .json({ message: "Failed to book flight", error: error.message });
   }
 };
@@ -703,7 +703,7 @@ const commentOnGuide = async (req, res) => {
     // Validate that the guide exists (optional but recommended)
     const guide = await TourGuide.findById(guideID);
     if (!guide) {
-      return res.status(404).json({ message: "Guide not found." });
+      return res.status(400).json({ message: "Guide not found." });
     }
 
     // Create a new comment
@@ -714,12 +714,12 @@ const commentOnGuide = async (req, res) => {
     });
 
     res
-      .status(201)
+      .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
-      .status(500)
+      .status(400)
       .json({ message: "Error posting comment", error: error.message });
   }
 };
@@ -745,7 +745,7 @@ const RateGuide = async (req, res) => {
 };
 
 const makeComplaint = async (req, res) => {
-  const { Title, Body } = req.body; // Extract title and body from the request
+  const { Title, Body, touristID } = req.body; // Extract title and body from the request
 
   // Validation: ensure the required fields are present
   if (!Title || !Body) {
@@ -757,6 +757,7 @@ const makeComplaint = async (req, res) => {
     const newComplaint = new Complaints({
       Title,
       Body,
+      Maker: touristID,
       Date: Date.now(), // This will default to the current date, can be omitted since schema has a default
     });
 
@@ -764,13 +765,13 @@ const makeComplaint = async (req, res) => {
     const savedComplaint = await newComplaint.save();
 
     // Send a response with the saved complaint
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Complaint created successfully",
       complaint: savedComplaint,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(400).json({ message: "Internal server error" });
   }
 };
 
@@ -858,7 +859,9 @@ const commentOnItinerary = async (req, res) => {
 
     // Validate input
     if (!itineraryID || !text) {
-      return res.status(400).json({ message: "Itinerary ID and comment text are required." });
+      return res
+        .status(400)
+        .json({ message: "Itinerary ID and comment text are required." });
     }
 
     // Validate that the itinerary exists (optional but recommended)
@@ -879,7 +882,9 @@ const commentOnItinerary = async (req, res) => {
       .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
-    res.status(500).json({ message: "Error posting comment", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error posting comment", error: error.message });
   }
 };
 
@@ -974,15 +979,16 @@ const changePasswordTourist = async (req, res) => {
   }
 };
 
-
 const bookTransportation = async (req, res) => {
   try {
-    const { itemId,itemModel ,userId,bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
+    const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
 
     // Check if the transportation option exists and is available
     const transportation = await TransportationModel.findById(itemId);
     if (!transportation || !transportation.availability) {
-      return res.status(404).json({ message: "Transportation option not found or not available." });
+      return res
+        .status(404)
+        .json({ message: "Transportation option not found or not available." });
     }
 
     // Create a new booking record
@@ -990,7 +996,7 @@ const bookTransportation = async (req, res) => {
       itemId,
       itemModel,
       userId,
-      bookedDate
+      bookedDate,
       // You can add more details if needed
     });
     await newBooking.save();
@@ -1000,7 +1006,10 @@ const bookTransportation = async (req, res) => {
     await transportation.save();
 
     // Respond back with success message and booking details
-    res.status(200).json({ message: "Transportation booked successfully!", booking: newBooking });
+    res.status(200).json({
+      message: "Transportation booked successfully!",
+      booking: newBooking,
+    });
   } catch (err) {
     console.error("Error booking transportation:", err);
     res.status(500).json({ message: "Unable to book transportation." });
@@ -1015,9 +1024,7 @@ const rateProduct = async (req, res) => {
       userId, // Refers to the user rating the product
       rating,
     });
-    await axios.put(
-      `http://localhost:8000/updateProductRatings/${productId}`
-    );
+    await axios.put(`http://localhost:8000/updateProductRatings/${productId}`);
     res
       .status(200)
       .json({ message: "Rating posted successfully", rating: newRating });
@@ -1067,7 +1074,8 @@ const updateProductRatings = async (req, res) => {
 };
 const selectPreferences = async (req, res) => {
   try {
-    const { userId, historicAreas, beaches, familyFriendly, shopping, budget } = req.body; // Retrieve preferences from request body
+    const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
+      req.body; // Retrieve preferences from request body
 
     // Check if preferences already exist for the user
 
@@ -1111,7 +1119,9 @@ const requestTouristAccountDeletion = async (req, res) => {
     // Ensure the tourist exists without altering other fields
     const tourist = await userModel.findById(touristID);
     if (!tourist || tourist.isDeleted) {
-      return res.status(404).json({ message: "Tourist not found or already deleted" });
+      return res
+        .status(404)
+        .json({ message: "Tourist not found or already deleted" });
     }
 
     // Check for upcoming bookings for events, activities, or itineraries
@@ -1119,34 +1129,40 @@ const requestTouristAccountDeletion = async (req, res) => {
     const upcomingBookings = await bookingSchema.find({
       userId: touristID,
       paid: true,
-      bookedDate: { $gte: currentDate }
+      bookedDate: { $gte: currentDate },
     });
 
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
-        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+        message:
+          "Account cannot be deleted. There are upcoming bookings that are paid for.",
       });
     }
 
     // Mark the account as deleted (soft delete) using `findByIdAndUpdate`
-    await userModel.findByIdAndUpdate(touristID, { isDeleted: true }, { new: true });
+    await userModel.findByIdAndUpdate(
+      touristID,
+      { isDeleted: true },
+      { new: true }
+    );
 
     // Optionally hide all associated events, activities, and itineraries
     await Promise.all([
       attractionModel.updateMany({ Creator: touristID }, { isVisible: false }),
-      itineraryModel.updateMany({ Creator: touristID }, { isVisible: false })
+      itineraryModel.updateMany({ Creator: touristID }, { isVisible: false }),
     ]);
 
     res.status(200).json({
-      message: "Account deletion requested successfully. Profile and associated data will no longer be visible."
+      message:
+        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
-
 
 // const rateEvent = async (req, res) => {
 //   try {
@@ -1165,7 +1181,7 @@ const requestTouristAccountDeletion = async (req, res) => {
 //       existingRating.rating = rating;
 //       existingRating.review = review;
 //       await existingRating.save();
-      
+
 //       return res.status(200).json({
 //         message: "Event rating updated successfully!",
 //         rating: existingRating,
@@ -1233,7 +1249,11 @@ const calculateLoyaltyPoints = async (req, res) => {
 
     // Update the user's total points in the database
     const updatedPoints = totalPoints + pointsEarned;
-    await userModel.findByIdAndUpdate(touristID, { Points: updatedPoints }, { new: true });
+    await userModel.findByIdAndUpdate(
+      touristID,
+      { Points: updatedPoints },
+      { new: true }
+    );
 
     res.status(200).json({
       message: "Loyalty points calculated successfully",
@@ -1242,7 +1262,9 @@ const calculateLoyaltyPoints = async (req, res) => {
     });
   } catch (error) {
     console.error("Error calculating loyalty points:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1275,8 +1297,6 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
-
-
 
 module.exports = {
   touristRegister,
