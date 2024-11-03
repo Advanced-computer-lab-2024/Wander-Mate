@@ -639,53 +639,59 @@ const SearchFlights = async (req, res) => {
 
 // Book Flight Function
 const BookFlight = async (req, res) => {
-  const { selectedFlightOffer, travelersInfo, paymentInfo } = req.body;
-
-  // Validate input
-  if (!selectedFlightOffer || !travelersInfo || !paymentInfo) {
-    return res.status(400).json({
-      message:
-        "Please provide the selected flight offer, travelers info, and payment info.",
-    });
-  }
-
   try {
-    // Get the OAuth access token
-    const accessToken = await getAmadeusToken();
+      const flightOrder = req.body;
+      const touristID = req.params;
 
-    // Book the flight by calling the flight-orders API
-    const response = await axios.post(
-      "https://test.api.amadeus.com/v1/booking/flight-orders",
-      {
-        data: {
-          type: "flight-order",
-          flightOffers: [selectedFlightOffer], // Selected flight offer from the search result
-          travelers: travelersInfo, // Traveler info array
-          payment: paymentInfo, // Payment information object
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
+      if (!flightOrder || !flightOrder.data) {
+          return res.status(400).json({ error: "Invalid flight order data" });
       }
-    );
 
-    // Return the booking confirmation
-    const bookingConfirmation = response.data;
-    res.status(200).json(bookingConfirmation);
-    res.send("Flight Booked");
+      const flightOffers = flightOrder.data.flightOffers;
+      const travelers = flightOrder.data.travelers;
+
+      if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
+          return res.status(400).json({ error: "Invalid flight offers or travelers data" });
+      }
+
+      // Here we assume that the user has selected a flight offer
+      // You might want to get this from the request or let the user select it
+      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer for demo purposes
+
+      // Prepare booking data
+      const bookingData = {
+          flightOffer: selectedFlightOffer,
+          travelers: travelers
+      };
+
+      // Simulate API booking process (replace with actual API call)
+      const bookingResponse = await bookFlightWithAPI(bookingData); // Mock function
+
+      // Check if booking was successful
+      if (bookingResponse.success) {
+          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details });
+      } else {
+          return res.status(500).json({ error: "Failed to book the flight." });
+      }
   } catch (error) {
-    console.error(
-      "Error booking flight:",
-      error.response ? error.response.data : error.message
-    );
-    res
-      .status(400)
-      .json({ message: "Failed to book flight", error: error.message });
+      console.error("Error processing flight order:", error);
+      return res.status(500).json({ error: "Internal server error." });
   }
 };
+
+// Mock function to simulate an API booking call
+const bookFlightWithAPI = async (bookingData) => {
+  // Simulate a successful booking response
+  return new Promise((resolve) => {
+      setTimeout(() => {
+          resolve({ success: true, details: { confirmationNumber: "ABC123", flightInfo: bookingData.flightOffer } });
+      }, 1000);
+  });
+};
+
+
+
+
 
 // Function to get Amadeus access token for Hotel API
 const getAmadeusTokenHotel = async () => {
