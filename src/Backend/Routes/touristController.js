@@ -1431,4 +1431,5 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
+  BookHotel,
 };

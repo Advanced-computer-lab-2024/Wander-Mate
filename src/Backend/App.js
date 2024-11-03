@@ -114,6 +114,7 @@ const {
   changePasswordAdmin,
   checkUserName,
   viewComplaintDetails,
+  markComplaintAsResolved,
 } = require("./Routes/adminController.js");
 
 const {
