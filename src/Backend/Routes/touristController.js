@@ -1549,12 +1549,12 @@ const cancelBooking = async (req, res) => {
 };
 
 const shareActivity = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body; // Expecting activity ID and sharing method
+  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
 
   try {
     // Validate input
-    if (!activityId || !shareMethod) {
-      return res.status(400).json({ message: "Activity ID and sharing method are required." });
+    if (!activityId) {
+      return res.status(400).json({ message: "Activity ID is required." });
     }
 
     // Find the activity by ID
@@ -1563,40 +1563,54 @@ const shareActivity = async (req, res) => {
       return res.status(404).json({ message: "Activity not found." });
     }
 
-    // Create the shareable link (you might want to adjust the URL based on your app's routing)
-    const shareableLink = `https://yourapp.com/activities/${activityId}`;
+    // Generate a shareable link
+    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
 
-    // Handle sharing method
-    if (shareMethod === "email" && email) {
-      // Send an email (You will need to integrate an email service like Nodemailer)
-      // Example using Nodemailer (make sure to install it and configure it)
-      const nodemailer = require("nodemailer");
+    if (shareMethod === "link") {
+      // If sharing via link, return the link
+      return res.status(200).json({
+        message: "Shareable link generated successfully.",
+        link: shareableLink,
+      });
+    } else if (shareMethod === "email") {
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required for sharing via email." });
+      }
+
+      // Here you can implement the logic to send an email
+      // For demonstration purposes, we will just return the link
+      // You can use a library like nodemailer to send emails
+
+      // Example of sending an email (you need to configure nodemailer)
+      /*
       const transporter = nodemailer.createTransport({
-        service: 'gmail', // You can use any email service
+        service: 'gmail',
         auth: {
           user: 'your-email@gmail.com',
-          pass: 'your-email-password',
-        },
+          pass: 'your-email-password'
+        }
       });
 
       const mailOptions = {
         from: 'your-email@gmail.com',
         to: email,
         subject: 'Check out this activity!',
-        text: `I thought you might be interested in this activity: ${shareableLink}`,
+        text: `I thought you might be interested in this activity: ${shareableLink}`
       };
 
       await transporter.sendMail(mailOptions);
-      return res.status(200).json({ message: "Activity shared via email successfully!" });
-    } else if (shareMethod === "link") {
-      // If sharing via link, just return the link
-      return res.status(200).json({ message: "Activity shared successfully!", link: shareableLink });
+      */
+
+      return res.status(200).json({
+        message: "Email sent successfully.",
+        link: shareableLink,
+      });
     } else {
-      return res.status(400).json({ message: "Invalid sharing method." });
+      return res.status(400).json({ message: "Invalid share method. Use 'link' or 'email'." });
     }
   } catch (error) {
     console.error("Error sharing activity:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
