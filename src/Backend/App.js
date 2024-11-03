@@ -53,7 +53,13 @@ const {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
-  // BookHotel,
+  // updateProductReviews,
+  // // BookHotel,
+  redeemPoints,
+  searchHotel,
+  reviewProduct,
+  cancelBooking,
+  shareActivity,
   rateEvent,
   bookItinerary,
   updateEventRatings
@@ -76,6 +82,7 @@ const {
   changePasswordSeller,
   requestSellerAccountDeletion,
   uploadPictureseller,
+  viewSellerProductSalesAndQuantity,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -115,6 +122,8 @@ const {
   checkUserName,
   viewComplaintDetails,
   markComplaintAsResolved,
+  viewProductSalesAndQuantity,
+  flagEventOrItinerary,
 } = require("./Routes/adminController.js");
 
 const {
@@ -239,6 +248,7 @@ app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
+app.get('/sellers/:sellerID/products/sales-and-quantity', viewSellerProductSalesAndQuantity);
 
 //CRUD activity
 app.get("/readActivities", readActivities);
@@ -265,6 +275,7 @@ app.get("/SellersearchProductByName", SellersearchProductByName);
 app.post("/filterProductsByPrice", filterProductsByPrice);
 app.get("/getProduct/:id", getProduct);
 app.get("/viewTouristProducts", viewTouristProducts);
+app.post("/redeempoints", redeemPoints);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
 app.get("/readHistoricalTags", readHistoricalTags);
@@ -295,13 +306,11 @@ app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
-app.post("/book-flight", BookFlight);
-// app.post("/BookHotel", BookHotel);
-app.post("/comment-on-guide/:id", commentOnGuide);
+app.post("/book-flight/:touristID", BookFlight);
+app.post("/searchHotel",searchHotel);
+// // app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
-app.post("/search-flights", SearchFlights);
-app.post("/book-flight", BookFlight);
-app.post("/comment-on-guide/:id", commentOnGuide);
+app.post("/commentOnGuide/:id", commentOnGuide);
 app.post("/makeComplaint", makeComplaint);
 //upload docs
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
@@ -323,7 +332,9 @@ app.post("/changePasswordSeller", changePasswordSeller);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
+app.post("/reviewProduct",reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
+// app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
   upload.single("image"),
@@ -335,17 +346,9 @@ app.put(
   uploadProductImageSeller
 );
 
-app.put(
-  "/uploadPicturetourguide/:guideID",
-  upload.single("image"),
-  uploadPicturetourguide
-);
+app.put("/uploadPicturetourguide/:guideID",upload.single("image"),uploadPicturetourguide);
 
-app.put(
-  "/uploadPictureadvertiser/:advertiserID",
-  upload.single("image"),
-  uploadPictureadvertiser
-);
+app.put("/uploadPictureadvertiser/:advertiserID",upload.single("image"),uploadPictureadvertiser);
 
 app.put(
   "/uploadPictureseller/:sellerID",
@@ -396,8 +399,13 @@ app.delete(
 );
 app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
-app.get("/viewMyComplaints", viewMyComplaints);
-// app.patch("/markComplaintAsResolved", markComplaintAsResolved);
-app.post("/bookItinerary",bookItinerary);
+app.get("/viewMyComplaints/:touristID", viewMyComplaints);
+// app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
+app.get("/viewProductSalesAndQuantity",viewProductSalesAndQuantity);
+app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAndQuantity);
+
+app.delete("/cancelBooking/:bookingID",cancelBooking);
+app.post("/shareActivity", shareActivity);
+app.post("/flag-event-or-itinerary", flagEventOrItinerary);app.post("/bookItinerary",bookItinerary);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);

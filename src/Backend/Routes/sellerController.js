@@ -412,34 +412,64 @@ const requestSellerAccountDeletion = async (req, res) => {
 
 const uploadPictureseller = async (req, res) => {
   try {
-    const { sellerID } = req.params; // Extract the product ID from the URL params
+    const { sellerID } = req.params; // Extract the seller ID from the URL params
 
     // Check if the image is uploaded
     if (!req.file) {
       return res.status(400).json({ error: "Image is required." });
     }
 
-    // Find the product by ID
-    const seller = await sellerModel.findById(sellerID);
-    if (!seller) {
-      return res.status(404).json({ error: "seller not found." });
+    // Update the seller's image using findByIdAndUpdate
+    const updatedSeller = await sellerModel.findByIdAndUpdate(
+      sellerID,
+      {
+        picture: {
+          data: req.file.buffer, // Store the uploaded image as a buffer
+          contentType: req.file.mimetype, // Set the content type (e.g., image/png)
+        },
+      },
+      { new: true, runValidators: true } // Options: return the updated document and run validation
+    );
+
+    // Check if the seller was found and updated
+    if (!updatedSeller) {
+      return res.status(404).json({ error: "Seller not found." });
     }
 
-    // Update the product's image
-    seller.picture = {
-      data: req.file.buffer, // Store the uploaded image as a buffer
-      contentType: req.file.mimetype, // Set the content type (e.g., image/png)
-    };
-
-    // Save the updated product
-    await seller.save();
-
-    res
-      .status(200)
-      .json({ message: "Seller image uploaded successfully!", seller });
+    res.status(200).json({
+      message: "Seller image uploaded successfully!",
+      seller: updatedSeller, // Return the updated seller object
+    });
   } catch (err) {
-    console.error("Error uploading Seller image:", err);
-    res.status(500).json({ error: "Failed to upload Seller image." });
+    console.error("Error uploading seller image:", err);
+    res.status(500).json({ error: "Failed to upload seller image." });
+  }
+};
+
+const viewSellerProductSalesAndQuantity = async (req, res) => {
+  try {
+    const { sellerID } = req.params; // Get the seller ID from the request parameters
+
+    // Fetch all products for the specific seller with their available quantity and sales information
+    const products = await ProductModel.find({ Seller: sellerID }, 'name quantity sales'); // Adjust the fields as necessary
+
+    // Check if products exist
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for this seller." });
+    }
+
+    // Prepare the response to include only relevant information
+    const productDetails = products.map(product => ({
+      name: product.name,
+      availableQuantity: product.quantity,
+      sales: product.sales // Assuming 'sales' is a field in your product schema
+    }));
+
+    // Return the product details
+    res.status(200).json(productDetails);
+  } catch (error) {
+    console.error("Error fetching seller product sales and quantity:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -460,4 +490,5 @@ module.exports = {
   changePasswordSeller,
   requestSellerAccountDeletion,
   uploadPictureseller,
+  viewSellerProductSalesAndQuantity,
 };

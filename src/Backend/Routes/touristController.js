@@ -13,7 +13,8 @@ const Complaints = require("../Models/complaints.js"); // Correctly import the m
 const bookingSchema = require("../Models/bookings.js");
 const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
-
+const ReviewModel = require("../Models/review.js");
+const Booking = require("../Models/bookings.js");
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -569,6 +570,144 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    return tokenResponse.data.access_token;
+  } catch (error) {
+    console.error(
+      "Error fetching access token:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Failed to fetch access token");
+  }
+};
+
+// Search for flights
+const SearchFlights = async (req, res) => {
+  const { origin, destination, departureDate, returnDate, travelers } = req.body;
+
+  // Validate input
+  if (!origin || !destination || !departureDate || !travelers) {
+    return res.status(400).json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Call the flight search API with the access token
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      {
+        params: {
+          originLocationCode: origin,
+          destinationLocationCode: destination,
+          departureDate,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: travelers, // Use 'adults' instead of 'travelers'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // Log the response for debugging
+    console.log("Flight search response:", response.data);
+
+    // Return the available flights
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(
+      "Error fetching flights:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to search flights", error: error.response ? error.response.data : error.message });
+  }
+};
+
+
+// Book Flight Function
+const BookFlight = async (req, res) => {
+  try {
+      const flightOrder = req.body;
+      const touristID = req.params.touristID;
+
+      if (!flightOrder || !flightOrder.data) {
+          return res.status(400).json({ error: "Invalid flight order data" });
+      }
+
+      const flightOffers = flightOrder.data.flightOffers;
+      const travelers = flightOrder.data.travelers;
+
+      if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
+          return res.status(400).json({ error: "Invalid flight offers or travelers data" });
+      }
+
+      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer for demo purposes
+
+      const bookingData = {
+          flightOffer: selectedFlightOffer,
+          travelers: travelers,
+          bookingDate: new Date()
+      };
+
+      const bookingResponse = await bookFlightWithAPI(bookingData); // Simulate booking API call
+
+      if (bookingResponse.success) {
+          const updatedTourist = await userModel.findByIdAndUpdate(
+              touristID,
+              { $push: { bookedFlights: bookingData } },
+              { new: true }
+          );
+
+          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details, updatedTourist });
+      } else {
+          return res.status(500).json({ error: "Failed to book the flight." });
+      }
+  } catch (error) {
+      console.error("Error processing flight order:", error);
+      return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+module.exports = { BookFlight };
+
+
+
+// Mock function to simulate an API booking call
+const bookFlightWithAPI = async (bookingData) => {
+  // Simulate a successful booking response
+  return new Promise((resolve) => {
+      setTimeout(() => {
+          resolve({ success: true, details: { confirmationNumber: "ABC123", flightInfo: bookingData.flightOffer } });
+      }, 1000);
+  });
+};
+
+
+
+
+
+// Function to get Amadeus access token for Hotel API
+const getAmadeusTokenHotel = async () => {
+  const apiKey = "Y9yPVu67o9SBBA4wfz9J9cjbWFHtMTqx"; // Replace with your Amadeus API key
+  const apiSecret = "I1kn9UybNBFh5TfK"; // Replace with your Amadeus API secret
+
+  try {
+    const tokenResponse = await axios.post(
+      "https://test.api.amadeus.com/v1/security/oauth2/token",
+      "grant_type=client_credentials&client_id=" +
         apiKey +
         "&client_secret=" +
         apiSecret,
@@ -589,32 +728,30 @@ const getAmadeusToken = async () => {
   }
 };
 
-// Search for flights
-const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate, travelers } =
-    req.body;
+// Function to search for hotels
+const searchHotel = async (req, res) => {
+  const { cityCode, checkInDate, checkOutDate, adults } = req.body;
 
   // Validate input
-  if (!origin || !destination || !departureDate || !travelers) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all required fields." });
+  if (!cityCode || !checkInDate || !checkOutDate || !adults) {
+    return res.status(400).json({
+      message: "Please provide city code, check-in/check-out dates, and number of adults.",
+    });
   }
 
   try {
     // Get the OAuth access token
-    const accessToken = await getAmadeusToken();
+    const accessToken = await getAmadeusTokenHotel();
 
-    // Call the flight search API with the access token
+    // Call the hotel search API
     const response = await axios.get(
-      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      "https://test.api.amadeus.com/v2/shopping/hotel-offers",
       {
         params: {
-          originLocationCode: origin,
-          destinationLocationCode: destination,
-          departureDate,
-          returnDate,
-          adults: travelers,
+          cityCode,
+          checkInDate,
+          checkOutDate,
+          adults,
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -623,70 +760,24 @@ const SearchFlights = async (req, res) => {
     );
 
     // Log the response for debugging
-    console.log("Flight search response:", response.data);
+    console.log("Hotel search response:", response.data);
 
-    // Return the available flights
-    res.status(200).json(response.data);
+    // Return the available hotel offers
+    res.status(200).json({
+      message: "Hotels retrieved successfully.",
+      hotelOffers: response.data,
+    });
   } catch (error) {
     console.error(
-      "Error fetching flights:",
+      "Error searching for hotels:",
       error.response ? error.response.data : error.message
     );
     res
       .status(500)
-      .json({ message: "Failed to search flights", error: error.message });
+      .json({ message: "Failed to search hotels", error: error.message });
   }
 };
 
-// Book Flight Function
-const BookFlight = async (req, res) => {
-  const { selectedFlightOffer, travelersInfo, paymentInfo } = req.body;
-
-  // Validate input
-  if (!selectedFlightOffer || !travelersInfo || !paymentInfo) {
-    return res.status(400).json({
-      message:
-        "Please provide the selected flight offer, travelers info, and payment info.",
-    });
-  }
-
-  try {
-    // Get the OAuth access token
-    const accessToken = await getAmadeusToken();
-
-    // Book the flight by calling the flight-orders API
-    const response = await axios.post(
-      "https://test.api.amadeus.com/v1/booking/flight-orders",
-      {
-        data: {
-          type: "flight-order",
-          flightOffers: [selectedFlightOffer], // Selected flight offer from the search result
-          travelers: travelersInfo, // Traveler info array
-          payment: paymentInfo, // Payment information object
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    // Return the booking confirmation
-    const bookingConfirmation = response.data;
-    res.status(200).json(bookingConfirmation);
-    res.send("Flight Booked");
-  } catch (error) {
-    console.error(
-      "Error booking flight:",
-      error.response ? error.response.data : error.message
-    );
-    res
-      .status(400)
-      .json({ message: "Failed to book flight", error: error.message });
-  }
-};
 
 // Book Hotel Function
 const BookHotel = async (req, res) => {
@@ -701,17 +792,17 @@ const BookHotel = async (req, res) => {
 
   try {
     // Get the OAuth access token
-    const accessToken = await getAmadeusToken();
+    const accessToken = await getAmadeusTokenHotel();
 
     // Book the hotel by calling the hotel booking API
     const response = await axios.post(
-      "https://test.api.amadeus.com/v1/booking/hotel-bookings", // replace with actual hotel booking API endpoint
+      "https://test.api.amadeus.com/v1/booking/hotel-bookings",
       {
         data: {
           type: "hotel-booking",
-          hotelOffers: [selectedHotelOffer], // Selected hotel offer from the search result
-          guests: guestsInfo, // Guest info array
-          payment: paymentInfo, // Payment information object
+          hotelOffers: [selectedHotelOffer],
+          guests: guestsInfo,
+          payment: paymentInfo,
         },
       },
       {
@@ -724,7 +815,10 @@ const BookHotel = async (req, res) => {
 
     // Return the booking confirmation
     const bookingConfirmation = response.data;
-    res.status(200).json(bookingConfirmation);
+    res.status(200).json({
+      message: "Hotel booked successfully.",
+      bookingConfirmation,
+    });
   } catch (error) {
     console.error(
       "Error booking hotel:",
@@ -1122,6 +1216,8 @@ const updateProductRatings = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 const selectPreferences = async (req, res) => {
   try {
     const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
@@ -1277,15 +1373,18 @@ const calculateLoyaltyPoints = async (req, res) => {
 
 const viewMyComplaints = async (req, res) => {
   try {
-    // Step 1: Fetch all complaints from the database
-    const complaints = await Complaints.find(); // Fetches all complaints
+    // Step 1: Extract the tourist ID from the request parameters
+    const { touristID } = req.params;
 
-    // Step 2: Check if there are no complaints
+    // Step 2: Fetch complaints for the specific tourist from the database
+    const complaints = await Complaints.find({ Maker: touristID }); // Filter by Maker field
+
+    // Step 3: Check if there are no complaints for this tourist
     if (!complaints || complaints.length === 0) {
-      return res.status(404).json({ message: "No complaints found." });
+      return res.status(404).json({ message: "No complaints found for this tourist." });
     }
 
-    // Step 3: Map through the complaints to prepare the response
+    // Step 4: Map through the complaints to prepare the response
     const complaintList = complaints.map((complaint) => ({
       id: complaint._id, // Unique complaint ID
       Title: complaint.Title, // Complaint title
@@ -1294,7 +1393,7 @@ const viewMyComplaints = async (req, res) => {
       Status: complaint.Status, // Status (pending/resolved)
     }));
 
-    // Step 4: Return the list of complaints with their statuses
+    // Step 5: Return the list of complaints for the specific tourist
     return res.status(200).json({
       message: "Complaints retrieved successfully.",
       complaints: complaintList,
@@ -1304,6 +1403,175 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const redeemPoints = async (req, res) => {
+  const { touristID, pointsToRedeem } = req.body;
+
+  try {
+    //const pointsToRedeem=tourist.points;
+    // Validate input
+    if (!touristID || !pointsToRedeem) {
+      return res.status(400).json({ message: "Tourist ID and points to redeem are required." });
+    }
+
+    // Fetch the tourist's current points and wallet balance
+    const tourist = await userModel.findById(touristID);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Check if the tourist has enough points to redeem
+    if (pointsToRedeem <= 0 || pointsToRedeem > tourist.Points) {
+      return res.status(400).json({ message: "Insufficient points to redeem." });
+    }
+
+    // Calculate the cash equivalent of the points
+    const cashEquivalent = (pointsToRedeem / 1000) * 100; // 1000 points = 100 EGP
+
+    // Update the tourist's wallet balance and points
+    tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
+    tourist.Points -= pointsToRedeem; // Deduct the redeemed points
+
+    // Save the changes
+    await tourist.save();
+
+    // Respond with success message and updated balance
+    res.status(200).json({
+      message: "Points redeemed successfully.",
+      cashEquivalent,
+      updatedWalletBalance: tourist.Wallet,
+      remainingPoints: tourist.Points,
+    });
+  } catch (error) {
+    console.error("Error redeeming points:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+const reviewProduct = async (req, res) => {
+  const { productId,userId, review } = req.body; // Only productId and review as a string
+  try {
+    // Create a new review entry
+    const newReview = await ReviewModel.create({
+      itemId: productId, // Refers to the product being reviewed
+      userId,
+      review, // Only store the review string
+    });
+
+      
+    res.status(200).json({
+      message: "Review posted successfully",
+      review: newReview,
+    });
+  } catch (error) {
+    console.error("Error posting review:", error.message);
+    res.status(400).json({
+      message: "Error posting review",
+      error: error.message,
+    });
+  }
+};
+
+const cancelBooking = async (req, res) => {
+  const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
+
+  try {
+    // Find the booking by ID
+    const booking = await Booking.findById(bookingID);
+    
+    // Check if the booking exists
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+
+    const currentDate = new Date();
+    const bookedDate = new Date(booking.bookedDate);
+    
+    // Calculate the time difference
+    const timeDifference = bookedDate - currentDate;
+
+    // Convert time difference to hours
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+    // Check if the cancellation is within the allowed period
+    if (hoursDifference < 48) {
+      return res.status(400).json({ error: "You can only cancel bookings 48 hours prior to the event." });
+    }
+
+    // If eligible, proceed to cancel the booking
+    await Booking.findByIdAndDelete(bookingID);
+
+    res.status(200).json({ message: "Booking cancelled successfully." });
+  } catch (err) {
+    console.error("Error cancelling booking:", err);
+    res.status(500).json({ error: "Failed to cancel booking." });
+  }
+};
+
+const shareActivity = async (req, res) => {
+  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
+
+  try {
+    // Validate input
+    if (!activityId) {
+      return res.status(400).json({ message: "Activity ID is required." });
+    }
+
+    // Find the activity by ID
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found." });
+    }
+
+    // Generate a shareable link
+    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
+
+    if (shareMethod === "link") {
+      // If sharing via link, return the link
+      return res.status(200).json({
+        message: "Shareable link generated successfully.",
+        link: shareableLink,
+      });
+    } else if (shareMethod === "email") {
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required for sharing via email." });
+      }
+
+      // Here you can implement the logic to send an email
+      // For demonstration purposes, we will just return the link
+      // You can use a library like nodemailer to send emails
+
+      // Example of sending an email (you need to configure nodemailer)
+      /*
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'your-email@gmail.com',
+          pass: 'your-email-password'
+        }
+      });
+
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'Check out this activity!',
+        text: `I thought you might be interested in this activity: ${shareableLink}`
+      };
+
+      await transporter.sendMail(mailOptions);
+      */
+
+      return res.status(200).json({
+        message: "Email sent successfully.",
+        link: shareableLink,
+      });
+    } else {
+      return res.status(400).json({ message: "Invalid share method. Use 'link' or 'email'." });
+    }
+  } catch (error) {
+    console.error("Error sharing activity:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1448,7 +1716,12 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
+  searchHotel,
   BookHotel,
+  redeemPoints,
+  reviewProduct,
+  cancelBooking,
+  shareActivity,
   bookItinerary,
   rateEvent,
   updateEventRatings

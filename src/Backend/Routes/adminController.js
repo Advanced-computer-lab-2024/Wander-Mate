@@ -11,7 +11,9 @@ const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const Complaints = require("../Models/complaints.js");
+const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
+const Itinerary = require("../Models/itinerary.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -704,41 +706,35 @@ const replytoComplaints = async (req, res) => {
   const { Body } = req.body;
 
   if (!Body) {
-    return res.status(400).json({ message: "Body is required for the reply" });
+      return res.status(400).json({ message: "Body is required for the reply" });
   }
 
   try {
-    // Find the complaint by its ID
-    const complaint = await Complaints.findById(complaintId);
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
+      // Find the complaint by its ID
+      const complaint = await Complaints.findById(complaintId);
+      if (!complaint) {
+          return res.status(404).json({ message: "Complaint not found" });
+      }
 
-    // Ensure replies array exists
-    if (!complaint.replies) {
-      complaint.replies = [];
-    }
+      // Create the reply object
+      const reply = {
+          Body,
+          Date: Date.now(),
+      };
 
-    // Create a new reply object
-    const reply = {
-      Body,
-      Date: Date.now(),
-    };
+      // Update the reply field in the complaint
+      complaint.reply = reply;
 
-    // Push the reply to the replies array
-    complaint.replies.push(reply);
+      // Save the updated complaint with the reply
+      await complaint.save();
 
-    // Save the updated complaint with the reply
-    await complaint.save();
-
-    return res
-      .status(200)
-      .json({ message: "Reply added successfully", complaint });
+      return res.status(200).json({ message: "Reply added successfully", complaint });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -882,17 +878,19 @@ const markComplaintAsResolved = async (req, res) => {
   const { complaintId } = req.params; // Extract complaint ID from the request parameters
 
   try {
-    // Find the complaint by its ID and update the status to "Resolved"
-    const updatedComplaint = await Complaints.findByIdAndUpdate(
-      complaintId,
-      { Status: "Resolved" },
-      { new: true } // Return the updated document
-    );
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
 
-    // Check if the complaint was found and updated
-    if (!updatedComplaint) {
+    // Check if the complaint was found
+    if (!complaint) {
       return res.status(404).json({ message: "Complaint not found" });
     }
+
+    // Update the status to "Resolved"
+    complaint.Status = "Resolved";
+    
+    // Save the updated complaint
+    const updatedComplaint = await complaint.save();
 
     // Send a response with the updated complaint
     return res.status(200).json({
@@ -900,10 +898,11 @@ const markComplaintAsResolved = async (req, res) => {
       complaint: updatedComplaint,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating complaint status:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 const viewAllComplaints = async (req, res) => {
@@ -1019,7 +1018,64 @@ const viewComplaintDetails = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
+const viewProductSalesAndQuantity = async (req, res) => {
+  try {
+    // Fetch all products with their available quantity and sales information
+    const products = await productModel.find({}, 'name quantity sales'); // Adjust the fields as necessary
 
+    // Check if products exist
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found." });
+    }
+
+    // Prepare the response to include only relevant information
+    const productDetails = products.map(product => ({
+      name: product.name,
+      availableQuantity: product.quantity,
+      sales: product.sales // Assuming 'sales' is a field in your product schema
+    }));
+
+    // Return the product details
+    res.status(200).json(productDetails);
+  } catch (error) {
+    console.error("Error fetching product sales and quantity:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+const flagEventOrItinerary = async (req, res) => {
+  const { id, type } = req.body; // Expecting the ID and type of the item (event or itinerary)
+
+  if (!id || !type) {
+    return res.status(400).json({ message: "ID and type are required." });
+  }
+
+  try {
+    let item;
+
+    // Determine which model to use based on the type
+    if (type === "event") {
+      item = await attractions.findById(id); // Assuming events are stored in attractionModel
+    } else if (type === "itinerary") {
+      item = await Itinerary.findById(id);
+    } else {
+      return res.status(400).json({ message: "Invalid type specified." });
+    }
+
+    // Check if the item exists
+    if (!item) {
+      return res.status(404).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found.` });
+    }
+
+    // Flag the item
+    item.isFlagged = true; // Set the isFlagged field to true
+    await item.save(); // Save the updated item
+
+    res.status(200).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.` });
+  } catch (error) {
+    console.error("Error flagging item:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 module.exports = {
   createAdmin,
   createCategory,
@@ -1057,4 +1113,6 @@ module.exports = {
   checkUserName,
   viewComplaintDetails,
   markComplaintAsResolved,
+  viewProductSalesAndQuantity,
+  flagEventOrItinerary,
 };
