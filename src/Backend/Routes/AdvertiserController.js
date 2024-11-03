@@ -7,8 +7,8 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const Itinerary = require("../Models/itinerary.js");
 const Attraction = require("../Models/attractions.js");
 const TransportationModel = require("../Models/transportation.js");
-const bookingSchema = require("../Models/bookings.js"); 
-
+const bookingSchema = require("../Models/bookings.js");
+const PdfDetails = require("../Models/pdfDetails.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -413,7 +413,9 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     // Ensure the advertiser exists
     const advertiser = await advertiserModel.findById(advertiserID);
     if (!advertiser || advertiser.isDeleted) {
-      return res.status(404).json({ message: "Advertiser not found or already deleted" });
+      return res
+        .status(404)
+        .json({ message: "Advertiser not found or already deleted" });
     }
 
     // Check for upcoming paid bookings
@@ -421,12 +423,13 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     const upcomingBookings = await bookingSchema.find({
       userId: advertiserID,
       paid: true,
-      bookedDate: { $gte: currentDate }
+      bookedDate: { $gte: currentDate },
     });
 
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
-        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+        message:
+          "Account cannot be deleted. There are upcoming bookings that are paid for.",
       });
     }
 
@@ -435,15 +438,21 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     await advertiser.save();
 
     // Hide all associated events, activities, and itineraries
-    await attractionModel.updateMany({ Creator: advertiserID }, { isVisible: false });
+    await attractionModel.updateMany(
+      { Creator: advertiserID },
+      { isVisible: false }
+    );
     await Itinerary.updateMany({ Creator: advertiserID }, { isVisible: false });
 
     res.status(200).json({
-      message: "Account deletion requested successfully. Profile and associated data will no longer be visible."
+      message:
+        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -479,7 +488,6 @@ const uploadPictureadvertiser = async (req, res) => {
     res.status(500).json({ error: "Failed to upload Advertiser image." });
   }
 };
-
 
 module.exports = {
   createActivity,
