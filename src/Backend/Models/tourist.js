@@ -40,6 +40,10 @@ const touristSchema = new Schema(
       type: Number,
       required: true,
     },
+    Points: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true, strict: false }
 );

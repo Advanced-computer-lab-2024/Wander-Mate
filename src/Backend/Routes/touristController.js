@@ -570,9 +570,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -592,14 +592,11 @@ const getAmadeusToken = async () => {
 
 // Search for flights
 const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate, travelers } =
-    req.body;
+  const { origin, destination, departureDate, returnDate, travelers } = req.body;
 
   // Validate input
   if (!origin || !destination || !departureDate || !travelers) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all required fields." });
+    return res.status(400).json({ message: "Please provide all required fields." });
   }
 
   try {
@@ -614,8 +611,8 @@ const SearchFlights = async (req, res) => {
           originLocationCode: origin,
           destinationLocationCode: destination,
           departureDate,
-          returnDate,
-          adults: travelers,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: travelers, // Use 'adults' instead of 'travelers'
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -635,9 +632,10 @@ const SearchFlights = async (req, res) => {
     );
     res
       .status(500)
-      .json({ message: "Failed to search flights", error: error.message });
+      .json({ message: "Failed to search flights", error: error.response ? error.response.data : error.message });
   }
 };
+
 
 // Book Flight Function
 const BookFlight = async (req, res) => {
