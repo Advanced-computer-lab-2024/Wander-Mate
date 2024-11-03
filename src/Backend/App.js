@@ -54,9 +54,12 @@ const {
   // rateEvent
   calculateLoyaltyPoints,
   viewMyComplaints,
-  BookHotel,
+  // updateProductReviews,
+  // BookHotel,
   redeemPoints,
   searchHotel,
+  reviewProduct,
+  cancelBooking,
   shareActivity,
 } = require("./Routes/touristController");
 
@@ -303,7 +306,7 @@ app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
 app.post("/searchHotel",searchHotel);
-app.post("/BookHotel", BookHotel);
+// app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
 app.post("/makeComplaint", makeComplaint);
@@ -327,7 +330,9 @@ app.post("/changePasswordSeller", changePasswordSeller);
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
+app.post("/reviewProduct",reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
+// app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
   upload.single("image"),
@@ -398,5 +403,7 @@ app.get("/viewMyComplaints/:touristID", viewMyComplaints);
 app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
 app.get("/viewProductSalesAndQuantity",viewProductSalesAndQuantity);
 app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAndQuantity);
+
+app.delete("/cancelBooking/:bookingID",cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);

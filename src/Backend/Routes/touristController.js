@@ -13,7 +13,8 @@ const Complaints = require("../Models/complaints.js"); // Correctly import the m
 const bookingSchema = require("../Models/bookings.js");
 const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
-
+const ReviewModel = require("../Models/review.js");
+const Booking = require("../Models/bookings.js");
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -569,9 +570,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -591,14 +592,11 @@ const getAmadeusToken = async () => {
 
 // Search for flights
 const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate, travelers } =
-    req.body;
+  const { origin, destination, departureDate, returnDate, travelers } = req.body;
 
   // Validate input
   if (!origin || !destination || !departureDate || !travelers) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all required fields." });
+    return res.status(400).json({ message: "Please provide all required fields." });
   }
 
   try {
@@ -613,8 +611,8 @@ const SearchFlights = async (req, res) => {
           originLocationCode: origin,
           destinationLocationCode: destination,
           departureDate,
-          returnDate,
-          adults: travelers,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: travelers, // Use 'adults' instead of 'travelers'
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -634,9 +632,10 @@ const SearchFlights = async (req, res) => {
     );
     res
       .status(500)
-      .json({ message: "Failed to search flights", error: error.message });
+      .json({ message: "Failed to search flights", error: error.response ? error.response.data : error.message });
   }
 };
+
 
 // Book Flight Function
 const BookFlight = async (req, res) => {
@@ -767,6 +766,7 @@ const searchHotel = async (req, res) => {
   }
 };
 
+
 // Book Hotel Function
 const BookHotel = async (req, res) => {
   const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
@@ -817,6 +817,7 @@ const BookHotel = async (req, res) => {
       .json({ message: "Failed to book hotel", error: error.message });
   }
 };
+
 
 const commentOnGuide = async (req, res) => {
   try {
@@ -1202,6 +1203,8 @@ const updateProductRatings = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 const selectPreferences = async (req, res) => {
   try {
     const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
@@ -1455,9 +1458,8 @@ const redeemPoints = async (req, res) => {
     const cashEquivalent = (pointsToRedeem / 1000) * 100; // 1000 points = 100 EGP
 
     // Update the tourist's wallet balance and points
-    tourist.Points -= pointsToRedeem; // Deduct the redeemed points
     tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
-
+    tourist.Points -= pointsToRedeem; // Deduct the redeemed points
 
     // Save the changes
     await tourist.save();
@@ -1474,6 +1476,66 @@ const redeemPoints = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const reviewProduct = async (req, res) => {
+  const { productId,userId, review } = req.body; // Only productId and review as a string
+  try {
+    // Create a new review entry
+    const newReview = await ReviewModel.create({
+      itemId: productId, // Refers to the product being reviewed
+      userId,
+      review, // Only store the review string
+    });
+
+      
+    res.status(200).json({
+      message: "Review posted successfully",
+      review: newReview,
+    });
+  } catch (error) {
+    console.error("Error posting review:", error.message);
+    res.status(400).json({
+      message: "Error posting review",
+      error: error.message,
+    });
+  }
+};
+
+const cancelBooking = async (req, res) => {
+  const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
+
+  try {
+    // Find the booking by ID
+    const booking = await Booking.findById(bookingID);
+    
+    // Check if the booking exists
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+
+    const currentDate = new Date();
+    const bookedDate = new Date(booking.bookedDate);
+    
+    // Calculate the time difference
+    const timeDifference = bookedDate - currentDate;
+
+    // Convert time difference to hours
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+    // Check if the cancellation is within the allowed period
+    if (hoursDifference < 48) {
+      return res.status(400).json({ error: "You can only cancel bookings 48 hours prior to the event." });
+    }
+
+    // If eligible, proceed to cancel the booking
+    await Booking.findByIdAndDelete(bookingID);
+
+    res.status(200).json({ message: "Booking cancelled successfully." });
+  } catch (err) {
+    console.error("Error cancelling booking:", err);
+    res.status(500).json({ error: "Failed to cancel booking." });
+  }
+};
+
 const shareActivity = async (req, res) => {
   const { activityId, shareMethod, email } = req.body; // Expecting activity ID and sharing method
 
@@ -1564,8 +1626,10 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
-  BookHotel,
   searchHotel,
+  BookHotel,
   redeemPoints,
+  reviewProduct,
+  cancelBooking,
   shareActivity,
 };

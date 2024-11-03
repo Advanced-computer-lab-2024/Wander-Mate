@@ -412,36 +412,40 @@ const requestSellerAccountDeletion = async (req, res) => {
 
 const uploadPictureseller = async (req, res) => {
   try {
-    const { sellerID } = req.params; // Extract the product ID from the URL params
+    const { sellerID } = req.params; // Extract the seller ID from the URL params
 
     // Check if the image is uploaded
     if (!req.file) {
       return res.status(400).json({ error: "Image is required." });
     }
 
-    // Find the product by ID
-    const seller = await sellerModel.findById(sellerID);
-    if (!seller) {
-      return res.status(404).json({ error: "seller not found." });
+    // Update the seller's image using findByIdAndUpdate
+    const updatedSeller = await sellerModel.findByIdAndUpdate(
+      sellerID,
+      {
+        picture: {
+          data: req.file.buffer, // Store the uploaded image as a buffer
+          contentType: req.file.mimetype, // Set the content type (e.g., image/png)
+        },
+      },
+      { new: true, runValidators: true } // Options: return the updated document and run validation
+    );
+
+    // Check if the seller was found and updated
+    if (!updatedSeller) {
+      return res.status(404).json({ error: "Seller not found." });
     }
 
-    // Update the product's image
-    seller.picture = {
-      data: req.file.buffer, // Store the uploaded image as a buffer
-      contentType: req.file.mimetype, // Set the content type (e.g., image/png)
-    };
-
-    // Save the updated product
-    await seller.save();
-
-    res
-      .status(200)
-      .json({ message: "Seller image uploaded successfully!", seller });
+    res.status(200).json({
+      message: "Seller image uploaded successfully!",
+      seller: updatedSeller, // Return the updated seller object
+    });
   } catch (err) {
-    console.error("Error uploading Seller image:", err);
-    res.status(500).json({ error: "Failed to upload Seller image." });
+    console.error("Error uploading seller image:", err);
+    res.status(500).json({ error: "Failed to upload seller image." });
   }
 };
+
 const viewSellerProductSalesAndQuantity = async (req, res) => {
   try {
     const { sellerID } = req.params; // Get the seller ID from the request parameters

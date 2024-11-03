@@ -11,6 +11,7 @@ const tourist = require("../Models/tourist.js");
 const userModel = require("../Models/users.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const Complaints = require("../Models/complaints.js");
+const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 
 // Creating an admin
@@ -704,41 +705,35 @@ const replytoComplaints = async (req, res) => {
   const { Body } = req.body;
 
   if (!Body) {
-    return res.status(400).json({ message: "Body is required for the reply" });
+      return res.status(400).json({ message: "Body is required for the reply" });
   }
 
   try {
-    // Find the complaint by its ID
-    const complaint = await Complaints.findById(complaintId);
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
+      // Find the complaint by its ID
+      const complaint = await Complaints.findById(complaintId);
+      if (!complaint) {
+          return res.status(404).json({ message: "Complaint not found" });
+      }
 
-    // Ensure replies array exists
-    if (!complaint.replies) {
-      complaint.replies = [];
-    }
+      // Create the reply object
+      const reply = {
+          Body,
+          Date: Date.now(),
+      };
 
-    // Create a new reply object
-    const reply = {
-      Body,
-      Date: Date.now(),
-    };
+      // Update the reply field in the complaint
+      complaint.reply = reply;
 
-    // Push the reply to the replies array
-    complaint.replies.push(reply);
+      // Save the updated complaint with the reply
+      await complaint.save();
 
-    // Save the updated complaint with the reply
-    await complaint.save();
-
-    return res
-      .status(200)
-      .json({ message: "Reply added successfully", complaint });
+      return res.status(200).json({ message: "Reply added successfully", complaint });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+      console.error(error);
+      return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 ///////////////////////////////////////////////////////////////////////
 
