@@ -14,7 +14,7 @@ const bookingSchema = require("../Models/bookings.js");
 const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
-
+const Booking = require("../Models/bookings.js");
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -766,6 +766,7 @@ const searchHotel = async (req, res) => {
   }
 };
 
+
 // Book Hotel Function
 const BookHotel = async (req, res) => {
   const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
@@ -1499,6 +1500,41 @@ const reviewProduct = async (req, res) => {
   }
 };
 
+const cancelBooking = async (req, res) => {
+  const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
+
+  try {
+    // Find the booking by ID
+    const booking = await Booking.findById(bookingID);
+    
+    // Check if the booking exists
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+
+    const currentDate = new Date();
+    const bookedDate = new Date(booking.bookedDate);
+    
+    // Calculate the time difference
+    const timeDifference = bookedDate - currentDate;
+
+    // Convert time difference to hours
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+    // Check if the cancellation is within the allowed period
+    if (hoursDifference < 48) {
+      return res.status(400).json({ error: "You can only cancel bookings 48 hours prior to the event." });
+    }
+
+    // If eligible, proceed to cancel the booking
+    await Booking.findByIdAndDelete(bookingID);
+
+    res.status(200).json({ message: "Booking cancelled successfully." });
+  } catch (err) {
+    console.error("Error cancelling booking:", err);
+    res.status(500).json({ error: "Failed to cancel booking." });
+  }
+};
 
 
 
@@ -1542,5 +1578,6 @@ module.exports = {
   searchHotel,
   BookHotel,
   redeemPoints,
-  reviewProduct
+  reviewProduct,
+  cancelBooking,
 };

@@ -59,6 +59,7 @@ const {
   redeemPoints,
   searchHotel,
   reviewProduct,
+  cancelBooking,
 } = require("./Routes/touristController");
 
 const {
@@ -400,3 +401,5 @@ app.get("/viewMyComplaints/:touristID", viewMyComplaints);
 app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
 app.get("/viewProductSalesAndQuantity",viewProductSalesAndQuantity);
 app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAndQuantity);
+
+app.delete("/cancelBooking/:bookingID",cancelBooking);
