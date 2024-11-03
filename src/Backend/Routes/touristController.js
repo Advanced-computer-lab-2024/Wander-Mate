@@ -687,6 +687,85 @@ const BookFlight = async (req, res) => {
   }
 };
 
+// Function to get Amadeus access token for Hotel API
+const getAmadeusTokenHotel = async () => {
+  const apiKey = "Y9yPVu67o9SBBA4wfz9J9cjbWFHtMTqx"; // Replace with your Amadeus API key
+  const apiSecret = "I1kn9UybNBFh5TfK"; // Replace with your Amadeus API secret
+
+  try {
+    const tokenResponse = await axios.post(
+      "https://test.api.amadeus.com/v1/security/oauth2/token",
+      "grant_type=client_credentials&client_id=" +
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    return tokenResponse.data.access_token;
+  } catch (error) {
+    console.error(
+      "Error fetching access token:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error("Failed to fetch access token");
+  }
+};
+
+// Function to search for hotels
+const searchHotel = async (req, res) => {
+  const { cityCode, checkInDate, checkOutDate, adults } = req.body;
+
+  // Validate input
+  if (!cityCode || !checkInDate || !checkOutDate || !adults) {
+    return res.status(400).json({
+      message: "Please provide city code, check-in/check-out dates, and number of adults.",
+    });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusTokenHotel();
+
+    // Call the hotel search API
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/hotel-offers",
+      {
+        params: {
+          cityCode,
+          checkInDate,
+          checkOutDate,
+          adults,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // Log the response for debugging
+    console.log("Hotel search response:", response.data);
+
+    // Return the available hotel offers
+    res.status(200).json({
+      message: "Hotels retrieved successfully.",
+      hotelOffers: response.data,
+    });
+  } catch (error) {
+    console.error(
+      "Error searching for hotels:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to search hotels", error: error.message });
+  }
+};
+
 // Book Hotel Function
 const BookHotel = async (req, res) => {
   const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
@@ -700,17 +779,17 @@ const BookHotel = async (req, res) => {
 
   try {
     // Get the OAuth access token
-    const accessToken = await getAmadeusToken();
+    const accessToken = await getAmadeusTokenHotel();
 
     // Book the hotel by calling the hotel booking API
     const response = await axios.post(
-      "https://test.api.amadeus.com/v1/booking/hotel-bookings", // replace with actual hotel booking API endpoint
+      "https://test.api.amadeus.com/v1/booking/hotel-bookings",
       {
         data: {
           type: "hotel-booking",
-          hotelOffers: [selectedHotelOffer], // Selected hotel offer from the search result
-          guests: guestsInfo, // Guest info array
-          payment: paymentInfo, // Payment information object
+          hotelOffers: [selectedHotelOffer],
+          guests: guestsInfo,
+          payment: paymentInfo,
         },
       },
       {
@@ -723,7 +802,10 @@ const BookHotel = async (req, res) => {
 
     // Return the booking confirmation
     const bookingConfirmation = response.data;
-    res.status(200).json(bookingConfirmation);
+    res.status(200).json({
+      message: "Hotel booked successfully.",
+      bookingConfirmation,
+    });
   } catch (error) {
     console.error(
       "Error booking hotel:",
@@ -1457,5 +1539,8 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
+  searchHotel,
+  BookHotel,
+  redeemPoints,
   reviewProduct
 };
