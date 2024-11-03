@@ -13,6 +13,7 @@ const PreferenceTags = require("../Models/preferenceTags.js");
 const Complaints = require("../Models/complaints.js");
 const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
+const Itinerary = require("../Models/itinerary.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1055,7 +1056,7 @@ const flagEventOrItinerary = async (req, res) => {
     if (type === "event") {
       item = await attractions.findById(id); // Assuming events are stored in attractionModel
     } else if (type === "itinerary") {
-      item = await itinerary.findById(id);
+      item = await Itinerary.findById(id);
     } else {
       return res.status(400).json({ message: "Invalid type specified." });
     }
