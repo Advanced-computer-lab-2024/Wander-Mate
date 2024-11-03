@@ -5,7 +5,7 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const { query } = require("express");
 const multer = require("multer");
-const storage = multer.memoryStorage(); // Use memory storage for simplicity
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage: storage });
 const bookingSchema = require("../Models/bookings.js"); 
 

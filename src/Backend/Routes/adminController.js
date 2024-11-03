@@ -432,6 +432,7 @@ const searchProductsByName = async (req, res) => {
       .json({ message: "Error searching for products", error: err.message });
   }
 };
+
 const UpdateProduct = async (req, res) => {
   try {
     const id = req.params.id; // Get product ID from request parameters
@@ -457,6 +458,7 @@ const UpdateProduct = async (req, res) => {
       .json({ message: "Error to update product", error: err.message });
   }
 };
+
 const filterProductsByPrice = async (req, res) => {
   try {
     // Destructure minPrice and maxPrice from the request query
@@ -495,6 +497,7 @@ const filterProductsByPrice = async (req, res) => {
     });
   }
 };
+
 const createPreferenceTags = async (req, res) => {
   try {
     const { Name } = req.body;
@@ -553,6 +556,7 @@ const updatePreferenceTags = async (req, res) => {
     res.status(400).json({ message: "Can't update the Tag" });
   }
 };
+
 const updatePreferenceTagById = async (req, res) => {
   try {
     const { id } = req.params; // Get the category ID from the URL parameters
@@ -782,6 +786,7 @@ const acceptRejectUser = async (req, res) => {
     res.status(500).json({ message: "Error updating user status" });
   }
 };
+
 const AdminarchiveProduct = async (req, res) => {
   try {
     const { productId } = req.params; // Get product ID from request parameters
@@ -841,6 +846,7 @@ const uploadProductImage = async (req, res) => {
     res.status(500).json({ error: "Failed to upload product image." });
   }
 };
+
 const viewDocuments = async (req, res) => {
   const ownerId = req.params.ownerId; // Fetch ownerId from request params
 
@@ -945,7 +951,6 @@ const checkUserName = async (req, res) => {
     console.error(error);
   }
 };
-
 
 const viewComplaintDetails = async (req, res) => {
   const { complaintId } = req.params; // Extract complaint ID from request parameters
