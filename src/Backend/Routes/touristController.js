@@ -688,6 +688,55 @@ const BookFlight = async (req, res) => {
   }
 };
 
+// Book Hotel Function
+const BookHotel = async (req, res) => {
+  const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
+
+  // Validate input
+  if (!selectedHotelOffer || !guestsInfo || !paymentInfo) {
+    return res.status(400).json({
+      message: "Please provide the selected hotel offer, guests info, and payment info.",
+    });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Book the hotel by calling the hotel booking API
+    const response = await axios.post(
+      "https://test.api.amadeus.com/v1/booking/hotel-bookings", // replace with actual hotel booking API endpoint
+      {
+        data: {
+          type: "hotel-booking",
+          hotelOffers: [selectedHotelOffer], // Selected hotel offer from the search result
+          guests: guestsInfo, // Guest info array
+          payment: paymentInfo, // Payment information object
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Return the booking confirmation
+    const bookingConfirmation = response.data;
+    res.status(200).json(bookingConfirmation);
+  } catch (error) {
+    console.error(
+      "Error booking hotel:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to book hotel", error: error.message });
+  }
+};
+
+
 const commentOnGuide = async (req, res) => {
   try {
     const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
@@ -1335,4 +1384,5 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
+  BookHotel,
 };
