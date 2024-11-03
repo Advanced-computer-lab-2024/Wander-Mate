@@ -1046,7 +1046,40 @@ const viewProductSalesAndQuantity = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const flagEventOrItinerary = async (req, res) => {
+  const { id, type } = req.body; // Expecting the ID and type of the item (event or itinerary)
 
+  if (!id || !type) {
+    return res.status(400).json({ message: "ID and type are required." });
+  }
+
+  try {
+    let item;
+
+    // Determine which model to use based on the type
+    if (type === "event") {
+      item = await attractionModel.findById(id); // Assuming events are stored in attractionModel
+    } else if (type === "itinerary") {
+      item = await itinerary.findById(id);
+    } else {
+      return res.status(400).json({ message: "Invalid type specified." });
+    }
+
+    // Check if the item exists
+    if (!item) {
+      return res.status(404).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found.` });
+    }
+
+    // Flag the item
+    item.isFlagged = true; // Set the isFlagged field to true
+    await item.save(); // Save the updated item
+
+    res.status(200).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.` });
+  } catch (error) {
+    console.error("Error flagging item:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 module.exports = {
   createAdmin,
   createCategory,
@@ -1085,4 +1118,5 @@ module.exports = {
   viewComplaintDetails,
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
+  flagEventOrItinerary,
 };
