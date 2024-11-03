@@ -1319,15 +1319,18 @@ const calculateLoyaltyPoints = async (req, res) => {
 
 const viewMyComplaints = async (req, res) => {
   try {
-    // Step 1: Fetch all complaints from the database
-    const complaints = await Complaints.find(); // Fetches all complaints
+    // Step 1: Extract the tourist ID from the request parameters
+    const { touristID } = req.params;
 
-    // Step 2: Check if there are no complaints
+    // Step 2: Fetch complaints for the specific tourist from the database
+    const complaints = await Complaints.find({ Maker: touristID }); // Filter by Maker field
+
+    // Step 3: Check if there are no complaints for this tourist
     if (!complaints || complaints.length === 0) {
-      return res.status(404).json({ message: "No complaints found." });
+      return res.status(404).json({ message: "No complaints found for this tourist." });
     }
 
-    // Step 3: Map through the complaints to prepare the response
+    // Step 4: Map through the complaints to prepare the response
     const complaintList = complaints.map((complaint) => ({
       id: complaint._id, // Unique complaint ID
       Title: complaint.Title, // Complaint title
@@ -1336,7 +1339,7 @@ const viewMyComplaints = async (req, res) => {
       Status: complaint.Status, // Status (pending/resolved)
     }));
 
-    // Step 4: Return the list of complaints with their statuses
+    // Step 5: Return the list of complaints for the specific tourist
     return res.status(200).json({
       message: "Complaints retrieved successfully.",
       complaints: complaintList,
