@@ -13,6 +13,7 @@ const Complaints = require("../Models/complaints.js"); // Correctly import the m
 const bookingSchema = require("../Models/bookings.js");
 const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
+const ReviewModel = require("../Models/review.js");
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -1121,6 +1122,8 @@ const updateProductRatings = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 const selectPreferences = async (req, res) => {
   try {
     const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
@@ -1392,6 +1395,31 @@ const redeemPoints = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const reviewProduct = async (req, res) => {
+  const { productId,userId, review } = req.body; // Only productId and review as a string
+  try {
+    // Create a new review entry
+    const newReview = await ReviewModel.create({
+      itemId: productId, // Refers to the product being reviewed
+      userId,
+      review, // Only store the review string
+    });
+
+      
+    res.status(200).json({
+      message: "Review posted successfully",
+      review: newReview,
+    });
+  } catch (error) {
+    console.error("Error posting review:", error.message);
+    res.status(400).json({
+      message: "Error posting review",
+      error: error.message,
+    });
+  }
+};
+
+
 
 
 module.exports = {
@@ -1431,5 +1459,5 @@ module.exports = {
   requestTouristAccountDeletion,
   calculateLoyaltyPoints,
   viewMyComplaints,
-  BookHotel,
+  reviewProduct
 };

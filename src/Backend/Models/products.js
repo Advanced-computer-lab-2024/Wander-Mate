@@ -28,7 +28,6 @@ const productSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
-    reviews: [String],
     isArchived: { type: Boolean, default: false },
   },
   { timestamps: true, strict: false }
