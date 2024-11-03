@@ -56,6 +56,7 @@ const {
   viewMyComplaints,
   BookHotel,
   redeemPoints,
+  searchHotel,
 } = require("./Routes/touristController");
 
 const {
@@ -297,6 +298,7 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
+app.post("/searchHotel",searchHotel);
 app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
