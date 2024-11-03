@@ -937,6 +937,7 @@ const addCommentONEvent = async (req, res) => {
   }
 };
 
+
 const rateItinerary = async (req, res) => {
   const { touristId, itineraryId, rating } = req.body;
   try {
@@ -945,9 +946,9 @@ const rateItinerary = async (req, res) => {
       userId: touristId,
       rating,
     });
-    await axios.put(
-      `http://localhost:8000/updateItineraryRatings/${itineraryId}`
-    );
+    // await axios.put(
+    //   http://localhost:8000/updateItineraryRatings/${itineraryId}
+    // );
     res
       .status(200)
       .json({ message: "Rating posted successfully", rating: newRating });
@@ -958,6 +959,7 @@ const rateItinerary = async (req, res) => {
       .json({ message: "Error posting rating", error: error.message });
   }
 };
+
 
 const updateItineraryRatings = async (req, res) => {
   const { itineraryId } = req.params;
@@ -1128,7 +1130,6 @@ const changePasswordTourist = async (req, res) => {
 const bookTransportation = async (req, res) => {
   try {
     const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
-
     // Check if the transportation option exists and is available
     const transportation = await TransportationModel.findById(itemId);
     if (!transportation || !transportation.availability) {
@@ -1312,49 +1313,6 @@ const requestTouristAccountDeletion = async (req, res) => {
   }
 };
 
-// const rateEvent = async (req, res) => {
-//   try {
-//     const { userId, eventId, rating, review } = req.body; // Retrieve data from the request body
-
-//     // Check if the event exists
-//     const event = await attractionModel.findById(eventId);
-//     if (!event) {
-//       return res.status(404).json({ message: "Event not found." });
-//     }
-
-//     // Check if the user has already rated this event
-//     let existingRating = await RatingModel.findOne({ userId, eventId });
-//     if (existingRating) {
-//       // Update the existing rating
-//       existingRating.rating = rating;
-//       existingRating.review = review;
-//       await existingRating.save();
-
-//       return res.status(200).json({
-//         message: "Event rating updated successfully!",
-//         rating: existingRating,
-//       });
-//     } else {
-//       // Create a new rating
-//       const newRating = new RatingModel({
-//         userId,
-//         eventId,
-//         rating,
-//         review,
-//       });
-//       await newRating.save();
-
-//       return res.status(201).json({
-//         message: "Event rated successfully!",
-//         rating: newRating,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error rating event:", error);
-//     res.status(500).json({ message: "Unable to rate event." });
-//   }
-// };
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 const calculateLoyaltyPoints = async (req, res) => {
   const { amountPaid, touristID } = req.body;
@@ -1617,6 +1575,112 @@ const shareActivity = async (req, res) => {
   }
 };
 
+
+const rateEvent = async (req, res) => {
+  const { userId, eventId, rating } = req.body;
+  try {
+    const newRating = await RatingModel.create({
+      itemId: eventId, // Refers to the event being rated
+      userId, // Refers to the user rating the event
+      rating,
+    });
+    await axios.put(`http://localhost:8000/updateEventRatings/${eventId}`);
+    res
+      .status(200)
+      .json({ message: "Rating posted successfully", rating: newRating });
+  } catch (error) {
+    console.error("Error posting rating:", error.message);
+    res
+      .status(400)
+      .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+
+const bookItinerary = async (req, res) => {
+  try {
+    const { itineraryId, userId, bookedDate } = req.body; // Get itinerary ID, user ID, and booked date from the request body
+
+    // Check if the itinerary exists
+    const itinerary = await itineraryModel.findById(itineraryId);
+    if (!itinerary) {
+      return res.status(40).json({ message: "Itinerary not found." });
+    }
+
+    console.log(itinerary);
+
+    // Create a new booking record using the bookingSchema model
+    const newBooking = new bookingSchema({
+      itemId: itineraryId,
+      itemModel: 'Itinerary', // Use 'Itinerary' since you're booking an itinerary
+      userId, // Make sure userId is correctly passed from the request
+      bookedDate,
+    });
+
+    await newBooking.save();
+
+    // Update the itinerary document to include the new booking ID
+    itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
+
+    console.log("Bookings array before saving itinerary:", itinerary.Bookings); // Log before saving
+
+    // Attempt to save the updated itinerary document
+    await itinerary.save();
+    console.log(itinerary);
+
+    // Respond back with success message and booking details
+    res.status(200).json({
+      message: "Itinerary booked successfully!",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error("Error booking itinerary:", error.message); // Log error for debugging
+    res.status(500).json({ message: "Error booking itinerary", error: error.message });
+  }
+};
+const updateEventRatings = async (req, res) => {
+  const { eventId } = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(eventId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      const updatedEvent = await itineraryModel.findByIdAndUpdate(
+        { _id: eventId },
+        {
+          ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        event: updatedEvent, // Return the updated event data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this event." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
+
+
+
+
 const currencyConverter = async (req, res) => {
   const baseCurrency = req.body.base || 'EGP'; // Default base currency
   const targetCurrency = req.body.target;
@@ -1718,5 +1782,8 @@ module.exports = {
   reviewProduct,
   cancelBooking,
   shareActivity,
+  bookItinerary,
+  rateEvent,
+  updateEventRatings
   currencyConverter,
 };

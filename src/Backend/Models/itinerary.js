@@ -53,6 +53,9 @@ const itinerarySchema = new Schema(
         required: true,
       },
     },
+    Bookings: {
+      type: [ObjectId]
+    }
   },
   { timestamps: true, strict: false }
 );
