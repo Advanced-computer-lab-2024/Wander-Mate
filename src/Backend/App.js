@@ -51,10 +51,12 @@ const {
   updateProductRatings,
   selectPreferences,
   requestTouristAccountDeletion,
-  // rateEvent
   calculateLoyaltyPoints,
   viewMyComplaints,
-  BookHotel,
+  // BookHotel,
+  rateEvent,
+  bookItinerary,
+  updateEventRatings
 } = require("./Routes/touristController");
 
 const {
@@ -294,7 +296,7 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
-app.post("/BookHotel", BookHotel);
+// app.post("/BookHotel", BookHotel);
 app.post("/comment-on-guide/:id", commentOnGuide);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/search-flights", SearchFlights);
@@ -393,8 +395,9 @@ app.delete(
   requestSellerAccountDeletion
 );
 app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
-// app.put("/rateEvent", rateEvent);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
-
 app.get("/viewMyComplaints", viewMyComplaints);
-app.patch("/markComplaintAsResolved", markComplaintAsResolved);
+// app.patch("/markComplaintAsResolved", markComplaintAsResolved);
+app.post("/bookItinerary",bookItinerary);
+app.post("/rateEvent", rateEvent);
+app.put("/updateEventRatings/:eventId", updateEventRatings);

@@ -416,7 +416,7 @@ const deactivateItinerary = async (req, res) => {
       return res.status(404).json({ message: "Itinerary not found." });
     }
 
-    if (itinerary.bookings > 0) {
+    if (itinerary.Bookings.length > 0) {
       itinerary.isActive = false; // Deactivate the itinerary
       await itinerary.save();
       
