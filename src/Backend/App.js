@@ -391,4 +391,4 @@ app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 
 app.get("/viewMyComplaints/:touristID", viewMyComplaints);
-app.patch("/markComplaintAsResolved", markComplaintAsResolved);
+app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
