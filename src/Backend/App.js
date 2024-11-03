@@ -56,6 +56,7 @@ const {
   viewMyComplaints,
   BookHotel,
   redeemPoints,
+  searchHotel,
 } = require("./Routes/touristController");
 
 const {
@@ -115,6 +116,7 @@ const {
   checkUserName,
   viewComplaintDetails,
   markComplaintAsResolved,
+  viewProductSalesAndQuantity,
 } = require("./Routes/adminController.js");
 
 const {
@@ -298,6 +300,7 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight", BookFlight);
+app.post("/searchHotel",searchHotel);
 app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
@@ -391,3 +394,5 @@ app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 
 app.get("/viewMyComplaints/:touristID", viewMyComplaints);
 app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
+app.get("/viewProductSalesAndQuantity",viewProductSalesAndQuantity);
+app.get("/viewSellerProductSalesAndQuantity/:sellerId",viewSellerProductSalesAndQuantity);
