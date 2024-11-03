@@ -641,7 +641,7 @@ const SearchFlights = async (req, res) => {
 const BookFlight = async (req, res) => {
   try {
       const flightOrder = req.body;
-      const touristID = req.params;
+      const touristID = req.params.touristID;
 
       if (!flightOrder || !flightOrder.data) {
           return res.status(400).json({ error: "Invalid flight order data" });
@@ -654,22 +654,24 @@ const BookFlight = async (req, res) => {
           return res.status(400).json({ error: "Invalid flight offers or travelers data" });
       }
 
-      // Here we assume that the user has selected a flight offer
-      // You might want to get this from the request or let the user select it
       const selectedFlightOffer = flightOffers[0]; // Selecting the first offer for demo purposes
 
-      // Prepare booking data
       const bookingData = {
           flightOffer: selectedFlightOffer,
-          travelers: travelers
+          travelers: travelers,
+          bookingDate: new Date()
       };
 
-      // Simulate API booking process (replace with actual API call)
-      const bookingResponse = await bookFlightWithAPI(bookingData); // Mock function
+      const bookingResponse = await bookFlightWithAPI(bookingData); // Simulate booking API call
 
-      // Check if booking was successful
       if (bookingResponse.success) {
-          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details });
+          const updatedTourist = await userModel.findByIdAndUpdate(
+              touristID,
+              { $push: { bookedFlights: bookingData } },
+              { new: true }
+          );
+
+          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details, updatedTourist });
       } else {
           return res.status(500).json({ error: "Failed to book the flight." });
       }
@@ -678,6 +680,10 @@ const BookFlight = async (req, res) => {
       return res.status(500).json({ error: "Internal server error." });
   }
 };
+
+module.exports = { BookFlight };
+
+
 
 // Mock function to simulate an API booking call
 const bookFlightWithAPI = async (bookingData) => {
