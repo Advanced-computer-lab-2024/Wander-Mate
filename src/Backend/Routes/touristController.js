@@ -1455,8 +1455,9 @@ const redeemPoints = async (req, res) => {
     const cashEquivalent = (pointsToRedeem / 1000) * 100; // 1000 points = 100 EGP
 
     // Update the tourist's wallet balance and points
-    tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
     tourist.Points -= pointsToRedeem; // Deduct the redeemed points
+    tourist.Wallet += cashEquivalent; // Add the cash equivalent to wallet
+
 
     // Save the changes
     await tourist.save();
