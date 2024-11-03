@@ -266,6 +266,7 @@ app.get("/SellersearchProductByName", SellersearchProductByName);
 app.post("/filterProductsByPrice", filterProductsByPrice);
 app.get("/getProduct/:id", getProduct);
 app.get("/viewTouristProducts", viewTouristProducts);
+app.post('/redeem-points', redeemPoints);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
 app.get("/readHistoricalTags", readHistoricalTags);

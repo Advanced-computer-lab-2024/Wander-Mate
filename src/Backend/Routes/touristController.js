@@ -1432,4 +1432,5 @@ module.exports = {
   calculateLoyaltyPoints,
   viewMyComplaints,
   BookHotel,
+  redeemPoints,
 };
