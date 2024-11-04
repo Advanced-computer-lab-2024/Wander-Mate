@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints List</title>
+    
+    <!-- Link to the CSS file (adjust the path as needed) -->
+    <link rel="stylesheet" href="../styles/styles.css">
+
+    <script>
+        async function fetchComplaints() {
+            try {
+                const response = await fetch('http://localhost:8000/viewAllComplaints'); // Adjust the URL as needed
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Clear any previous messages
+                    document.getElementById('message').textContent = '';
+
+                    // Display complaints
+                    const complaintsContainer = document.getElementById('complaints');
+                    complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+
+                    data.complaints.forEach(complaint => {
+                        complaintsContainer.innerHTML += `<div class="complaint">
+                            <h3>${complaint.Title}</h3>
+                            <p><strong>Description:</strong> ${complaint.Body}</p>
+                            <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> ${complaint.Status}</p>
+                        </div>`;
+                    });
+                } else {
+                    // Display an error message if no complaints were found
+                    document.getElementById('message').textContent = data.message;
+                }
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+                document.getElementById('message').textContent = 'An error occurred while fetching complaints.';
+            }
+        }
+
+        // Fetch complaints when the page loads
+        window.onload = fetchComplaints;
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Complaints List</h1>
+            <div id="message" class="error"></div>
+            <div id="complaints"></div>
+        </div>
+    </div>
+</body>
+</html>
