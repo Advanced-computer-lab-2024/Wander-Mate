@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
-import Header from "@/components/partials/header";
-import Sidebar from "@/components/partials/sidebar";
-import { cn } from "@/lib/utils";
-import { useSidebar, useThemeStore } from "@/store";
+import Header from "../components/partials/header"
+import Sidebar from "../components/partials/sidebar";
+import { cn } from "../lib/utils";
+import { useSidebar, useThemeStore } from "../store";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
-import Footer from "@/components/partials/footer";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import MobileSidebar from "@/components/partials/sidebar/mobile-sidebar";
-import HeaderSearch from "@/components/header-search";
-import { useMounted } from "@/hooks/use-mounted";
-import LayoutLoader from "@/components/layout-loader";
+import Footer from "../components/partials/footer";
+import { useMediaQuery } from "../hooks/use-media-query";
+import MobileSidebar from "../components/partials/sidebar/mobile-sidebar";
+import HeaderSearch from "../components/header-search";
+import { useMounted } from "../hooks/use-mounted";
+import LayoutLoader from "../components/layout-loader";
 const DashBoardLayoutProvider = ({ children, trans }) => {
   const { collapsed, sidebarType, setCollapsed, subMenu } = useSidebar();
   const [open, setOpen] = React.useState(false);
