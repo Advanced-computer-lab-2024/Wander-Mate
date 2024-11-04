@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "../config/site";
 import { persist, createJSONStorage } from "zustand/middleware";
 export const useThemeStore = create((set) => ({
   theme: siteConfig.theme,

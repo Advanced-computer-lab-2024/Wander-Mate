@@ -2,8 +2,8 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { Controller, FormProvider, useFormContext } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
+import { cn } from "../../lib/utils";
+import { Label } from "../../components/ui/label";
 
 const Form = FormProvider;
 
@@ -114,10 +114,14 @@ const FormMessage = React.forwardRef(
       <p
         ref={ref}
         id={formMessageId}
-        className={cn("text-xs text-destructive leading-none px-1.5 py-2  rounded-0.5", className, {
-          " bg-destructive text-destructive-foreground  inline-block":
-            tooltip,
-        })}
+        className={cn(
+          "text-xs text-destructive leading-none px-1.5 py-2  rounded-0.5",
+          className,
+          {
+            " bg-destructive text-destructive-foreground  inline-block":
+              tooltip,
+          }
+        )}
         {...props}
       >
         {body}
