@@ -642,61 +642,55 @@ const SearchFlights = async (req, res) => {
 
 // Book Flight Function
 const BookFlight = async (req, res) => {
+  const { flightIndex } = req.body;
+  
+  if (typeof flightIndex === "undefined") {
+    return res.status(400).json({ error: "Flight index is required." });
+  }
+
   try {
-      const flightOrder = req.body;
-      const touristID = req.params.touristID;
+    // Fetch the list of available flights from your previous search results
+    const availableFlights = await getAvailableFlightsFromCache(); // Replace this with your cache mechanism
 
-      if (!flightOrder || !flightOrder.data) {
-          return res.status(400).json({ error: "Invalid flight order data" });
-      }
+    if (!availableFlights || !availableFlights[flightIndex]) {
+      return res.status(400).json({ error: "Invalid flight index." });
+    }
 
-      const flightOffers = flightOrder.data.flightOffers;
-      const travelers = flightOrder.data.travelers;
+    const selectedFlightOffer = availableFlights[flightIndex];
 
-      if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
-          return res.status(400).json({ error: "Invalid flight offers or travelers data" });
-      }
+    const bookingData = {
+      flightOffer: selectedFlightOffer,
+      travelers: [{ id: "1", name: "Test Traveler" }], // Modify as per user data
+      bookingDate: new Date(),
+    };
 
-      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer for demo purposes
+    const bookingResponse = await bookFlightWithAPI(bookingData);
 
-      const bookingData = {
-          flightOffer: selectedFlightOffer,
-          travelers: travelers,
-          bookingDate: new Date()
-      };
-
-      const bookingResponse = await bookFlightWithAPI(bookingData); // Simulate booking API call
-
-      if (bookingResponse.success) {
-          const updatedTourist = await userModel.findByIdAndUpdate(
-              touristID,
-              { $push: { bookedFlights: bookingData } },
-              { new: true }
-          );
-
-          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details, updatedTourist });
-      } else {
-          return res.status(500).json({ error: "Failed to book the flight." });
-      }
+    if (bookingResponse.success) {
+      return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details });
+    } else {
+      return res.status(500).json({ error: "Failed to book the flight." });
+    }
   } catch (error) {
-      console.error("Error processing flight order:", error);
-      return res.status(500).json({ error: "Internal server error." });
+    console.error("Error booking flight:", error);
+    return res.status(500).json({ error: "Internal server error." });
   }
 };
 
-module.exports = { BookFlight };
-
-
-
-// Mock function to simulate an API booking call
+// Mock function to simulate booking API call
 const bookFlightWithAPI = async (bookingData) => {
-  // Simulate a successful booking response
+    // Simulate a successful booking response
   return new Promise((resolve) => {
-      setTimeout(() => {
-          resolve({ success: true, details: { confirmationNumber: "ABC123", flightInfo: bookingData.flightOffer } });
-      }, 1000);
+    setTimeout(() => {
+      resolve({
+        success: true,
+        details: { confirmationNumber: "ABC123", flightInfo: bookingData.flightOffer },
+      });
+    }, 1000);
   });
 };
+
+module.exports = { BookFlight };
 
 
 
