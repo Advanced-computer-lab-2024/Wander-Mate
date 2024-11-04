@@ -595,10 +595,10 @@ const getAmadeusToken = async () => {
 
 // Search for flights
 const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate, travelers } = req.body;
+  const { origin, destination, departureDate, returnDate } = req.body;
 
   // Validate input
-  if (!origin || !destination || !departureDate || !travelers) {
+  if (!origin || !destination || !departureDate ) {
     return res.status(400).json({ message: "Please provide all required fields." });
   }
 
@@ -615,7 +615,7 @@ const SearchFlights = async (req, res) => {
           destinationLocationCode: destination,
           departureDate,
           returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
-          adults: travelers, // Use 'adults' instead of 'travelers'
+          adults: 1, // Use 'adults' instead of 'travelers'
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -643,29 +643,34 @@ const SearchFlights = async (req, res) => {
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-      const flightOrder = req.body;
+      const flightOrder = req.body; // This should be the flight offer object
       const touristID = req.params.touristID;
 
-      if (!flightOrder || !flightOrder.data) {
+      // Check if the flight order is valid
+      if (!flightOrder || !flightOrder.id) {
           return res.status(400).json({ error: "Invalid flight order data" });
       }
 
-      const flightOffers = flightOrder.data.flightOffers;
-      const travelers = flightOrder.data.travelers;
+      // Extract flight offers and traveler pricing
+      const flightOffers = [flightOrder]; // Wrap the single flight offer in an array
+      const travelers = flightOrder.travelerPricings; // Extract traveler pricing directly
 
+      // Validate the extracted data
       if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
           return res.status(400).json({ error: "Invalid flight offers or travelers data" });
       }
 
-      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer for demo purposes
+      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer (only one in this case)
 
+      // Constructing the booking data
       const bookingData = {
           flightOffer: selectedFlightOffer,
           travelers: travelers,
           bookingDate: new Date()
       };
 
-      const bookingResponse = await bookFlightWithAPI(bookingData); // Simulate booking API call
+      // Simulate booking API call
+      const bookingResponse = await bookFlightWithAPI(bookingData);
 
       if (bookingResponse.success) {
           const updatedTourist = await userModel.findByIdAndUpdate(
@@ -685,8 +690,6 @@ const BookFlight = async (req, res) => {
 };
 
 module.exports = { BookFlight };
-
-
 
 // Mock function to simulate an API booking call
 const bookFlightWithAPI = async (bookingData) => {

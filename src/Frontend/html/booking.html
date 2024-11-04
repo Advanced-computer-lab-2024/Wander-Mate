@@ -1,0 +1,68 @@
+<!-- booking.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Flight Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .flight-details {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Flight</h1>
+    <div id="flightDetails" class="flight-details"></div>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to display flight details on the page
+        function displayFlightDetails(flight) {
+            const flightDetailsDiv = document.getElementById('flightDetails');
+            flightDetailsDiv.innerHTML = `
+                <h2>Flight Details</h2>
+                <p><strong>Flight:</strong> ${flight.carrierCode} ${flight.flightNumber}</p>
+                <p><strong>Departure:</strong> ${flight.departureTime}</p>
+                <p><strong>Arrival:</strong> ${flight.arrivalTime}</p>
+                <p><strong>Price:</strong> ${flight.price} ${flight.currency}</p>
+                <p><strong>Flight Offer ID:</strong> ${flight.id}</p>
+                <button onclick="confirmBooking('${flight.id}')">Confirm Booking</button>
+            `;
+        }
+
+        // Function to handle the booking confirmation
+        function confirmBooking(flightOfferId) {
+            alert(`Flight Offer ID ${flightOfferId} has been booked!`);
+            // Implement additional booking logic here (e.g., save to the server)
+        }
+
+        // Main function to handle loading the flight details
+        function loadFlightDetails() {
+            const flightDetails = {
+                id: getUrlParameter('flightOfferId'),
+                carrierCode: getUrlParameter('carrierCode'),
+                flightNumber: getUrlParameter('flightNumber'),
+                departureTime: getUrlParameter('departureTime'),
+                arrivalTime: getUrlParameter('arrivalTime'),
+                price: getUrlParameter('price'),
+                currency: getUrlParameter('currency')
+            };
+            displayFlightDetails(flightDetails);
+        }
+
+        // Call the main function to load flight details
+        loadFlightDetails();
+    </script>
+</body>
+</html>

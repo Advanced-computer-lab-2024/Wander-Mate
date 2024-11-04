@@ -1,94 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Book Flight | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <div class="wrapper">
-      <div class="title">Book Flight</div>
-      <form id="flightSearchForm">
-        <div class="field">
-          <label for="origin">Origin:</label>
-          <input type="text" id="origin" name="origin" required />
-        </div>
-        <div class="field">
-          <label for="destination">Destination:</label>
-          <input type="text" id="destination" name="destination" required />
-        </div>
-        <div class="field">
-          <label for="departureDate">Departure Date:</label>
-          <input type="date" id="departureDate" name="departureDate" required />
-        </div>
-        <div class="field">
-          <label for="returnDate">Return Date (optional):</label>
-          <input type="date" id="returnDate" name="returnDate" />
-        </div>
-        <div class="field">
-          <label for="travelers">Travelers:</label>
-          <input type="number" id="travelers" name="travelers" min="1" required />
-        </div>
-        <div class="field">
-          <button type="button" onclick="searchFlights()">Search Flights</button>
-        </div>
-      </form>
-      <div id="results"></div>
+        <div class="title">Book Flight</div>
+        <form id="flightSearchForm">
+            <div class="field">
+                <label for="origin">Origin:</label>
+                <input type="text" id="origin" name="origin" required />
+            </div>
+            <div class="field">
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" name="destination" required />
+            </div>
+            <div class="field">
+                <label for="departureDate">Departure Date:</label>
+                <input type="date" id="departureDate" name="departureDate" required />
+            </div>
+            <div class="field">
+                <label for="returnDate">Return Date (optional):</label>
+                <input type="date" id="returnDate" name="returnDate" />
+            </div>
+            <div class="field">
+                <button type="button" onclick="searchFlights()">Search Flights</button>
+            </div>
+        </form>
+        <div id="results"></div>
     </div>
 
     <script>
-      // Function to handle flight search
-      async function searchFlights() {
-        // Get form values
-        const origin = document.getElementById("origin").value;
-        console.log(origin);
-        const destination = document.getElementById("destination").value;
-        console.log(destination);
-        const departureDate = document.getElementById("departureDate").value;
-        console.log(departureDate);
-        const returnDate = document.getElementById("returnDate").value;
-        console.log(returnDate);
-        const travelers = document.getElementById("travelers").value;
-        console.log(travelers);
+        // Function to handle flight search
+        async function searchFlights() {
+            const origin = document.getElementById("origin").value;
+            const destination = document.getElementById("destination").value;
+            const departureDate = document.getElementById("departureDate").value;
+            const returnDate = document.getElementById("returnDate").value;
 
-        try {
-          // Make the POST request to your backend
-          const response = await axios.post("http://localhost:8000/search-flights", {
-            origin,
-            destination,
-            departureDate,
-            returnDate,
-            travelers,
-          });
+            try {
+                const response = await axios.post("http://localhost:8000/search-flights", {
+                    origin,
+                    destination,
+                    departureDate,
+                    returnDate,
+                });
 
-          // Display the results
-          displayResults(response.data);
-        } catch (error) {
-          console.error("Error searching flights:", error);
-          document.getElementById("results").innerHTML =
-            "<p>Failed to search flights. Please try again later.</p>";
+                displayResults(response.data);
+            } catch (error) {
+                console.error("Error searching flights:", error);
+                document.getElementById("results").innerHTML =
+                    "<p>Failed to search flights. Please try again later.</p>";
+            }
         }
-      }
 
-      // Function to display flight results
-      function displayResults(data) {
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = "<h2>Available Flights:</h2>";
+        // Function to display flight results
+        function displayResults(data) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<h2>Available Flights:</h2>";
 
-        // Assuming data contains a list of flight offers
-        data.data.forEach((flight) => {
-          const flightInfo = document.createElement("div");
-          flightInfo.classList.add("flight-info");
-          flightInfo.innerHTML = `
-            <p><strong>Flight:</strong> ${flight.itineraries[0].segments[0].carrierCode} ${flight.itineraries[0].segments[0].number}</p>
-            <p><strong>Departure:</strong> ${flight.itineraries[0].segments[0].departure.at}</p>
-            <p><strong>Arrival:</strong> ${flight.itineraries[0].segments[0].arrival.at}</p>
-            <p><strong>Price:</strong> ${flight.price.total} ${flight.price.currency}</p>
-          `;
-          resultsDiv.appendChild(flightInfo);
-        });
-      }
+            // Assuming data contains a list of flight offers
+            data.data.forEach((flight) => {
+                const flightInfo = document.createElement("div");
+                flightInfo.classList.add("flight-info");
+                flightInfo.innerHTML = `
+                    <p><strong>Flight:</strong> ${flight.itineraries[0].segments[0].carrierCode} ${flight.itineraries[0].segments[0].number}</p>
+                    <p><strong>Departure:</strong> ${flight.itineraries[0].segments[0].departure.at}</p>
+                    <p><strong>Arrival:</strong> ${flight.itineraries[1].segments[0].arrival.at}</p>
+                    <p><strong>Price:</strong> ${flight.price.total} ${flight.price.currency}</p>
+                    <p><strong>Flight Offer ID:</strong> ${flight.id}</p>
+                    <button onclick="bookFlight(${JSON.stringify(flight)})">Book</button>
+                    <br><br>
+                `;
+                resultsDiv.appendChild(flightInfo);
+            });
+        }
+
+        // Function to book a flight
+        async function bookFlight(flightOffer) {
+            const touristID = "12345"; // Replace with the actual tourist ID
+
+            try {
+                const response = await axios.post(`http://localhost:8000/book-flight/${touristID}`, flightOffer);
+                alert("Flight booked successfully! Confirmation Number: " + response.data.bookingDetails.confirmationNumber);
+            } catch (error) {
+                console.error("Error booking flight:", error);
+                alert("Failed to book the flight. Please try again later.");
+            }
+        }
     </script>
-  </body>
+</body>
 </html>
