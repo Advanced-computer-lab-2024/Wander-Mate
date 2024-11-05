@@ -54,7 +54,7 @@ const NavigationMenuBar = () => {
           {/* First Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" className="bg-white text-black border border-gray-300">
+            <Button variant="soft" color = "secondary">
                 Destinations
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -71,7 +71,7 @@ const NavigationMenuBar = () => {
           {/* Second Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" className="bg-white text-black border border-gray-300">
+            <Button variant="soft" color = "secondary">
                 Packages
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -88,7 +88,7 @@ const NavigationMenuBar = () => {
           {/* Third Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" className="bg-white text-black border border-gray-300">
+            <Button variant="soft" color = "secondary">
                 About Us
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -103,7 +103,7 @@ const NavigationMenuBar = () => {
         </div>
       </div>
 
-      <span className="text-lg font-semibold" style={{ color: '#826af9' }}>
+      <span className="text-lg font-semibold" style={{ color: '#000000' }}>
 Welcome/ Tourist Name
 </span> {/* Updated text color */}
 </header>
