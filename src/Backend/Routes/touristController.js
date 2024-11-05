@@ -859,7 +859,7 @@ const commentOnGuide = async (req, res) => {
     const newComment = await CommentModel.create({
       touristID, // Change to match your schema
       aboutId: guideID, // Change to match your schema
-      text, // Assuming `text` is a field in your comment schema
+      Body:text, // Assuming `text` is a field in your comment schema
     });
 
     res
