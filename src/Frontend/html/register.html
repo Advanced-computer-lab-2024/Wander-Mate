@@ -9,68 +9,6 @@
       .tourist-fields {
         display: none;
       }
-
-      /* Notification message styling */
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px;
-        background-color: #f44336; /* Red background */
-        color: white;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        display: none;
-        z-index: 1000;
-      }
-
-      /* Modal styling similar to the example */
-      .modal-container {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 400px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        z-index: 1001;
-      }
-      .modal-header {
-        padding: 15px;
-        border-bottom: 1px solid #ddd;
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .modal-body {
-        padding: 15px;
-        font-size: 14px;
-        line-height: 1.5;
-      }
-      .modal-footer {
-        padding: 15px;
-        text-align: right;
-        border-top: 1px solid #ddd;
-      }
-      .close-btn {
-        background-color: #6200ea;
-        color: white;
-        border: none;
-        padding: 7px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-      }
     </style>
   </head>
   <body>
@@ -79,7 +17,7 @@
       <form id="registerForm" onsubmit="return submitForm(event)">
         <div class="field">
           <input type="text" id="username" required />
-          <label>Username</label>
+          <label>Userame</label>
         </div>
         <div class="field">
           <input type="email" id="email" required />
@@ -122,7 +60,7 @@
           </div>
           <div class="field">
             <input type="date" id="dob" />
-            <label>Birthday</label>
+            <label>BirthDay</label>
           </div>
           <div class="field">
             <input type="text" id="touristRole" />
@@ -136,40 +74,10 @@
             <label for="remember-me">Remember me</label>
           </div>
         </div>
-
-        <!-- Terms and Conditions Checkbox -->
-        <div class="content">
-          <div class="checkbox">
-            <input type="checkbox" id="terms" />
-            <label for="terms">I agree to the <a href="#" onclick="showModal(event)">Terms and Conditions</a></label>
-          </div>
-        </div>
-
         <div class="field">
-          <input type="submit" id="registerButton" value="Register" />
+          <input type="submit" value="Register" />
         </div>
       </form>
-
-      <!-- Notification message -->
-      <div id="notification" class="notification">You must agree to the terms and conditions to register.</div>
-
-      <!-- Modal for Terms and Conditions -->
-      <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
-      <div id="termsModal" class="modal-container">
-        <div class="modal-header">Terms and Conditions</div>
-        <div class="modal-body">
-          <p>By using this service, you agree to the following terms and conditions:</p>
-          <ul>
-            <li>You must adhere to all the rules and policies.</li>
-            <li>Your data will be stored according to our privacy policy.</li>
-            <li>Misuse of the service can lead to account suspension.</li>
-            <!-- Add more terms content as needed -->
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button class="close-btn" onclick="closeModal()">Close</button>
-        </div>
-      </div>
     </div>
 
     <script>
@@ -177,47 +85,53 @@
         const nationalitySelect = document.getElementById("nationality");
 
         try {
-          // Fetch list of nations from the API
-          const response = await fetch("http://localhost:8000/getNations");
+  const response = await fetch(URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
 
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
+  const responseData = await response.json();
+  console.log("Response from server:", responseData);
 
-          const nations = await response.json();
+  if (response.ok) {
+    sessionStorage.setItem("userID", responseData.userID); // Save the userID
+    console.log("User  ID saved to session storage:", responseData.userID);
+    window.location.href = "comments.html"; // Redirect to comments page
+}else {
+    // Handle error, e.g., show an error message
+    alert("Error: " + responseData.message || "Unknown error");
+  }
+} catch (error) {
+  console.error("Error in fetch call:", error);
+  alert("An error occurred. Please try again.");
+}
+      }
 
-          // Populate the dropdown with the fetched nations
-          nations.forEach((nation) => {
-            const option = document.createElement("option");
-            option.value = nation._id; // Use the nation ID as the value
-            option.textContent = nation.country_name; // Display the nation name
-            nationalitySelect.appendChild(option);
-          });
-        } catch (error) {
-          console.error("Error fetching nations:", error);
-          alert("Could not load nationalities. Please try again later.");
+      function updateRole() {
+        const dropdown = document.getElementById("roleDropdown");
+        const selectedRole = dropdown.options[dropdown.selectedIndex].text;
+
+        // Update the label with the selected role
+        const label = document.getElementById("roleLabel");
+        label.textContent = selectedRole;
+
+        // Show tourist-specific fields only if the selected role is "Tourist"
+        const touristFields = document.getElementById("touristFields");
+
+        if (selectedRole === "Tourist") {
+          touristFields.style.display = "block"; // Show tourist fields
+        } else {
+          touristFields.style.display = "none"; // Hide tourist fields
         }
-      }
-
-      function closeModal() {
-        document.getElementById("modalOverlay").style.display = "none";
-        document.getElementById("termsModal").style.display = "none";
-      }
-
-      function showNotification(message) {
-        const notification = document.getElementById("notification");
-        notification.textContent = message;
-        notification.style.display = "block";
-
-        // Hide the notification after 3 seconds
-        setTimeout(() => {
-          notification.style.display = "none";
-        }, 3000);
       }
 
       function validateForm() {
         const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
 
         // Simple password matching validation
         if (password !== confirmPassword) {
@@ -231,7 +145,7 @@
       }
 
       async function submitForm(event) {
-        event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); // Prevent default form submission
 
     // Validate the form before submitting
     if (!validateForm()) {
