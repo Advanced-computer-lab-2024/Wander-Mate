@@ -3,14 +3,15 @@ import React from 'react';
 
 // Importing custom Navigation Menu components
 import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuContent,
-  NavigationMenuTrigger,
-  NavigationMenuLink,
-} from '../components/ui/navigation-menu'; // Assuming the code you provided is saved as NavigationMenu.js
-
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from '../components/ui/dropdown-menu'; // Adjust path as needed
+import { Button } from '../components/ui/button';
+import { Icon } from '@iconify/react'; // Assuming you're using iconify for icons
 // SiteLogo Component
 const SiteLogo = () => (
   <svg
