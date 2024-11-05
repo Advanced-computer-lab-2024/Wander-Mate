@@ -9,6 +9,68 @@
       .tourist-fields {
         display: none;
       }
+
+      /* Notification message styling */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        background-color: #f44336; /* Red background */
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        display: none;
+        z-index: 1000;
+      }
+
+      /* Modal styling similar to the example */
+      .modal-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+      }
+      .modal-header {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .modal-body {
+        padding: 15px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .modal-footer {
+        padding: 15px;
+        text-align: right;
+        border-top: 1px solid #ddd;
+      }
+      .close-btn {
+        background-color: #6200ea;
+        color: white;
+        border: none;
+        padding: 7px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
     </style>
   </head>
   <body>
@@ -17,7 +79,7 @@
       <form id="registerForm" onsubmit="return submitForm(event)">
         <div class="field">
           <input type="text" id="username" required />
-          <label>Userame</label>
+          <label>Username</label>
         </div>
         <div class="field">
           <input type="email" id="email" required />
@@ -60,7 +122,7 @@
           </div>
           <div class="field">
             <input type="date" id="dob" />
-            <label>BirthDay</label>
+            <label>Birthday</label>
           </div>
           <div class="field">
             <input type="text" id="touristRole" />
@@ -74,61 +136,68 @@
             <label for="remember-me">Remember me</label>
           </div>
         </div>
+
+        <!-- Terms and Conditions Checkbox -->
+        <div class="content">
+          <div class="checkbox">
+            <input type="checkbox" id="terms" />
+            <label for="terms">I agree to the <a href="#" onclick="showModal(event)">Terms and Conditions</a></label>
+          </div>
+        </div>
+
         <div class="field">
-          <input type="submit" value="Register" />
+          <input type="submit" id="registerButton" value="Register" />
         </div>
       </form>
+
+      <!-- Notification message -->
+      <div id="notification" class="notification">You must agree to the terms and conditions to register.</div>
+
+      <!-- Modal for Terms and Conditions -->
+      <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
+      <div id="termsModal" class="modal-container">
+        <div class="modal-header">Terms and Conditions</div>
+        <div class="modal-body">
+          <p>By using this service, you agree to the following terms and conditions:</p>
+          <ul>
+            <li>You must adhere to all the rules and policies.</li>
+            <li>Your data will be stored according to our privacy policy.</li>
+            <li>Misuse of the service can lead to account suspension.</li>
+            <!-- Add more terms content as needed -->
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+      </div>
     </div>
 
     <script>
-      async function fetchNations() {
-        const nationalitySelect = document.getElementById("nationality");
-
-        try {
-          // Fetch list of nations from the API
-          const response = await fetch("http://localhost:8000/getNations");
-
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-
-          const nations = await response.json();
-
-          // Populate the dropdown with the fetched nations
-          nations.forEach((nation) => {
-            const option = document.createElement("option");
-            option.value = nation._id; // Use the nation ID as the value
-            option.textContent = nation.country_name; // Display the nation name
-            nationalitySelect.appendChild(option);
-          });
-        } catch (error) {
-          console.error("Error fetching nations:", error);
-          alert("Could not load nationalities. Please try again later.");
-        }
+      function showModal(event) {
+        event.preventDefault(); // Prevent link navigation
+        document.getElementById("modalOverlay").style.display = "block";
+        document.getElementById("termsModal").style.display = "block";
       }
 
-      function updateRole() {
-        const dropdown = document.getElementById("roleDropdown");
-        const selectedRole = dropdown.options[dropdown.selectedIndex].text;
+      function closeModal() {
+        document.getElementById("modalOverlay").style.display = "none";
+        document.getElementById("termsModal").style.display = "none";
+      }
 
-        // Update the label with the selected role
-        const label = document.getElementById("roleLabel");
-        label.textContent = selectedRole;
+      function showNotification(message) {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.style.display = "block";
 
-        // Show tourist-specific fields only if the selected role is "Tourist"
-        const touristFields = document.getElementById("touristFields");
-
-        if (selectedRole === "Tourist") {
-          touristFields.style.display = "block"; // Show tourist fields
-        } else {
-          touristFields.style.display = "none"; // Hide tourist fields
-        }
+        // Hide the notification after 3 seconds
+        setTimeout(() => {
+          notification.style.display = "none";
+        }, 3000);
       }
 
       function validateForm() {
         const password = document.getElementById("password").value;
-        const confirmPassword =
-          document.getElementById("confirmPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
         // Simple password matching validation
         if (password !== confirmPassword) {
@@ -143,6 +212,14 @@
 
       async function submitForm(event) {
         event.preventDefault(); // Prevent default form submission
+
+        // Check if terms and conditions are accepted before submitting
+        const termsCheckbox = document.getElementById("terms");
+
+        if (!termsCheckbox.checked) {
+          showNotification("You must agree to the terms and conditions to register.");
+          return; // Prevent form submission
+        }
 
         // Validate the form before submitting
         if (!validateForm()) {
@@ -188,7 +265,6 @@
           case "Tour Guide":
             URL += "createTourGuide";
             direction = "TourGuide.html";
-
             break;
           default:
             URL = ""; // Handle case where no role is selected
