@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TouristHomePage from "./pages/TouristHomepage";
 import NavigationMenuBar from "./pages/NavigationMenuBar";
 
+import Products from "./pages/products";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/registerPage" element={<RegisterPage />} />
         <Route path="/TouristHomepage" element={<TouristHomePage />} />
         <Route path="/NavigationMenuBar" element={<NavigationMenuBar />} />
+        <Route path="/products" element={<Products />}/>
       </Routes>
     </Router>
   );
