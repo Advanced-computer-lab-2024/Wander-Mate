@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply to Complaint</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Reply to Complaint</h1>
+            <div id="complaintDetails"></div>
+            <textarea id="replyMessage" placeholder="Type your reply here..."></textarea>
+            <button id="sendReply">Send Reply</button>
+        </div>
+    </div>
+
+    <script>
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+            pairs.forEach(pair => {
+                const [key, value] = pair.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+            });
+            return params;
+        }
+
+        const queryParams = getQueryParams();
+        const complaintId = queryParams.complaintId;
+
+        // Check if complaintId was retrieved correctly
+        if (complaintId) {
+            document.getElementById('complaintDetails').innerHTML = `<p>Complaint ID: ${complaintId}</p>`;
+
+            async function fetchComplaintDetails() {
+                try {
+                    const response = await fetch(`http://localhost:8000/getComplaintDetails?id=${complaintId}`);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        document.getElementById('complaintDetails').innerHTML += `
+                            <h3>${data.Title}</h3>
+                            <p><strong>Description:</strong> ${data.Body}</p>
+                            <p><strong>Date:</strong> ${new Date(data.Date).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> ${data.Status}</p>`;
+                    } else {
+                        document.getElementById('complaintDetails').textContent = 'Complaint details not found.';
+                    }
+                } catch (error) {
+                    console.error('Error fetching complaint details:', error);
+                    document.getElementById('complaintDetails').textContent = 'An error occurred while fetching complaint details.';
+                }
+            }
+
+            fetchComplaintDetails();
+        } else {
+            document.getElementById('complaintDetails').innerHTML = '<p>No complaint ID provided.</p>';
+        }
+
+        document.getElementById('sendReply').addEventListener('click', function() {
+            const replyMessage = document.getElementById('replyMessage').value;
+            console.log('Reply sent for Complaint ID:', complaintId, 'Message:', replyMessage);
+            // Handle sending the reply to the server here, using complaintId and replyMessage
+        });
+    </script>
+</body>
+</html>
