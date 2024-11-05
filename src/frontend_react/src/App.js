@@ -11,7 +11,7 @@ import Places from "./pages/places";
 import Products from "./pages/products";
 import AdvertiserHomePage from "./pages/AdvertiserHomePage";
 import CreateActivity from './pages/createActivity';
-import PersonalDetails from './pages/personalDetails';
+import PersonalDetails from './components/personalDetails';
 function App() {
   return (
     <Router>

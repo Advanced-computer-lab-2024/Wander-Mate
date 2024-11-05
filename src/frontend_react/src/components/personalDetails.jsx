@@ -1,16 +1,16 @@
 "use client"
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { Label } from "../components/ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
 import { format } from "date-fns"
 import { cn } from "../lib/utils"
-import { Button } from "../components/ui/button"
-import { Calendar } from "../components/ui/calendar"
+import { Button } from "./ui/button"
+import { Calendar } from "./ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../components/ui/popover"
+} from "./ui/popover"
 import { useState } from "react";
 import { CalendarDays } from "lucide-react";
 import {
@@ -19,8 +19,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Card, CardContent } from "../components/ui/card";
+} from "./ui/select";
+import { Card, CardContent } from "./ui/card";
 const PersonalDetails = () => {
   const [date, setDate] = useState()
   return (

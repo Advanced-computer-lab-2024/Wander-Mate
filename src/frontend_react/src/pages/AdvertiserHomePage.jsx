@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage} from '../components/ui/avatar';
 import { Icon } from "@iconify/react";
-
+import { Button } from '../components/ui/button';
 
 // Importing custom Navigation Menu components
 import {
@@ -16,7 +16,7 @@ import {
   NavigationMenuViewport,
 } from '../components/ui/navigation-menu'; // Assuming the code you provided is saved as NavigationMenu.js
 
-import{
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -29,8 +29,11 @@ import{
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-}from '../components/ui/dropdown-menu';
+} from '../components/ui/dropdown-menu';
 
+
+// import { faker } from "@faker-js/faker";
+// SiteLogo Component
 const SiteLogo = () => (
   <svg
     id="Layer_1"
@@ -59,57 +62,82 @@ const SiteLogo = () => (
 // Main Tourist Homepage Component
 const AdvertiserHomePage = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-800">
-      {/* Navbar */}
-      <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
+    <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
       {/* Navigation Menu */}
-      <NavigationMenu className="flex">
-     {/* Site Logo in Top left */}
-     <SiteLogo />
+        <SiteLogo />
+      <div className="flex items-center w-full justify-center">
+        {/* Site Logo in Top left */}
 
-          {/* Navigation Menu */}
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link to="/activities" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition">
-                Activities
-              </Link>
-            </NavigationMenuItem>
+        {/* Centered Dropdowns */}
+        <div className="ml-6 flex justify-center items-center space-x-6 h-full">
+          {/* First Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="soft" color="secondary">
+                Destinations
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>Explore Destinations</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Beach Destinations</DropdownMenuItem>
+              <DropdownMenuItem>Mountain Retreats</DropdownMenuItem>
+              <DropdownMenuItem>City Tours</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Advertiser</NavigationMenuTrigger>
-              <NavigationMenuContent className="p-4">
-                <div className="flex flex-col space-y-2">
-                <Link to="/createAdvertiser" className="text-blue-600 hover:underline">Create Advertiser</Link>
-                <Link to="/AdvertiserInfo" className="text-blue-600 hover:underline">Advertiser Info</Link>
-                <Link to="/ReadInfo" className="text-blue-600 hover:underline">Read Advertiser Info</Link>
-                <Link to="/UpdateInfo" className="text-blue-600 hover:underline">Update Info</Link>
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+          {/* Second Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="soft" color="secondary">
+                Packages
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>Available Packages</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Family Packages</DropdownMenuItem>
+              <DropdownMenuItem>Honeymoon Specials</DropdownMenuItem>
+              <DropdownMenuItem>Adventure Tours</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>About Us</NavigationMenuTrigger>
-              <NavigationMenuContent className="p-4">
-                <div className="flex flex-col space-y-2">
-                  <NavigationMenuLink href="#company">Our Story</NavigationMenuLink>
-                  <NavigationMenuLink href="#team">Meet the Team</NavigationMenuLink>
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-          <NavigationMenuViewport />
-          <NavigationMenuIndicator />
-        </NavigationMenu>
-        
+          {/* Third Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="soft" color="secondary">
+                About Us
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>About Us</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Our Story</DropdownMenuItem>
+              <DropdownMenuItem>Meet the Team</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Flex container for button and profile dropdown */}
+      <div className="flex items-center space-x-2">
+        {/* Cart Icon as Button */}
+        <button className="text-gray-600 hover:text-gray-800 focus:outline-none p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1m-9-1a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1M18 6H4.27l2.55 6H15c.33 0 .62-.16.8-.4l3-4c.13-.17.2-.38.2-.6a1 1 0 0 0-1-1m-3 7H6.87l-.77 1.56L6 15a1 1 0 0 0 1 1h11v1H7a2 2 0 0 1-2-2a2 2 0 0 1 .25-.97l.72-1.47L2.34 4H1V3h2l.85 2H18a2 2 0 0 1 2 2c0 .5-.17.92-.45 1.26l-2.91 3.89c-.36.51-.96.85-1.64.85"/>
+          </svg>
+        </button>
+
         {/* Profile Dropdown Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="flex items-center space-x-3 mr-4">
-            <Avatar>
-              <AvatarFallback className=" bg-primary text-primary-foreground">
-                <Icon icon="heroicons:user-20-solid" className=" h-6 w-10" />
-              </AvatarFallback>
-            </Avatar>
+              <Avatar>
+                <AvatarFallback>MA</AvatarFallback>
+              </Avatar>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
@@ -132,39 +160,8 @@ const AdvertiserHomePage = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative bg-cover bg-center h-[60vh]" style={{ backgroundImage: 'url("https://example.com/hero-image.jpg")' }}>
-        <div className="flex items-center justify-center h-full bg-black bg-opacity-50 text-white text-center px-6">
-          <div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Explore the World with Us</h1>
-            <p className="text-lg md:text-2xl mb-6">Discover breathtaking destinations and unforgettable experiences.</p>
-            <button className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition">Get Started</button>
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Destinations Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="max-w-screen-xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-center mb-8">Popular Destinations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Destination Cards */}
-            <DestinationCard title="Maldives" description="White sandy beaches and crystal clear waters." imageUrl="https://example.com/maldives.jpg" />
-            <DestinationCard title="Swiss Alps" description="Scenic mountains and winter wonderlands." imageUrl="https://example.com/swiss-alps.jpg" />
-            <DestinationCard title="New York" description="The city that never sleeps." imageUrl="https://example.com/new-york.jpg" />
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="max-w-screen-xl mx-auto px-6 text-center">
-          <p>&copy; {new Date().getFullYear()} TourismCo. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </header>
   );
 }
 
