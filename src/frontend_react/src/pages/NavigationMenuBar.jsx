@@ -51,13 +51,13 @@ const SiteLogo = () => (
 // Simplified Navigation Menu Component
 const NavigationMenuBar = () => {
   return (
-    <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
+    <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
       {/* Navigation Menu */}
       <div className="flex items-center">
         {/* Site Logo in Top left */}
         <SiteLogo />
 
-        <div className="ml-6 space-x-6 flex">
+        <div className="ml-6 flex flex-1 justify-center items-center space-x-6 h-full">
           {/* First Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -111,7 +111,7 @@ const NavigationMenuBar = () => {
       </div>
 
       {/* Flex container for button and profile dropdown */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2">
         {/* Cart Icon as Button */}
         <button className="text-gray-600 hover:text-gray-800 focus:outline-none p-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">

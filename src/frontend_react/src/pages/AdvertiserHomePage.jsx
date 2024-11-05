@@ -16,6 +16,21 @@ import {
   NavigationMenuViewport,
 } from '../components/ui/navigation-menu'; // Assuming the code you provided is saved as NavigationMenu.js
 
+import{
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+}from '../components/ui/dropdown-menu';
+
 const SiteLogo = () => (
   <svg
     id="Layer_1"
@@ -85,11 +100,38 @@ const AdvertiserHomePage = () => {
           <NavigationMenuViewport />
           <NavigationMenuIndicator />
         </NavigationMenu>
-        <Avatar>
-          <AvatarFallback className="bg-primary text-primary-foreground">
-            <Icon icon="heroicons:user-20-solid" className="h-6 w-6" />
-          </AvatarFallback>
-        </Avatar>
+        
+        {/* Profile Dropdown Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="cursor-pointer">
+            <div className="flex items-center space-x-3 mr-4">
+            <Avatar>
+              <AvatarFallback className=" bg-primary text-primary-foreground">
+                <Icon icon="heroicons:user-20-solid" className=" h-6 w-10" />
+              </AvatarFallback>
+            </Avatar>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="start">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                Profile
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Settings
+                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              Log out
+              <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       {/* Hero Section */}
