@@ -107,7 +107,7 @@ const AdvertiserHomePage = () => {
             <div className="flex items-center space-x-3 mr-4">
             <Avatar>
               <AvatarFallback className=" bg-primary text-primary-foreground">
-                <Icon icon="heroicons:user-20-solid" className=" h-6 w-6" />
+                <Icon icon="heroicons:user-20-solid" className=" h-6 w-10" />
               </AvatarFallback>
             </Avatar>
             </div>
