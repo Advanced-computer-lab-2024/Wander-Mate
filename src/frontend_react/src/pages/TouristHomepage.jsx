@@ -1,3 +1,6 @@
+import React from 'react';
+
+
 // Importing custom Navigation Menu components
 import {
   NavigationMenu,
