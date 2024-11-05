@@ -61,7 +61,7 @@ const AdvertiserHomePage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800">
       {/* Navbar */}
-      <header className="bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto">
+      <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
       {/* Navigation Menu */}
       <NavigationMenu className="flex">
      {/* Site Logo in Top left */}
