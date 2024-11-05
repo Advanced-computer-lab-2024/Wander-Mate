@@ -1,5 +1,3 @@
-"use client";
-
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
@@ -7,6 +5,7 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 
 const ProductCard = ({
+  name, // add the name prop here
   image,
   title,
   description,
@@ -86,9 +85,14 @@ const ProductCard = ({
         <h6 className="text-secondary-foreground text-base font-medium mb-[6px] truncate">
           {title}
         </h6>
+        
+        {/* Add the name in bold above the description */}
+        <p className="font-bold text-base mb-2">{name}</p>
+        
         <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
           {description}
         </p>
+        
         <p className="mb-4 space-x-4">
           <span className="text-secondary-foreground text-base font-medium mt-2">
             ${price}
