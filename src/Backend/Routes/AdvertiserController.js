@@ -491,7 +491,28 @@ const uploadPictureadvertiser = async (req, res) => {
     res.status(500).json({ error: "Failed to upload advertiser image." });
   }
 };
+const getadvertiserImage = async (req, res) => {
+  try {
+    const { advertiserID } = req.params; // Get the product ID from the request parameters
 
+    // Find the product by ID
+    const ADvertiser = await advertiserModel.findById(advertiserID);
+
+    // Check if product exists
+    if (!ADvertiser || !ADvertiser.picture || !ADvertiser.picture.data) {
+      return res.status(404).json({ error: "Image not found." });
+    }
+
+    // Set the content type for the image
+    res.set("Content-Type", ADvertiser.picture.contentType);
+
+    // Send the image data
+    res.send(ADvertiser.picture.data);
+  } catch (err) {
+    console.error("Error retrieving image:", err);
+    res.status(500).json({ error: "Failed to retrieve image." });
+  }
+};
 
 module.exports = {
   createActivity,
@@ -511,4 +532,5 @@ module.exports = {
   addTransportation,
   requestAdvertiserAccountDeletion,
   uploadPictureadvertiser,
+  getadvertiserImage,
 };
