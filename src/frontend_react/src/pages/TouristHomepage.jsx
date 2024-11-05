@@ -27,8 +27,8 @@ const TouristHomePage = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger>Destinations</NavigationMenuTrigger>
-              <NavigationMenuContent className="p-4">
-                <div className="flex flex-col space-y-2">
+              <NavigationMenuContent className="w-[196px]" align="start">
+                <div className="w-[196px]" align="start">
                   <NavigationMenuLink href="#beach">Beach Destinations</NavigationMenuLink>
                   <NavigationMenuLink href="#mountain">Mountain Retreats</NavigationMenuLink>
                   <NavigationMenuLink href="#city">City Tours</NavigationMenuLink>
@@ -38,7 +38,7 @@ const TouristHomePage = () => {
 
             <NavigationMenuItem>
               <NavigationMenuTrigger>Packages</NavigationMenuTrigger>
-              <NavigationMenuContent className="p-4">
+              <NavigationMenuContent className="w-[196px]" align="start">
                 <div className="flex flex-col space-y-2">
                   <NavigationMenuLink href="#family">Family Packages</NavigationMenuLink>
                   <NavigationMenuLink href="#honeymoon">Honeymoon Specials</NavigationMenuLink>
