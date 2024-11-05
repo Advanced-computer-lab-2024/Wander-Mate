@@ -5,6 +5,7 @@ import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TouristHomePage from "./pages/TouristHomepage";
 
+
 function App() {
   return (
     <Router>
