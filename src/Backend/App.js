@@ -84,6 +84,7 @@ const {
   requestSellerAccountDeletion,
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
+  getSellerImage,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -144,6 +145,7 @@ const {
   deactivateItinerary,
   requestTourGuideAccountDeletion,
   uploadPicturetourguide,
+  gettourGuideImage,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -163,6 +165,7 @@ const {
   addTransportation,
   requestAdvertiserAccountDeletion,
   uploadPictureadvertiser,
+  getadvertiserImage,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -270,6 +273,9 @@ app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
+app.get("/seller/:sellerId/image",getSellerImage);
+app.get("/ADvertiser/:advertiserId/image",getadvertiserImage);
+app.get("/GUIDE/:guideID/image",gettourGuideImage);
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
 app.post("/searchProductsByName", searchProductsByName);
 app.get("/SellersearchProductByName", SellersearchProductByName);
