@@ -5,6 +5,8 @@ import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TouristHomePage from "./pages/TouristHomepage";
 import NavigationMenuBar from "./pages/NavigationMenuBar";
+
+
 function App() {
   return (
     <Router>
