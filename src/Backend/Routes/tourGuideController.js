@@ -512,6 +512,28 @@ const uploadPicturetourguide = async (req, res) => {
     res.status(500).json({ error: "Failed to upload tour guide image." });
   }
 };
+const gettourGuideImage = async (req, res) => {
+  try {
+    const { guideID } = req.params; // Get the product ID from the request parameters
+
+    // Find the product by ID
+    const GUIDE = await tourGuideModel.findById(guideID);
+
+    // Check if product exists
+    if (!GUIDE || !GUIDE.picture || !GUIDE.picture.data) {
+      return res.status(404).json({ error: "Image not found." });
+    }
+
+    // Set the content type for the image
+    res.set("Content-Type", GUIDE.picture.contentType);
+
+    // Send the image data
+    res.send(GUIDE.picture.data);
+  } catch (err) {
+    console.error("Error retrieving image:", err);
+    res.status(500).json({ error: "Failed to retrieve image." });
+  }
+};
 
 
 
@@ -532,4 +554,5 @@ module.exports = {
   deactivateItinerary,
   requestTourGuideAccountDeletion,
   uploadPicturetourguide,
+  gettourGuideImage,
 };

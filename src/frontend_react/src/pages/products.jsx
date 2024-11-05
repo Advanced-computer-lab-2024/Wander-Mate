@@ -82,6 +82,8 @@ const Products = () => {
   const handleSortChange = (e) => setSortOrder(e.target.value);
 
   return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Products</h1>
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <input
@@ -150,6 +152,7 @@ const Products = () => {
           <p>No products found</p>
         )}
       </div>
+    </div>
     </div>
   );
 };
