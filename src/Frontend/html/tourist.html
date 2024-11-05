@@ -4,6 +4,21 @@
     <meta charset="utf-8" />
     <title>Tourist Profile | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
+    <style>
+      /* Apply the same style as other buttons */
+      .field input[type="button"].delete-button {
+        background-color: #f44336; /* Red color */
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%; /* Ensure it matches the width of other buttons */
+      }
+      .field input[type="button"].delete-button:hover {
+        background-color: #d32f2f; /* Darker red on hover */
+      }
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -45,7 +60,11 @@
             <input type="submit" value="Change Password" />
           </div>
         </form>
-      </div>
-    </div>
+        <!-- New Delete Account button -->
+        <form action="deleteAccountTourist.html">
+          <div class="field">
+            <input type="submit" value="Delete Account" />
+          </div>
+        </form>
   </body>
 </html>
