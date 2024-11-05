@@ -9,29 +9,19 @@
     <link rel="stylesheet" href="../styles/register.css">
 
     <script>
-        async function fetchComplaints() {
+        let complaintsData = []; // Store all complaints data globally
+
+        async function fetchComplaints(status = "All") {
             try {
                 const response = await fetch('http://localhost:8000/viewAllComplaints'); // Adjust the URL as needed
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Clear any previous messages
                     document.getElementById('message').textContent = '';
+                    complaintsData = data.complaints; // Store fetched complaints
 
-                    // Display complaints
-                    const complaintsContainer = document.getElementById('complaints');
-                    complaintsContainer.innerHTML = '<h2>Complaints</h2>';
-
-                    data.complaints.forEach(complaint => {
-                        complaintsContainer.innerHTML += `<div class="complaint">
-                            <h3>${complaint.Title}</h3>
-                            <p><strong>Description:</strong> ${complaint.Body}</p>
-                            <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
-                            <p><strong>Status:</strong> ${complaint.Status}</p>
-                        </div>`;
-                    });
+                    displayComplaints(status);
                 } else {
-                    // Display an error message if no complaints were found
                     document.getElementById('message').textContent = data.message;
                 }
             } catch (error) {
@@ -40,14 +30,64 @@
             }
         }
 
+        // Display complaints based on the selected status
+        function displayComplaints(status) {
+            const complaintsContainer = document.getElementById('complaints');
+            complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+
+            // Filter complaints by status if a specific status is selected
+            const filteredComplaints = status === "All" 
+                ? complaintsData 
+                : complaintsData.filter(complaint => complaint.Status === status);
+
+            if (filteredComplaints.length === 0) {
+                complaintsContainer.innerHTML += `<p>No complaints with the status "${status}" found.</p>`;
+            } else {
+                filteredComplaints.forEach(complaint => {
+                    complaintsContainer.innerHTML += `<div class="complaint">
+                        <h3>${complaint.Title}</h3>
+                        <p><strong>Description:</strong> ${complaint.Body}</p>
+                        <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> ${complaint.Status}</p>
+                    </div>`;
+                });
+            }
+        }
+
+        // Sort complaints by date and display
+        function sortComplaintsByDate() {
+            complaintsData.sort((a, b) => new Date(a.Date) - new Date(b.Date)); // Sort complaints by date
+            const selectedStatus = document.getElementById('statusFilter').value; // Get the selected status
+            displayComplaints(selectedStatus); // Redisplay complaints with the current filter
+        }
+
+        // Handle status change to filter complaints
+        function onStatusChange() {
+            const selectedStatus = document.getElementById('statusFilter').value;
+            displayComplaints(selectedStatus);
+        }
+
         // Fetch complaints when the page loads
-        window.onload = fetchComplaints;
+        window.onload = () => fetchComplaints();
     </script>
 </head>
 <body>
     <div class="wrapper">
         <div class="container">
             <h1>Complaints List</h1>
+
+            <!-- Status filter dropdown -->
+            <label for="statusFilter">Filter by Status:</label>
+            <select id="statusFilter" onchange="onStatusChange()">
+                <option value="All">All</option>
+                <option value="Resolved">Resolved</option>
+                <option value="undefined">undefined</option>
+                <option value="Pending">Pending</option>
+            </select>
+
+            <!-- Button to sort complaints by date -->
+            <button onclick="sortComplaintsByDate()">Sort by Date</button>
+
             <div id="message" class="error"></div>
             <div id="complaints"></div>
         </div>
