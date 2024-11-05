@@ -1,23 +1,37 @@
+import React, { useState } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "./ui/dialog";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "./ui/carousel"; // Ensure to import the Carousel components
+} from "./ui/carousel";
+import BasicMap from "./ui/basic-map"; // Import the map component
 
 const PlaceCard = ({
   name,
-  images = [], // Default to an empty array
+  images = [],
   description,
   tags,
   category,
+  latitude,
+  longitude,
 }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <Card className="p-4 rounded-md">
       <div className="relative h-[191px] mb-3 rounded-md overflow-hidden">
@@ -41,8 +55,12 @@ const PlaceCard = ({
               </div>
             )}
           </CarouselContent>
-          <CarouselPrevious className="text-white" />
-          <CarouselNext className="text-white" />
+          {images.length > 1 && (
+            <>
+              <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+              <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+            </>
+          )}
         </Carousel>
       </div>
       <div>
@@ -65,12 +83,29 @@ const PlaceCard = ({
         <Button
           className="w-full"
           variant="outline"
-          onClick={() => alert(`Showing more details about ${name}`)}
+          onClick={() => setOpen(true)}
         >
           <Icon icon="ph:info" className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
           Show More Details
         </Button>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{name}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
+          {latitude && longitude && (
+            <div className="my-4">
+              <BasicMap latitude={latitude} longitude={longitude} height={300} />
+            </div>
+          )}
+          <DialogFooter>
+            <DialogClose onClick={() => setOpen(false)}>Close</DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

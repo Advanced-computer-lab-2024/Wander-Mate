@@ -169,6 +169,8 @@ const Places = () => {
                   key={place._id} // Assuming each place has a unique _id
                   name={place.Name} // Replace with the correct property
                   images={place.Pictures} // Adjust based on your API response
+                  latitude={29.9753}
+                  longitude={31.1342}
                   description={place.Description} // Adjust based on your API response
                   tags={place.Tags.map(tagId => tagMap[tagId])} // Map tag IDs to names
                   category={categories.find(cat => cat._id === place.Category)?.Name || "No Category"} // Use find to get category name
