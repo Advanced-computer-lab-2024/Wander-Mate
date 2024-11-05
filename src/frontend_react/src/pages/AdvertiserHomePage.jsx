@@ -82,14 +82,8 @@ const AdvertiserHomePage = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
-
           <NavigationMenuViewport />
           <NavigationMenuIndicator />
-          {/* <Avatar>
-            <AvatarFallback className=" bg-primary text-primary-foreground">
-              <Icon icon="heroicons:user-20-solid" className=" h-6 w-6" />
-            </AvatarFallback>
-          </Avatar> */}
         </NavigationMenu>
         <Avatar>
           <AvatarFallback className="bg-primary text-primary-foreground">
