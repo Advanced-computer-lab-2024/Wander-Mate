@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Account Deletion | Tourist | Wander-Mate</title>
+    <title>Request Account Deletion | Tour Guide | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
         <div class="title">Request Account Deletion</div>
         <form id="deleteAccountForm">
             <div class="field">
-                <input type="text" name="id" id="id" placeholder="Tourist ID" required readonly />
-                <label for="id">Tourist ID</label>
+                <input type="text" name="id" id="id" placeholder="Tour Guide ID" required readonly />
+                <label for="id">Tour Guide ID</label>
             </div>
             <div class="field">
                 <input type="submit" value="Request Deletion">
@@ -23,74 +23,71 @@
     </div>
 
     <script>
-        // Function to fetch Tourist ID from the server
-        async function fetchTouristID() {
-            const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+        // Function to fetch the Tour Guide ID and populate the field
+        async function fetchTourGuideID() {
+            const username = sessionStorage.getItem('username');
             if (!username) {
                 console.error('No username found in session storage.');
-                return; // Exit if no username is found
+                return;
             }
 
             try {
                 const response = await fetch(`http://localhost:8000/getID/${username}`);
-                if (!response.ok) {
-                    throw new Error('Failed to get tourist ID');
-                }
+                if (!response.ok) throw new Error('Failed to get tour guide ID');
 
                 const { userID } = await response.json();
-                // Store the tourist ID in session storage
-                sessionStorage.setItem('touristID', userID);
-                console.log('Fetched Tourist ID:', userID); // Debugging log
-                document.getElementById('id').value = userID; // Automatically fill the tourist ID field
+                sessionStorage.setItem('tourGuideID', userID);
+                document.getElementById('id').value = userID;
             } catch (error) {
-                console.error('Error fetching tourist ID:', error);
-                alert('Could not load tourist ID.');
+                console.error('Error fetching tour guide ID:', error);
+                alert('Could not load tour guide ID.');
             }
         }
 
-        // Retrieve the tourist ID from session storage when the page loads
+        // Load Tour Guide ID on page load
         window.onload = () => {
-            const touristID = sessionStorage.getItem('touristID');
-            console.log('Session Storage Tourist ID:', touristID); // Debugging log
-            if (touristID) {
-                document.getElementById('id').value = touristID; // Automatically set the tourist ID field
+            const tourGuideID = sessionStorage.getItem('tourGuideID');
+            if (tourGuideID) {
+                document.getElementById('id').value = tourGuideID;
             } else {
-                fetchTouristID(); // Fetch and store the tourist ID if not already in session storage
+                fetchTourGuideID();
             }
         };
 
         document.getElementById("deleteAccountForm").addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const touristID = document.getElementById("id").value;
+            const guideID = document.getElementById("id").value;
 
             const confirmation = confirm("Are you sure you want to request account deletion? This action cannot be undone.");
             if (!confirmation) {
-                return; // If the user cancels, do nothing
+                return; // Exit if the user cancels the confirmation
             }
 
             try {
-                const response = await fetch(`http://localhost:8000/requestTouristAccountDeletion/${touristID}`, {
+                const response = await fetch(`http://localhost:8000/requestTourGuideAccountDeletion/${guideID}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
                     },
                 });
 
+                const responseData = await response.json();
+
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    document.getElementById("errorMessage").innerText = errorData.message;
+                    document.getElementById("errorMessage").innerText = responseData.message || "Error processing request.";
                     document.getElementById("errorMessage").style.display = "block";
                     document.getElementById("successMessage").style.display = "none";
                 } else {
-                    document.getElementById("successMessage").innerText = "Account deletion requested successfully.";
+                    document.getElementById("successMessage").innerText = responseData.message;
                     document.getElementById("successMessage").style.display = "block";
                     document.getElementById("errorMessage").style.display = "none";
-                    // Optionally redirect or reset the form
                 }
             } catch (error) {
+                console.error("Error in processing deletion request:", error);
                 document.getElementById("errorMessage").innerText = "Server error. Please try again later.";
                 document.getElementById("errorMessage").style.display = "block";
+                document.getElementById("successMessage").style.display = "none";
             }
         });
     </script>
