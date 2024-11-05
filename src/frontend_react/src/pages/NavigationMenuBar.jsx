@@ -54,7 +54,7 @@ const NavigationMenuBar = () => {
           {/* First Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button>
+            <Button variant="soft" className="bg-white text-black border border-gray-300">
                 Destinations
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -71,7 +71,7 @@ const NavigationMenuBar = () => {
           {/* Second Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button>
+            <Button variant="soft" className="bg-white text-black border border-gray-300">
                 Packages
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -88,12 +88,12 @@ const NavigationMenuBar = () => {
           {/* Third Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button>
+            <Button variant="soft" className="bg-white text-black border border-gray-300">
                 About Us
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px]" align="start">
+            <DropdownMenuContent className="w-[196px] " align="start">
               <DropdownMenuLabel>About Us</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Our Story</DropdownMenuItem>
