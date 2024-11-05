@@ -62,10 +62,7 @@ const LogInForm = () => {
   } = useForm({
     resolver: zodResolver(schema),
     mode: "all",
-    defaultValues: {
-      email: "dashtail@codeshaper.net",
-      password: "password",
-    },
+    
   });
 
   const onSubmit = (data) => {
@@ -106,6 +103,7 @@ const LogInForm = () => {
             {...register("email")}
             type="email"
             id="email"
+            placeholder="JohnDoe@wandermate.com"
             className={cn("", {
               "border-destructive": errors.email,
             })}
@@ -131,10 +129,10 @@ const LogInForm = () => {
               id="password"
               className="peer"
               size={!isDesktop2xl ? "xl" : "lg"}
-              placeholder=" "
+              placeholder="password"
             />
             <div
-              className="absolute top-1/2 -translate-y-1/2 ltr:right-4 rtl:left-4 cursor-pointer"
+              className="absolute top-1/2 -translate-y-1/2 right-4 rtl:left-4 cursor-pointer"
               onClick={togglePasswordType}
             >
               {passwordType === "password" ? (

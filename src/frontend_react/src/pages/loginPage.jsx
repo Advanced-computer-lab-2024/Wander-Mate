@@ -46,17 +46,17 @@ const LoginPage = () => {
           >
             <SwiperSlide>
               <div className="w-full h-full flex justify-center items-center">
-                <img src={slider1} alt="Slider Image 1" className="" />
+                <img src={slider1} alt="Slider 1" className="" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="w-full h-full flex justify-center items-center">
-                <img src={slider2} alt="Slider Image 2" className="" />
+                <img src={slider2} alt="Slider 2" className="" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="w-full h-full flex justify-center items-center">
-                <img src={slider3} alt="Slider Image 3" className="" />
+                <img src={slider3} alt="Slider 3" className="" />
               </div>
             </SwiperSlide>
           </Swiper>

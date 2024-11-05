@@ -1,3 +1,14 @@
+@use "partials/calendar.scss";
+@use "partials/react-slect";
+@use "partials/map";
+@use "partials/shepherd";
+
+@use "partials/extra/pagination";
+@use "partials/extra/timeline";
+@use "partials/extra/steps";
+
+@use "partials/extra/scrollbar";
+@use "partials/extra/slider";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -147,17 +158,6 @@
 }
 
 @layer components {
-  @import "partials/calendar.scss";
-  @import "partials/react-slect";
-  @import "partials/map";
-  @import "partials/shepherd";
-
-  @import "partials/extra/pagination";
-  @import "partials/extra/timeline";
-  @import "partials/extra/steps";
-
-  @import "partials/extra/scrollbar";
-  @import "partials/extra/slider";
 }
 
 .has-sticky-header {
