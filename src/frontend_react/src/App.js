@@ -5,6 +5,7 @@ import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TouristHomePage from "./pages/TouristHomepage";
 import NavigationMenuBar from "./pages/NavigationMenuBar";
+import Places from "./pages/places";
 
 import Products from "./pages/products";
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/TouristHomepage" element={<TouristHomePage />} />
         <Route path="/NavigationMenuBar" element={<NavigationMenuBar />} />
         <Route path="/products" element={<Products />}/>
+        <Route path="/places" element={<Places />}/>
       </Routes>
     </Router>
   );

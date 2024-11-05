@@ -7,11 +7,10 @@ import { useState } from "react";
 const ProductCard = ({
   name, // add the name prop here
   image,
-  title,
   description,
   price,
   discount,
-  category,
+  ratings,
 }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
@@ -44,7 +43,7 @@ const ProductCard = ({
       <div className="relative h-[191px] flex flex-col justify-center items-center mb-3 rounded-md">
         <div className="w-full overflow-hidden rounded-md relative z-10 bg-default-100 dark:bg-default-200 h-full group">
           <img
-            alt={title}
+            
             className="h-full w-full object-contain p-6 transition-all duration-300 group-hover:scale-105"
             src={image}
           />
@@ -75,15 +74,15 @@ const ProductCard = ({
       <div>
         <div className="flex justify-between items-center mb-2">
           <p className="text-xs text-secondary-foreground uppercase font-normal">
-            {category}
+            {ratings}
           </p>
           <span className="flex items-center text-secondary-foreground font-normal text-xs gap-x-1">
             <Icon icon="ph:star-fill" className="text-yellow-400" />
-            <span>4.8</span>
+            <span>{ratings}</span>
           </span>
         </div>
         <h6 className="text-secondary-foreground text-base font-medium mb-[6px] truncate">
-          {title}
+          
         </h6>
         
         {/* Add the name in bold above the description */}
