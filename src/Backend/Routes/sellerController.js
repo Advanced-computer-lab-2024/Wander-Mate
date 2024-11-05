@@ -472,6 +472,28 @@ const viewSellerProductSalesAndQuantity = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const getSellerImage = async (req, res) => {
+  try {
+    const { sellerID } = req.params; // Get the product ID from the request parameters
+
+    // Find the product by ID
+    const seller = await sellerModel.findById(sellerID);
+
+    // Check if product exists
+    if (!seller || !seller.picture || !seller.picture.data) {
+      return res.status(404).json({ error: "Image not found." });
+    }
+
+    // Set the content type for the image
+    res.set("Content-Type", seller.picture.contentType);
+
+    // Send the image data
+    res.send(seller.picture.data);
+  } catch (err) {
+    console.error("Error retrieving image:", err);
+    res.status(500).json({ error: "Failed to retrieve image." });
+  }
+};
 
 module.exports = {
   createSeller,
@@ -491,4 +513,5 @@ module.exports = {
   requestSellerAccountDeletion,
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
+  getSellerImage,
 };

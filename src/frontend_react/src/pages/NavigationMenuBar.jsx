@@ -49,15 +49,17 @@ const SiteLogo = () => (
 
 
 // Simplified Navigation Menu Component
+// Simplified Navigation Menu Component
 const NavigationMenuBar = () => {
   return (
     <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
       {/* Navigation Menu */}
-      <div className="flex items-center">
-        {/* Site Logo in Top left */}
         <SiteLogo />
+      <div className="flex items-center w-full justify-center">
+        {/* Site Logo in Top left */}
 
-        <div className="ml-6 flex flex-1 justify-center items-center space-x-6 h-full">
+        {/* Centered Dropdowns */}
+        <div className="ml-6 flex justify-center items-center space-x-6 h-full">
           {/* First Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -100,7 +102,7 @@ const NavigationMenuBar = () => {
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px] " align="start">
+            <DropdownMenuContent className="w-[196px]" align="start">
               <DropdownMenuLabel>About Us</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Our Story</DropdownMenuItem>
@@ -124,7 +126,6 @@ const NavigationMenuBar = () => {
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="flex items-center space-x-3 mr-4">
               <Avatar>
-                {/* <AvatarImage src={faker.image.avatarLegacy()} /> */}
                 <AvatarFallback>MA</AvatarFallback>
               </Avatar>
             </div>
@@ -153,5 +154,6 @@ const NavigationMenuBar = () => {
     </header>
   );
 };
+
 
 export default NavigationMenuBar;
