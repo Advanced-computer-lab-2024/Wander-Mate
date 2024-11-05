@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change Password | Tourist | Wander-Mate</title>
+    <title>Redeem Points | Tourist | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css">
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Change Password</div>
-        <form id="changePasswordForm">
+        <div class="title">Redeem Points</div>
+        <form id="redeemPointsForm">
             <div class="field">
                 <input type="text" name="id" id="id" placeholder="Tourist ID" required readonly />
                 <label for="id">Tourist ID</label>
             </div>
             <div class="field">
-                <input type="password" name="oldPassword" id="oldPassword" placeholder=" " required>
-                <label for="oldPassword">Old Password</label>
+                <input type="number" name="pointsToRedeem" id="pointsToRedeem" placeholder=" " required>
+                <label for="pointsToRedeem">Points to Redeem</label>
             </div>
+
             <div class="field">
-                <input type="password" name="newPassword" id="newPassword" placeholder=" " required>
-                <label for="newPassword">New Password</label>
-            </div>
-            <div class="field">
-                <input type="submit" value="Change Password">
+                <input type="submit" value="Redeem Points">
             </div>
         </form>
         <div id="successMessage" style="color: green; display: none;"></div>
@@ -67,29 +64,30 @@
             }
         };
 
-        document.getElementById("changePasswordForm").addEventListener("submit", async (event) => {
-            event.preventDefault();
+        // Event listener for form submission
+        document.getElementById("redeemPointsForm").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent the default form submission
 
-            const id = document.getElementById("id").value;
-            const oldPassword = document.getElementById("oldPassword").value;
-            const newPassword = document.getElementById("newPassword").value;
-
+            const touristID = document.getElementById("id").value; // Get the tourist ID
+            const pointsToRedeem = document.getElementById("pointsToRedeem").value; // Get the points to redeem
+            
             try {
-                const response = await fetch("http://localhost:8000/changePasswordTourist", {
+                const response = await fetch("http://localhost:8000/redeempoints", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ id, oldPassword, newPassword }),
+                    body: JSON.stringify({ touristID, pointsToRedeem }), // Send the correct data to the backend
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    document.getElementById("errorMessage").innerText = errorData.message;
+                    document.getElementById("errorMessage").innerText = errorData.message || "An error occurred.";
                     document.getElementById("errorMessage").style.display = "block";
                     document.getElementById("successMessage").style.display = "none";
                 } else {
-                    document.getElementById("successMessage").innerText = "Password updated successfully.";
+                    const successData = await response.json(); // Get the success response from the backend
+                    document.getElementById("successMessage").innerText = successData.message;
                     document.getElementById("successMessage").style.display = "block";
                     document.getElementById("errorMessage").style.display = "none";
                 }
