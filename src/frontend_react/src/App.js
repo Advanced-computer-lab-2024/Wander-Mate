@@ -12,6 +12,7 @@ import AdvertiserHomePage from "./pages/AdvertiserHomePage";
 import CreateActivity from "./pages/createActivity";
 import PersonalDetails from "./components/personalDetails";
 import ViewAllComplaints from "./components/viewAllComplaints";
+import ChangePasword from "./components/changePassword";
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/places" element={<Places />} />
         <Route path="/personalDetails" element={<PersonalDetails />} />
         <Route path="/viewAllComplaints" element={<ViewAllComplaints/>}/>
+        <Route path="/changePassword" element={<ChangePasword/>}/>
       </Routes>
     </Router>
   );
