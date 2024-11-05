@@ -1,17 +1,24 @@
 import React from 'react';
-
+import { Avatar, AvatarFallback, AvatarImage} from '../components/ui/avatar';
 
 // Importing custom Navigation Menu components
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu'; // Adjust path as needed
 import { Button } from '../components/ui/button';
 import { Icon } from '@iconify/react'; // Assuming you're using iconify for icons
+// import { faker } from "@faker-js/faker";
 // SiteLogo Component
 const SiteLogo = () => (
   <svg
@@ -100,12 +107,40 @@ const NavigationMenuBar = () => {
               <DropdownMenuItem>Meet the Team</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          
         </div>
       </div>
+    
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild className=" cursor-pointer">
+          <div className=" flex items-center  space-x-3">
+            <Avatar>
+              {/* <AvatarImage src={faker.image.avatarLegacy()} /> */}
+              <AvatarFallback>MA</AvatarFallback>
+            </Avatar>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="start">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              Profile
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </DropdownMenuItem>          
+            <DropdownMenuItem>
+              Settings
+              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />  
+          <DropdownMenuItem>
+            Log out
+            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <span className="text-lg font-semibold" style={{ color: '#000000' }}>
-Welcome/ Tourist Name
-</span> {/* Updated text color */}
 </header>
    
   );
