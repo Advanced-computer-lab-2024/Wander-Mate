@@ -13,6 +13,7 @@ import CreateActivity from "./pages/createActivity";
 import PersonalDetails from "./components/personalDetails";
 import ViewAllComplaints from "./components/viewAllComplaints";
 import ViewItineraries from "./pages/viewItineraries";
+import Rating from "./pages/ratings";
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/personalDetails" element={<PersonalDetails />} />
         <Route path="/viewAllComplaints" element={<ViewAllComplaints/>}/>
         <Route path="/viewItineraries" element={<ViewItineraries/>}/>
+        <Route path="/ratings" element={<Rating/>}/>
       </Routes>
     </Router>
   );
