@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PlaceCard from "../components/placeCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton"; 
 
+
 const Places = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -15,6 +16,7 @@ const Places = () => {
   const fetchImages = async (activityId)=> {
     try {
       const response = await fetch(`http://localhost:8000/getPlaceImage/${activityId}`);
+      console.log(response);
       if (response.ok) {
         return await response.json();
       } else {
@@ -166,7 +168,7 @@ const Places = () => {
                 <PlaceCard
                   key={place._id} // Assuming each place has a unique _id
                   name={place.Name} // Replace with the correct property
-                  images={place.images} // Adjust based on your API response
+                  images={place.Pictures} // Adjust based on your API response
                   description={place.Description} // Adjust based on your API response
                   tags={place.Tags.map(tagId => tagMap[tagId])} // Map tag IDs to names
                   category={categories.find(cat => cat._id === place.Category)?.Name || "No Category"} // Use find to get category name
