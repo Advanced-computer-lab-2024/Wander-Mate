@@ -3,7 +3,8 @@ import bg from "../public/images/auth/bg-2.jpg";
 import slider1 from "../public/images/auth/slide-1.png";
 import slider2 from "../public/images/auth/slide-2.png";
 import slider3 from "../public/images/auth/slide-3.png";
-import RegForm from "./register";
+// import RegForm from "./register";
+import Registeration from "../components/registeration";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -63,7 +64,7 @@ const RegisterPage = () => {
         </div>
         <div className="px-4 py-4 flex justify-center items-center col-span-2 lg:col-span-1">
           <div className="sm:w-[480px] w-full">
-            <RegForm />
+            <Registeration />
           </div>
         </div>
       </div>

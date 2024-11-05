@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { Check } from "lucide-react";
 
 const stepVariants = cva(
@@ -177,7 +177,8 @@ const Step = React.forwardRef(
               !isLast && direction !== "vertical",
             "ltr:before:left-[44px] before:w-[calc(100%-44px)] rtl:before:right-[44px]":
               gap && !alternativeLabel,
-            "ltr:before:left-1/2 rtl:before:right-1/2 ": alternativeLabel && !gap,
+            "ltr:before:left-1/2 rtl:before:right-1/2 ":
+              alternativeLabel && !gap,
             "ltr:before:left-[calc(50%+33px)] rtl:before:right-[calc(50%+33px)] before:w-[calc(100%-60px)]":
               alternativeLabel && gap,
             "before:w-[calc(100%-85px)]":
