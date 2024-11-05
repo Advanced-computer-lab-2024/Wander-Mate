@@ -1,10 +1,10 @@
 "use client"
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { Button } from "../components/ui/button";
+import { Card, CardHeader, CardContent, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { cn } from "../lib/utils";
 import { Icon } from "@iconify/react";
 import { Eye, EyeOff } from "lucide-react";
 import {
@@ -14,61 +14,60 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../components/ui/table";
 
-import windowsImage from "@/public/images/social/windows.png"
-import androidImage from "@/public/images/social/android.png"
-import macImage from "@/public/images/social/mac.png"
-import iphoneImage from "@/public/images/social/iphone.png"
-import Image from "next/image";
+import windowsImage from "../public/images/social/windows.png"
+import androidImage from "../public/images/social/android.png"
+import macImage from "../public/images/social/mac.png"
+import iphoneImage from "../public/images/social/iphone.png"
 
 const ChangePassword = () => {
   const [currentPasswordType, setCurrentPasswordType] = useState("password")
   const [newPasswordType, setNewPasswordType] = useState("password")
   const [confirmPasswordType, setConfirmPasswordType] = useState("password")
 
-  const data = [
-    {
-      id: 1,
-      browser: "Chrome on Windows",
-      image: windowsImage,
-      device: "Unknown",
-      location: "Bangladesh",
-      recent_activites: "10, Jan 2023 20:07"
-    },
-    {
-      id: 2,
-      browser: "Chrome on Android",
-      image: androidImage,
-      device: "Unknown",
-      location: "Australia",
-      recent_activites: "13, Jan 2023 20:07"
-    },
-    {
-      id: 3,
-      browser: "Chrome on MacOS",
-      image: macImage,
-      device: "Unknown",
-      location: "United Kingdom",
-      recent_activites: "12, Jan 2023 20:07"
-    },
-    {
-      id: 4,
-      browser: "Chrome on iPhone",
-      image: iphoneImage,
-      device: "iPhone 12 pro",
-      location: "India",
-      recent_activites: "11, Mar 2023 20:07"
-    },
-    {
-      id: 5,
-      browser: "Edge on Android",
-      image: androidImage,
-      device: "Unknown",
-      location: "Canada",
-      recent_activites: "10, Feb 2023 20:07"
-    }
-  ]
+  // const data = [
+  //   {
+  //     id: 1,
+  //     browser: "Chrome on Windows",
+  //     image: windowsImage,
+  //     device: "Unknown",
+  //     location: "Bangladesh",
+  //     recent_activites: "10, Jan 2023 20:07"
+  //   },
+  //   {
+  //     id: 2,
+  //     browser: "Chrome on Android",
+  //     image: androidImage,
+  //     device: "Unknown",
+  //     location: "Australia",
+  //     recent_activites: "13, Jan 2023 20:07"
+  //   },
+  //   {
+  //     id: 3,
+  //     browser: "Chrome on MacOS",
+  //     image: macImage,
+  //     device: "Unknown",
+  //     location: "United Kingdom",
+  //     recent_activites: "12, Jan 2023 20:07"
+  //   },
+  //   {
+  //     id: 4,
+  //     browser: "Chrome on iPhone",
+  //     image: iphoneImage,
+  //     device: "iPhone 12 pro",
+  //     location: "India",
+  //     recent_activites: "11, Mar 2023 20:07"
+  //   },
+  //   {
+  //     id: 5,
+  //     browser: "Edge on Android",
+  //     image: androidImage,
+  //     device: "Unknown",
+  //     location: "Canada",
+  //     recent_activites: "10, Feb 2023 20:07"
+  //   }
+  // ]
   return (
     <>
       <Card className="rounded-t-none pt-6">
@@ -152,7 +151,7 @@ const ChangePassword = () => {
           </div>
         </CardContent>
       </Card>
-      {/* recent device table */}
+      {/* recent device table
       <Card className="mt-6">
         <CardHeader className="flex-row items-center border-none mb-0">
           <CardTitle className="flex-1 text-lg font-medium text-default-800">Recent Device</CardTitle>
@@ -175,8 +174,8 @@ const ChangePassword = () => {
                 }
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {
+            <TableBody> */}
+              {/* {
                 data.map((item, index) => (
                   <TableRow
                    key={`device-row-${index}`}
@@ -186,7 +185,7 @@ const ChangePassword = () => {
                       className="py-2">
                       <div className="flex items-center gap-2 text-sm font-medium text-default-600 whitespace-nowrap">
                         <div className="h-5 w-5 grid place-content-center rounded bg-default-100 dark:bg-default-50">
-                          <Image className="w-3.5 h-3.5" src={item.image} alt={item.browser} />
+                          <img className="w-3.5 h-3.5" src={item.image} alt={item.browser} />
                         </div>
                         {item.browser}
                       </div>
@@ -199,11 +198,11 @@ const ChangePassword = () => {
                     </TableCell>
                   </TableRow>
                 ))
-              }
-            </TableBody>
+              } */}
+            {/* </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card>   */}
     </>
   );
 };
