@@ -1,4 +1,6 @@
-import React from 'react';
+console.log('Rendering TouristHomePage component');
+console.log('Rendering NavigationMenu component');
+console.log('Rendering DestinationCard component');import React from 'react';
 
 
 // Importing custom Navigation Menu components
