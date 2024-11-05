@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Comments | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+  <body>
+    <div class="wrapper">
+      <div class="title">Comments</div>
+      <form id="commentSection">
+      <div class="field">
+        <label for="guideID">Guide ID:</label>
+        <input type="text" id="origin" name="origin" required />
+    </div>
+    <div class="field">
+        <label for="text">Comment:</label>
+        <textarea id="text" name="text" rows="5" cols="40" required></textarea>
+    </div>
+      <form action="tourist.html">
+        <div class="field">
+          <input type="submit" value="Submit" />
+        </div>
+      </form>
+    </form>
+    </div id="results"></div>
+  
+  <script>
+    async function getComment(){
+        // Retrieve userID from sessionStorage
+        const userID = sessionStorage.getItem("userID");
+        console.log("Retrieved UserID:", userID);
+    const guideID= document.getElementById("guideID").value
+    const comment= document.getElementById("text").value;
+    try{
+        const response = await axios.post(`http://localhost:3000/commentOnGuide/${userID}`, {
+            aboutId:guideID,
+            Body:comment,
+    });
+    displayResults(response.data);
+}catch(error){
+    console.error("Error registering comment", error);
+    document.getElementById("results").innerHTML=
+    "<p>Failed to register comment.</p>";
+}
+}
+  </script>
+  </body>
+</html>
