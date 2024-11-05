@@ -6,6 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { Textarea } from "../components/ui/textarea"
 import { Star, ShoppingBag, Map } from 'lucide-react'
+import {
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+} from '../components/ui/sheet' // Update the import path if necessary
 
 const items = [
   { id: '1', name: 'Wireless Headphones', type: 'product', image: '/placeholder.svg?height=100&width=100' },
@@ -48,7 +58,6 @@ export default function UserRatings() {
 
     console.log('Submitted ratings:', ratings)
     console.log('Submitted reviews:', reviews)
-    // Here you would typically send the reviews to your backend if needed
   }
 
   const StarRating = ({ itemId }) => (
@@ -67,66 +76,86 @@ export default function UserRatings() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Rate Your Purchases and Tours</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <ShoppingBag className="mr-2" /> Products
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {items.filter(item => item.type === 'product').map(item => (
-                <Card key={item.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
-                      <span>{item.name}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <StarRating itemId={item.id} />
-                    <Textarea
-                      placeholder="Write your review here..."
-                      className="mt-2"
-                      value={reviews[item.id] || ''}
-                      onChange={(e) => handleReviewChange(item.id, e.target.value)}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
+    
+
+      {/* Button to open the sheet */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button className="mt-4">Previous Purchase</Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Your Ratings and Reviews</SheetTitle>
+            <SheetDescription>
+              Here are the ratings and reviews you've submitted.
+            </SheetDescription>
+          </SheetHeader>
           
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <Map className="mr-2" /> Tours
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {items.filter(item => item.type === 'tour').map(item => (
-                <Card key={item.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
-                      <span>{item.name}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <StarRating itemId={item.id} />
-                    <Textarea
-                      placeholder="Write your review here..."
-                      className="mt-2"
-                      value={reviews[item.id] || ''}
-                      onChange={(e) => handleReviewChange(item.id, e.target.value)}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-        </div>
-        
-        <Button type="submit" className="mt-6">Submit Ratings</Button>
-      </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                <ShoppingBag className="mr-2" /> Products
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2">
+                {items.filter(item => item.type === 'product').map(item => (
+                  <Card key={item.id}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                        <span>{item.name}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StarRating itemId={item.id} />
+                      <Textarea
+                        placeholder="Write your review here..."
+                        className="mt-2"
+                        value={reviews[item.id] || ''}
+                        onChange={(e) => handleReviewChange(item.id, e.target.value)}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+            
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                <Map className="mr-2" /> Tours
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2">
+                {items.filter(item => item.type === 'tour').map(item => (
+                  <Card key={item.id}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                        <span>{item.name}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StarRating itemId={item.id} />
+                      <Textarea
+                        placeholder="Write your review here..."
+                        className="mt-2"
+                        value={reviews[item.id] || ''}
+                        onChange={(e) => handleReviewChange(item.id, e.target.value)}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+            
+            <Button type="submit" className="mt-6">Submit Ratings</Button>
+          </form>
+
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button variant="outline">Close</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
