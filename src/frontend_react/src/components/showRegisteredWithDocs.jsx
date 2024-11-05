@@ -11,7 +11,6 @@ import {
   TableHead,
   TableCell,
 } from "./ui/table";
-import { Checkbox } from "./ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 
@@ -26,17 +25,9 @@ const ShowWithDocs = () => {
           res.json()
         );
         const sellers = s.sellers;
-        // const tourGuides = await fetch("/api/tourguides").then((res) =>
-        //   res.json()
-        // );
-        // const advertisers = await fetch("/api/advertisers").then((res) =>
-        //   res.json()
-        // );
 
         const combinedUsers = [
           ...sellers.map((user) => ({ ...user, role: "seller" })),
-          //   ...tourGuides.map((user) => ({ ...user, role: "tourguide" })),
-          //   ...advertisers.map((user) => ({ ...user, role: "advertiser" })),
         ];
 
         setUsers(combinedUsers);
@@ -47,22 +38,6 @@ const ShowWithDocs = () => {
 
     fetchUsers();
   }, []);
-
-  const handleSelectAll = () => {
-    if (selectedRows.length === users.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(users.map((user) => user.id));
-    }
-  };
-
-  const handleRowSelect = (id) => {
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(id)
-        ? prevSelectedRows.filter((rowId) => rowId !== id)
-        : [...prevSelectedRows, id]
-    );
-  };
 
   const showDocs = (userId) => {
     console.log("Show docs for user:", userId);
@@ -76,36 +51,56 @@ const ShowWithDocs = () => {
     console.log("Delete user:", userId);
   };
 
+  const styles = {
+    table: {
+      width: "100%",
+      borderCollapse: "collapse",
+      fontSize: "14px",
+    },
+    th: {
+      border: "1px solid #ddd",
+      padding: "8px",
+      backgroundColor: "#f2f2f2",
+      textAlign: "left",
+    },
+    td: {
+      border: "1px solid #ddd",
+      padding: "8px",
+    },
+    rowHover: {
+      backgroundColor: "#f5f5f5",
+    },
+    avatar: {
+      width: "30px",
+      height: "30px",
+    },
+  };
+
   return (
-    <Table>
+    <Table style={styles.table}>
       <TableHeader>
         <TableRow>
-          <TableHead>
-            <Checkbox
-              checked={selectedRows.length === users.length}
-              onCheckedChange={handleSelectAll}
-            />
-          </TableHead>
-          <TableHead>User</TableHead>
-          <TableHead>Title</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>Action</TableHead>
+          <TableHead style={styles.th}>User</TableHead>
+          <TableHead style={styles.th}>Title</TableHead>
+          <TableHead style={styles.th}>Email</TableHead>
+          <TableHead style={styles.th}>Role</TableHead>
+          <TableHead style={styles.th}>Action</TableHead>
         </TableRow>
       </TableHeader>
 
       <TableBody>
         {users.map((item) => (
-          <TableRow key={item.id} className="hover:bg-muted">
-            <TableCell>
-              <Checkbox
-                checked={selectedRows.includes(item.id)}
-                onCheckedChange={() => handleRowSelect(item.id)}
-              />
-            </TableCell>
-            <TableCell className="font-medium text-card-foreground/80">
+          <TableRow
+            key={item.id}
+            style={{ ...styles.tr, ...styles.rowHover }}
+            className="hover:bg-muted"
+          >
+            <TableCell
+              className="font-medium text-card-foreground/80"
+              style={styles.td}
+            >
               <div className="flex gap-3 items-center">
-                <Avatar className="rounded-full">
+                <Avatar className="rounded-full" style={styles.avatar}>
                   <AvatarImage src={item.picture} />
                   <AvatarFallback>AB</AvatarFallback>
                 </Avatar>
@@ -114,14 +109,14 @@ const ShowWithDocs = () => {
                 </span>
               </div>
             </TableCell>
-            <TableCell>{item.FullName}</TableCell>
-            <TableCell>{item.Email}</TableCell>
-            <TableCell>
+            <TableCell style={styles.td}>{item.FullName}</TableCell>
+            <TableCell style={styles.td}>{item.Email}</TableCell>
+            <TableCell style={styles.td}>
               <Badge variant="soft" className="capitalize">
                 {item.role}
               </Badge>
             </TableCell>
-            <TableCell className="flex justify-end">
+            <TableCell style={styles.td} className="flex justify-end">
               <div className="flex gap-3">
                 <Button
                   size="icon"
