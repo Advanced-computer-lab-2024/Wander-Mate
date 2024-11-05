@@ -34,6 +34,7 @@
         // Function to fetch Advertiser ID from the server
         async function fetchAdvertiserID() {
             const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+            console.log(username);
             if (!username) {
                 console.error('No username found in session storage.');
                 return; // Exit if no username is found
