@@ -51,7 +51,7 @@ const SiteLogo = () => (
 // Simplified Navigation Menu Component
 const NavigationMenuBar = () => {
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto">
+    <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
       {/* Navigation Menu */}
       <div className="flex items-center">
         {/* Site Logo in Top left */}
@@ -61,7 +61,7 @@ const NavigationMenuBar = () => {
           {/* First Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" color = "secondary">
+              <Button variant="soft" color="secondary">
                 Destinations
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -78,7 +78,7 @@ const NavigationMenuBar = () => {
           {/* Second Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" color = "secondary">
+              <Button variant="soft" color="secondary">
                 Packages
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -95,7 +95,7 @@ const NavigationMenuBar = () => {
           {/* Third Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-            <Button variant="soft" color = "secondary">
+              <Button variant="soft" color="secondary">
                 About Us
                 <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
               </Button>
@@ -107,42 +107,50 @@ const NavigationMenuBar = () => {
               <DropdownMenuItem>Meet the Team</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
         </div>
       </div>
-    
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild className=" cursor-pointer">
-          <div className=" flex items-center  space-x-3">
-            <Avatar>
-              {/* <AvatarImage src={faker.image.avatarLegacy()} /> */}
-              <AvatarFallback>MA</AvatarFallback>
-            </Avatar>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="start">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>          
-            <DropdownMenuItem>
-              Settings
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />  
-          <DropdownMenuItem>
-            Log out
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-</header>
-   
+      {/* Flex container for button and profile dropdown */}
+      <div className="flex items-center space-x-4">
+        {/* Cart Icon as Button */}
+        <button className="text-gray-600 hover:text-gray-800 focus:outline-none p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1m-9-1a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1M18 6H4.27l2.55 6H15c.33 0 .62-.16.8-.4l3-4c.13-.17.2-.38.2-.6a1 1 0 0 0-1-1m-3 7H6.87l-.77 1.56L6 15a1 1 0 0 0 1 1h11v1H7a2 2 0 0 1-2-2a2 2 0 0 1 .25-.97l.72-1.47L2.34 4H1V3h2l.85 2H18a2 2 0 0 1 2 2c0 .5-.17.92-.45 1.26l-2.91 3.89c-.36.51-.96.85-1.64.85"/>
+          </svg>
+        </button>
+
+        {/* Profile Dropdown Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="cursor-pointer">
+            <div className="flex items-center space-x-3 mr-4">
+              <Avatar>
+                {/* <AvatarImage src={faker.image.avatarLegacy()} /> */}
+                <AvatarFallback>MA</AvatarFallback>
+              </Avatar>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="start">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                Profile
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Settings
+                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              Log out
+              <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
   );
 };
 
