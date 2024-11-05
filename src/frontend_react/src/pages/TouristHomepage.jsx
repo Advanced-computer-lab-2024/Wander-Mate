@@ -36,57 +36,77 @@ const SiteLogo = () => (
   </svg>
 );
 
+
+
+
+
 // Simplified Navigation Menu Component
 const NavigationMenuBar = () => {
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto">
       {/* Navigation Menu */}
-      <NavigationMenu className="flex">
-     {/* Site Logo in Top left */}
-     <SiteLogo />
-     
-     
+      <div className="flex items-center">
+        {/* Site Logo in Top left */}
+        <SiteLogo />
 
+        <div className="ml-6 space-x-6 flex">
+          {/* First Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                Destinations
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>Explore Destinations</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Beach Destinations</DropdownMenuItem>
+              <DropdownMenuItem>Mountain Retreats</DropdownMenuItem>
+              <DropdownMenuItem>City Tours</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <NavigationMenuList className="ml-80">
-          <NavigationMenuItem className="relative">
-            <NavigationMenuTrigger>Destinations</NavigationMenuTrigger>
-            <NavigationMenuContent className="p-4 ">
-              <div className="flex flex-col space-y-2 ">
-                <NavigationMenuLink href="#beach">Beach Destinations</NavigationMenuLink>
-                <NavigationMenuLink href="#mountain">Mountain Retreats</NavigationMenuLink>
-                <NavigationMenuLink href="#city">City Tours</NavigationMenuLink>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+          {/* Second Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                Packages
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>Available Packages</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Family Packages</DropdownMenuItem>
+              <DropdownMenuItem>Honeymoon Specials</DropdownMenuItem>
+              <DropdownMenuItem>Adventure Tours</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Packages</NavigationMenuTrigger>
-            <NavigationMenuContent className="p-4">
-              <div className="flex flex-col space-y-2">
-                <NavigationMenuLink href="#family">Family Packages</NavigationMenuLink>
-                <NavigationMenuLink href="#honeymoon">Honeymoon Specials</NavigationMenuLink>
-                <NavigationMenuLink href="#adventure">Adventure Tours</NavigationMenuLink>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>About Us</NavigationMenuTrigger>
-            <NavigationMenuContent className="p-4">
-              <div className="flex flex-col space-y-2">
-                <NavigationMenuLink href="#company">Our Story</NavigationMenuLink>
-                <NavigationMenuLink href="#team">Meet the Team</NavigationMenuLink>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+          {/* Third Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                About Us
+                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[196px]" align="start">
+              <DropdownMenuLabel>About Us</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Our Story</DropdownMenuItem>
+              <DropdownMenuItem>Meet the Team</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
 
       <span className="text-lg font-semibold" style={{ color: '#826af9' }}>
-          Welcome/ Tourist Name
-        </span> {/* Updated text color */}
-    </header>
+Welcome/ Tourist Name
+</span> {/* Updated text color */}
+</header>
+   
   );
 };
 
