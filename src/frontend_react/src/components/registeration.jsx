@@ -195,73 +195,53 @@ const Registration = () => {
                 <>
                   {selectedRole === "Tourist" && (
                     <div className="col-span-12 space-y-4 mb-4">
-                      <div className="col-span-12 lg:col-span-6">
-                        <Label className="mb-2" htmlFor="fullName">Enter Full Name</Label>
-                        <Input 
-                          type="text" 
-                          placeholder="Full Name" 
-                          required
-                          value={formData.fullName}
-                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    <div className="col-span-12 lg:col-span-6">
+                      <Input type="text" placeholder="Full Name" />
+                    </div>
+                    <div className="col-span-12 lg:col-span-6">
+                      <Input type="email" placeholder="Email" />
+                    </div>
+                    <div className="col-span-12 lg:col-span-6">
+                      <Input type="text" placeholder="Mobile Number" />
+                    </div>
+                    <div className="col-span-12 lg:col-span-6 flex space-x-4"> {/* Added flex and spacing between items */}
+                      <div className="flex-1 relative"> {/* flex-1 allows DatePicker to take available space */}
+                        <DatePicker
+                          selected={birthdate}
+                          onChange={(date) => setBirthdate(date)}
+                          dateFormat="yyyy/MM/dd" // You can customize the date format
+                          placeholderText="Select your birthdate"
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 py-2 px-3" // Ensure width and padding
                         />
                       </div>
-                      <div className="col-span-12 lg:col-span-6">
-                        <Label className="mb-2" htmlFor="email">Enter Email</Label>
-                        <Input 
-                          type="email" 
-                          placeholder="Email" 
-                          required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        />
-                      </div>
-                      <div className="col-span-12 lg:col-span-6">
-                        <Label className="mb-2" htmlFor="mobileNumber">Enter Mobile Number</Label>
-                        <Input 
-                          type="text" 
-                          placeholder="Mobile Number" 
-                          required
-                          value={formData.mobileNumber}
-                          onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
-                        />
-                      </div>
-                      <div className="col-span-12 lg:col-span-6 flex space-x-4">
-                        <div className="flex-1 relative">
-                          <DatePicker
-                            selected={birthdate}
-                            onChange={(date) => setBirthdate(date)}
-                            dateFormat="yyyy/MM/dd"
-                            placeholderText="Select your birthdate"
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 py-2 px-3"
-                            required
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button className="w-full" variant="outline">
-                                Job / Student
-                                <ChevronDown className="h-4 w-4 ml-2" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Job / Student</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              {["Job", "Student"].map((option) => (
-                                <DropdownMenuItem
-                                  key={option}
-                                  onClick={() => {
-                                    setFormData({ ...formData, jobOrStudent: option });
-                                  }}
-                                >
-                                  {option}
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
+                      <div className="flex-1"> {/* Set the dropdown to take remaining space */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              color="secondary" 
+                              className="w-full h-full flex items-center justify-between" // Adjusting width and height
+                            >
+                              Nationality
+                              <ChevronDown className="h-5 w-5 ml-2" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="absolute left-0 w-full mt-1" align="start">
+                            <DropdownMenuLabel>Nationalities</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem>Billing</DropdownMenuItem>
+                            <DropdownMenuItem>Team</DropdownMenuItem>
+                            <DropdownMenuItem>Subscription</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
+                    <div className="col-span-12 lg:col-span-6">
+                      <Input type="text" placeholder="Job or Student" />
+                    </div>
+                  </div>
+                  
                   )}
                   {["Advertiser", "Seller", "Tour Guide"].includes(selectedRole) && (
                     <div className="col-span-12 space-y-4 mb-4">

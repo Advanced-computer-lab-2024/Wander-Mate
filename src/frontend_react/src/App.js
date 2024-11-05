@@ -11,6 +11,7 @@ import Products from "./pages/products";
 import AdvertiserHomePage from "./pages/AdvertiserHomePage";
 import CreateActivity from "./pages/createActivity";
 import PersonalDetails from "./components/personalDetails";
+import ViewAllComplaints from "./components/viewAllComplaints";
 function App() {
   return (
     <Router>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/createActivity" element={<CreateActivity />} />
         <Route path="/places" element={<Places />} />
         <Route path="/personalDetails" element={<PersonalDetails />} />
+        <Route path="/viewAllComplaints" element={<ViewAllComplaints/>}/>
       </Routes>
     </Router>
   );
