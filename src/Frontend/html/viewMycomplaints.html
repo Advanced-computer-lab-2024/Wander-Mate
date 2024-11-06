@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Complaints | Tourist | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">My Complaints</div>
+        <form id="complaintForm">
+            <div class="field">
+                <input type="text" name="id" id="id" placeholder="Tourist ID" required readonly />
+                <label for="id">Tourist ID</label>
+            </div>
+        </form>
+        <div id="complaintsList"></div>
+        <div id="successMessage" style="color: green; display: none;"></div>
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        // Function to fetch Tourist ID from the server
+        async function fetchTouristID() {
+            const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+            if (!username) {
+                console.error('No username found in session storage.');
+                return; // Exit if no username is found
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) throw new Error('Failed to get tourist ID');
+
+                const { userID } = await response.json();
+                sessionStorage.setItem('touristID', userID); // Store the tourist ID
+                document.getElementById('id').value = userID; // Fill the ID field
+                fetchComplaints(userID); // Fetch complaints after setting ID
+            } catch (error) {
+                console.error('Error fetching tourist ID:', error);
+                alert('Could not load tourist ID.');
+            }
+        }
+
+        // Function to fetch complaints for the tourist
+        async function fetchComplaints(touristID) {
+            try {
+                const response = await fetch(`http://localhost:8000/viewMyComplaints/${touristID}`);
+                if (!response.ok) throw new Error('Failed to load complaints.');
+
+                const data = await response.json();
+                displayComplaints(data.complaints);
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+                document.getElementById("errorMessage").innerText = "You don't have any complaints.";
+                document.getElementById("errorMessage").style.display = "block";
+            }
+        }
+
+        // Function to display complaints on the page
+        function displayComplaints(complaints) {
+            const complaintsList = document.getElementById("complaintsList");
+            complaintsList.innerHTML = ""; // Clear previous complaints
+
+            if (complaints.length === 0) {
+                complaintsList.innerHTML = "<p>No complaints found for this tourist.</p>";
+                return;
+            }
+
+            complaints.forEach(complaint => {
+                const complaintDiv = document.createElement("div");
+                complaintDiv.classList.add("complaint-item");
+                complaintDiv.innerHTML = `
+                    <h3>${complaint.Title}</h3>
+                    <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> ${complaint.Status}</p>
+                    <p>${complaint.Body}</p>
+                `;
+                complaintsList.appendChild(complaintDiv);
+            });
+        }
+
+        // Load tourist ID and complaints on page load
+        window.onload = () => {
+            const touristID = sessionStorage.getItem('touristID');
+            if (touristID) {
+                document.getElementById('id').value = touristID;
+                fetchComplaints(touristID);
+            } else {
+                fetchTouristID();
+            }
+        };
+    </script>
+</body>
+</html>

@@ -8,19 +8,57 @@
     <!-- Link to the CSS file (adjust the path as needed) -->
     <link rel="stylesheet" href="../styles/register.css">
 
+    <style>
+        /* Modal styling */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
     <script>
         let complaintsData = []; // Store all complaints data globally
 
-        async function fetchComplaints(status = "All") {
+        // Fetch complaints from the server
+        async function fetchComplaints() {
             try {
-                const response = await fetch('http://localhost:8000/viewAllComplaints'); // Adjust the URL as needed
+                const response = await fetch('http://localhost:8000/viewAllComplaints');
                 const data = await response.json();
 
                 if (response.ok) {
+                    complaintsData = data.complaints.map(complaint => ({
+                        ...complaint,
+                        Status: complaint.Status || "Pending" // Set "Pending" if Status is undefined
+                    }));
                     document.getElementById('message').textContent = '';
-                    complaintsData = data.complaints; // Store fetched complaints
-
-                    displayComplaints(status);
+                    displayComplaints(); // Display all complaints initially
                 } else {
                     document.getElementById('message').textContent = data.message;
                 }
@@ -30,41 +68,98 @@
             }
         }
 
-        // Display complaints based on the selected status
-        function displayComplaints(status) {
-            const complaintsContainer = document.getElementById('complaints');
-            complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+        // Display only the title and status of complaints initially
+        function displayComplaints(status = "All") {
+                const complaintsContainer = document.getElementById('complaints');
+                complaintsContainer.innerHTML = '<h2>Complaints</h2>';
 
-            // Filter complaints by status if a specific status is selected
-            const filteredComplaints = status === "All" 
-                ? complaintsData 
-                : complaintsData.filter(complaint => complaint.Status === status);
+                // Filter complaints based on selected status
+                const filteredComplaints = status === "All" ? complaintsData : complaintsData.filter(complaint => complaint.Status === status);
 
-            if (filteredComplaints.length === 0) {
-                complaintsContainer.innerHTML += `<p>No complaints with the status "${status}" found.</p>`;
-            } else {
-                filteredComplaints.forEach(complaint => {
-                    complaintsContainer.innerHTML += `<div class="complaint">
+                if (filteredComplaints.length === 0) {
+                    complaintsContainer.innerHTML += `<p>No complaints found with the status "${status}".</p>`;
+                    return;
+            }
+
+            // Display each complaint with title, status, and action buttons
+            filteredComplaints.forEach(complaint => {
+                const complaintId = complaint._id || complaint.id || complaint.complaintId;
+
+                complaintsContainer.innerHTML += `
+                    <div class="complaint">
                         <h3>${complaint.Title}</h3>
-                        <p><strong>Description:</strong> ${complaint.Body}</p>
-                        <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
                         <p><strong>Status:</strong> ${complaint.Status}</p>
+                        
+                        <!-- View Details Button -->
+                        <button onclick="viewComplaintDetails('${complaintId}')">View Details</button>
+
+                        <!-- Mark as Resolved Button (only shown if status is not already "Resolved") -->
+                        ${complaint.Status !== "Resolved" ? `<button onclick="resolveComplaint('${complaintId}')">Mark as Resolved</button>` : ''}
                     </div>`;
+            });
+        }
+
+        async function resolveComplaint(complaintId) {
+            try {
+                const response = await fetch(`http://localhost:8000/markComplaintAsResolved/${complaintId}`, {
+                    method: 'PUT',
                 });
+
+                if (response.ok) {
+                    const { complaint } = await response.json();
+                    alert("Complaint marked as resolved.");
+
+                    // Update the status in the local data and re-render the complaints list
+                    complaintsData = complaintsData.map(c =>
+                        c._id === complaintId ? { ...c, Status: "Resolved" } : c
+                    );
+
+                    displayComplaints(); // Refresh the displayed list to show the updated status
+                } else {
+                    const data = await response.json();
+                    alert(`Error: ${data.message}`);
+                }
+            } catch (error) {
+                console.error("Error marking complaint as resolved:", error);
+                alert("An error occurred while marking the complaint as resolved.");
             }
         }
 
-        // Sort complaints by date and display
-        function sortComplaintsByDate() {
-            complaintsData.sort((a, b) => new Date(a.Date) - new Date(b.Date)); // Sort complaints by date
-            const selectedStatus = document.getElementById('statusFilter').value; // Get the selected status
-            displayComplaints(selectedStatus); // Redisplay complaints with the current filter
+        // Function to fetch and display complaint details in a modal
+        async function viewComplaintDetails(complaintId) {
+            try {
+                const response = await fetch(`http://localhost:8000/viewComplaintDetails/${complaintId}`);
+                if (!response.ok) throw new Error('Failed to retrieve complaint details');
+
+                const { complaint } = await response.json();
+                displayComplaintDetailsModal(complaint);
+            } catch (error) {
+                console.error("Error retrieving complaint details:", error);
+                alert("Could not retrieve complaint details.");
+            }
         }
 
-        // Handle status change to filter complaints
-        function onStatusChange() {
-            const selectedStatus = document.getElementById('statusFilter').value;
-            displayComplaints(selectedStatus);
+        // Display complaint details in a modal
+        function displayComplaintDetailsModal(complaint) {
+            const modal = document.getElementById("detailsModal");
+            const modalContent = document.getElementById("modal-content");
+
+            // Populate modal with complaint details
+            modalContent.innerHTML = `
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>${complaint.Title}</h3>
+                <p><strong>Description:</strong> ${complaint.Body}</p>
+                <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                <p><strong>Status:</strong> ${complaint.Status}</p>
+            `;
+
+            // Display the modal
+            modal.style.display = "block";
+        }
+
+        // Close the modal
+        function closeModal() {
+            document.getElementById("detailsModal").style.display = "none";
         }
 
         // Fetch complaints when the page loads
@@ -78,10 +173,9 @@
 
             <!-- Status filter dropdown -->
             <label for="statusFilter">Filter by Status:</label>
-            <select id="statusFilter" onchange="onStatusChange()">
+            <select id="statusFilter" onchange="displayComplaints(this.value)">
                 <option value="All">All</option>
                 <option value="Resolved">Resolved</option>
-                <option value="undefined">undefined</option>
                 <option value="Pending">Pending</option>
             </select>
 
@@ -90,6 +184,13 @@
 
             <div id="message" class="error"></div>
             <div id="complaints"></div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing complaint details -->
+    <div id="detailsModal" class="modal">
+        <div id="modal-content" class="modal-content">
+            <!-- Dynamic complaint details will be populated here -->
         </div>
     </div>
 </body>
