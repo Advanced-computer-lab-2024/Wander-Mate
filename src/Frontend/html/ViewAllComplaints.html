@@ -8,20 +8,57 @@
     <!-- Link to the CSS file (adjust the path as needed) -->
     <link rel="stylesheet" href="../styles/register.css">
 
+    <style>
+        /* Modal styling */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
     <script>
         let complaintsData = []; // Store all complaints data globally
 
         // Fetch complaints from the server
-        async function fetchComplaints(status = "All") {
+        async function fetchComplaints() {
             try {
                 const response = await fetch('http://localhost:8000/viewAllComplaints');
                 const data = await response.json();
-                console.log(data); // Debugging: Log the entire response to confirm structure
 
                 if (response.ok) {
-                    complaintsData = data.complaints; // Store complaints data globally
+                    complaintsData = data.complaints.map(complaint => ({
+                        ...complaint,
+                        Status: complaint.Status || "Pending" // Set "Pending" if Status is undefined
+                    }));
                     document.getElementById('message').textContent = '';
-                    displayComplaints(status);
+                    displayComplaints(); // Display all complaints initially
                 } else {
                     document.getElementById('message').textContent = data.message;
                 }
@@ -31,7 +68,7 @@
             }
         }
 
-        // Display complaints based on status and include reply functionality
+        // Display only the title and status of complaints initially
         function displayComplaints(status = "All") {
             const complaintsContainer = document.getElementById('complaints');
             complaintsContainer.innerHTML = '<h2>Complaints</h2>';
@@ -39,64 +76,61 @@
             // Filter complaints based on selected status
             const filteredComplaints = status === "All" ? complaintsData : complaintsData.filter(complaint => complaint.Status === status);
 
+            if (filteredComplaints.length === 0) {
+                complaintsContainer.innerHTML += `<p>No complaints found with the status "${status}".</p>`;
+                return;
+            }
+
+            // Display each complaint with only title and status
             filteredComplaints.forEach(complaint => {
                 const complaintId = complaint._id || complaint.id || complaint.complaintId;
 
                 complaintsContainer.innerHTML += `
                     <div class="complaint">
                         <h3>${complaint.Title}</h3>
-                        <p><strong>Description:</strong> ${complaint.Body}</p>
-                        <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
                         <p><strong>Status:</strong> ${complaint.Status}</p>
 
-                        <!-- Reply Section -->
-                        <div class="reply-section">
-                            <textarea id="reply-${complaintId}" placeholder="Type your reply here..."></textarea>
-                            <button onclick="sendReply('${complaintId}')">Send Reply</button>
-                        </div>
+                        <!-- View Details Button -->
+                        <button onclick="viewComplaintDetails('${complaintId}')">View Details</button>
                     </div>`;
             });
         }
 
-        // Send a reply for a specific complaint
-        async function sendReply(complaintId) {
-            console.log("Sending reply for complaint ID:", complaintId); // Debugging
-            const replyMessage = document.getElementById(`reply-${complaintId}`).value;
-
-            if (!replyMessage) {
-                alert("Please enter a reply message.");
-                return;
-            }
-
+        // Function to fetch and display complaint details in a modal
+        async function viewComplaintDetails(complaintId) {
             try {
-                const response = await fetch(`http://localhost:8000/complaints/${complaintId}/reply`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ Body: replyMessage })
-                });
+                const response = await fetch(`http://localhost:8000/viewComplaintDetails/${complaintId}`);
+                if (!response.ok) throw new Error('Failed to retrieve complaint details');
 
-                if (response.ok) {
-                    alert("Reply sent successfully!");
-                    document.getElementById(`reply-${complaintId}`).value = ''; // Clear the text area
-                } else {
-                    alert("Failed to send reply. Please try again.");
-                }
+                const { complaint } = await response.json();
+                displayComplaintDetailsModal(complaint);
             } catch (error) {
-                console.error("Error sending reply:", error);
-                alert("An error occurred while sending the reply.");
+                console.error("Error retrieving complaint details:", error);
+                alert("Could not retrieve complaint details.");
             }
         }
 
-        // Handle status filter change
-        function onStatusChange() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            displayComplaints(statusFilter);
+        // Display complaint details in a modal
+        function displayComplaintDetailsModal(complaint) {
+            const modal = document.getElementById("detailsModal");
+            const modalContent = document.getElementById("modal-content");
+
+            // Populate modal with complaint details
+            modalContent.innerHTML = `
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>${complaint.Title}</h3>
+                <p><strong>Description:</strong> ${complaint.Body}</p>
+                <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                <p><strong>Status:</strong> ${complaint.Status}</p>
+            `;
+
+            // Display the modal
+            modal.style.display = "block";
         }
 
-        // Sort complaints by date
-        function sortComplaintsByDate() {
-            complaintsData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-            displayComplaints(document.getElementById('statusFilter').value);
+        // Close the modal
+        function closeModal() {
+            document.getElementById("detailsModal").style.display = "none";
         }
 
         // Fetch complaints when the page loads
@@ -110,10 +144,9 @@
 
             <!-- Status filter dropdown -->
             <label for="statusFilter">Filter by Status:</label>
-            <select id="statusFilter" onchange="onStatusChange()">
+            <select id="statusFilter" onchange="displayComplaints(this.value)">
                 <option value="All">All</option>
                 <option value="Resolved">Resolved</option>
-                <option value="undefined">Undefined</option>
                 <option value="Pending">Pending</option>
             </select>
 
@@ -122,6 +155,13 @@
 
             <div id="message" class="error"></div>
             <div id="complaints"></div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing complaint details -->
+    <div id="detailsModal" class="modal">
+        <div id="modal-content" class="modal-content">
+            <!-- Dynamic complaint details will be populated here -->
         </div>
     </div>
 </body>
