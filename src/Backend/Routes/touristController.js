@@ -766,7 +766,7 @@ const searchHotel = async (req, res) => {
     const accessToken = await getAmadeusTokenHotel();
 
     // Call the hotel search API
-    const response = await axios.get(
+    const response = await axios.post(
       "https://test.api.amadeus.com/v2/shopping/hotel-offers",
       {
         params: {
