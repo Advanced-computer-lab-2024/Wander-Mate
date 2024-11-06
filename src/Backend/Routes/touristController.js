@@ -869,6 +869,7 @@ const commentOnGuide = async (req, res) => {
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
+      console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
