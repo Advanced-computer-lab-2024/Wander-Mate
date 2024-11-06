@@ -69,10 +69,10 @@
                 flightInfo.innerHTML = `
                     <p><strong>Flight:</strong> ${flight.itineraries[0].segments[0].carrierCode} ${flight.itineraries[0].segments[0].number}</p>
                     <p><strong>Departure:</strong> ${flight.itineraries[0].segments[0].departure.at}</p>
-                    <p><strong>Arrival:</strong> ${flight.itineraries[1].segments[0].arrival.at}</p>
+                    <p><strong>Arrival:</strong> ${flight.itineraries[0].segments[0].arrival.at}</p>
                     <p><strong>Price:</strong> ${flight.price.total} ${flight.price.currency}</p>
                     <p><strong>Flight Offer ID:</strong> ${flight.id}</p>
-                    <button onclick="bookFlight(${JSON.stringify(flight)})">Book</button>
+                    <button onclick="bookFlight('${flight.id}', '${flight.price.total}', '${flight.itineraries[0].segments[0].departure.at}', '${flight.itineraries[0].segments[0].arrival.at}')">Book</button>
                     <br><br>
                 `;
                 resultsDiv.appendChild(flightInfo);
@@ -80,11 +80,19 @@
         }
 
         // Function to book a flight
-        async function bookFlight(flightOffer) {
-            const touristID = "12345"; // Replace with the actual tourist ID
+        async function bookFlight(flightID, price, departureDate, arrivalDate) {
+            const userID = sessionStorage.getItem("userId");
+            console.log("Retrieved UserID:", userID);
+
+            const bookingData = {
+                flightID,
+                price,
+                departureDate,
+                arrivalDate,
+            };
 
             try {
-                const response = await axios.post(`http://localhost:8000/book-flight/${touristID}`, flightOffer);
+                const response = await axios.post(`http://localhost:8000/book-flight/${userID}`, bookingData);
                 alert("Flight booked successfully! Confirmation Number: " + response.data.bookingDetails.confirmationNumber);
             } catch (error) {
                 console.error("Error booking flight:", error);
@@ -93,4 +101,3 @@
         }
     </script>
 </body>
-</html>

@@ -315,15 +315,16 @@
 
           // Debugging: log the response object
           const responseData = await response.json();
-          console.log("Response from server:", responseData);
+        console.log("Response from server:", responseData);
+        console.log("User  ID:", responseData.userID); // Log the specific userID
 
-          if (response.ok) {
-            // Handle success, e.g., redirect to success page or show a message
-            window.location.href = direction;
-          } else {
-            // Handle error, e.g., show an error message
+        if (response.ok) {
+            sessionStorage.setItem("userId", responseData.userID); // Save userID from the response
+            console.log("User   ID saved to session storage:", responseData.userID);
+            window.location.href = direction; // Redirect after successful registration
+        } else {
             alert("Error: " + responseData.message || "Unknown error");
-          }
+        }
         } catch (error) {
           console.error("Error in fetch call:", error);
           alert("An error occurred. Please try again.");
