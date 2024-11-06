@@ -419,13 +419,12 @@ app.delete(
 app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 app.get("/viewMyComplaints/:touristID", viewMyComplaints);
-// app.patch("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
+app.put("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
 app.get("/viewProductSalesAndQuantity", viewProductSalesAndQuantity);
 app.get(
   "/viewSellerProductSalesAndQuantity/:sellerId",
   viewSellerProductSalesAndQuantity
 );
-
 app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);

@@ -1032,7 +1032,7 @@ const viewProductSalesAndQuantity = async (req, res) => {
     const productDetails = products.map(product => ({
       name: product.name,
       availableQuantity: product.quantity,
-      sales: product.sales // Assuming 'sales' is a field in your product schema
+       // Assuming 'sales' is a field in your product schema
     }));
 
     // Return the product details
