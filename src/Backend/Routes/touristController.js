@@ -1509,6 +1509,26 @@ const reviewProduct = async (req, res) => {
     });
   }
 };
+const getMyBookings = async (req, res) => {
+  const { touristID } = req.params; // Assuming the tourist ID is passed in the URL
+
+  try {
+    // Find all bookings for the specified tourist ID
+    const bookings = await Booking.find({ userId: touristID });
+
+    // Check if any bookings are found
+    if (bookings.length === 0) {
+      return res.status(404).json({ error: "No bookings found for this tourist." });
+    }
+
+    // Return the list of bookings
+    res.status(200).json(bookings);
+  } catch (err) {
+    console.error("Error fetching bookings:", err);
+    res.status(500).json({ error: "Failed to retrieve bookings." });
+  }
+};
+
 
 const cancelBooking = async (req, res) => {
   const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
@@ -1826,4 +1846,5 @@ module.exports = {
   updateEventRatings,
   currencyConverter,
   viewAllTransportations,
+  getMyBookings,
 };

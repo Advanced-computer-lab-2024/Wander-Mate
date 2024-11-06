@@ -65,6 +65,7 @@ const {
   updateEventRatings,
   currencyConverter,
   viewAllTransportations,
+  getMyBookings,
 } = require("./Routes/touristController");
 
 const {
@@ -425,6 +426,7 @@ app.get(
   "/viewSellerProductSalesAndQuantity/:sellerId",
   viewSellerProductSalesAndQuantity
 );
+app.get("/getMyBookings/:touristID",getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
