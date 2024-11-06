@@ -5,6 +5,64 @@
     <title>Register Form</title>
     <link rel="stylesheet" href="../styles/register.css" />
     <style>
+      .modal-container {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px;
+  background-color: #f44336; /* Red background */
+  color: white;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: none; /* Hidden by default */
+  z-index: 1002; /* Ensure it appears above other elements */
+}
+
+
       /* Hide tourist-specific fields by default */
       .tourist-fields {
         display: none;
@@ -41,6 +99,7 @@
           </select>
           <label id="roleLabel" for="roleDropdown">Role</label>
         </div>
+        <div id="notification" class="notification">You must agree to the terms and conditions to register.</div>
 
         <!-- Tourist-specific fields (hidden by default) -->
         <div id="touristFields" class="tourist-fields">
@@ -74,42 +133,69 @@
             <label for="remember-me">Remember me</label>
           </div>
         </div>
+        <div class="content">
+          <div class="checkbox">
+              <input type="checkbox" id="terms" />
+              <label for="terms">I agree to the <a href="#" onclick="showModal(event)">Terms and Conditions</a></label>
+          </div>
+      </div>
         <div class="field">
           <input type="submit" value="Register" />
         </div>
       </form>
     </div>
-
+    <div id="termsModal" class="modal-container">
+      <div class="modal-header">
+        <h3>Terms and Conditions</h3>
+        <button class="close-btn" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p>By using this service, you agree to the following terms and conditions:</p>
+        <ul>
+          <li>You must adhere to all the rules and policies.</li>
+          <li>Your data will be stored according to our privacy policy.</li>
+          <li>Misuse of the service can lead to account suspension.</li>
+        </ul>
+      </div>
+    </div>
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
+    
     <script>
       async function fetchNations() {
         const nationalitySelect = document.getElementById("nationality");
 
         try {
-  const response = await fetch(URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  });
+          // Fetch list of nations from the API
+          const response = await fetch("http://localhost:8000/getNations");
 
-  const responseData = await response.json();
-  console.log("Response from server:", responseData);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
 
-  if (response.ok) {
-    sessionStorage.setItem("userID", responseData.userID); // Save the userID
-    console.log("User  ID saved to session storage:", responseData.userID);
-    window.location.href = "comments.html"; // Redirect to comments page
-}else {
-    // Handle error, e.g., show an error message
-    alert("Error: " + responseData.message || "Unknown error");
-  }
-} catch (error) {
-  console.error("Error in fetch call:", error);
-  alert("An error occurred. Please try again.");
-}
+          const nations = await response.json();
+
+          // Populate the dropdown with the fetched nations
+          nations.forEach((nation) => {
+            const option = document.createElement("option");
+            option.value = nation._id; // Use the nation ID as the value
+            option.textContent = nation.country_name; // Display the nation name
+            nationalitySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching nations:", error);
+          alert("Could not load nationalities. Please try again later.");
+        }
       }
+      function showModal(event) {
+            event.preventDefault();
+            document.getElementById("modalOverlay").style.display = "block";
+            document.getElementById("termsModal").style.display = "block";
+        }
 
+        function closeModal() {
+            document.getElementById("modalOverlay").style.display = "none";
+            document.getElementById("termsModal").style.display = "none";
+        }
       function updateRole() {
         const dropdown = document.getElementById("roleDropdown");
         const selectedRole = dropdown.options[dropdown.selectedIndex].text;
@@ -143,80 +229,106 @@
 
         return true; // Allow form submission
       }
-
+      function showNotification(message) {
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+  notification.style.display = "block";
+  setTimeout(() => {
+    notification.style.display = "none";
+  }, 3000); // Hide after 3 seconds
+}
       async function submitForm(event) {
-    event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); // Prevent default form submission
+        const termsCheckbox = document.getElementById("terms");
+  if (!termsCheckbox.checked) {
+    showNotification("You must agree to the terms and conditions to register.");
+    return; // Stop the form submission
+  }
+        // Validate the form before submitting
+        if (!validateForm()) {
+          return;
+        }
 
-    // Validate the form before submitting
-    if (!validateForm()) {
-        return;
-    }
+        // Save the username to session storage before submitting
+        const username = document.getElementById("username").value;
+        sessionStorage.setItem("username", username); // Save username
+        console.log("Username saved to session storage:", username);
 
-    // Collect form data
-    const formData = {
-        Username: document.getElementById("username").value,
-        Email: document.getElementById("email").value,
-        Password: document.getElementById("password").value,
-        user: document.getElementById("roleDropdown").value,
-        MobileNumber: document.getElementById("mobileNumber")?.value,
-        Nationality: document.getElementById("nationality")?.value,
-        DOB: document.getElementById("dob")?.value,
-        Role: document.getElementById("touristRole")?.value,
-        FullName: document.getElementById("fullName")?.value,
-    };
+        // Collect form data
+        const formData = {
+          Username: document.getElementById("username").value,
+          Email: document.getElementById("email").value,
+          Password: document.getElementById("password").value,
+          user: document.getElementById("roleDropdown").value,
+          MobileNumber: document.getElementById("mobileNumber")?.value,
+          Nationality: document.getElementById("nationality")?.value,
+          DOB: document.getElementById("dob")?.value,
+          Role: document.getElementById("touristRole")?.value,
+          FullName: document.getElementById("fullName")?.value,
+        };
+        console.log(formData.Nationality);
 
-    let URL = "http://localhost:8000/";
-    let direction = "";
+        let URL = "http://localhost:8000/";
+        let direction = "";
 
-    // Use formData.user to determine the correct URL
-    switch (formData.user) {
-        case "Advertiser":
+        // Use formData.user to determine the correct URL
+        switch (formData.user) {
+          case "Advertiser":
             URL += "createAdvertiser";
             direction = "Advertiser.html";
             break;
-        case "Tourist":
+          case "Tourist":
             URL += "touristRegister";
             direction = "tourist.html";
             break;
-        case "Seller":
+          case "Seller":
             URL += "createSeller";
             direction = "seller.html";
             break;
-        case "Tour Guide":
+          case "Tour Guide":
             URL += "createTourGuide";
             direction = "TourGuide.html";
+
             break;
-        default:
+          default:
             URL = ""; // Handle case where no role is selected
             break;
-    }
+        }
 
-    try {
-        const response = await fetch(URL, {
+        // Debugging: log the final URL
+        console.log("Final API URL:", URL);
+
+        if (!URL) {
+          console.error("Invalid URL. Check the role selected.");
+          alert("Invalid URL. Check the role selected.");
+          return;
+        }
+
+        try {
+          const response = await fetch(URL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(formData),
-        });
+          });
 
-        const responseData = await response.json();
-        console.log("Response from server:", responseData); // Log the entire response
+          // Debugging: log the response object
+          const responseData = await response.json();
+          console.log("Response from server:", responseData);
 
-        if (response.ok) {
-            // Save userID to sessionStorage
-            sessionStorage.setItem("userID", responseData.userID); // Save the userID
-            console.log("User  ID saved to session storage:", responseData.userID);
-            // Redirect after saving the user ID
+          if (response.ok) {
+            // Handle success, e.g., redirect to success page or show a message
             window.location.href = direction;
-        } else {
+          } else {
+            // Handle error, e.g., show an error message
             alert("Error: " + responseData.message || "Unknown error");
+          }
+        } catch (error) {
+          console.error("Error in fetch call:", error);
+          alert("An error occurred. Please try again.");
         }
-    } catch (error) {
-        console.error("Error in fetch call:", error);
-        alert("An error occurred. Please try again.");
-    }
-}
+      }
 
       document.addEventListener("DOMContentLoaded", fetchNations);
     </script>

@@ -9,82 +9,61 @@
     <link rel="stylesheet" href="../styles/register.css">
 
     <script>
-        async function fetchComplaints() {
+        let complaintsData = []; // Store all complaints data globally
+
+        async function fetchComplaints(status = "All") {
     try {
         const response = await fetch('http://localhost:8000/viewAllComplaints');
         const data = await response.json();
         console.log(data); // Debugging: Log the entire response to confirm structure
 
-        if (response.ok) {
-            document.getElementById('message').textContent = '';
-            const complaintsContainer = document.getElementById('complaints');
-            complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+                if (response.ok) {
+                    // Clear any previous messages
+                    document.getElementById('message').textContent = '';
 
-            data.complaints.forEach(complaint => {
-                console.log(complaint); // Debugging: Log each complaint to confirm ID
-                const complaintId = complaint._id || complaint.id || complaint.complaintId; // Adjust based on actual property
+                    // Display complaints
+                    const complaintsContainer = document.getElementById('complaints');
+                    complaintsContainer.innerHTML = '<h2>Complaints</h2>';
 
-                complaintsContainer.innerHTML += `
-                    <div class="complaint">
-                        <h3>${complaint.Title}</h3>
-                        <p><strong>Description:</strong> ${complaint.Body}</p>
-                        <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
-                        <p><strong>Status:</strong> ${complaint.Status}</p>
-
-                        <!-- Reply Section -->
-                        <div class="reply-section">
-                            <textarea id="reply-${complaintId}" placeholder="Type your reply here..."></textarea>
-                            <button onclick="sendReply('${complaintId}')">Send Reply</button>
-                        </div>
-                    </div>`;
-            });
-        } else {
-            document.getElementById('message').textContent = data.message;
+                    data.complaints.forEach(complaint => {
+                        complaintsContainer.innerHTML += `<div class="complaint">
+                            <h3>${complaint.Title}</h3>
+                            <p><strong>Description:</strong> ${complaint.Body}</p>
+                            <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> ${complaint.Status}</p>
+                        </div>`;
+                    });
+                } else {
+                    // Display an error message if no complaints were found
+                    document.getElementById('message').textContent = data.message;
+                }
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+                document.getElementById('message').textContent = 'An error occurred while fetching complaints.';
+            }
         }
-    } catch (error) {
-        console.error('Error fetching complaints:', error);
-        document.getElementById('message').textContent = 'An error occurred while fetching complaints.';
-    }
-}
-
-// Function to send a reply for a specific complaint
-async function sendReply(complaintId) {
-    console.log("Sending reply for complaint ID:", complaintId); // Debugging
-    const replyMessage = document.getElementById(`reply-${complaintId}`).value;
-
-    if (!replyMessage) {
-        alert("Please enter a reply message.");
-        return;
-    }
-
-    try {
-        const response = await fetch(`http://localhost:8000/complaints/${complaintId}/reply`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Body: replyMessage }) // Adjusted to match backend expected structure
-        });
-
-        if (response.ok) {
-            alert("Reply sent successfully!");
-            document.getElementById(`reply-${complaintId}`).value = ''; // Clear the text area
-        } else {
-            alert("Failed to send reply. Please try again.");
-        }
-    } catch (error) {
-        console.error("Error sending reply:", error);
-        alert("An error occurred while sending the reply.");
-    }
-}
-
 
         // Fetch complaints when the page loads
-        window.onload = fetchComplaints;
+        window.onload = () => fetchComplaints();
     </script>
 </head>
 <body>
     <div class="wrapper">
         <div class="container">
             <h1>Complaints List</h1>
+
+            <!-- Status filter dropdown -->
+            <label for="statusFilter">Filter by Status:</label>
+            <select id="statusFilter" onchange="onStatusChange()">
+                <option value="All">All</option>
+                <option value="Resolved">Resolved</option>
+                <option value="undefined">undefined</option>
+                <option value="Pending">Pending</option>
+            </select>
+
+            <!-- Button to sort complaints by date -->
+            <button onclick="sortComplaintsByDate()">Sort by Date</button>
+
             <div id="message" class="error"></div>
             <div id="complaints"></div>
         </div>

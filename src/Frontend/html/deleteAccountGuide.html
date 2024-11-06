@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Account Deletion | Tour Guide | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Request Account Deletion</div>
+        <form id="deleteAccountForm">
+            <div class="field">
+                <input type="text" name="id" id="id" placeholder="Tour Guide ID" required readonly />
+                <label for="id">Tour Guide ID</label>
+            </div>
+            <div class="field">
+                <input type="submit" value="Request Deletion">
+            </div>
+        </form>
+        <div id="successMessage" style="color: green; display: none;"></div>
+        <div id="errorMessage" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        // Function to fetch the Tour Guide ID and populate the field
+        async function fetchTourGuideID() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                console.error('No username found in session storage.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) throw new Error('Failed to get tour guide ID');
+
+                const { userID } = await response.json();
+                sessionStorage.setItem('tourGuideID', userID);
+                document.getElementById('id').value = userID;
+            } catch (error) {
+                console.error('Error fetching tour guide ID:', error);
+                alert('Could not load tour guide ID.');
+            }
+        }
+
+        // Load Tour Guide ID on page load
+        window.onload = () => {
+            const tourGuideID = sessionStorage.getItem('tourGuideID');
+            if (tourGuideID) {
+                document.getElementById('id').value = tourGuideID;
+            } else {
+                fetchTourGuideID();
+            }
+        };
+
+        document.getElementById("deleteAccountForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const guideID = document.getElementById("id").value;
+
+            const confirmation = confirm("Are you sure you want to request account deletion? This action cannot be undone.");
+            if (!confirmation) {
+                return; // Exit if the user cancels the confirmation
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/requestTourGuideAccountDeletion/${guideID}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    document.getElementById("errorMessage").innerText = responseData.message || "Error processing request.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    document.getElementById("successMessage").style.display = "none";
+                } else {
+                    document.getElementById("successMessage").innerText = responseData.message;
+                    document.getElementById("successMessage").style.display = "block";
+                    document.getElementById("errorMessage").style.display = "none";
+                }
+            } catch (error) {
+                console.error("Error in processing deletion request:", error);
+                document.getElementById("errorMessage").innerText = "Server error. Please try again later.";
+                document.getElementById("errorMessage").style.display = "block";
+                document.getElementById("successMessage").style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
