@@ -1134,6 +1134,28 @@ const changePasswordTourist = async (req, res) => {
   }
 };
 
+const viewAllTransportations = async (req, res) => {
+  try {
+    // Fetch all transportations from the database
+    const transportations = await TransportationModel.find();
+
+    // Check if there are transportations available
+    if (transportations.length === 0) {
+      return res.status(404).json({ message: "No transportation options available." });
+    }
+
+    // Respond with the list of transportations
+    res.status(200).json({
+      message: "Transportations retrieved successfully!",
+      transportations,
+    });
+  } catch (err) {
+    console.error("Error fetching transportations:", err);
+    res.status(500).json({ message: "Failed to retrieve transportations." });
+  }
+};
+
+
 const bookTransportation = async (req, res) => {
   try {
     const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
@@ -1148,7 +1170,7 @@ const bookTransportation = async (req, res) => {
     // Create a new booking record
     const newBooking = new bookingSchema({
       itemId,
-      itemModel,
+      itemModel :"Transportation",
       userId,
       bookedDate,
       // You can add more details if needed
@@ -1800,4 +1822,5 @@ module.exports = {
   rateEvent,
   updateEventRatings,
   currencyConverter,
+  viewAllTransportations,
 };

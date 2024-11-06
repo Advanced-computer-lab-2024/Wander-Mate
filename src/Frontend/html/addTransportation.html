@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Transportation</title>
+    <link rel="stylesheet" href="../styles/register.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Add Transportation</div>
+        <form id="addTransportationForm">
+            <div class="field">
+                <input type="text" name="advertiserID" id="id" readonly placeholder="Advertiser ID" />
+                <label for="advertiserID">Advertiser ID</label>
+            </div>
+            <div class="field">
+                <label for="availability">Availability</label>
+                <select name="availability" id="availability">
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                </select>
+            </div>
+            <div class="field">
+                <input type="submit" value="Add Transportation">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Function to fetch Advertiser ID from the server
+        async function fetchAdvertiserID() {
+            const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+            console.log(username);
+            if (!username) {
+                console.error('No username found in session storage.');
+                return; // Exit if no username is found
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get advertiser ID');
+                }
+
+                const { userID } = await response.json();
+                // Store the advertiser ID in session storage
+                sessionStorage.setItem('advertiserID', userID);
+                console.log('Fetched Advertiser ID:', userID); // Debugging log
+                document.getElementById('id').value = userID; // Automatically fill the advertiser ID field
+            } catch (error) {
+                console.error('Error fetching advertiser ID:', error);
+                alert('Could not load advertiser ID.');
+            }
+        }
+
+        // Retrieve the advertiser ID from session storage when the page loads
+        window.onload = () => {
+            const advertiserID = sessionStorage.getItem('advertiserID');
+            console.log('Session Storage Advertiser ID:', advertiserID); // Debugging log
+            if (advertiserID) {
+                document.getElementById('id').value = advertiserID; // Automatically set the advertiser ID field
+            } else {
+                fetchAdvertiserID(); // Fetch and store the advertiser ID if not already in session storage
+            }
+        };
+
+        // Handle form submission (Add Transportation)
+        document.getElementById("addTransportationForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const advertiserID = document.getElementById("id").value;
+    const availability = document.getElementById("availability").value; // No need for conversion here yet
+
+    // Debugging log
+    console.log('Advertiser ID:', advertiserID);
+    console.log('Availability (string):', availability); // Log raw availability string from select
+
+    try {
+        const response = await fetch("http://localhost:8000/addTransportation", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                advertiserID,
+                availability
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert("Error: " + errorData.error);
+        } else {
+            alert("Transportation added successfully!");
+            // Optionally, clear the form after successful submission
+            document.getElementById("addTransportationForm").reset();
+        }
+    } catch (error) {
+        console.error("Error adding transportation:", error);
+        alert("Server error. Please try again later.");
+    }
+});
+
+    </script>
+</body>
+</html>
