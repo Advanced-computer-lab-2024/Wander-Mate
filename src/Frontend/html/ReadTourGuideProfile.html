@@ -8,9 +8,17 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Get Tour Guide Profile</div>
+        <div class="title">Tour Guide Profile</div>
+
         <div id="profileInfo" class="profile-info" style="display:none;">
             <h2>Profile Information</h2>
+
+            <!-- Profile Picture Section -->
+            <div id="profilePictureContainer" style="display:none;">
+                <img id="profilePicture" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;" />
+            </div>
+
+            <!-- Other Profile Information -->
             <p><strong>Username:</strong> <span id="displayUsername"></span></p>
             <p><strong>Email:</strong> <span id="displayEmail"></span></p>
             <p><strong>Mobile Number:</strong> <span id="displayMobileNumber"></span></p>
@@ -57,12 +65,19 @@
                 const profileData = await response.json();
                 console.log(profileData); // Log the profile data for debugging
 
-                // Display the profile information
+                // Display profile information
                 document.getElementById('displayUsername').innerText = profileData.Username || 'N/A';
                 document.getElementById('displayEmail').innerText = profileData.Email || 'N/A';
                 document.getElementById('displayMobileNumber').innerText = profileData.MobileNumber || 'N/A';
                 document.getElementById('displayPreviousWork').innerText = profileData.PreviousWork || 'N/A';
                 document.getElementById('displayYearsOfExperience').innerText = profileData.YearsOfExperience || 'N/A';
+
+                // Display the profile picture if it exists
+                if (profileData.picture) {  // Assuming ProfilePicture contains the URL or path to the image
+                    const profilePicture = document.getElementById("profilePicture");
+                    profilePicture.src = profileData.picture; // Set image source
+                    document.getElementById("profilePictureContainer").style.display = "block"; // Show the container
+                }
 
                 document.getElementById('profileInfo').style.display = 'block';
                 document.getElementById('errorMessage').style.display = 'none';

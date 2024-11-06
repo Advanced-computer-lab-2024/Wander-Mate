@@ -68,10 +68,12 @@ const touristRegister = async (req, res) => {
     // 3. Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
-
+    
+    let parsedPoints = 0;
+    
     if (Points) {
       // 4. Ensure Points is an integer and validate the input
-      let parsedPoints = parseInt(Points); // Convert Points to an integer
+      parsedPoints = parseInt(Points); // Convert Points to an integer
       if (isNaN(parsedPoints) || parsedPoints < 0) {
         // Check if the input is not a number or if it's negative
         parsedPoints = 0; // Default to 0 points if invalid input
@@ -755,7 +757,7 @@ const searchHotel = async (req, res) => {
     const accessToken = await getAmadeusTokenHotel();
 
     // Call the hotel search API
-    const response = await axios.get(
+    const response = await axios.post(
       "https://test.api.amadeus.com/v2/shopping/hotel-offers",
       {
         params: {
