@@ -1,65 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Documents</title>
-
-    <!-- Link to the CSS file -->
-    <link rel="stylesheet" href="../styles/register.css">
-
-    <script>
-        async function fetchDocuments(ownerId) {
-            try {
-                const response = await fetch(`http://localhost:8000/viewDocuments/${ownerId}`); // Adjust the URL as needed
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Clear any previous messages
-                    document.getElementById('message').textContent = '';
-
-                    // Display documents
-                    const documentsContainer = document.getElementById('documents');
-                    documentsContainer.innerHTML = '<h2>User Documents</h2>';
-
-                    data.documents.forEach((doc, index) => {
-                        // Create a download link for each document
-                        const downloadLink = `<a href="data:application/pdf;base64,${doc.pdf}" download="${doc.Title}.pdf">Download ${doc.Title}</a>`;
-
-                        // Optionally, embed the PDF for viewing directly on the page
-                        const embeddedPdf = `<iframe src="data:application/pdf;base64,${doc.pdf}" width="100%" height="400px" title="${doc.Title}"></iframe>`;
-
-                        documentsContainer.innerHTML += `
-                            <div class="document">
-                                <h3>${doc.Title}</h3>
-                                ${downloadLink}
-                                <br>
-                                ${embeddedPdf} <!-- Uncomment if you want embedded view -->
-                            </div>`;
-                    });
-                } else {
-                    document.getElementById('message').textContent = data.message;
-                }
-            } catch (error) {
-                console.error('Error fetching documents:', error);
-                document.getElementById('message').textContent = 'An error occurred while fetching documents.';
-            }
-        }
-
-        // Fetch the documents for a specific owner ID when the page loads
-        window.onload = () => {
-            const ownerId = '12345'; // Replace this with the actual ownerId as needed
-            fetchDocuments(ownerId);
-        };
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View All Documents</title>
+  <link rel="stylesheet" href="../styles/register.css"> <!-- Assuming your CSS is in 'styles.css' -->
 </head>
 <body>
-    <div class="wrapper">
-        <div class="container">
-            <h1>User Documents</h1>
-            <div id="message" class="error"></div>
-            <div id="documents"></div>
-        </div>
+  <div class="wrapper">
+    <div class="title">All Documents</div>
+    <div id="documentList" class="content">
+      <!-- All documents will be displayed here -->
     </div>
+  </div>
+
+  <script>
+    // Fetch all documents on page load
+    async function fetchAllDocuments() {
+      try {
+        const response = await fetch('http://localhost:8000/viewDocuments'); // Assuming this endpoint fetches all documents
+        const data = await response.json();
+
+        if (data.message === "Documents retrieved successfully.") {
+          displayDocuments(data.documents);
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch documents.");
+      }
+    }
+
+    // Display documents in the list
+    function displayDocuments(documents) {
+      const documentList = document.getElementById('documentList');
+      documentList.innerHTML = ''; // Clear previous results if any
+
+      documents.forEach(doc => {
+        const docElement = document.createElement('div');
+        docElement.classList.add('document');
+
+        const title = document.createElement('h3');
+        title.textContent = doc.Title;
+        docElement.appendChild(title);
+
+        const pdfLink = document.createElement('a');
+        pdfLink.href = `data:application/pdf;base64,${doc.pdf}`;
+        pdfLink.textContent = 'Download PDF';
+        pdfLink.target = '_blank';
+        docElement.appendChild(pdfLink);
+
+        documentList.appendChild(docElement);
+      });
+    }
+
+    // Load all documents when the page loads
+    window.onload = fetchAllDocuments;
+  </script>
 </body>
 </html>
