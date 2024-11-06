@@ -170,11 +170,47 @@
                   complaint.Date
                 ).toLocaleDateString()}</p>
                 <p><strong>Status:</strong> ${complaint.Status}</p>
+                
+                <h4>Reply to Complaint:</h4>
+                <textarea id="replyText" rows="3" placeholder="Write your reply here..."></textarea>
+                <button onclick="submitReply('${complaint._id}')">Submit Reply</button>
             `;
 
         // Display the modal
         modal.style.display = "block";
       }
+      
+
+// Function to submit a reply
+async function submitReply(complaintId) {
+    const replyText = document.getElementById("replyText").value;
+    if (!replyText) {
+        alert("Reply cannot be empty.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8000/complaints/${complaintId}/reply`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ Body: replyText }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message);
+            // Optionally, you can refresh the complaint details to show the new reply
+            viewComplaintDetails(complaintId);
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error("Error submitting reply:", error);
+        alert("An error occurred while submitting your reply.");
+    }
+}
 
       // Close the modal
       function closeModal() {
