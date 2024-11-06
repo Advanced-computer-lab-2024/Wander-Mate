@@ -128,6 +128,7 @@ const {
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
+  getAllUsernames
 } = require("./Routes/adminController.js");
 
 const {
@@ -435,3 +436,4 @@ app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations",viewAllTransportations);
+app.get("/getAllUsernames",getAllUsernames);

@@ -1076,6 +1076,31 @@ const flagEventOrItinerary = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
+const getAllUsernames = async (req, res) => {
+  try {
+    // Fetch usernames from all collections in parallel
+    const [advertisers, tourGuides, sellers] = await Promise.all([
+      Advertiser.find().select("Username"), // Only select the "Username" field
+      tourGuide.find().select("Username"),
+      Seller.find().select("Username")
+    ]);
+
+    // Extract usernames from each collection
+    const usernames = [
+      ...advertisers.map((advertiser) => advertiser.Username),
+      ...tourGuides.map((tourGuide) => tourGuide.Username),
+      ...sellers.map((seller) => seller.Username)
+    ];
+
+    // Respond with the collected usernames
+    res.status(200).json({ usernames });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching usernames" });
+  }
+};
+
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1115,4 +1140,5 @@ module.exports = {
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
+  getAllUsernames,
 };
