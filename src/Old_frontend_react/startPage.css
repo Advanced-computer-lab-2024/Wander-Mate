@@ -1,0 +1,112 @@
+/* Frame 3 */
+.frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: relative; /* Keep it as relative */
+  width: 100vw;
+  min-height: 100vh; /* Use min-height */
+  padding: 0; /* Remove padding */
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.7) 11.51%,
+      rgba(0, 0, 0, 0) 100%
+    ),
+    url("../images/pyramids.jpg") center center / cover no-repeat; /* Test with placeholder */
+  z-index: 1; /* Ensure the gradient appears on top */
+}
+
+/* Container */
+.inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+  gap: 48px;
+  width: 100%;
+  height: 218px;
+}
+
+/* QUALITY & PASSION */
+.title {
+  width: 100%;
+  height: auto; /* Adjust height to auto for better flexibility */
+  font-family: 'Josefin Sans', sans-serif; /* Replace with your desired font */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 96px; /* Adjust size as needed */
+  line-height: 125%; /* Adjust line height for spacing */
+  display: flex;
+  justify-content: center; /* Center text horizontally */
+  align-items: center; /* Center text vertically */
+  text-align: center; /* Ensure text is centered */
+  letter-spacing: 0.105em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin-bottom: 20px; /* Added margin to raise the title */
+}
+
+/* Button */
+.buttonR {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 16px ;
+  gap: 10px;
+  width: 198px;
+  height: 50px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid #ffffff;
+  border-radius: 0px 20px;
+  cursor: pointer;
+}
+
+.buttonR:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Register Now */
+.buttonR-text {
+  width: 118px;
+  height: 18px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Media Queries (adjust breakpoints as needed) */
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 60px; /* Adjust font size for smaller screens */
+    margin-bottom: 15px; /* Adjust margin for smaller screens */
+  }
+  .button {
+    width: 150px; /* Adjust button width */
+    padding: 12px 30px; /* Adjust padding for a better fit */
+  }
+  .button-text {
+    font-size: 16px; /* Adjust font size for button text */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .title {
+    font-size: 40px; /* Further adjust font size for smaller screens */
+    margin-bottom: 10px; /* Adjust margin for smaller screens */
+  }
+  .button {
+    width: 120px; /* Adjust button width */
+    padding: 10px 20px; /* Adjust padding for better fit */
+  }
+  .button-text {
+    font-size: 14px; /* Adjust font size for button text */
+  }
+}
