@@ -31,9 +31,9 @@
     </div>
 
     <script>
-      let allProducts = []; // Variable to store all fetched products
-      let allSellers = []; // Variable to store all fetched sellers
-      let sellerMap = {}; // Map to associate seller IDs with names
+      let allProducts = [];
+      let allSellers = [];
+      let sellerMap = {};
 
       async function fetchSellers() {
         try {
@@ -76,7 +76,7 @@
 
       function displayProducts(products) {
         const productList = document.getElementById("productList");
-        productList.innerHTML = ""; // Clear existing products
+        productList.innerHTML = ""; 
 
         products.forEach((product) => {
           const productItem = document.createElement("div");
@@ -103,6 +103,10 @@
                       .join("")}
                   </ul>
               </p>
+              <div class="review-section">
+                <input type="text" class="review-input" id="review-${product._id}" placeholder="Add a review">
+                <button onclick="submitReview('${product._id}')">Submit Review</button>
+              </div>
               <p class="product-archive-status">
                 Status: <span class="${product.isArchived ? 'archived' : 'active'}">
                   ${product.isArchived ? 'Archived' : 'Active'}
@@ -138,13 +142,47 @@
           const data = await response.json();
           if (response.ok) {
             alert(data.message);
-            await fetchProducts(); // Reload products after update
+            await fetchProducts();
           } else {
             alert('Failed to update product status.');
           }
         } catch (error) {
           console.error("Error archiving product:", error);
           alert("An error occurred while updating product status.");
+        }
+      }
+
+      async function submitReview(productId) {
+        const reviewText = document.getElementById(`review-${productId}`).value;
+        const userId = sessionStorage.getItem("userId"); // Retrieve userId from session storage
+
+        if (!userId || !reviewText) {
+          alert("You must be logged in and enter a review to submit.");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:8000/reviewProduct", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              productId,
+              userId,
+              review: reviewText,
+            }),
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            alert(data.message);
+            document.getElementById(`review-${productId}`).value = ""; // Clear input after submitting
+            await fetchProducts(); // Refresh products to show new reviews
+          } else {
+            alert("Failed to post review.");
+          }
+        } catch (error) {
+          console.error("Error posting review:", error);
+          alert("An error occurred while posting the review.");
         }
       }
 
@@ -158,47 +196,38 @@
         const maxPrice =
           parseFloat(document.getElementById("maxPrice").value) || Infinity;
 
-        // Filter by product name
         let filteredProducts = allProducts.filter((product) =>
           product.name.toLowerCase().includes(productName)
         );
 
-        // Filter by price range
         filteredProducts = filteredProducts.filter(
           (product) => product.price >= minPrice && product.price <= maxPrice
         );
 
-        // Display the filtered products without sorting
         displayProducts(filteredProducts);
       }
 
-      // Fetch products and sellers when the page loads
       document.addEventListener("DOMContentLoaded", async () => {
-        await fetchSellers(); // Fetch sellers first
-        await fetchProducts(); // Then fetch products
+        await fetchSellers();
+        await fetchProducts();
       });
 
-      // Event listener for the apply filters button
       document
         .getElementById("applyFiltersButton")
         .addEventListener("click", () => {
-          applyFilters(); // Apply the filters and search
+          applyFilters();
         });
 
-      // Event listener for the sort button
       document.getElementById("sortButton").addEventListener("click", () => {
-        sortProductsByRatings(); // Sort by ratings
+        sortProductsByRatings();
       });
 
-      // Reset event listener
       document.getElementById("resetButton").addEventListener("click", () => {
-        // Reset the filter and display all products again
         document.getElementById("minPrice").value = "";
         document.getElementById("maxPrice").value = "";
-        document.getElementById("productName").value = ""; // Clear the search input
-        displayProducts(allProducts); // Display all products
+        document.getElementById("productName").value = "";
+        displayProducts(allProducts);
       });
     </script>
   </body>
 </html>
-
