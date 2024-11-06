@@ -12,6 +12,7 @@ import AdvertiserHomePage from "./pages/AdvertiserHomePage";
 import CreateActivity from "./pages/createActivity";
 import PersonalDetails from "./components/personalDetails";
 import ViewAllComplaints from "./components/viewAllComplaints";
+import ChangePasword from "./components/changePassword";
 import ViewItineraries from "./pages/viewItineraries";
 import Rating from "./pages/ratings";
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/viewAllComplaints" element={<ViewAllComplaints/>}/>
         <Route path="/viewItineraries" element={<ViewItineraries/>}/>
         <Route path="/ratings" element={<Rating/>}/>
+        <Route path="/changePassword" element={<ChangePasword/>}/>
       </Routes>
     </Router>
   );
