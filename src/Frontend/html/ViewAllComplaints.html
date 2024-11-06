@@ -11,36 +11,92 @@
     <script>
         let complaintsData = []; // Store all complaints data globally
 
+        // Fetch complaints from the server
         async function fetchComplaints(status = "All") {
-    try {
-        const response = await fetch('http://localhost:8000/viewAllComplaints');
-        const data = await response.json();
-        console.log(data); // Debugging: Log the entire response to confirm structure
+            try {
+                const response = await fetch('http://localhost:8000/viewAllComplaints');
+                const data = await response.json();
+                console.log(data); // Debugging: Log the entire response to confirm structure
 
                 if (response.ok) {
-                    // Clear any previous messages
+                    complaintsData = data.complaints; // Store complaints data globally
                     document.getElementById('message').textContent = '';
-
-                    // Display complaints
-                    const complaintsContainer = document.getElementById('complaints');
-                    complaintsContainer.innerHTML = '<h2>Complaints</h2>';
-
-                    data.complaints.forEach(complaint => {
-                        complaintsContainer.innerHTML += `<div class="complaint">
-                            <h3>${complaint.Title}</h3>
-                            <p><strong>Description:</strong> ${complaint.Body}</p>
-                            <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
-                            <p><strong>Status:</strong> ${complaint.Status}</p>
-                        </div>`;
-                    });
+                    displayComplaints(status);
                 } else {
-                    // Display an error message if no complaints were found
                     document.getElementById('message').textContent = data.message;
                 }
             } catch (error) {
                 console.error('Error fetching complaints:', error);
                 document.getElementById('message').textContent = 'An error occurred while fetching complaints.';
             }
+        }
+
+        // Display complaints based on status and include reply functionality
+        function displayComplaints(status = "All") {
+            const complaintsContainer = document.getElementById('complaints');
+            complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+
+            // Filter complaints based on selected status
+            const filteredComplaints = status === "All" ? complaintsData : complaintsData.filter(complaint => complaint.Status === status);
+
+            filteredComplaints.forEach(complaint => {
+                const complaintId = complaint._id || complaint.id || complaint.complaintId;
+
+                complaintsContainer.innerHTML += `
+                    <div class="complaint">
+                        <h3>${complaint.Title}</h3>
+                        <p><strong>Description:</strong> ${complaint.Body}</p>
+                        <p><strong>Date:</strong> ${new Date(complaint.Date).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> ${complaint.Status}</p>
+
+                        <!-- Reply Section -->
+                        <div class="reply-section">
+                            <textarea id="reply-${complaintId}" placeholder="Type your reply here..."></textarea>
+                            <button onclick="sendReply('${complaintId}')">Send Reply</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // Send a reply for a specific complaint
+        async function sendReply(complaintId) {
+            console.log("Sending reply for complaint ID:", complaintId); // Debugging
+            const replyMessage = document.getElementById(`reply-${complaintId}`).value;
+
+            if (!replyMessage) {
+                alert("Please enter a reply message.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/complaints/${complaintId}/reply`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ Body: replyMessage })
+                });
+
+                if (response.ok) {
+                    alert("Reply sent successfully!");
+                    document.getElementById(`reply-${complaintId}`).value = ''; // Clear the text area
+                } else {
+                    alert("Failed to send reply. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error sending reply:", error);
+                alert("An error occurred while sending the reply.");
+            }
+        }
+
+        // Handle status filter change
+        function onStatusChange() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            displayComplaints(statusFilter);
+        }
+
+        // Sort complaints by date
+        function sortComplaintsByDate() {
+            complaintsData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+            displayComplaints(document.getElementById('statusFilter').value);
         }
 
         // Fetch complaints when the page loads
@@ -57,7 +113,7 @@
             <select id="statusFilter" onchange="onStatusChange()">
                 <option value="All">All</option>
                 <option value="Resolved">Resolved</option>
-                <option value="undefined">undefined</option>
+                <option value="undefined">Undefined</option>
                 <option value="Pending">Pending</option>
             </select>
 
