@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Products | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Available Products</div>
+
+      <div class="search-section">
+        <label for="productName">Search by Product Name:</label>
+        <input type="text" id="productName" placeholder="Enter product name" />
+      </div>
+
+      <div class="filter-section">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" placeholder="0" />
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" placeholder="1000" />
+        <button id="applyFiltersButton">Apply Filters</button>
+        <button id="resetButton">Reset</button>
+        <button id="sortButton">Sort by Ratings</button>
+      </div>
+
+      <div class="product-list" id="productList">
+        <!-- Products will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <script>
+      let allProducts = []; // Variable to store all fetched products
+      let allSellers = []; // Variable to store all fetched sellers
+      let sellerMap = {}; // Map to associate seller IDs with names
+
+      async function fetchSellers() {
+        try {
+          const response = await fetch("http://localhost:8000/getSellers");
+          if (response.ok) {
+            const data = await response.json();
+            allSellers = data.sellers;
+            sellerMap = allSellers.reduce((map, seller) => {
+              map[seller._id] = seller.Username;
+              return map;
+            }, {});
+          } else {
+            console.error("Failed to fetch sellers:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching sellers:", error);
+        }
+      }
+
+      async function fetchProducts() {
+        try {
+          const response = await fetch(
+            "http://localhost:8000/viewSellerProducts"
+          );
+          const products = await response.json();
+
+          if (response.ok) {
+            allProducts = products;
+            applyFilters(); // Apply initial filters to show all products
+          } else {
+            document.getElementById("productList").innerHTML =
+              "<p>No products available</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while fetching products.</p>";
+        }
+      }
+
+      function displayProducts(products) {
+        const productList = document.getElementById("productList");
+        productList.innerHTML = ""; // Clear existing products
+
+        products.forEach((product) => {
+          const productItem = document.createElement("div");
+          productItem.className = "product-item";
+
+          const productImage = `http://localhost:8000/products/${product._id}/image`;
+
+          productItem.innerHTML = `
+            <img src="${productImage}" alt="Product Image" class="product-image">
+            <div class="product-details">
+              <h2 class="product-name">${product.name}</h2>
+              <p class="product-description">${product.description}</p>
+              <p class="product-price">Price: $${product.price.toFixed(2)}</p>
+              <p class="product-seller">Seller: ${
+                sellerMap[product.seller] || "Unknown"
+              }</p>
+              <p class="product-ratings">Ratings: ${"★".repeat(
+                product.ratings
+              )}${"☆".repeat(5 - product.ratings)} (${product.ratings})</p>
+              <p class="product-reviews">Reviews: 
+                  <ul>
+                    ${product.reviews
+                      .map((review) => `<li>${review}</li>`)
+                      .join("")}
+                  </ul>
+              </p>
+              <p class="product-archive-status">
+                Status: <span class="${product.isArchived ? 'archived' : 'active'}">
+                  ${product.isArchived ? 'Archived' : 'Active'}
+                </span>
+              </p>
+              <div class="archive-button">
+                <button onclick="archiveProduct('${product._id}', ${
+            product.isArchived ? 'false' : 'true'
+          })">
+                  ${product.isArchived ? 'Unarchive' : 'Archive'}
+                </button>
+              </div>
+            </div>
+            <div class="edit-button">
+              <a href="editProduct.html?id=${product._id}">Edit</a>
+            </div>
+          `;
+
+          productList.appendChild(productItem);
+        });
+      }
+
+      async function archiveProduct(productId, isArchived) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/AdminarchiveProduct/${productId}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ isArchived }),
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            alert(data.message);
+            await fetchProducts(); // Reload products after update
+          } else {
+            alert('Failed to update product status.');
+          }
+        } catch (error) {
+          console.error("Error archiving product:", error);
+          alert("An error occurred while updating product status.");
+        }
+      }
+
+      function applyFilters() {
+        const productName = document
+          .getElementById("productName")
+          .value.trim()
+          .toLowerCase();
+        const minPrice =
+          parseFloat(document.getElementById("minPrice").value) || 0;
+        const maxPrice =
+          parseFloat(document.getElementById("maxPrice").value) || Infinity;
+
+        // Filter by product name
+        let filteredProducts = allProducts.filter((product) =>
+          product.name.toLowerCase().includes(productName)
+        );
+
+        // Filter by price range
+        filteredProducts = filteredProducts.filter(
+          (product) => product.price >= minPrice && product.price <= maxPrice
+        );
+
+        // Display the filtered products without sorting
+        displayProducts(filteredProducts);
+      }
+
+      // Fetch products and sellers when the page loads
+      document.addEventListener("DOMContentLoaded", async () => {
+        await fetchSellers(); // Fetch sellers first
+        await fetchProducts(); // Then fetch products
+      });
+
+      // Event listener for the apply filters button
+      document
+        .getElementById("applyFiltersButton")
+        .addEventListener("click", () => {
+          applyFilters(); // Apply the filters and search
+        });
+
+      // Event listener for the sort button
+      document.getElementById("sortButton").addEventListener("click", () => {
+        sortProductsByRatings(); // Sort by ratings
+      });
+
+      // Reset event listener
+      document.getElementById("resetButton").addEventListener("click", () => {
+        // Reset the filter and display all products again
+        document.getElementById("minPrice").value = "";
+        document.getElementById("maxPrice").value = "";
+        document.getElementById("productName").value = ""; // Clear the search input
+        displayProducts(allProducts); // Display all products
+      });
+    </script>
+  </body>
+</html>
+
