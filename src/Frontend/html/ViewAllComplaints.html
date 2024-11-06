@@ -70,18 +70,18 @@
 
         // Display only the title and status of complaints initially
         function displayComplaints(status = "All") {
-            const complaintsContainer = document.getElementById('complaints');
-            complaintsContainer.innerHTML = '<h2>Complaints</h2>';
+                const complaintsContainer = document.getElementById('complaints');
+                complaintsContainer.innerHTML = '<h2>Complaints</h2>';
 
-            // Filter complaints based on selected status
-            const filteredComplaints = status === "All" ? complaintsData : complaintsData.filter(complaint => complaint.Status === status);
+                // Filter complaints based on selected status
+                const filteredComplaints = status === "All" ? complaintsData : complaintsData.filter(complaint => complaint.Status === status);
 
-            if (filteredComplaints.length === 0) {
-                complaintsContainer.innerHTML += `<p>No complaints found with the status "${status}".</p>`;
-                return;
+                if (filteredComplaints.length === 0) {
+                    complaintsContainer.innerHTML += `<p>No complaints found with the status "${status}".</p>`;
+                    return;
             }
 
-            // Display each complaint with only title and status
+            // Display each complaint with title, status, and action buttons
             filteredComplaints.forEach(complaint => {
                 const complaintId = complaint._id || complaint.id || complaint.complaintId;
 
@@ -89,11 +89,40 @@
                     <div class="complaint">
                         <h3>${complaint.Title}</h3>
                         <p><strong>Status:</strong> ${complaint.Status}</p>
-
+                        
                         <!-- View Details Button -->
                         <button onclick="viewComplaintDetails('${complaintId}')">View Details</button>
+
+                        <!-- Mark as Resolved Button (only shown if status is not already "Resolved") -->
+                        ${complaint.Status !== "Resolved" ? `<button onclick="resolveComplaint('${complaintId}')">Mark as Resolved</button>` : ''}
                     </div>`;
             });
+        }
+
+        async function resolveComplaint(complaintId) {
+            try {
+                const response = await fetch(`http://localhost:8000/markComplaintAsResolved/${complaintId}`, {
+                    method: 'PUT',
+                });
+
+                if (response.ok) {
+                    const { complaint } = await response.json();
+                    alert("Complaint marked as resolved.");
+
+                    // Update the status in the local data and re-render the complaints list
+                    complaintsData = complaintsData.map(c =>
+                        c._id === complaintId ? { ...c, Status: "Resolved" } : c
+                    );
+
+                    displayComplaints(); // Refresh the displayed list to show the updated status
+                } else {
+                    const data = await response.json();
+                    alert(`Error: ${data.message}`);
+                }
+            } catch (error) {
+                console.error("Error marking complaint as resolved:", error);
+                alert("An error occurred while marking the complaint as resolved.");
+            }
         }
 
         // Function to fetch and display complaint details in a modal
