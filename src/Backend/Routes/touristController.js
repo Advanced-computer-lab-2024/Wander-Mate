@@ -894,20 +894,21 @@ const RateGuide = async (req, res) => {
 };
 
 const makeComplaint = async (req, res) => {
-  const { Title, Body, touristID } = req.body; // Extract title and body from the request
+  const { Title, Body, touristID, reply } = req.body;
 
-  // Validation: ensure the required fields are present
+  // Validation: Ensure the required fields are present
   if (!Title || !Body) {
     return res.status(400).json({ message: "Title and Body are required" });
   }
 
   try {
-    // Create a new complaint object
+    // Create a new complaint object with a placeholder for reply if not provided
     const newComplaint = new Complaints({
       Title,
       Body,
       Maker: touristID,
-      Date: Date.now(), // This will default to the current date, can be omitted since schema has a default
+      Date: Date.now(),
+      reply: reply || { Body: "No reply yet", Date: Date.now() }, // Ensure reply.Body has a value
     });
 
     // Save the complaint to the database
@@ -923,6 +924,7 @@ const makeComplaint = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
+
 
 const addCommentONEvent = async (req, res) => {
   const { comment, eventId, touristID } = req.body;

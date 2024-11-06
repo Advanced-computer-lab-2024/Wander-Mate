@@ -26,6 +26,10 @@ const complaintSchema = new Schema(
                 default: Date.now,
             },
         },
+        Status: {
+            type: String,
+            default: "Pending", // Default status
+        },
     },
     { timestamps: true, strict: false }
 );
