@@ -25,6 +25,11 @@
         button {
             margin-right: 10px;
         }
+        #comment-section {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap" async defer></script>
 </head>
@@ -36,7 +41,19 @@
     <div class="share-buttons">
         <button id="share-link-button">Share via Link</button>
         <button id="share-email-button">Share via Email</button>
-        <button id="flag-button">Flag</button> <!-- New Flag Button -->
+        <button id="flag-button">Flag</button>
+    </div>
+
+    <div class="edit-button">
+        <a href="" class="buy-button">Buy</a>
+    </div>
+
+    <div id="comment-section">
+        <h3>Comment on this Itinerary</h3>
+        <p id="tourist-id-display"></p>
+        <p id="itinerary-id-display"></p>
+        <textarea id="comment-body" placeholder="Enter your comment here..." rows="4" style="width: 100%;"></textarea>
+        <button id="submit-comment-button">Submit Comment</button>
     </div>
 
     <script>
@@ -53,9 +70,7 @@
         // Fetch itinerary data from the API
         async function fetchItineraryData(itineraryId) {
             try {
-                const response = await fetch(`http://localhost:8000/readItinerary/${itineraryId}`, {
-                    headers: {},
-                });
+                const response = await fetch(`http://localhost:8000/readItinerary/${itineraryId}`);
                 if (!response.ok) throw new Error("Network response was not ok");
                 itineraryData = await response.json();
 
@@ -64,6 +79,7 @@
 
                 initMap();
                 displayItineraryDetails();
+                displayItineraryID(itineraryId);
             } catch (error) {
                 console.error("Error fetching itinerary data:", error);
                 document.getElementById("itinerary-details").innerText = "Error loading itinerary details.";
@@ -114,16 +130,73 @@
                 <ul>
                     ${itineraryData.LocationsToVisit.map(location => `<li><strong>Name:</strong> ${location.Name}<br></li>`).join("")}
                 </ul>
-                <div class="edit-button">
-                    <a href="" class="buy-button">Buy</a>
-                </div>
             `;
         }
 
+        function displayItineraryID(itineraryId) {
+            document.getElementById("itinerary-id-display").textContent = `Itinerary ID: ${itineraryId}`;
+        }
+
+        async function fetchTouristID() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                console.error('No username found in session storage.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) throw new Error('Failed to get tourist ID');
+
+                const { userID } = await response.json();
+                sessionStorage.setItem('touristID', userID);
+                document.getElementById('tourist-id-display').textContent = `Tourist ID: ${userID}`;
+            } catch (error) {
+                console.error('Error fetching tourist ID:', error);
+                alert('Could not load tourist ID.');
+            }
+        }
+
+        async function submitComment() {
+            const itineraryID = itineraryData.id;
+            const touristID = sessionStorage.getItem('touristID');
+            const Body = document.getElementById("comment-body").value;
+
+            if (!Body) {
+                alert("Please enter a comment.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:8000/comment-on-itinerary/" + touristID, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ itineraryID, Body }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Comment posted successfully: ${result.message}`);
+                    document.getElementById("comment-body").value = ""; // Clear the comment box
+                } else {
+                    const errorResult = await response.json();
+                    alert(`Error posting comment: ${errorResult.message}`);
+                }
+            } catch (error) {
+                console.error("Error posting comment:", error);
+                alert("There was an error posting the comment. Please try again.");
+            }
+        }
+
         window.onload = () => {
-            const { id } = getQueryParams(); // Get the itinerary ID from the URL
+            const { id } = getQueryParams();
             fetchItineraryData(id);
+            fetchTouristID();
         };
+
+        document.getElementById("submit-comment-button").addEventListener("click", submitComment);
 
         const shareLinkButton = document.getElementById("share-link-button");
         const shareEmailButton = document.getElementById("share-email-button");
@@ -136,7 +209,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ activityId: activityId, shareMethod: "link" }),
+                body: JSON.stringify({ activityId, shareMethod: "link" }),
             });
            
             const result = await response.json();
@@ -153,32 +226,30 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ activityId: activityId, shareMethod: "email", email: email }),
+                body: JSON.stringify({ activityId, shareMethod: "email", email }),
             });
 
             const result = await response.json();
             alert(`Activity shared successfully! ${result.message}`);
         });
 
-        // Function to flag an itinerary or event
         flagButton.addEventListener("click", async () => {
             const activityId = itineraryData.id || getQueryParams().id;
             const reason = prompt("Please enter the reason for flagging this item:");
             if (!reason) return;
 
-            const type = "itinerary"; // Specify whether it's an "itinerary" or "event"
-          
+            const type = "itinerary";
+
             try {
                 const response = await fetch("http://localhost:8000/flag-event-or-itinerary", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ id: activityId, type: type }), // Send ID and type
+                    body: JSON.stringify({ id: activityId, type }),
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
                     alert(`${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.`);
                 } else {
                     const errorResult = await response.json();

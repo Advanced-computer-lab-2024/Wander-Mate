@@ -650,32 +650,21 @@ const SearchFlights = async (req, res) => {
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-    const flightOrder = req.body; // This should be the flight offer object
+    const {flightID, price, departureDate, arrivalDate} = req.body; // This should be the flight offer object
     const touristID = req.params.touristID;
 
     // Check if the flight order is valid
-    if (!flightOrder || !flightOrder.id) {
+    if (!flightID || !price || !departureDate || !arrivalDate) {
       return res.status(400).json({ error: "Invalid flight order data" });
     }
 
-    // Extract flight offers and traveler pricing
-    const flightOffers = [flightOrder]; // Wrap the single flight offer in an array
-    const travelers = flightOrder.travelerPricings; // Extract traveler pricing directly
-
-    // Validate the extracted data
-    if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid flight offers or travelers data" });
-    }
-
-    const selectedFlightOffer = flightOffers[0]; // Selecting the first offer (only one in this case)
-
     // Constructing the booking data
     const bookingData = {
-      flightOffer: selectedFlightOffer,
-      travelers: travelers,
+      flightID: flightID,
+      price: price,
       bookingDate: new Date(),
+      departureDate:departureDate,
+      arrivalDate:arrivalDate,
     };
 
     // Simulate booking API call
@@ -880,6 +869,7 @@ const commentOnGuide = async (req, res) => {
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
+      console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
@@ -1020,11 +1010,11 @@ const updateItineraryRatings = async (req, res) => {
 
 const commentOnItinerary = async (req, res) => {
   try {
-    const { itineraryID, text } = req.body; // Expecting itinerary ID and comment text in the request body
+    const { itineraryID, Body } = req.body; // Expecting itinerary ID and comment text in the request body
     const touristID = req.params.id; // Assuming tourist ID is passed as a parameter
 
     // Validate input
-    if (!itineraryID || !text) {
+    if (!itineraryID || !Body) {
       return res
         .status(400)
         .json({ message: "Itinerary ID and comment text are required." });
@@ -1040,7 +1030,7 @@ const commentOnItinerary = async (req, res) => {
     const newComment = await CommentModel.create({
       touristID, // Assuming `touristID` matches your schema
       aboutId: itineraryID, // Change to match your schema
-      text, // Assuming `text` is a field in your comment schema
+      Body, // Assuming `text` is a field in your comment schema
     });
 
     res
