@@ -1181,7 +1181,7 @@ const bookTransportation = async (req, res) => {
     // Create a new booking record
     const newBooking = new bookingSchema({
       itemId,
-      itemModel,
+      itemModel :"Transportation",
       userId,
       bookedDate,
       // You can add more details if needed
