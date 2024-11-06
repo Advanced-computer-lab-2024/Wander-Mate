@@ -9,8 +9,8 @@
             font-family: Arial, sans-serif;
         }
         #map {
-            height: 400px; /* Set the height of the map */
-            width: 100%; /* Full width */
+            height: 400px;
+            width: 100%;
         }
         #itinerary-details {
             margin-top: 20px;
@@ -36,6 +36,7 @@
     <div class="share-buttons">
         <button id="share-link-button">Share via Link</button>
         <button id="share-email-button">Share via Email</button>
+        <button id="flag-button">Flag</button> <!-- New Flag Button -->
     </div>
 
     <script>
@@ -45,29 +46,29 @@
         function getQueryParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                id: params.get("id"), // Get the itinerary ID from the URL
+                id: params.get("id"),
             };
         }
 
         // Fetch itinerary data from the API
         async function fetchItineraryData(itineraryId) {
-    try {
-        const response = await fetch(`http://localhost:8000/readItinerary/${itineraryId}`, {
-            headers: {},
-        });
-        if (!response.ok) throw new Error("Network response was not ok");
-        itineraryData = await response.json();
+            try {
+                const response = await fetch(`http://localhost:8000/readItinerary/${itineraryId}`, {
+                    headers: {},
+                });
+                if (!response.ok) throw new Error("Network response was not ok");
+                itineraryData = await response.json();
 
-        // Ensure itineraryData includes activityId
-        itineraryData.id = itineraryId; // Manually set the ID if not already included in the response
+                // Ensure itineraryData includes activityId
+                itineraryData.id = itineraryId;
 
-        initMap();
-        displayItineraryDetails();
-    } catch (error) {
-        console.error("Error fetching itinerary data:", error);
-        document.getElementById("itinerary-details").innerText = "Error loading itinerary details.";
-    }
-}
+                initMap();
+                displayItineraryDetails();
+            } catch (error) {
+                console.error("Error fetching itinerary data:", error);
+                document.getElementById("itinerary-details").innerText = "Error loading itinerary details.";
+            }
+        }
 
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -116,68 +117,78 @@
                 <div class="edit-button">
                     <a href="" class="buy-button">Buy</a>
                 </div>
-                <div class="edit-button">
-                    <a href="" class="flag-button">Flag</a>
-                </div>
             `;
         }
 
-        // Call fetchItineraryData with the itinerary ID from the URL when the window loads
         window.onload = () => {
             const { id } = getQueryParams(); // Get the itinerary ID from the URL
             fetchItineraryData(id);
         };
 
- // Share activity via link or email
- const shareLinkButton = document.getElementById("share-link-button");
-const shareEmailButton = document.getElementById("share-email-button");
+        const shareLinkButton = document.getElementById("share-link-button");
+        const shareEmailButton = document.getElementById("share-email-button");
+        const flagButton = document.getElementById("flag-button");
 
-// Function to share via link
-shareLinkButton.addEventListener("click", async () => {
-    const activityId = itineraryData.id || getQueryParams().id; // Ensure activityId is available
-    console.log("Activity ID:", activityId); // Log the activity ID
-    const response = await fetch("http://localhost:8000/shareActivity", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ activityId: activityId, shareMethod: "link" }), // Include activityId in the body
+        shareLinkButton.addEventListener("click", async () => {
+            const activityId = itineraryData.id || getQueryParams().id;
+            const response = await fetch("http://localhost:8000/shareActivity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ activityId: activityId, shareMethod: "link" }),
+            });
+           
+            const result = await response.json();
+            alert(`Activity shared successfully! Link: ${result.link}`);
         });
-       
-        const result = await response.json();
-        console.log("Shared activity link:", result.link);
-        alert(`Activity shared successfully! Link: ${result.link}`);
-    
-});
 
-// Function to share via email
-shareEmailButton.addEventListener("click", async () => {
-    const activityId = itineraryData.id || getQueryParams().id; // Ensure activityId is available
-    console.log("Activity ID:", activityId); // Log the activity ID
+        shareEmailButton.addEventListener("click", async () => {
+            const activityId = itineraryData.id || getQueryParams().id;
+            const email = prompt("Enter the recipient's email address:");
+            if (!email) return;
 
-    const email = prompt("Enter the recipient's email address:");
-    if (!email) return;
-    
+            const response = await fetch("http://localhost:8000/shareActivity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ activityId: activityId, shareMethod: "email", email: email }),
+            });
 
-
-        const response = await fetch("http://localhost:8000/shareActivity", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ activityId: activityId, shareMethod: "email", email: email }), // Include activityId in the body
+            const result = await response.json();
+            alert(`Activity shared successfully! ${result.message}`);
         });
-        console.log("A77777777777777777777777777777aaaaoookaa",  response);
-        if (!response.ok) {
-            console.log("A77777777777777777777777777777aaaa");
-            const errorDetails = await response.text(); // Get the error details
-            throw new Error(`Network response was not ok: ${errorDetails}`);
-        }
-        const result = await response.json();
-        console.log("Activity shared via email:", result.message);
-        alert(`Activity shared successfully! ${result.message}`);
-    
-});
+
+        // Function to flag an itinerary or event
+        flagButton.addEventListener("click", async () => {
+            const activityId = itineraryData.id || getQueryParams().id;
+            const reason = prompt("Please enter the reason for flagging this item:");
+            if (!reason) return;
+
+            const type = "itinerary"; // Specify whether it's an "itinerary" or "event"
+          
+            try {
+                const response = await fetch("http://localhost:8000/flag-event-or-itinerary", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id: activityId, type: type }), // Send ID and type
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.`);
+                } else {
+                    const errorResult = await response.json();
+                    alert(`Error flagging ${type}: ${errorResult.message}`);
+                }
+            } catch (error) {
+                console.error("Error flagging item:", error);
+                alert("There was an error flagging the item. Please try again.");
+            }
+        });
     </script>
 </body>
 </html>
