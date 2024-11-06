@@ -64,6 +64,7 @@ const {
   bookItinerary,
   updateEventRatings,
   currencyConverter,
+  viewAllTransportations,
 } = require("./Routes/touristController");
 
 const {
@@ -432,3 +433,4 @@ app.post("/bookItinerary", bookItinerary);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
+app.get("/viewAllTransportations",viewAllTransportations);
