@@ -19,7 +19,7 @@
         h3 {
             margin: 0;
         }
-        .share-buttons {
+        .share-buttons, .edit-button {
             margin-top: 20px;
         }
         button {
@@ -45,7 +45,7 @@
     </div>
 
     <div class="edit-button">
-        <a href="" class="buy-button">Buy</a>
+        <button class="book-button">Book</button>
     </div>
 
     <div id="comment-section">
@@ -74,8 +74,7 @@
                 if (!response.ok) throw new Error("Network response was not ok");
                 itineraryData = await response.json();
 
-                // Ensure itineraryData includes activityId
-                itineraryData.id = itineraryId;
+                itineraryData.id = itineraryId; // Ensure itineraryData includes activityId
 
                 initMap();
                 displayItineraryDetails();
@@ -157,6 +156,40 @@
             }
         }
 
+        // Frontend function to book the itinerary
+        async function handleBookItinerary() {
+            const itineraryId = itineraryData.id;
+            const userId = sessionStorage.getItem('touristID');
+            const bookedDate = new Date().toISOString().split("T")[0]; // Using today's date
+
+            if (!userId) {
+                alert("Tourist ID not available. Please log in.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:8000/bookItinerary", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ itineraryId, userId, bookedDate }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Booked successfully!"); // Show popup message
+                    console.log("Booking details:", data.booking);
+                } else {
+                    alert(data.message || "Error booking itinerary.");
+                }
+            } catch (error) {
+                console.error("Error booking itinerary:", error);
+                alert("An error occurred while booking the itinerary.");
+            }
+        }
+
         async function submitComment() {
             const itineraryID = itineraryData.id;
             const touristID = sessionStorage.getItem('touristID');
@@ -197,6 +230,7 @@
         };
 
         document.getElementById("submit-comment-button").addEventListener("click", submitComment);
+        document.querySelector(".book-button").addEventListener("click", handleBookItinerary);
 
         const shareLinkButton = document.getElementById("share-link-button");
         const shareEmailButton = document.getElementById("share-email-button");
