@@ -650,32 +650,21 @@ const SearchFlights = async (req, res) => {
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-    const flightOrder = req.body; // This should be the flight offer object
+    const {flightID, price, departureDate, arrivalDate} = req.body; // This should be the flight offer object
     const touristID = req.params.touristID;
 
     // Check if the flight order is valid
-    if (!flightOrder || !flightOrder.id) {
+    if (!flightID || !price || !departureDate || !arrivalDate) {
       return res.status(400).json({ error: "Invalid flight order data" });
     }
 
-    // Extract flight offers and traveler pricing
-    const flightOffers = [flightOrder]; // Wrap the single flight offer in an array
-    const travelers = flightOrder.travelerPricings; // Extract traveler pricing directly
-
-    // Validate the extracted data
-    if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid flight offers or travelers data" });
-    }
-
-    const selectedFlightOffer = flightOffers[0]; // Selecting the first offer (only one in this case)
-
     // Constructing the booking data
     const bookingData = {
-      flightOffer: selectedFlightOffer,
-      travelers: travelers,
+      flightID: flightID,
+      price: price,
       bookingDate: new Date(),
+      departureDate:departureDate,
+      arrivalDate:arrivalDate,
     };
 
     // Simulate booking API call
@@ -1181,7 +1170,7 @@ const bookTransportation = async (req, res) => {
     // Create a new booking record
     const newBooking = new bookingSchema({
       itemId,
-      itemModel,
+      itemModel :"Transportation",
       userId,
       bookedDate,
       // You can add more details if needed

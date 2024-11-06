@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attended Activities</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+      .comment-form {
+        margin-top: 20px;
+      }
+      .comment-form input,
+      .comment-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+      }
+      .comment-form button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .comment-form button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Attended Activities</h1>
+    <p id="error-message" class="error" style="display: none">
+      Error fetching activities
+    </p>
+    <table id="activities-table" style="display: none">
+      <thead>
+        <tr>
+          <th>Activity Name</th>
+          <th>Creator</th>
+          <th>Booked Date</th>
+          <th>Add Comment</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Comment Form Section -->
+    <div id="comment-section" class="comment-form" style="display: none">
+      <h2>Add a Comment</h2>
+      <textarea
+        id="comment-text"
+        rows="4"
+        placeholder="Write your comment..."
+      ></textarea>
+      <button onclick="submitComment()">Submit Comment</button>
+    </div>
+
+    <script>
+      async function fetchActivities() {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          displayError("Username not found in session storage.");
+          return;
+        }
+        let x;
+        try {
+          const response1 = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+          if (!response1.ok) {
+            throw new Error("Failed to get seller ID");
+          }
+
+          x = await response1.json();
+        } catch (error) {
+          console.log(error);
+          displayError("Failed to get seller ID");
+          return;
+        }
+
+        const { userID } = x;
+        try {
+          const response = await fetch(
+            `http://localhost:8000/viewAttendedActivities/${userID}`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            displayActivities(data);
+          } else {
+            displayError(data.message || "Error fetching activities");
+          }
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+          displayError("Error fetching activities");
+        }
+      }
+
+      function displayActivities(activities) {
+        const table = document.getElementById("activities-table");
+        const tbody = table.querySelector("tbody");
+        tbody.innerHTML = ""; // Clear existing rows
+
+        activities.forEach((activity) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${activity.itemId.Name}</td>
+            <td>${activity.itemId.Creator.Username}</td>
+            <td>${new Date(activity.bookedDate).toLocaleDateString()}</td>
+            <td><button onclick="prepareCommentForm('${
+              activity.itemId._id
+            }')">Add Comment</button></td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        table.style.display = "table";
+      }
+
+      function displayError(message) {
+        const errorMessage = document.getElementById("error-message");
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+      }
+
+      // Prepare comment form for a specific activity
+      let currentEventId = null;
+
+      function prepareCommentForm(eventId) {
+        currentEventId = eventId; // Set the eventId for comment submission
+        document.getElementById("comment-section").style.display = "block"; // Show the comment form
+      }
+
+      // Submit the comment to the server
+      async function submitComment() {
+        const comment = document.getElementById("comment-text").value;
+        if (!comment) {
+          alert("Please write a comment before submitting.");
+          return;
+        }
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          displayError("Username not found in session storage.");
+          return;
+        }
+        let x;
+        try {
+          const response1 = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+          if (!response1.ok) {
+            throw new Error("Failed to get seller ID");
+          }
+
+          x = await response1.json();
+        } catch (error) {
+          console.log(error);
+          displayError("Failed to get seller ID");
+          return;
+        }
+
+        const { userID } = x;
+
+        const data = {
+          comment,
+          eventId: currentEventId,
+          touristID: username, // Assuming username is used as touristID
+        };
+
+        try {
+          const response = await fetch(
+            "http://localhost:8000/addCommentONEvent",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          );
+
+          const result = await response.json();
+          if (response.ok) {
+            alert(result.message); // Show success message
+            document.getElementById("comment-text").value = ""; // Clear comment field
+            document.getElementById("comment-section").style.display = "none"; // Hide form
+          } else {
+            alert(result.message || "Error posting comment");
+          }
+        } catch (error) {
+          console.error("Error posting comment:", error);
+          alert("Error posting comment");
+        }
+      }
+
+      // Call the fetch function when the page loads
+      window.onload = fetchActivities;
+    </script>
+  </body>
+</html>

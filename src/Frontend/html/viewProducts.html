@@ -23,7 +23,6 @@
         <button id="applyFiltersButton">Apply Filters</button>
         <button id="resetButton">Reset</button>
         <button id="sortButton">Sort by Ratings</button>
-        <!-- Sort button added here -->
       </div>
 
       <div class="product-list" id="productList">
@@ -104,17 +103,51 @@
                       .join("")}
                   </ul>
               </p>
+              <p class="product-archive-status">
+                Status: <span class="${product.isArchived ? 'archived' : 'active'}">
+                  ${product.isArchived ? 'Archived' : 'Active'}
+                </span>
+              </p>
+              <div class="archive-button">
+                <button onclick="archiveProduct('${product._id}', ${
+            product.isArchived ? 'false' : 'true'
+          })">
+                  ${product.isArchived ? 'Unarchive' : 'Archive'}
+                </button>
+              </div>
             </div>
             <div class="edit-button">
-          <a href="editProduct.html?id=${product._id}">Edit</a>
-      </div>
+              <a href="editProduct.html?id=${product._id}">Edit</a>
+            </div>
           `;
 
           productList.appendChild(productItem);
         });
       }
 
-      // Combined search and filter function
+      async function archiveProduct(productId, isArchived) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/AdminarchiveProduct/${productId}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ isArchived }),
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            alert(data.message);
+            await fetchProducts(); // Reload products after update
+          } else {
+            alert('Failed to update product status.');
+          }
+        } catch (error) {
+          console.error("Error archiving product:", error);
+          alert("An error occurred while updating product status.");
+        }
+      }
+
       function applyFilters() {
         const productName = document
           .getElementById("productName")
@@ -136,36 +169,6 @@
         );
 
         // Display the filtered products without sorting
-        displayProducts(filteredProducts);
-      }
-
-      // Function to sort products by ratings
-      function sortProductsByRatings() {
-        const productName = document
-          .getElementById("productName")
-          .value.trim()
-          .toLowerCase();
-        const minPrice =
-          parseFloat(document.getElementById("minPrice").value) || 0;
-        const maxPrice =
-          parseFloat(document.getElementById("maxPrice").value) || Infinity;
-
-        // Filter by product name
-        let filteredProducts = allProducts.filter((product) =>
-          product.name.toLowerCase().includes(productName)
-        );
-
-        // Filter by price range
-        filteredProducts = filteredProducts.filter(
-          (product) => product.price >= minPrice && product.price <= maxPrice
-        );
-
-        // Sort by ratings
-        filteredProducts = filteredProducts.sort(
-          (a, b) => b.ratings - a.ratings
-        );
-
-        // Display sorted products
         displayProducts(filteredProducts);
       }
 

@@ -1,122 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/register.css">
-    <title>Upload Tour Guide Profile Picture</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/register.css" />
+    <title>Upload Profile Picture</title>
+  </head>
+  <body>
     <div class="wrapper">
-        <div class="title">Tour Guide Profile Picture</div>
-        
-        <!-- Section to display tour guide profile information -->
-        <div id="profile-info">
-            <p><strong>Guide ID:</strong> <span id="displayGuideID"></span></p>
-            <p><strong>Name:</strong> <span id="guideName"></span></p>
-            <p><strong>Email:</strong> <span id="guideEmail"></span></p>
-            <!-- Add more profile fields here as needed -->
+      <div class="title">Upload Profile Picture</div>
+      <!-- Form to upload profile picture -->
+      <form id="uploadPictureForm" enctype="multipart/form-data">
+        <div class="field">
+          <input
+            type="text"
+            name="userID"
+            id="userID"
+            placeholder="userID"
+            required
+            readonly
+          />
+          <label for="id">Tourguide ID</label>
         </div>
+        <label for="image">Profile Picture:</label>
+        <div class="field">
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            required
+          />
+        </div>
+        <div class="field">
+          <input type="submit" value="Upload Picture" />
+        </div>
+      </form>
 
-        <!-- Form to upload profile picture -->
-        <form id="uploadPicture" enctype="multipart/form-data">
-            <label for="profile-picture">Profile Picture:</label>
-            <div class="field">
-                <input type="file" id="newPictures" name="newPictures" accept="image/*" required />
-            </div>
-            <div class="field">
-                <input type="submit" value="Upload Picture" />
-            </div>
-        </form>
+      <div id="successMessage" style="color: green; display: none">
+        Picture uploaded successfully!
+      </div>
+      <div id="errorMessage" style="color: red; display: none">
+        Error uploading picture. Please try again.
+      </div>
     </div>
 
     <script>
-        // Function to fetch Guide ID from the server
-        async function fetchGuideID() {
-            const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
-            if (!username) {
-                console.error('No username found in session storage.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://localhost:8000/getGuideID/${username}`);
-                if (!response.ok) {
-                    throw new Error('Failed to get guide ID');
-                }
-
-                const { guideID } = await response.json();
-                sessionStorage.setItem('guideID', guideID); // Store the guide ID in session storage
-                document.getElementById('displayGuideID').textContent = guideID; // Display Guide ID
-                loadProfileInfo(); // Load profile info with the fetched guide ID
-            } catch (error) {
-                console.error('Error fetching guide ID:', error);
-                alert('Could not load guide ID.');
-            }
+      // Function to fetch User ID from the server
+      async function fetchUserID() {
+        const username = sessionStorage.getItem("username"); // Retrieve the username from session storage
+        if (!username) {
+          console.error("No username found in session storage.");
+          return; // Exit if no username is found
         }
 
-        // Function to load profile information
-        async function loadProfileInfo() {
-            const guideID = sessionStorage.getItem("guideID");
+        try {
+          const response = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+          if (!response.ok) throw new Error("Failed to get user ID");
 
-            if (!guideID) {
-                fetchGuideID(); // Fetch guide ID if not in session storage
-                return;
-            }
-
-            // Display guide ID on the page
-            document.getElementById("displayGuideID").textContent = guideID;
-
-            try {
-                const response = await fetch(`http://localhost:8000/getTourGuideProfile/${guideID}`);
-                if (!response.ok) {
-                    throw new Error("Failed to load profile information.");
-                }
-
-                const profile = await response.json();
-                document.getElementById("guideName").textContent = profile.name;
-                document.getElementById("guideEmail").textContent = profile.email;
-                // Add more fields here as needed
-
-            } catch (error) {
-                console.error("Error loading profile information:", error);
-                alert("Could not load profile information. Please try again.");
-            }
+          const { userID } = await response.json(); // Fetch general user ID
+          sessionStorage.setItem("userID", userID); // Store user ID in session storage
+          document.getElementById("userID").value = userID; // Fill the ID field
+        } catch (error) {
+          console.error("Error fetching user ID:", error);
+          document.getElementById("errorMessage").innerText =
+            "Could not load user ID.";
+          document.getElementById("errorMessage").style.display = "block";
         }
+      }
 
-        // Load profile information when the page loads
-        document.addEventListener("DOMContentLoaded", loadProfileInfo);
+      // Handle form submission for picture upload
+      document
+        .getElementById("uploadPictureForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
 
-        // Handle form submission for picture upload
-        document.getElementById("uploadPicture").addEventListener("submit", async function (event) {
-            event.preventDefault(); // Prevent default form submission
+          const formData = new FormData(this);
+          const guideID = sessionStorage.getItem("userID");
 
-            const formData = new FormData(this);
-            const guideID = sessionStorage.getItem("guideID");
+          if (!guideID) {
+            alert("User ID is missing.");
+            return;
+          }
 
-            if (!guideID) {
-                alert("Guide ID is missing in session storage.");
-                return;
-            }
+          try {
+            const response = await fetch(
+              `http://localhost:8000/uploadPicturetourguide/${guideID}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
 
-            try {
-                const response = await fetch(`http://localhost:8000/uploadPicturetourguide/${guideID}`, {
-                    method: "PUT",
-                    body: formData,
-                });
+            if (!response.ok)
+              throw new Error("Failed to upload profile picture.");
 
-                if (!response.ok) {
-                    throw new Error("Failed to upload tour guide picture.");
-                }
-
-                const result = await response.json();
-                alert(result.message); // Show success message
-                this.reset(); // Reset form fields after successful submission
-            } catch (error) {
-                console.error("Error uploading tour guide picture:", error);
-                alert("Could not upload the picture. Please try again.");
-            }
+            const result = await response.json();
+            document.getElementById("successMessage").innerText =
+              result.message;
+            document.getElementById("successMessage").style.display = "block";
+            this.reset(); // Reset form fields after successful submission
+          } catch (error) {
+            console.error("Error uploading picture:", error);
+            document.getElementById("errorMessage").innerText =
+              "Could not upload the picture. Please try again.";
+            document.getElementById("errorMessage").style.display = "block";
+          }
         });
+
+      // Load User ID on page load
+      window.onload = fetchUserID;
     </script>
-</body>
+  </body>
 </html>
