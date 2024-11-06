@@ -5,6 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Products | Wander-Mate</title>
     <link rel="stylesheet" href="../styles/register.css" />
+    <style>
+      /* Star rating styles */
+      .star-rating span {
+        font-size: 1.5em;
+        color: black; /* Initial color (white) */
+        cursor: pointer;
+        transition: color 0.3s;
+        padding: 5px;
+        margin-right: 2px;
+      }
+
+      /* Hover effect starting from the left */
+      .star-rating span:hover,
+      .star-rating span:hover ~ span {
+        color: rgb(0, 0, 0);
+      }
+
+      .star-rating span:hover,
+      .star-rating span:hover ~ span {
+        color: gold;
+      }
+
+      /* Selected stars should remain yellow */
+      .star-rating .selected {
+        color: gold;
+      }
+
+      .rating-message {
+        color: green;
+        font-size: 0.9em;
+        margin-left: 10px;
+      }
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -90,38 +123,29 @@
               <h2 class="product-name">${product.name}</h2>
               <p class="product-description">${product.description}</p>
               <p class="product-price">Price: $${product.price.toFixed(2)}</p>
-              <p class="product-seller">Seller: ${
-                sellerMap[product.seller] || "Unknown"
-              }</p>
-              <p class="product-ratings">Ratings: ${"★".repeat(
-                product.ratings
-              )}${"☆".repeat(5 - product.ratings)} (${product.ratings})</p>
+              <p class="product-seller">Seller: ${sellerMap[product.seller] || "Unknown"}</p>
+              <p class="product-ratings">Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}</p>
+
+              <!-- Star Rating Section -->
+              <div class="star-rating" id="rating-${product._id}">
+                ${[1, 2, 3, 4, 5]
+                  .map((star) => `<span onclick="rateProduct('${product._id}', ${star})">&#9733;</span>`)
+                  .join("")}
+                <span id="rating-message-${product._id}" class="rating-message"></span>
+              </div>
+
+              <!-- Review Section -->
+              <div class="review-section">
+                <input type="text" class="review-input" id="review-${product._id}" placeholder="Add a review">
+                <button onclick="submitReview('${product._id}')">Submit Review</button>
+              </div>
               <p class="product-reviews">Reviews: 
-                  <ul>
+                  <ul id="reviews-list-${product._id}">
                     ${product.reviews
                       .map((review) => `<li>${review}</li>`)
                       .join("")}
                   </ul>
               </p>
-              <div class="review-section">
-                <input type="text" class="review-input" id="review-${product._id}" placeholder="Add a review">
-                <button onclick="submitReview('${product._id}')">Submit Review</button>
-              </div>
-              <p class="product-archive-status">
-                Status: <span class="${product.isArchived ? 'archived' : 'active'}">
-                  ${product.isArchived ? 'Archived' : 'Active'}
-                </span>
-              </p>
-              <div class="archive-button">
-                <button onclick="archiveProduct('${product._id}', ${
-            product.isArchived ? 'false' : 'true'
-          })">
-                  ${product.isArchived ? 'Unarchive' : 'Archive'}
-                </button>
-              </div>
-            </div>
-            <div class="edit-button">
-              <a href="editProduct.html?id=${product._id}">Edit</a>
             </div>
           `;
 
@@ -129,32 +153,69 @@
         });
       }
 
-      async function archiveProduct(productId, isArchived) {
+      async function rateProduct(productId, rating) {
+        const userId = sessionStorage.getItem("userId"); // Retrieve user ID from session storage
+        if (!userId) {
+          alert("You must be logged in to rate a product.");
+          return;
+        }
+
         try {
-          const response = await fetch(
-            `http://localhost:8000/AdminarchiveProduct/${productId}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ isArchived }),
-            }
-          );
+          const response = await fetch("http://localhost:8000/rateProduct", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, productId, rating }),
+          });
+
           const data = await response.json();
+
           if (response.ok) {
-            alert(data.message);
-            await fetchProducts();
+            document.getElementById(`rating-message-${productId}`).textContent = "Thank you for your rating!";
+            setStarRating(productId, rating); // Set the star colors based on rating
+            await updateProductRatingsDisplay(productId); // Fetch and display updated ratings
           } else {
-            alert('Failed to update product status.');
+            alert(data.message || "Failed to post rating.");
           }
         } catch (error) {
-          console.error("Error archiving product:", error);
-          alert("An error occurred while updating product status.");
+          console.error("Error posting rating:", error);
+          alert("An error occurred while posting the rating.");
+        }
+      }
+
+      // Helper function to apply the "selected" class to stars up to the rating given
+      function setStarRating(productId, rating) {
+        const stars = document.querySelectorAll(`#rating-${productId} span`);
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.classList.add("selected");
+          } else {
+            star.classList.remove("selected");
+          }
+        });
+      }
+
+      async function updateProductRatingsDisplay(productId) {
+        try {
+          const response = await fetch(`http://localhost:8000/viewProduct/${productId}`);
+          const product = await response.json();
+
+          if (response.ok) {
+            // Update the rating display in the UI
+            const productElement = document.getElementById(`rating-${productId}`);
+            if (productElement) {
+              productElement.previousElementSibling.textContent = `Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}`;
+            }
+          } else {
+            console.error("Failed to fetch updated product rating:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching updated product rating:", error);
         }
       }
 
       async function submitReview(productId) {
         const reviewText = document.getElementById(`review-${productId}`).value;
-        const userId = sessionStorage.getItem("userId"); // Retrieve userId from session storage
+        const userId = sessionStorage.getItem("userId"); // Retrieve user ID from session storage
 
         if (!userId || !reviewText) {
           alert("You must be logged in and enter a review to submit.");
@@ -176,13 +237,34 @@
           if (response.ok) {
             alert(data.message);
             document.getElementById(`review-${productId}`).value = ""; // Clear input after submitting
-            await fetchProducts(); // Refresh products to show new reviews
+            await fetchProductReviews(productId); // Fetch and display updated reviews
           } else {
             alert("Failed to post review.");
           }
         } catch (error) {
           console.error("Error posting review:", error);
           alert("An error occurred while posting the review.");
+        }
+      }
+
+      async function fetchProductReviews(productId) {
+        try {
+          const response = await fetch(`http://localhost:8000/viewProduct/${productId}`);
+          const product = await response.json();
+
+          if (response.ok) {
+            // Update the reviews list in the UI
+            const reviewsList = document.getElementById(`reviews-list-${productId}`);
+            if (reviewsList) {
+              reviewsList.innerHTML = product.reviews
+                .map((review) => `<li>${review}</li>`)
+                .join("");
+            }
+          } else {
+            console.error("Failed to fetch updated reviews:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching updated reviews:", error);
         }
       }
 
