@@ -755,7 +755,7 @@ const searchHotel = async (req, res) => {
     const accessToken = await getAmadeusTokenHotel();
 
     // Call the hotel search API
-    const response = await axios.get(
+    const response = await axios.post(
       "https://test.api.amadeus.com/v2/shopping/hotel-offers",
       {
         params: {
@@ -869,6 +869,7 @@ const commentOnGuide = async (req, res) => {
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
+      console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res

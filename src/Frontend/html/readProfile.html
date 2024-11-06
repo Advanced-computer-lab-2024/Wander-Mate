@@ -12,6 +12,11 @@
 
       <!-- Profile details -->
       <div class="profile-details">
+         <!-- Profile Picture Section -->
+         <div id="profilePictureContainer" style="display:none;">
+          <img id="profilePicture" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;" />
+      </div>
+
         <div class="field">
           <label for="sellerName">Name:</label>
           <p id="sellerName">Not Available</p>
@@ -83,6 +88,13 @@
               sellerData.MobileNumber || "Not Available"; // Update phone
             // document.getElementById("sellerRating").textContent =
             //   sellerData.Rating || "Not Available"; // Update rating
+             // Display the profile picture if it exists
+             if (sellerData.picture) {  // Assuming ProfilePicture contains the URL or path to the image
+                    const profilePicture = document.getElementById("profilePicture");
+                    profilePicture.src = sellerData.picture; // Set image source
+                    document.getElementById("profilePictureContainer").style.display = "block"; // Show the container
+                }
+
           } else {
             alert("Seller not found.");
             resetSellerDetails(); // Reset the displayed values
