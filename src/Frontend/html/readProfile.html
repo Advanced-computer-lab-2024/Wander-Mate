@@ -91,7 +91,7 @@
              // Display the profile picture if it exists
              if (sellerData.picture) {  // Assuming ProfilePicture contains the URL or path to the image
                     const profilePicture = document.getElementById("profilePicture");
-                    profilePicture.src = sellerData.picture; // Set image source
+                    profilePicture.src = `data:${sellerData.picture.contentType};base64,${sellerData.picture.data}`; // Set image source
                     document.getElementById("profilePictureContainer").style.display = "block"; // Show the container
                 }
 

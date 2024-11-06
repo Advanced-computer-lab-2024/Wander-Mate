@@ -14,6 +14,10 @@
     <div class="message" id="errorMessage" style="color: red; display: none;"></div>
 
     <div class="advertiser-info" id="advertiserInfo" style="display: none;">
+      <!-- Profile Picture Section -->
+      <div id="profilePictureContainer" style="display:none;">
+        <img id="profilePicture" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;" />
+      </div>
       <p><strong>Username:</strong> <span id="infoUsername"></span></p>
       <p><strong>Email:</strong> <span id="infoEmail"></span></p>
       <p><strong>Website:</strong> <span id="infoWebsite"></span></p>
@@ -30,6 +34,7 @@
     const infoWebsite = document.getElementById('infoWebsite');
     const infoHotline = document.getElementById('infoHotline');
     const infoCompanyProfile = document.getElementById('infoCompanyProfile');
+    const profilePicture = document.getElementById("profilePicture");
 
     // Automatically load advertiser info when the page loads
     window.onload = async function() {
@@ -58,6 +63,12 @@
           infoWebsite.innerText = result[0].Website;
           infoHotline.innerText = result[0].Hotline;
           infoCompanyProfile.innerText = result[0].CompanyProfile;
+
+          // Check if profile picture exists
+          if (result[0].picture) {
+            profilePicture.src = `data:${result[0].picture.contentType};base64,${result[0].picture.data}`; // Set image source
+            document.getElementById("profilePictureContainer").style.display = "block"; // Show the container
+          }
 
           advertiserInfoDiv.style.display = 'block';
           errorMessage.style.display = 'none';

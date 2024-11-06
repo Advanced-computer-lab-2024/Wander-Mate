@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/register.css" />
+    <title>Upload Profile Picture</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Upload Profile Picture</div>
+      <!-- Form to upload profile picture -->
+      <form id="uploadPictureForm" enctype="multipart/form-data">
+        <div class="field">
+          <input
+            type="text"
+            name="userID"
+            id="userID"
+            placeholder="userID"
+            required
+            readonly
+          />
+          <label for="id">Seller ID</label>
+        </div>
+        <label for="image">Profile Picture:</label>
+        <div class="field">
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            required
+          />
+        </div>
+        <div class="field">
+          <input type="submit" value="Upload Picture" />
+        </div>
+      </form>
+
+      <div id="successMessage" style="color: green; display: none">
+        Picture uploaded successfully!
+      </div>
+      <div id="errorMessage" style="color: red; display: none">
+        Error uploading picture. Please try again.
+      </div>
+    </div>
+
+    <script>
+      // Function to fetch User ID from the server
+      async function fetchUserID() {
+        const username = sessionStorage.getItem("username"); // Retrieve the username from session storage
+        if (!username) {
+          console.error("No username found in session storage.");
+          return; // Exit if no username is found
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+          if (!response.ok) throw new Error("Failed to get user ID");
+
+          const { userID } = await response.json(); // Fetch general user ID
+          sessionStorage.setItem("userID", userID); // Store user ID in session storage
+          document.getElementById("userID").value = userID; // Fill the ID field
+        } catch (error) {
+          console.error("Error fetching user ID:", error);
+          document.getElementById("errorMessage").innerText =
+            "Could not load user ID.";
+          document.getElementById("errorMessage").style.display = "block";
+        }
+      }
+
+      // Handle form submission for picture upload
+      document
+        .getElementById("uploadPictureForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const formData = new FormData(this);
+          const sellerID = sessionStorage.getItem("userID");
+
+          if (!sellerID) {
+            alert("User ID is missing.");
+            return;
+          }
+
+          try {
+            const response = await fetch(
+              `http://localhost:8000/uploadPictureseller/${sellerID}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
+
+            if (!response.ok)
+              throw new Error("Failed to upload profile picture.");
+
+            const result = await response.json();
+            document.getElementById("successMessage").innerText =
+              result.message;
+            document.getElementById("successMessage").style.display = "block";
+            this.reset(); // Reset form fields after successful submission
+          } catch (error) {
+            console.error("Error uploading picture:", error);
+            document.getElementById("errorMessage").innerText =
+              "Could not upload the picture. Please try again.";
+            document.getElementById("errorMessage").style.display = "block";
+          }
+        });
+
+      // Load User ID on page load
+      window.onload = fetchUserID;
+    </script>
+  </body>
+</html>
