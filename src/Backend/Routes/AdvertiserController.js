@@ -377,23 +377,27 @@ const changePasswordAdvertiser = async (req, res) => {
 const addTransportation = async (req, res) => {
   try {
     // Destructure transportation fields from the request body
-    const { advertiserId, availability } = req.body;
+    const { advertiserID, availability } = req.body;
 
     // Basic validation
-    if (!advertiserId) {
+    if (!advertiserID) {
       return res.status(400).json({ error: "Advertiser ID is required." });
     }
 
     // Check if the advertiser exists
-    const advertiser = await advertiserModel.findById(advertiserId);
+    const advertiser = await advertiserModel.findById(advertiserID);
     if (!advertiser) {
       return res.status(404).json({ error: "Advertiser not found." });
     }
 
+    // Ensure availability is a boolean
+    const isAvailable = availability === 'true'; // Convert 'true' to true, 'false' to false
+    console.log('Parsed Availability:', isAvailable); // Debugging log
+
     // Create a new transportation instance
     const transportation = await TransportationModel.create({
-      advertiserId, // Link transportation to the advertiser
-      availability: availability !== undefined ? availability : true, // Default to true if not provided
+      advertiserId: advertiserID, // Link transportation to the advertiser
+      availability: isAvailable, // Set availability as boolean
     });
 
     // Respond with success and the transportation data
@@ -406,6 +410,7 @@ const addTransportation = async (req, res) => {
     res.status(400).json({ error: "Failed to add transportation." });
   }
 };
+
 const requestAdvertiserAccountDeletion = async (req, res) => {
   const { advertiserID } = req.params;
 

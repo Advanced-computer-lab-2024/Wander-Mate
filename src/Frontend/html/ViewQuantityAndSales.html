@@ -57,7 +57,7 @@
       async function fetchProducts() {
         try {
           const response = await fetch(
-            "http://localhost:8000/viewProductSalesAndQuantity"
+            "http://localhost:8000/viewSellerProducts"
           );
           const products = await response.json();
 
