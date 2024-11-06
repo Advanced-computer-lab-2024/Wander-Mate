@@ -1020,11 +1020,11 @@ const updateItineraryRatings = async (req, res) => {
 
 const commentOnItinerary = async (req, res) => {
   try {
-    const { itineraryID, text } = req.body; // Expecting itinerary ID and comment text in the request body
+    const { itineraryID, Body } = req.body; // Expecting itinerary ID and comment text in the request body
     const touristID = req.params.id; // Assuming tourist ID is passed as a parameter
 
     // Validate input
-    if (!itineraryID || !text) {
+    if (!itineraryID || !Body) {
       return res
         .status(400)
         .json({ message: "Itinerary ID and comment text are required." });
@@ -1040,7 +1040,7 @@ const commentOnItinerary = async (req, res) => {
     const newComment = await CommentModel.create({
       touristID, // Assuming `touristID` matches your schema
       aboutId: itineraryID, // Change to match your schema
-      text, // Assuming `text` is a field in your comment schema
+      Body, // Assuming `text` is a field in your comment schema
     });
 
     res
