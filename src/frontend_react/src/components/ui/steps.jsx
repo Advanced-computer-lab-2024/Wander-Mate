@@ -47,7 +47,7 @@ const Stepper = React.forwardRef(
     {
       className,
       children,
-      activeStep,
+      activestep,
       direction,
       disabled,
       variant,
@@ -80,7 +80,7 @@ const Stepper = React.forwardRef(
           return React.cloneElement(child, {
             ...props,
             isLast,
-            activeStep: activeStep,
+            activestep: activestep,
             disabled: disabled && !isLast,
             count,
             index: index,
