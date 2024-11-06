@@ -15,8 +15,8 @@ const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
-const apiKey = 'b485c7b5c42a8362ccedd69ab6fe973e';
-const baseUrl = 'http://data.fixer.io/api/latest';
+const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
+const baseUrl = "http://data.fixer.io/api/latest";
 
 // Registration function
 const touristRegister = async (req, res) => {
@@ -49,13 +49,13 @@ const touristRegister = async (req, res) => {
         .json({ message: "Please provide all required fields." });
     }
 
-    // 2. Check if the user already exists (by Email)
-    const existingUser = await userModel.findOne({ Email: Email });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "User with this email already exists." });
-    }
+    // // 2. Check if the user already exists (by Email)
+    // const existingUser = await userModel.findOne({ Email: Email });
+    // if (existingUser) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "User with this email already exists." });
+    // }
 
     const existingUser1 = await Usernames.findOne({ Username: Username });
 
@@ -69,11 +69,15 @@ const touristRegister = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    // 4. Ensure Points is an integer and validate the input
-    let parsedPoints = parseInt(Points); // Convert Points to an integer
-    if (isNaN(parsedPoints) || parsedPoints < 0) {
-      // Check if the input is not a number or if it's negative
-      parsedPoints = 0; // Default to 0 points if invalid input
+    if (Points) {
+      // 4. Ensure Points is an integer and validate the input
+      let parsedPoints = parseInt(Points); // Convert Points to an integer
+      if (isNaN(parsedPoints) || parsedPoints < 0) {
+        // Check if the input is not a number or if it's negative
+        parsedPoints = 0; // Default to 0 points if invalid input
+      }
+    } else {
+      parsedPoints = 0;
     }
 
     // Badge assignment logic based on points
@@ -112,6 +116,7 @@ const touristRegister = async (req, res) => {
       .json({ message: "User registered successfully", userID: newUser._id });
   } catch (error) {
     // Handle errors (e.g., database issues)
+    console.log(error);
     res
       .status(500)
       .json({ message: "Error registering user", error: error.message });
@@ -573,9 +578,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-      apiKey +
-      "&client_secret=" +
-      apiSecret,
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -598,8 +603,10 @@ const SearchFlights = async (req, res) => {
   const { origin, destination, departureDate, returnDate } = req.body;
 
   // Validate input
-  if (!origin || !destination || !departureDate ) {
-    return res.status(400).json({ message: "Please provide all required fields." });
+  if (!origin || !destination || !departureDate) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
   }
 
   try {
@@ -633,59 +640,65 @@ const SearchFlights = async (req, res) => {
       "Error fetching flights:",
       error.response ? error.response.data : error.message
     );
-    res
-      .status(500)
-      .json({ message: "Failed to search flights", error: error.response ? error.response.data : error.message });
+    res.status(500).json({
+      message: "Failed to search flights",
+      error: error.response ? error.response.data : error.message,
+    });
   }
 };
-
 
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-      const flightOrder = req.body; // This should be the flight offer object
-      const touristID = req.params.touristID;
+    const flightOrder = req.body; // This should be the flight offer object
+    const touristID = req.params.touristID;
 
-      // Check if the flight order is valid
-      if (!flightOrder || !flightOrder.id) {
-          return res.status(400).json({ error: "Invalid flight order data" });
-      }
+    // Check if the flight order is valid
+    if (!flightOrder || !flightOrder.id) {
+      return res.status(400).json({ error: "Invalid flight order data" });
+    }
 
-      // Extract flight offers and traveler pricing
-      const flightOffers = [flightOrder]; // Wrap the single flight offer in an array
-      const travelers = flightOrder.travelerPricings; // Extract traveler pricing directly
+    // Extract flight offers and traveler pricing
+    const flightOffers = [flightOrder]; // Wrap the single flight offer in an array
+    const travelers = flightOrder.travelerPricings; // Extract traveler pricing directly
 
-      // Validate the extracted data
-      if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
-          return res.status(400).json({ error: "Invalid flight offers or travelers data" });
-      }
+    // Validate the extracted data
+    if (!Array.isArray(flightOffers) || !Array.isArray(travelers)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid flight offers or travelers data" });
+    }
 
-      const selectedFlightOffer = flightOffers[0]; // Selecting the first offer (only one in this case)
+    const selectedFlightOffer = flightOffers[0]; // Selecting the first offer (only one in this case)
 
-      // Constructing the booking data
-      const bookingData = {
-          flightOffer: selectedFlightOffer,
-          travelers: travelers,
-          bookingDate: new Date()
-      };
+    // Constructing the booking data
+    const bookingData = {
+      flightOffer: selectedFlightOffer,
+      travelers: travelers,
+      bookingDate: new Date(),
+    };
 
-      // Simulate booking API call
-      const bookingResponse = await bookFlightWithAPI(bookingData);
+    // Simulate booking API call
+    const bookingResponse = await bookFlightWithAPI(bookingData);
 
-      if (bookingResponse.success) {
-          const updatedTourist = await userModel.findByIdAndUpdate(
-              touristID,
-              { $push: { bookedFlights: bookingData } },
-              { new: true }
-          );
+    if (bookingResponse.success) {
+      const updatedTourist = await userModel.findByIdAndUpdate(
+        touristID,
+        { $push: { bookedFlights: bookingData } },
+        { new: true }
+      );
 
-          return res.status(200).json({ message: "Flight booked successfully!", bookingDetails: bookingResponse.details, updatedTourist });
-      } else {
-          return res.status(500).json({ error: "Failed to book the flight." });
-      }
+      return res.status(200).json({
+        message: "Flight booked successfully!",
+        bookingDetails: bookingResponse.details,
+        updatedTourist,
+      });
+    } else {
+      return res.status(500).json({ error: "Failed to book the flight." });
+    }
   } catch (error) {
-      console.error("Error processing flight order:", error);
-      return res.status(500).json({ error: "Internal server error." });
+    console.error("Error processing flight order:", error);
+    return res.status(500).json({ error: "Internal server error." });
   }
 };
 
@@ -695,15 +708,17 @@ module.exports = { BookFlight };
 const bookFlightWithAPI = async (bookingData) => {
   // Simulate a successful booking response
   return new Promise((resolve) => {
-      setTimeout(() => {
-          resolve({ success: true, details: { confirmationNumber: "ABC123", flightInfo: bookingData.flightOffer } });
-      }, 1000);
+    setTimeout(() => {
+      resolve({
+        success: true,
+        details: {
+          confirmationNumber: "ABC123",
+          flightInfo: bookingData.flightOffer,
+        },
+      });
+    }, 1000);
   });
 };
-
-
-
-
 
 // Function to get Amadeus access token for Hotel API
 const getAmadeusTokenHotel = async () => {
@@ -741,7 +756,8 @@ const searchHotel = async (req, res) => {
   // Validate input
   if (!cityCode || !checkInDate || !checkOutDate || !adults) {
     return res.status(400).json({
-      message: "Please provide city code, check-in/check-out dates, and number of adults.",
+      message:
+        "Please provide city code, check-in/check-out dates, and number of adults.",
     });
   }
 
@@ -784,7 +800,6 @@ const searchHotel = async (req, res) => {
   }
 };
 
-
 // Book Hotel Function
 const BookHotel = async (req, res) => {
   const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
@@ -792,7 +807,8 @@ const BookHotel = async (req, res) => {
   // Validate input
   if (!selectedHotelOffer || !guestsInfo || !paymentInfo) {
     return res.status(400).json({
-      message: "Please provide the selected hotel offer, guests info, and payment info.",
+      message:
+        "Please provide the selected hotel offer, guests info, and payment info.",
     });
   }
 
@@ -836,7 +852,6 @@ const BookHotel = async (req, res) => {
   }
 };
 
-
 const commentOnGuide = async (req, res) => {
   try {
     const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
@@ -859,7 +874,7 @@ const commentOnGuide = async (req, res) => {
     const newComment = await CommentModel.create({
       touristID, // Change to match your schema
       aboutId: guideID, // Change to match your schema
-      Body:text, // Assuming `text` is a field in your comment schema
+      Body: text, // Assuming `text` is a field in your comment schema
     });
 
     res
@@ -942,7 +957,6 @@ const addCommentONEvent = async (req, res) => {
   }
 };
 
-
 const rateItinerary = async (req, res) => {
   const { touristId, itineraryId, rating } = req.body;
   try {
@@ -964,7 +978,6 @@ const rateItinerary = async (req, res) => {
       .json({ message: "Error posting rating", error: error.message });
   }
 };
-
 
 const updateItineraryRatings = async (req, res) => {
   const { itineraryId } = req.params;
@@ -1132,6 +1145,28 @@ const changePasswordTourist = async (req, res) => {
   }
 };
 
+const viewAllTransportations = async (req, res) => {
+  try {
+    // Fetch all transportations from the database
+    const transportations = await TransportationModel.find();
+
+    // Check if there are transportations available
+    if (transportations.length === 0) {
+      return res.status(404).json({ message: "No transportation options available." });
+    }
+
+    // Respond with the list of transportations
+    res.status(200).json({
+      message: "Transportations retrieved successfully!",
+      transportations,
+    });
+  } catch (err) {
+    console.error("Error fetching transportations:", err);
+    res.status(500).json({ message: "Failed to retrieve transportations." });
+  }
+};
+
+
 const bookTransportation = async (req, res) => {
   try {
     const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
@@ -1225,7 +1260,6 @@ const updateProductRatings = async (req, res) => {
   }
 };
 
-
 const selectPreferences = async (req, res) => {
   try {
     const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
@@ -1318,7 +1352,6 @@ const requestTouristAccountDeletion = async (req, res) => {
   }
 };
 
-
 const calculateLoyaltyPoints = async (req, res) => {
   const { amountPaid, touristID } = req.body;
 
@@ -1389,7 +1422,9 @@ const viewMyComplaints = async (req, res) => {
 
     // Step 3: Check if there are no complaints for this tourist
     if (!complaints || complaints.length === 0) {
-      return res.status(404).json({ message: "No complaints found for this tourist." });
+      return res
+        .status(404)
+        .json({ message: "No complaints found for this tourist." });
     }
 
     // Step 4: Map through the complaints to prepare the response
@@ -1418,7 +1453,9 @@ const redeemPoints = async (req, res) => {
     //const pointsToRedeem=tourist.points;
     // Validate input
     if (!touristID || !pointsToRedeem) {
-      return res.status(400).json({ message: "Tourist ID and points to redeem are required." });
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and points to redeem are required." });
     }
 
     // Fetch the tourist's current points and wallet balance
@@ -1429,7 +1466,9 @@ const redeemPoints = async (req, res) => {
 
     // Check if the tourist has enough points to redeem
     if (pointsToRedeem <= 0 || pointsToRedeem > tourist.Points) {
-      return res.status(400).json({ message: "Insufficient points to redeem." });
+      return res
+        .status(400)
+        .json({ message: "Insufficient points to redeem." });
     }
 
     // Calculate the cash equivalent of the points
@@ -1451,11 +1490,13 @@ const redeemPoints = async (req, res) => {
     });
   } catch (error) {
     console.error("Error redeeming points:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 const reviewProduct = async (req, res) => {
-  const { productId,userId, review } = req.body; // Only productId and review as a string
+  const { productId, userId, review } = req.body; // Only productId and review as a string
   try {
     // Create a new review entry
     const newReview = await ReviewModel.create({
@@ -1464,7 +1505,6 @@ const reviewProduct = async (req, res) => {
       review, // Only store the review string
     });
 
-      
     res.status(200).json({
       message: "Review posted successfully",
       review: newReview,
@@ -1484,7 +1524,7 @@ const cancelBooking = async (req, res) => {
   try {
     // Find the booking by ID
     const booking = await Booking.findById(bookingID);
-    
+
     // Check if the booking exists
     if (!booking) {
       return res.status(404).json({ error: "Booking not found." });
@@ -1492,7 +1532,7 @@ const cancelBooking = async (req, res) => {
 
     const currentDate = new Date();
     const bookedDate = new Date(booking.bookedDate);
-    
+
     // Calculate the time difference
     const timeDifference = bookedDate - currentDate;
 
@@ -1501,7 +1541,9 @@ const cancelBooking = async (req, res) => {
 
     // Check if the cancellation is within the allowed period
     if (hoursDifference < 48) {
-      return res.status(400).json({ error: "You can only cancel bookings 48 hours prior to the event." });
+      return res.status(400).json({
+        error: "You can only cancel bookings 48 hours prior to the event.",
+      });
     }
 
     // If eligible, proceed to cancel the booking
@@ -1530,7 +1572,9 @@ const shareActivity = async (req, res) => {
     }
 
     // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
+    const shareableLink = `${req.protocol}://${req.get(
+      "host"
+    )}/activities/${activityId}`;
 
     if (shareMethod === "link") {
       // If sharing via link, return the link
@@ -1540,7 +1584,9 @@ const shareActivity = async (req, res) => {
       });
     } else if (shareMethod === "email") {
       if (!email) {
-        return res.status(400).json({ message: "Email address is required for sharing via email." });
+        return res.status(400).json({
+          message: "Email address is required for sharing via email.",
+        });
       }
 
       // Here you can implement the logic to send an email
@@ -1572,14 +1618,15 @@ const shareActivity = async (req, res) => {
         link: shareableLink,
       });
     } else {
-      return res.status(400).json({ message: "Invalid share method. Use 'link' or 'email'." });
+      return res
+        .status(400)
+        .json({ message: "Invalid share method. Use 'link' or 'email'." });
     }
   } catch (error) {
     console.error("Error sharing activity:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
-
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1601,7 +1648,6 @@ const rateEvent = async (req, res) => {
   }
 };
 
-
 const bookItinerary = async (req, res) => {
   try {
     const { itineraryId, userId, bookedDate } = req.body; // Get itinerary ID, user ID, and booked date from the request body
@@ -1617,7 +1663,7 @@ const bookItinerary = async (req, res) => {
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: itineraryId,
-      itemModel: 'Itinerary', // Use 'Itinerary' since you're booking an itinerary
+      itemModel: "Itinerary", // Use 'Itinerary' since you're booking an itinerary
       userId, // Make sure userId is correctly passed from the request
       bookedDate,
     });
@@ -1640,7 +1686,9 @@ const bookItinerary = async (req, res) => {
     });
   } catch (error) {
     console.error("Error booking itinerary:", error.message); // Log error for debugging
-    res.status(500).json({ message: "Error booking itinerary", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error booking itinerary", error: error.message });
   }
 };
 const updateEventRatings = async (req, res) => {
@@ -1680,28 +1728,24 @@ const updateEventRatings = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 const currencyConverter = async (req, res) => {
-  const baseCurrency = req.body.base || 'EGP'; // Default base currency
+  const baseCurrency = req.body.base || "EGP"; // Default base currency
   const targetCurrency = req.body.target;
 
   if (!targetCurrency) {
     return res.status(400).json({
       success: false,
-      message: 'Target currency is required',
+      message: "Target currency is required",
     });
   }
 
   try {
     // Fetch rates with 'EUR' as the base (due to the limitation of the free plan)
-    const response = await fetch(`${baseUrl}?access_key=${apiKey}&symbols=${baseCurrency},${targetCurrency}`);
+    const response = await fetch(
+      `${baseUrl}?access_key=${apiKey}&symbols=${baseCurrency},${targetCurrency}`
+    );
     if (!response.ok) {
-      throw new Error('Failed to fetch currency data');
+      throw new Error("Failed to fetch currency data");
     }
 
     const data = await response.json();
@@ -1710,7 +1754,7 @@ const currencyConverter = async (req, res) => {
     if (!data.success) {
       return res.status(500).json({
         success: false,
-        message: data.error.info || 'Error fetching data from Fixer',
+        message: data.error.info || "Error fetching data from Fixer",
       });
     }
 
@@ -1734,15 +1778,13 @@ const currencyConverter = async (req, res) => {
       conversionRate,
     });
   } catch (error) {
-    console.error('Error fetching currency data:', error);
+    console.error("Error fetching currency data:", error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred while fetching currency data',
+      message: "An error occurred while fetching currency data",
     });
   }
 };
-
-
 
 module.exports = {
   touristRegister,
@@ -1791,4 +1833,5 @@ module.exports = {
   rateEvent,
   updateEventRatings,
   currencyConverter,
+  viewAllTransportations,
 };

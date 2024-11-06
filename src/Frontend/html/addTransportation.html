@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Transportation</title>
+  <link rel="stylesheet" href="../styles/register.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+  <div class="wrapper">
+    <div class="title">Add Transportation</div>
+    <form id="addTransportationForm">
+      <!-- Advertiser ID field removed from form since it's retrieved from session storage -->
+      
+      <div class="field">
+        <select id="availability" name="availability">
+          <option value="true" selected>Available</option>
+          <option value="false">Not Available</option>
+        </select>
+        <label for="availability">Availability</label>
+      </div>
+
+      <div class="field">
+        <input type="submit" value="Add Transportation">
+      </div>
+
+      <p id="responseMessage"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("addTransportationForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      // Retrieve advertiserId from sessionStorage
+      const advertiserId = sessionStorage.getItem("advertiserId");
+      if (!advertiserId) {
+        document.getElementById("responseMessage").textContent = "Advertiser ID not found in session storage.";
+        return;
+      }
+
+      const availability = document.getElementById("availability").value === "true";
+
+      try {
+        const response = await fetch("/api/addTransportation", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ advertiserId, availability })
+        });
+
+        const result = await response.json();
+        document.getElementById("responseMessage").textContent = result.message || result.error;
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("responseMessage").textContent = "Failed to add transportation.";
+      }
+    });
+  </script>
+</body>
+</html>
