@@ -9,6 +9,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const bookingSchema = require("../Models/bookings.js"); 
 const PdfDetails = require("../Models/pdfDetails.js");
+const jwt = require("jsonwebtoken");
 
 
 

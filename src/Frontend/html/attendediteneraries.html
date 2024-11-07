@@ -34,13 +34,20 @@
             font-size: 0.9em;
             margin-left: 10px;
         }
+
+        /* Comment section styles */
+        .comment-section {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <div class="title">Attended Itineraries</div>
         <div class="activity-list" id="activityList">
-            <!-- Attended itineraries will be dynamically inserted here -->
+            <!-- Attended itineraries with comment sections will be dynamically inserted here -->
         </div>
     </div>
 
@@ -67,28 +74,56 @@
             }
         }
 
-        // Display attended itineraries with rating options
+        // Display attended itineraries with rating and comment sections
         function displayAttendedItineraries(itineraries) {
-            const activityList = document.getElementById("activityList");
-            activityList.innerHTML = ""; // Clear existing itineraries
-            itineraries.forEach((itinerary) => {
-                const activityItem = document.createElement("div");
-                activityItem.className = "activity-item";
+    const activityList = document.getElementById("activityList");
+    activityList.innerHTML = ""; // Clear existing itineraries
 
-                activityItem.innerHTML = `
-                    <div class="activity-details">
-                        <h2 class="activity-name">${itinerary.itemId.Name}</h2>
-                        <p class="activity-date">Attended on: ${new Date(itinerary.bookedDate).toLocaleDateString()}</p>
-                    </div>
-                    <div id="star-rating-${itinerary.itemId._id}" class="star-rating">
-                        ${[1, 2, 3, 4, 5].map(i => `<span onclick="rateItinerary('${itinerary.itemId._id}', ${i})">★</span>`).join("")}
-                    </div>
-                    <div id="rating-message-${itinerary.itemId._id}" class="rating-message"></div>
-                `;
+    itineraries.forEach((itinerary) => {
+        const activityItem = document.createElement("div");
+        activityItem.className = "activity-item";
 
-                activityList.appendChild(activityItem);
-            });
-        }
+        activityItem.innerHTML = `
+            <div class="activity-details">
+                <h3>Itinerary ID: ${itinerary.itemId._id}</h3>
+                <h2 class="activity-name">${itinerary.itemId.Name}</h2>
+                <h3>Tour Guide: ${itinerary.itemId.Creator.Username}</h3>
+                <p class="activity-date">Attended on: ${new Date(itinerary.bookedDate).toLocaleDateString()}</p>
+            </div>
+            <h3>Rate the Itinerary</h3>
+            <div id="star-rating-${itinerary.itemId._id}" class="star-rating">
+                ${[1, 2, 3, 4, 5].map(i => `<span onclick="rateItinerary('${itinerary.itemId._id}', ${i})">★</span>`).join("")}
+            </div>
+            <div id="rating-message-${itinerary.itemId._id}" class="rating-message"></div>
+            
+            <!-- Tour Guide Rating Section -->
+            <div class="guide-rating-section">
+                <h3>Rate the Tour Guide</h3>
+                <div id="star-rating-guide-${itinerary.itemId._id}" class="star-rating">
+                    ${[1, 2, 3, 4, 5].map(i => `<span onclick="rateGuide('${itinerary.itemId._id}', '${itinerary.itemId.Creator._id}', ${i})">★</span>`).join("")}
+                </div>
+                <div id="guide-rating-message-${itinerary.itemId._id}" class="rating-message"></div>
+            </div>
+
+            <!-- Guide Comment Section -->
+            <div class="guide-comment-section">
+                <h3>Comment on the Tour Guide</h3>
+                <textarea id="guide-comment-body-${itinerary.itemId._id}" placeholder="Enter your comment here..." rows="4" style="width: 100%;"></textarea>
+                <button onclick="submitGuideComment('${itinerary.itemId.Creator._id}', '${itinerary.itemId._id}')">Submit Guide Comment</button>
+            </div>
+
+            <!-- Comment Section for each itinerary -->
+            <div class="comment-section" id="comment-section-${itinerary.itemId._id}">
+                <h3>Comment on this Itinerary</h3>
+                <textarea id="comment-body-${itinerary.itemId._id}" placeholder="Enter your comment here..." rows="4" style="width: 100%;"></textarea>
+                <button onclick="submitComment('${itinerary.itemId._id}')">Submit Comment</button>
+            </div>
+        `;
+
+        activityList.appendChild(activityItem);
+    });
+}
+
 
         // Rate an itinerary
         async function rateItinerary(itineraryId, rating) {
@@ -131,8 +166,114 @@
             });
         }
 
+        // Submit a comment for a specific itinerary
+        async function submitComment(itineraryId) {
+    const touristID = sessionStorage.getItem('touristID'); // Fetch the tourist ID from session storage
+    const Body = document.getElementById(`comment-body-${itineraryId}`).value;
+
+    if (!Body) {
+        alert("Please enter a comment.");
+        return;
+    }
+
+    try {
+        // Use touristID as part of the URL, according to the backend route structure
+        const response = await fetch(`http://localhost:8000/comment-on-itinerary/${touristID}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ itineraryID: itineraryId, Body }), // Send itineraryID and Body in the request body
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert(`Comment posted successfully: ${result.message}`);
+            document.getElementById("comment-body").value = ""; // Clear the comment box
+        } else {
+            const errorResult = await response.json();
+            alert(`Error posting comment: ${errorResult.message}`);
+        }
+    } catch (error) {
+        console.error("Error posting comment:", error);
+        alert("There was an error posting the comment. Please try again.");
+    }
+}
+async function rateGuide(itineraryId, guideId, rating) {
+    const touristId = sessionStorage.getItem("touristID"); // Retrieve tourist ID from session storage
+    if (!touristId) {
+        alert("You must be logged in to rate the tour guide.");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8000/RateGuide", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ touristId, guideId, rating }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById(`guide-rating-message-${itineraryId}`).textContent = "Thank you for rating the guide!";
+            setStarRatingGuide(itineraryId, rating);
+        } else {
+            alert(data.message || "Failed to post guide rating.");
+        }
+    } catch (error) {
+        console.error("Error posting guide rating:", error);
+        alert("An error occurred while posting the guide rating.");
+    }
+}
+
+// Highlight selected stars up to the rating given for the guide
+function setStarRatingGuide(itineraryId, rating) {
+    const stars = document.querySelectorAll(`#star-rating-guide-${itineraryId} span`);
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add("selected");
+        } else {
+            star.classList.remove("selected");
+        }
+    });
+}async function submitGuideComment(guideId, itineraryId) {
+    const touristID = sessionStorage.getItem('touristID'); // Fetch the tourist ID from session storage
+    const text = document.getElementById(`guide-comment-body-${itineraryId}`).value; // Fetch the comment text
+
+    if (!text) {
+        alert("Please enter a comment.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8000/commentOnGuide/${touristID}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ guideID: guideId, text }), // Send guideID and text in the request body
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert(`Comment posted successfully: ${result.message}`);
+            document.getElementById(`guide-comment-body-${itineraryId}`).value = ""; // Clear the comment box
+        } else {
+            const errorResult = await response.json();
+            alert(`Error posting comment: ${errorResult.message}`);
+        }
+    } catch (error) {
+        console.error("Error posting comment:", error);
+        alert("There was an error posting the comment. Please try again.");
+    }
+}
+
+
+
         // Fetch attended itineraries when the page loads
         document.addEventListener("DOMContentLoaded", fetchAttendedItineraries);
+       // document.getElementById("submit-comment-button").addEventListener("click", submitComment);
     </script>
 </body>
 </html>

@@ -9,6 +9,8 @@ const Attraction = require("../Models/attractions.js");
 const TransportationModel = require("../Models/transportation.js");
 const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
+const jwt = require("jsonwebtoken");
+
 
 const createActivity = async (req, res) => {
   const Bookings = [];

@@ -81,6 +81,7 @@
     <script>
       async function fetchActivities() {
         const username = sessionStorage.getItem("username");
+        console.log(username);
         if (!username) {
           displayError("Username not found in session storage.");
           return;
@@ -102,6 +103,7 @@
         }
 
         const { userID } = x;
+        console.log(userID);
         try {
           const response = await fetch(
             `http://localhost:8000/viewAttendedActivities/${userID}`
@@ -168,6 +170,7 @@
         }
         let x;
         try {
+          console.log(username);
           const response1 = await fetch(
             `http://localhost:8000/getID/${username}`
           );
@@ -185,9 +188,9 @@
         const { userID } = x;
 
         const data = {
-          comment,
+          Body: comment,
           eventId: currentEventId,
-          touristID: username, // Assuming username is used as touristID
+          touristID: userID,
         };
 
         try {
@@ -211,7 +214,6 @@
             alert(result.message || "Error posting comment");
           }
         } catch (error) {
-          console.error("Error posting comment:", error);
           alert("Error posting comment");
         }
       }

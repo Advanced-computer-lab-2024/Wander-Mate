@@ -39,12 +39,8 @@
     <div id="itinerary-details"></div>
 
     <div class="share-buttons">
-        <button id="share-link-button">Share via Link</button>
-        <button id="share-email-button">Share via Email</button>
         <button id="flag-button">Flag</button>
     </div>
-
-
 
     <div id="comment-section">
         <h3>Comment on this Itinerary</h3>
@@ -154,9 +150,7 @@
             }
         }
 
-        // Frontend function to book the itinerary
-     
-
+        // Frontend function to submit a comment
         async function submitComment() {
             const itineraryID = itineraryData.id;
             const touristID = sessionStorage.getItem('touristID');
@@ -190,56 +184,13 @@
             }
         }
 
-        window.onload = () => {
-            const { id } = getQueryParams();
-            fetchItineraryData(id);
-            fetchTouristID();
-        };
-
-        document.getElementById("submit-comment-button").addEventListener("click", submitComment);
-        document.querySelector(".book-button").addEventListener("click", handleBookItinerary);
-
-        const shareLinkButton = document.getElementById("share-link-button");
-        const shareEmailButton = document.getElementById("share-email-button");
-        const flagButton = document.getElementById("flag-button");
-
-        shareLinkButton.addEventListener("click", async () => {
+        // Flag itinerary or event
+        async function flagItem() {
             const activityId = itineraryData.id || getQueryParams().id;
-            const response = await fetch("http://localhost:8000/shareActivity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "link" }),
-            });
-           
-            const result = await response.json();
-            alert(`Activity shared successfully! Link: ${result.link}`);
-        });
+            const type = "itinerary"; // or "event" depending on the context
 
-        shareEmailButton.addEventListener("click", async () => {
-            const activityId = itineraryData.id || getQueryParams().id;
-            const email = prompt("Enter the recipient's email address:");
-            if (!email) return;
-
-            const response = await fetch("http://localhost:8000/shareActivity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "email", email }),
-            });
-
-            const result = await response.json();
-            alert(`Activity shared successfully! ${result.message}`);
-        });
-
-        flagButton.addEventListener("click", async () => {
-            const activityId = itineraryData.id || getQueryParams().id;
             const reason = prompt("Please enter the reason for flagging this item:");
             if (!reason) return;
-
-            const type = "itinerary";
 
             try {
                 const response = await fetch("http://localhost:8000/flag-event-or-itinerary", {
@@ -250,17 +201,26 @@
                     body: JSON.stringify({ id: activityId, type }),
                 });
 
+                const result = await response.json();
                 if (response.ok) {
                     alert(`${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.`);
                 } else {
-                    const errorResult = await response.json();
-                    alert(`Error flagging ${type}: ${errorResult.message}`);
+                    alert(`Error flagging ${type}: ${result.message}`);
                 }
             } catch (error) {
                 console.error("Error flagging item:", error);
                 alert("There was an error flagging the item. Please try again.");
             }
-        });
+        }
+
+        window.onload = () => {
+            const { id } = getQueryParams();
+            fetchItineraryData(id);
+            fetchTouristID();
+        };
+
+        document.getElementById("submit-comment-button").addEventListener("click", submitComment);
+        document.getElementById("flag-button").addEventListener("click", flagItem);
     </script>
 </body>
 </html>

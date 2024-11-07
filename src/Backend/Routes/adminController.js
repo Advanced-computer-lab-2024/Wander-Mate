@@ -18,6 +18,7 @@ const touristModel = require("../Models/tourist.js");
 const advertiserModel = require("../Models/advertiser.js");
 const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
+const jwt = require("jsonwebtoken");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1214,7 +1215,7 @@ const login = async (req, res) => {
     const token = createToken(userLogged.Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json(user);
+    res.status(200).json({ Username: Username, Type: user.Type });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An error occurred during login" });
@@ -1262,4 +1263,5 @@ module.exports = {
   flagEventOrItinerary,
   getAllUsernames,
   getDistinctOwners,
+  login,
 };
