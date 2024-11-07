@@ -1098,7 +1098,6 @@ const viewAttendedItineraries = async (req, res) => {
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
-      console.log(itinerary.userId);
       return (
         itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
@@ -1675,7 +1674,6 @@ const bookItinerary = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-    console.log(itinerary);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1690,11 +1688,9 @@ const bookItinerary = async (req, res) => {
     // Update the itinerary document to include the new booking ID
     itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", itinerary.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await itinerary.save();
-    console.log(itinerary);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1719,7 +1715,6 @@ const bookActivity = async (req, res) => {
       return res.status(40).json({ message: "Activity not found." });
     }
 
-    console.log(activity);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1734,11 +1729,9 @@ const bookActivity = async (req, res) => {
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await activity.save();
-    console.log(activity);
 
     // Respond back with success message and booking details
     res.status(200).json({
