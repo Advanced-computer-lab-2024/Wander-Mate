@@ -1,14 +1,14 @@
 import React from "react";
-import "../../assets/css/startPage.css"; // Import the CSS file
-import MainNav from "../ui/mainNav";
-import OurAcheivementsBlock from "../blocks/OurAcheivementsBlock";
-import OurService from "../blocks/OurServiceBlock";
+import "../assets/css/startPage.css"; // Import the CSS file
+import MainNav from "../components/mainNav";
+import OurAcheivementsBlock from "../components/OurAcheivementsBlock";
+import OurService from "../components/OurServiceBlock";
 import { useNavigate } from "react-router-dom";
 
 const StartPage = () => {
   const navigate = useNavigate();
   const handleRegClick = () => {
-    navigate("/registerStart");
+    navigate("/registerPage");
   };
   return (
     <>

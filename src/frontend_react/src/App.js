@@ -15,6 +15,7 @@ import ChangePasword from "./components/changePassword";
 import ViewItineraries from "./pages/viewItineraries";
 import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
+import StartPage from "./pages/startPage";
 function App() {
   return (
     <Router>
@@ -33,6 +34,7 @@ function App() {
         <Route path="/changePassword" element={<ChangePasword />} />
         <Route path="/uploadDocs" element={<UploadDocs />} />
         <Route path="*" element={<ErrorPage />} />
+        <Route path="/" element={<StartPage />} />
       </Routes>
     </Router>
   );

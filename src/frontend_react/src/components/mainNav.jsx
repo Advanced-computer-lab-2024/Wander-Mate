@@ -1,8 +1,8 @@
 import React from "react";
-import "../../assets/css/mainNav.css";
-import "../../assets/css/smallButton.css";
+import "../assets/css/mainNav.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
 
 const MainNav = ({ targetId1, targetId2 }) => {
   const handleClick = (event) => {
@@ -15,7 +15,7 @@ const MainNav = ({ targetId1, targetId2 }) => {
 
   const navigate = useNavigate();
   const handleRegister = () => {
-    navigate("/registerStart");
+    navigate("/registerPage");
   };
 
   const [isVisible, setIsVisible] = useState(true);
@@ -84,20 +84,14 @@ const MainNav = ({ targetId1, targetId2 }) => {
           Explore
         </a>
       </div>
-      <div className="user-profile">
-        <span
-          className="smallButton"
-          style={{ left: "82.5%" }}
-          onClick={handleRegister}
-        >
-          <span className="smallButton-label">Signup</span>
-        </span>
-        <span
-          className="smallButton smallButton-secondary"
-          style={{ left: "88%" }}
-        >
-          <span className="smallButton-label">Login</span>
-        </span>
+      <div className="startGroup">
+        <Button variant="outline" size="xs" style={{ left: "88%" }}>
+          Login
+        </Button>
+        <Button size="xs" style={{ left: "82.5%" }} onClick={handleRegister}>
+          Signup
+        </Button>
+
         {/* <svg
           width="30"
           height="30"
