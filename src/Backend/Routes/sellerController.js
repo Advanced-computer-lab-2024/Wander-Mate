@@ -64,7 +64,7 @@ const createSeller = async (req, res) => {
     });
 
     const userID = seller._id;
-    await userModel.create({ Username: Username, userID });
+    await userModel.create({ Username: Username, userID, Type: "Seller" });
 
     res.status(200).json(seller);
   } catch (err) {

@@ -11,7 +11,7 @@ const StartPage = () => {
     navigate("/registerPage");
   };
   return (
-    <>
+    <div className="full">
       <MainNav targetId1="ourServiceSection" />
       <div className="frame">
         <div className="inner-container">
@@ -25,7 +25,7 @@ const StartPage = () => {
       </div>
       <OurService id="ourServiceSection" />
       <OurAcheivementsBlock />
-    </>
+    </div>
   );
 };
 
