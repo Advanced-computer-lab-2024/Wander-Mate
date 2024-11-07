@@ -1725,7 +1725,7 @@ const bookActivity = async (req, res) => {
     // Check if the itinerary exists
     const activity = await attractionModel.findById(activityId);
     if (!activity) {
-      return res.status(40).json({ message: "Itinerary not found." });
+      return res.status(40).json({ message: "Activity not found." });
     }
 
     console.log(activity);
@@ -1733,7 +1733,7 @@ const bookActivity = async (req, res) => {
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: activityId,
-      itemModel: "Itinerary", // Use 'Itinerary' since you're booking an itinerary
+      itemModel: "Attraction", // Use 'Itinerary' since you're booking an itinerary
       userId, // Make sure userId is correctly passed from the request
       bookedDate,
     });
@@ -1745,7 +1745,7 @@ const bookActivity = async (req, res) => {
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", activity.Bookings); // Log before saving
+    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await activity.save();
@@ -1753,14 +1753,14 @@ const bookActivity = async (req, res) => {
 
     // Respond back with success message and booking details
     res.status(200).json({
-      message: "Itinerary booked successfully!",
+      message: "Activity booked successfully!",
       booking: newBooking,
     });
   } catch (error) {
-    console.error("Error booking itinerary:", error.message); // Log error for debugging
+    console.error("Error booking Activity:", error.message); // Log error for debugging
     res
       .status(500)
-      .json({ message: "Error booking itinerary", error: error.message });
+      .json({ message: "Error booking Activity", error: error.message });
   }
 };
 const updateEventRatings = async (req, res) => {
