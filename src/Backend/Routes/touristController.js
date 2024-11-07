@@ -1096,14 +1096,16 @@ const viewAttendedItineraries = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
+    
     // Check if any itineraries were found
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No past itineraries found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
+      console.log(itinerary.userId);
       return (
-        itinerary.itemId._id.toString() === id.toString() &&
+        itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
       );
     });
