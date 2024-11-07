@@ -33,6 +33,13 @@ const PdfDetails = require("../Models/pdfDetails.js");
 //     }
 // };
 
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
+
 const createSeller = async (req, res) => {
   try {
     const { Username, Password, Email, Description } = req.body;
@@ -64,6 +71,9 @@ const createSeller = async (req, res) => {
     });
 
     const userID = seller._id;
+    const token = createToken(Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     await userModel.create({ Username: Username, userID, Type: "Seller" });
 
     res.status(200).json(seller);

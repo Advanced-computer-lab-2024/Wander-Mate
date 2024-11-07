@@ -172,6 +172,13 @@ const deleteActivity = async (req, res) => {
   }
 };
 
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
+
 const createAdvertiser = async (req, res) => {
   try {
     const { Username, Password, Email } = req.body;
@@ -203,6 +210,9 @@ const createAdvertiser = async (req, res) => {
     const userID = advertiser._id;
     //add to usermodel
     await userModel.create({ Username: Username, userID, Type:"Advertiser" });
+    const token = createToken(Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
     res.status(200).json(advertiser);
   } catch (err) {

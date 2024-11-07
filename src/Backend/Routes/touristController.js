@@ -18,6 +18,12 @@ const Booking = require("../Models/bookings.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -112,6 +118,10 @@ const touristRegister = async (req, res) => {
     });
     const userID = newUser._id;
     await Usernames.create({ Username: Username, userID, Type: "Tourist" });
+
+    const token = createToken(Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     // 7. Send success response
     res
       .status(200)
