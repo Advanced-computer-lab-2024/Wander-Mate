@@ -66,6 +66,7 @@ const {
   currencyConverter,
   viewAllTransportations,
   getMyBookings,
+  getProductReviews,
 } = require("./Routes/touristController");
 
 const {
@@ -439,3 +440,4 @@ app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
+app.get("/getProductReviews/:productId",getProductReviews);

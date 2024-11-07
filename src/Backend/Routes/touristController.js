@@ -1795,6 +1795,33 @@ const currencyConverter = async (req, res) => {
     });
   }
 };
+const getProductReviews = async (req, res) => {
+  const { productId } = req.params; // Get productId from the request parameters
+  try {
+    // Find reviews related to the specific productId, and select only the 'review' field
+    const reviews = await ReviewModel.find({ itemId: productId }).select('review');
+
+    // If no reviews found, send a message indicating that
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({
+        message: "No reviews found for this product.",
+      });
+    }
+
+    // Return the reviews in the response (only the 'review' field)
+    res.status(200).json({
+      message: "Reviews fetched successfully",
+      reviews: reviews.map(review => review.review), // Send only the review text
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error.message);
+    res.status(400).json({
+      message: "Error fetching reviews",
+      error: error.message,
+    });
+  }
+};
+
 
 module.exports = {
   touristRegister,
@@ -1845,4 +1872,5 @@ module.exports = {
   currencyConverter,
   viewAllTransportations,
   getMyBookings,
+  getProductReviews
 };
