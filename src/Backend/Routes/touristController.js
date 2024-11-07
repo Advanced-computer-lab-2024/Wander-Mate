@@ -937,17 +937,18 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { comment, eventId, touristID } = req.body;
+  const { Body, eventId, touristID } = req.body;
   try {
     const newComment = await CommentModel.create({
       touristID,
-      comment,
+      Body,
       aboutId: eventId,
     });
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Error posting comment" });
   }
 };
@@ -1051,7 +1052,7 @@ const commentOnItinerary = async (req, res) => {
 
 const viewAttendedActivities = async (req, res) => {
   const touristId = req.params.touristId; // Get the touristId from params
-  const model = "Activity";
+  const model = "Attraction";
 
   try {
     // Fetch activities using the filter
@@ -1060,14 +1061,12 @@ const viewAttendedActivities = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
-
     // Check if any activities were found
     if (activities.length === 0) {
       return res.status(404).json({ message: "No past activities found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = activities.filter((activity) => {
-      console.log(activity.userId);
       return (
         activity.userId.toString() === id.toString() &&
         activity.bookedDate < currentDate
