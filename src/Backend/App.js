@@ -67,6 +67,7 @@ const {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
+  bookActivity,
 } = require("./Routes/touristController");
 
 const {
@@ -435,6 +436,7 @@ app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
+app.post("/bookActivity",bookActivity);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);

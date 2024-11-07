@@ -1692,6 +1692,8 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
+    
+
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
@@ -1702,6 +1704,52 @@ const bookItinerary = async (req, res) => {
     // Attempt to save the updated itinerary document
     await itinerary.save();
     console.log(itinerary);
+
+    // Respond back with success message and booking details
+    res.status(200).json({
+      message: "Itinerary booked successfully!",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error("Error booking itinerary:", error.message); // Log error for debugging
+    res
+      .status(500)
+      .json({ message: "Error booking itinerary", error: error.message });
+  }
+};
+
+const bookActivity = async (req, res) => {
+  try {
+    const { activityId, userId, bookedDate } = req.body; // Get itinerary ID, user ID, and booked date from the request body
+
+    // Check if the itinerary exists
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(40).json({ message: "Itinerary not found." });
+    }
+
+    console.log(activity);
+
+    // Create a new booking record using the bookingSchema model
+    const newBooking = new bookingSchema({
+      itemId: activityId,
+      itemModel: "Itinerary", // Use 'Itinerary' since you're booking an itinerary
+      userId, // Make sure userId is correctly passed from the request
+      bookedDate,
+    });
+
+    
+
+    await newBooking.save();
+
+    // Update the itinerary document to include the new booking ID
+    activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
+
+    console.log("Bookings array before saving itinerary:", activity.Bookings); // Log before saving
+
+    // Attempt to save the updated itinerary document
+    await activity.save();
+    console.log(activity);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1888,4 +1936,5 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
+  bookActivity
 };
