@@ -237,7 +237,8 @@
         const flagButton = document.getElementById("flag-button");
 
         shareLinkButton.addEventListener("click", async () => {
-            const activityId = itineraryData.id || getQueryParams().id;
+            const activityId = itineraryData._id || getQueryParams().id;
+            console.log(activityId);
             const response = await fetch("http://localhost:8000/shareActivity", {
                 method: "POST",
                 headers: {
@@ -264,7 +265,7 @@
             });
 
             const result = await response.json();
-            alert(`Activity shared successfully! ${result.message}`);
+            alert(`Activity shared successfully! ${result.link}`);
         });
 
         

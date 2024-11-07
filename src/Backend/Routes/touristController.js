@@ -722,7 +722,6 @@ const bookFlightWithAPI = async (bookingData) => {
     }, 1000);
   });
 };
-
 // Function to get Amadeus access token for Hotel API
 const getAmadeusTokenHotel = async () => {
   const apiKey = "Y9yPVu67o9SBBA4wfz9J9cjbWFHtMTqx"; // Replace with your Amadeus API key
@@ -731,10 +730,7 @@ const getAmadeusTokenHotel = async () => {
   try {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
-      "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      "grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -756,20 +752,16 @@ const getAmadeusTokenHotel = async () => {
 const searchHotel = async (req, res) => {
   const { cityCode, checkInDate, checkOutDate, adults } = req.body;
 
-  // Validate input
   if (!cityCode || !checkInDate || !checkOutDate || !adults) {
     return res.status(400).json({
-      message:
-        "Please provide city code, check-in/check-out dates, and number of adults.",
+      message: "Please provide city code, check-in/check-out dates, and number of adults.",
     });
   }
 
   try {
-    // Get the OAuth access token
     const accessToken = await getAmadeusTokenHotel();
 
-    // Call the hotel search API
-    const response = await axios.post(
+    const response = await axios.get(
       "https://test.api.amadeus.com/v2/shopping/hotel-offers",
       {
         params: {
@@ -784,10 +776,7 @@ const searchHotel = async (req, res) => {
       }
     );
 
-    // Log the response for debugging
     console.log("Hotel search response:", response.data);
-
-    // Return the available hotel offers
     res.status(200).json({
       message: "Hotels retrieved successfully.",
       hotelOffers: response.data,
@@ -797,9 +786,10 @@ const searchHotel = async (req, res) => {
       "Error searching for hotels:",
       error.response ? error.response.data : error.message
     );
-    res
-      .status(500)
-      .json({ message: "Failed to search hotels", error: error.message });
+    res.status(500).json({
+      message: "Failed to search hotels",
+      error: error.response ? error.response.data : error.message,
+    });
   }
 };
 
@@ -807,19 +797,15 @@ const searchHotel = async (req, res) => {
 const BookHotel = async (req, res) => {
   const { selectedHotelOffer, guestsInfo, paymentInfo } = req.body;
 
-  // Validate input
   if (!selectedHotelOffer || !guestsInfo || !paymentInfo) {
     return res.status(400).json({
-      message:
-        "Please provide the selected hotel offer, guests info, and payment info.",
+      message: "Please provide the selected hotel offer, guests info, and payment info.",
     });
   }
 
   try {
-    // Get the OAuth access token
     const accessToken = await getAmadeusTokenHotel();
 
-    // Book the hotel by calling the hotel booking API
     const response = await axios.post(
       "https://test.api.amadeus.com/v1/booking/hotel-bookings",
       {
@@ -838,7 +824,6 @@ const BookHotel = async (req, res) => {
       }
     );
 
-    // Return the booking confirmation
     const bookingConfirmation = response.data;
     res.status(200).json({
       message: "Hotel booked successfully.",
@@ -849,11 +834,14 @@ const BookHotel = async (req, res) => {
       "Error booking hotel:",
       error.response ? error.response.data : error.message
     );
-    res
-      .status(500)
-      .json({ message: "Failed to book hotel", error: error.message });
+    res.status(500).json({
+      message: "Failed to book hotel",
+      error: error.response ? error.response.data : error.message,
+    });
   }
 };
+
+module.exports = { searchHotel, BookHotel };
 
 const commentOnGuide = async (req, res) => {
   try {
@@ -1590,7 +1578,7 @@ const shareActivity = async (req, res) => {
     }
 
     // Find the activity by ID
-    const activity = await attractionModel.findById(activityId);
+    const activity = await itineraryModel.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: "Activity not found." });
     }
@@ -1692,6 +1680,8 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
+    
+
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
@@ -1713,6 +1703,52 @@ const bookItinerary = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error booking itinerary", error: error.message });
+  }
+};
+
+const bookActivity = async (req, res) => {
+  try {
+    const { activityId, userId, bookedDate } = req.body; // Get itinerary ID, user ID, and booked date from the request body
+
+    // Check if the itinerary exists
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(40).json({ message: "Activity not found." });
+    }
+
+    console.log(activity);
+
+    // Create a new booking record using the bookingSchema model
+    const newBooking = new bookingSchema({
+      itemId: activityId,
+      itemModel: "Attraction", // Use 'Itinerary' since you're booking an itinerary
+      userId, // Make sure userId is correctly passed from the request
+      bookedDate,
+    });
+
+    
+
+    await newBooking.save();
+
+    // Update the itinerary document to include the new booking ID
+    activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
+
+    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
+
+    // Attempt to save the updated itinerary document
+    await activity.save();
+    console.log(activity);
+
+    // Respond back with success message and booking details
+    res.status(200).json({
+      message: "Activity booked successfully!",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error("Error booking Activity:", error.message); // Log error for debugging
+    res
+      .status(500)
+      .json({ message: "Error booking Activity", error: error.message });
   }
 };
 const updateEventRatings = async (req, res) => {
@@ -1888,4 +1924,5 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
+  bookActivity
 };

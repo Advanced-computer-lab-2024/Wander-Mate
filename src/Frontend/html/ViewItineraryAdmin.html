@@ -203,19 +203,30 @@
         const shareEmailButton = document.getElementById("share-email-button");
         const flagButton = document.getElementById("flag-button");
 
-        shareLinkButton.addEventListener("click", async () => {
-            const activityId = itineraryData.id || getQueryParams().id;
-            const response = await fetch("http://localhost:8000/shareActivity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "link" }),
-            });
-           
-            const result = await response.json();
-            alert(`Activity shared successfully! Link: ${result.link}`);
+       shareLinkButton.addEventListener("click", async () => {
+    const activityId = itineraryData.id || getQueryParams().id;
+    try {
+        const response = await fetch("http://localhost:8000/shareActivity", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ activityId, shareMethod: "link" }),
         });
+
+        const result = await response.json();
+        if (result && result.link) {
+            alert(`Activity shared successfully! Link: ${result.link}`);
+        } else {
+            alert("Activity shared successfully! Link not available.");
+        }
+    } catch (error) {
+        console.error("Error sharing activity:", error);
+        alert("There was an error sharing the activity. Please try again.");
+    }
+});
+
+
 
         shareEmailButton.addEventListener("click", async () => {
             const activityId = itineraryData.id || getQueryParams().id;
