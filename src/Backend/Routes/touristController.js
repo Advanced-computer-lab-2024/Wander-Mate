@@ -19,7 +19,6 @@ const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
 
-
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -730,7 +729,10 @@ const getAmadeusTokenHotel = async () => {
   try {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
-      "grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + apiSecret,
+      "grant_type=client_credentials&client_id=" +
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -754,7 +756,8 @@ const searchHotel = async (req, res) => {
 
   if (!cityCode || !checkInDate || !checkOutDate || !adults) {
     return res.status(400).json({
-      message: "Please provide city code, check-in/check-out dates, and number of adults.",
+      message:
+        "Please provide city code, check-in/check-out dates, and number of adults.",
     });
   }
 
@@ -799,7 +802,8 @@ const BookHotel = async (req, res) => {
 
   if (!selectedHotelOffer || !guestsInfo || !paymentInfo) {
     return res.status(400).json({
-      message: "Please provide the selected hotel offer, guests info, and payment info.",
+      message:
+        "Please provide the selected hotel offer, guests info, and payment info.",
     });
   }
 
@@ -1047,7 +1051,7 @@ const commentOnItinerary = async (req, res) => {
 
 const viewAttendedActivities = async (req, res) => {
   const touristId = req.params.touristId; // Get the touristId from params
-  const model = "Attraction";
+  const model = "Activity";
 
   try {
     // Fetch activities using the filter
@@ -1056,14 +1060,16 @@ const viewAttendedActivities = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
+
     // Check if any activities were found
     if (activities.length === 0) {
       return res.status(404).json({ message: "No past activities found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = activities.filter((activity) => {
+      console.log(activity.userId);
       return (
-        activity.itemId._id.toString() === id.toString() &&
+        activity.userId.toString() === id.toString() &&
         activity.bookedDate < currentDate
       );
     });
@@ -1086,7 +1092,7 @@ const viewAttendedItineraries = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
-    
+
     // Check if any itineraries were found
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No past itineraries found." });
@@ -1680,8 +1686,6 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
-    
-
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
@@ -1725,8 +1729,6 @@ const bookActivity = async (req, res) => {
       userId, // Make sure userId is correctly passed from the request
       bookedDate,
     });
-
-    
 
     await newBooking.save();
 
@@ -1924,5 +1926,5 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
-  bookActivity
+  bookActivity,
 };
