@@ -69,6 +69,7 @@ const {
   getMyBookings,
   getProductReviews,
   bookActivity,
+  shareItenerary,
 } = require("./Routes/touristController");
 
 const {
@@ -133,7 +134,8 @@ const {
   flagEventOrItinerary,
   getAllUsernames,
   getDistinctOwners,
-  login
+  login,
+  getAdminID
 } = require("./Routes/adminController.js");
 
 const {
@@ -437,6 +439,7 @@ app.get(
 app.get("/getMyBookings/:touristID",getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
+app.post("/shareItinerary", shareItenerary);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
 app.post("/bookActivity",bookActivity);
@@ -447,3 +450,4 @@ app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
 app.get("/getProductReviews/:productId",getProductReviews);
 app.post("/login",login);
+app.get("/getAdminID", getAdminID);

@@ -155,6 +155,7 @@
           const Activities = await response.json();
 
           if (response.ok) {
+            
             allActivities = Activities; // Store all Activities
             displayedActivities = allActivities; // Initialize displayed activities
             displayActivities(displayedActivities); // Display all Activities initially
@@ -173,6 +174,7 @@
         const activityList = document.getElementById("activityList");
         activityList.innerHTML = ""; // Clear existing Activities
         activities.forEach((activity) => {
+          if(!activity.isFlagged){
           const activityItem = document.createElement("div");
           activityItem.className = "activity-item";
 
@@ -200,6 +202,7 @@
                                          `;
 
           activityList.appendChild(activityItem);
+                        }
         });
       }
 

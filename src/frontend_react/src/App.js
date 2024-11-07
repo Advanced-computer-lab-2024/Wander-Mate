@@ -16,6 +16,7 @@ import ViewItineraries from "./pages/viewItineraries";
 import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
+import BookFlight from "./pages/bookFlight";
 function App() {
   return (
     <Router>
@@ -35,6 +36,7 @@ function App() {
         <Route path="/uploadDocs" element={<UploadDocs />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
+        <Route path="/bookFlight" element={<BookFlight />} />
       </Routes>
     </Router>
   );

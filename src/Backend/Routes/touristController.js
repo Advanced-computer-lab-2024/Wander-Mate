@@ -19,7 +19,6 @@ const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
 
-
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -874,17 +873,18 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { comment, eventId, touristID } = req.body;
+  const { Body, eventId, touristID } = req.body;
   try {
     const newComment = await CommentModel.create({
       touristID,
-      comment,
+      Body,
       aboutId: eventId,
     });
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Error posting comment" });
   }
 };
@@ -1004,7 +1004,7 @@ const viewAttendedActivities = async (req, res) => {
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = activities.filter((activity) => {
       return (
-        activity.itemId._id.toString() === id.toString() &&
+        activity.userId.toString() === id.toString() &&
         activity.bookedDate < currentDate
       );
     });
@@ -1027,14 +1027,13 @@ const viewAttendedItineraries = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
-    
+
     // Check if any itineraries were found
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No past itineraries found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
-      console.log(itinerary.userId);
       return (
         itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
@@ -1580,6 +1579,79 @@ const shareActivity = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const shareItenerary = async (req, res) => {
+  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
+
+  try {
+    // Validate input
+    if (!activityId) {
+      return res.status(400).json({ message: "Activity ID is required." });
+    }
+
+    // Find the activity by ID
+    const activity = await itineraryModel.findById(activityId);
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found." });
+    }
+
+    // Generate a shareable link
+    const shareableLink = `${req.protocol}://${req.get(
+      "host"
+    )}/activities/${activityId}`;
+
+    if (shareMethod === "link") {
+      // If sharing via link, return the link
+      return res.status(200).json({
+        message: "Shareable link generated successfully.",
+        link: shareableLink,
+      });
+    } else if (shareMethod === "email") {
+      if (!email) {
+        return res.status(400).json({
+          message: "Email address is required for sharing via email.",
+        });
+      }
+
+      // Here you can implement the logic to send an email
+      // For demonstration purposes, we will just return the link
+      // You can use a library like nodemailer to send emails
+
+      // Example of sending an email (you need to configure nodemailer)
+      /*
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'your-email@gmail.com',
+          pass: 'your-email-password'
+        }
+      });
+
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'Check out this activity!',
+        text: `I thought you might be interested in this activity: ${shareableLink}`
+      };
+
+      await transporter.sendMail(mailOptions);
+      */
+
+      return res.status(200).json({
+        message: "Email sent successfully.",
+        link: shareableLink,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Invalid share method. Use 'link' or 'email'." });
+    }
+  } catch (error) {
+    console.error("Error sharing activity:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1611,7 +1683,6 @@ const bookItinerary = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-    console.log(itinerary);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1621,18 +1692,14 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
-    
-
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
     itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", itinerary.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await itinerary.save();
-    console.log(itinerary);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1657,7 +1724,6 @@ const bookActivity = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-    console.log(activity);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1667,18 +1733,14 @@ const bookActivity = async (req, res) => {
       bookedDate,
     });
 
-    
-
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", activity.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await activity.save();
-    console.log(activity);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1865,5 +1927,6 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
-  bookActivity
+  bookActivity,
+  shareItenerary,
 };
