@@ -57,7 +57,7 @@ const createAdmin = async (req, res) => {
       Password: hashedPassword,
     });
     const userId = admin._id;
-    await userModel.create({ Username: Username, userId, Type: "Admin" });
+    await userModel.create({ Username: Username, userID: userId, Type: "Admin" });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -315,7 +315,7 @@ const createTourismGov = async (req, res) => {
     const userId = TourismGov._id;
     await userModel.create({
       Username: Username,
-      userId,
+      userID: userId,
       Type: "TourismGoverner",
     });
     const token = createToken(TourismGov.Username);
@@ -685,6 +685,17 @@ const getID = async (req, res) => {
     const collection = db.collection("users");
     const user = await collection.findOne({ Username: req.params.Username });
     res.status(200).json({ userID: user.userID }); // Send user as JSON response
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+};
+
+const getAdminID = async (req, res) => {
+  try {
+    const {Username} = req.body;
+    
+    const user = await userModel.findOne({ Username: Username });
+    res.status(200).json({ userID: user.userId }); // Send user as JSON response
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
@@ -1264,4 +1275,5 @@ module.exports = {
   getAllUsernames,
   getDistinctOwners,
   login,
+  getAdminID,
 };
