@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attended Itineraries | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <style>
+        .activity-item {
+            margin-bottom: 20px;
+        }
+
+        /* Star rating styles */
+        .star-rating span {
+            font-size: 1.5em;
+            color: black;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 5px;
+            margin-right: 2px;
+        }
+
+        .star-rating span:hover,
+        .star-rating span:hover ~ span {
+            color: gold;
+        }
+
+        .star-rating .selected {
+            color: gold;
+        }
+
+        .rating-message {
+            color: green;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Attended Itineraries</div>
+        <div class="activity-list" id="activityList">
+            <!-- Attended itineraries will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        let attendedItineraries = []; // Variable to store attended itineraries
+
+        // Fetch attended itineraries from the API
+        async function fetchAttendedItineraries() {
+            const touristId = sessionStorage.getItem("touristID");
+
+            try {
+                const response = await fetch(`http://localhost:8000/viewAttendedItineraries/${touristId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    attendedItineraries = data;
+                    displayAttendedItineraries(attendedItineraries);
+                } else {
+                    document.getElementById("activityList").innerHTML = "<p>No past itineraries available</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching attended itineraries:", error);
+                document.getElementById("activityList").innerHTML = "<p>An error occurred while fetching itineraries.</p>";
+            }
+        }
+
+        // Display attended itineraries with rating options
+        function displayAttendedItineraries(itineraries) {
+            const activityList = document.getElementById("activityList");
+            activityList.innerHTML = ""; // Clear existing itineraries
+            itineraries.forEach((itinerary) => {
+                const activityItem = document.createElement("div");
+                activityItem.className = "activity-item";
+
+                activityItem.innerHTML = `
+                    <div class="activity-details">
+                        <h2 class="activity-name">${itinerary.itemId.Name}</h2>
+                        <p class="activity-date">Attended on: ${new Date(itinerary.bookedDate).toLocaleDateString()}</p>
+                    </div>
+                    <div id="star-rating-${itinerary.itemId._id}" class="star-rating">
+                        ${[1, 2, 3, 4, 5].map(i => `<span onclick="rateItinerary('${itinerary.itemId._id}', ${i})">★</span>`).join("")}
+                    </div>
+                    <div id="rating-message-${itinerary.itemId._id}" class="rating-message"></div>
+                `;
+
+                activityList.appendChild(activityItem);
+            });
+        }
+
+        // Rate an itinerary
+        async function rateItinerary(itineraryId, rating) {
+            const touristId = sessionStorage.getItem("touristID"); // Retrieve tourist ID from session storage
+            if (!touristId) {
+                alert("You must be logged in to rate an itinerary.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:8000/rateItinerary", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ touristId, itineraryId, rating }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById(`rating-message-${itineraryId}`).textContent = "Thank you for your rating!";
+                    setStarRating(itineraryId, rating);
+                } else {
+                    alert(data.message || "Failed to post rating.");
+                }
+            } catch (error) {
+                console.error("Error posting rating:", error);
+                alert("An error occurred while posting the rating.");
+            }
+        }
+
+        // Highlight selected stars up to the rating given
+        function setStarRating(itineraryId, rating) {
+            const stars = document.querySelectorAll(`#star-rating-${itineraryId} span`);
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("selected");
+                } else {
+                    star.classList.remove("selected");
+                }
+            });
+        }
+
+        // Fetch attended itineraries when the page loads
+        document.addEventListener("DOMContentLoaded", fetchAttendedItineraries);
+    </script>
+</body>
+</html>
