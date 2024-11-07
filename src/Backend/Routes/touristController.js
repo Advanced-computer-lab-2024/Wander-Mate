@@ -19,7 +19,6 @@ const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
 
-
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -730,7 +729,10 @@ const getAmadeusTokenHotel = async () => {
   try {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
-      "grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + apiSecret,
+      "grant_type=client_credentials&client_id=" +
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -754,7 +756,8 @@ const searchHotel = async (req, res) => {
 
   if (!cityCode || !checkInDate || !checkOutDate || !adults) {
     return res.status(400).json({
-      message: "Please provide city code, check-in/check-out dates, and number of adults.",
+      message:
+        "Please provide city code, check-in/check-out dates, and number of adults.",
     });
   }
 
@@ -799,7 +802,8 @@ const BookHotel = async (req, res) => {
 
   if (!selectedHotelOffer || !guestsInfo || !paymentInfo) {
     return res.status(400).json({
-      message: "Please provide the selected hotel offer, guests info, and payment info.",
+      message:
+        "Please provide the selected hotel offer, guests info, and payment info.",
     });
   }
 
@@ -933,17 +937,18 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { comment, eventId, touristID } = req.body;
+  const { Body, eventId, touristID } = req.body;
   try {
     const newComment = await CommentModel.create({
       touristID,
-      comment,
+      Body,
       aboutId: eventId,
     });
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Error posting comment" });
   }
 };
@@ -1063,7 +1068,7 @@ const viewAttendedActivities = async (req, res) => {
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = activities.filter((activity) => {
       return (
-        activity.itemId._id.toString() === id.toString() &&
+        activity.userId.toString() === id.toString() &&
         activity.bookedDate < currentDate
       );
     });
@@ -1086,14 +1091,13 @@ const viewAttendedItineraries = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
-    
+
     // Check if any itineraries were found
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No past itineraries found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
-      console.log(itinerary.userId);
       return (
         itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
@@ -1670,7 +1674,6 @@ const bookItinerary = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-    console.log(itinerary);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1680,18 +1683,14 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
-    
-
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
     itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", itinerary.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await itinerary.save();
-    console.log(itinerary);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1716,7 +1715,6 @@ const bookActivity = async (req, res) => {
       return res.status(40).json({ message: "Activity not found." });
     }
 
-    console.log(activity);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1726,18 +1724,14 @@ const bookActivity = async (req, res) => {
       bookedDate,
     });
 
-    
-
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await activity.save();
-    console.log(activity);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1924,5 +1918,5 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
-  bookActivity
+  bookActivity,
 };
