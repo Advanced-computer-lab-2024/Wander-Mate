@@ -128,7 +128,8 @@ const {
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
-  getAllUsernames
+  getAllUsernames,
+  getDistinctOwners
 } = require("./Routes/adminController.js");
 
 const {
@@ -329,7 +330,8 @@ app.post("/makeComplaint", makeComplaint);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
-app.get("/viewDocuments/:ownerId", viewDocuments);
+app.get("/viewDocuments", viewDocuments);
+app.get("/getDistinctOwners",getDistinctOwners);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
