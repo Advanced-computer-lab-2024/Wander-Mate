@@ -324,7 +324,7 @@ app.get("/getTourguides", getTourguides);
 app.post("/getAge", getAge);
 app.post("/search-flights", SearchFlights);
 app.post("/book-flight/:touristID", BookFlight);
-app.post("/searchHotel", searchHotel);
+app.get("/searchHotel", searchHotel);
 // // app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
