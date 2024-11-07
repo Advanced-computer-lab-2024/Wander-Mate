@@ -1,6 +1,6 @@
 import React from "react";
 import SmallCard from "../ui/smallCard";
-import "../../assets/css/ourAcheivements.css";
+import "../assets/css/ourAcheivements.css";
 const OurAcheivementsBlock = () => {
   return (
     <div className="rectangle">

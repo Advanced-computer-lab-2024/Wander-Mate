@@ -1,8 +1,8 @@
 import React from "react";
 import "../assets/css/startPage.css"; // Import the CSS file
 import MainNav from "../components/mainNav";
-// import OurAcheivementsBlock from "../blocks/OurAcheivementsBlock";
-// import OurService from "../blocks/OurServiceBlock";
+import OurAcheivementsBlock from "../components/OurAcheivementsBlock";
+import OurService from "../components/OurServiceBlock";
 import { useNavigate } from "react-router-dom";
 
 const StartPage = () => {
@@ -23,8 +23,8 @@ const StartPage = () => {
           </div>
         </div>
       </div>
-      {/* <OurService id="ourServiceSection" />
-      <OurAcheivementsBlock /> */}
+      <OurService id="ourServiceSection" />
+      <OurAcheivementsBlock />
     </>
   );
 };
