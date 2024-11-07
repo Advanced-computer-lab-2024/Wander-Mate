@@ -67,6 +67,7 @@ const {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
+  bookActivity,
 } = require("./Routes/touristController");
 
 const {
@@ -130,7 +131,8 @@ const {
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
   getAllUsernames,
-  getDistinctOwners
+  getDistinctOwners,
+  login
 } = require("./Routes/adminController.js");
 
 const {
@@ -435,9 +437,11 @@ app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
+app.post("/bookActivity",bookActivity);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
 app.get("/getProductReviews/:productId",getProductReviews);
+app.post("/login",login);

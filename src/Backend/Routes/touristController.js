@@ -17,7 +17,15 @@ const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
+const jwt = require("jsonwebtoken");
 
+
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
 // Registration function
 const touristRegister = async (req, res) => {
   try {
@@ -112,6 +120,10 @@ const touristRegister = async (req, res) => {
     });
     const userID = newUser._id;
     await Usernames.create({ Username: Username, userID, Type: "Tourist" });
+
+    const token = createToken(Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     // 7. Send success response
     res
       .status(200)
@@ -1086,14 +1098,16 @@ const viewAttendedItineraries = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
+    
     // Check if any itineraries were found
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No past itineraries found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
+      console.log(itinerary.userId);
       return (
-        itinerary.itemId._id.toString() === id.toString() &&
+        itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
       );
     });
@@ -1678,6 +1692,8 @@ const bookItinerary = async (req, res) => {
       bookedDate,
     });
 
+    
+
     await newBooking.save();
 
     // Update the itinerary document to include the new booking ID
@@ -1699,6 +1715,52 @@ const bookItinerary = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error booking itinerary", error: error.message });
+  }
+};
+
+const bookActivity = async (req, res) => {
+  try {
+    const { activityId, userId, bookedDate } = req.body; // Get itinerary ID, user ID, and booked date from the request body
+
+    // Check if the itinerary exists
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(40).json({ message: "Activity not found." });
+    }
+
+    console.log(activity);
+
+    // Create a new booking record using the bookingSchema model
+    const newBooking = new bookingSchema({
+      itemId: activityId,
+      itemModel: "Attraction", // Use 'Itinerary' since you're booking an itinerary
+      userId, // Make sure userId is correctly passed from the request
+      bookedDate,
+    });
+
+    
+
+    await newBooking.save();
+
+    // Update the itinerary document to include the new booking ID
+    activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
+
+    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
+
+    // Attempt to save the updated itinerary document
+    await activity.save();
+    console.log(activity);
+
+    // Respond back with success message and booking details
+    res.status(200).json({
+      message: "Activity booked successfully!",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error("Error booking Activity:", error.message); // Log error for debugging
+    res
+      .status(500)
+      .json({ message: "Error booking Activity", error: error.message });
   }
 };
 const updateEventRatings = async (req, res) => {
@@ -1874,4 +1936,5 @@ module.exports = {
   viewAllTransportations,
   getMyBookings,
   getProductReviews,
+  bookActivity
 };

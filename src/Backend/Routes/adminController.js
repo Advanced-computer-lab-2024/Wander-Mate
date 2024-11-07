@@ -14,6 +14,11 @@ const Complaints = require("../Models/complaints.js");
 const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const Itinerary = require("../Models/itinerary.js");
+const touristModel = require("../Models/tourist.js");
+const advertiserModel = require("../Models/advertiser.js");
+const sellerModel = require("../Models/seller.js");
+const tourGuideModel = require("../Models/tourGuide.js");
+const jwt = require("jsonwebtoken");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -53,7 +58,9 @@ const createAdmin = async (req, res) => {
     });
     const userId = admin._id;
     await userModel.create({ Username: Username, userId, Type: "Admin" });
+    const token = createToken(Username);
 
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(200).json(admin);
   } catch (err) {
     console.error(err);
@@ -311,6 +318,9 @@ const createTourismGov = async (req, res) => {
       userId,
       Type: "TourismGoverner",
     });
+    const token = createToken(TourismGov.Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
     res.status(200).json(TourismGov);
   } catch (err) {
@@ -1145,6 +1155,73 @@ const getDistinctOwners = async (req, res) => {
   }
 };
 
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
+
+const login = async (req, res) => {
+  try {
+    const { Username, Password } = req.body;
+
+    // Check if both fields are provided
+    if (!Username || !Password) {
+      return res
+        .status(400)
+        .json({ message: "Username and Password are required" });
+    }
+
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+    let userLogged;
+    switch (user.Type) {
+      case "Admin":
+        userLogged = await adminModel.findOne({ Username: Username });
+        break;
+      case "Tourist":
+        userLogged = await touristModel.findOne({ Username: Username });
+        break;
+      case "Seller":
+        userLogged = await sellerModel.findOne({ Username: Username });
+        break;
+      case "TourGuide":
+        userLogged = await tourGuideModel.findOne({ Username: Username });
+        break;
+      case "TourismGoverner":
+        userLogged = await TourismGoverner.findOne({ Username: Username });
+        break;
+      case "Advertiser":
+        userLogged = await advertiserModel.findOne({ Username: Username });
+        break;
+    }
+
+    // Check if the admin exists in the database
+    if (!userLogged) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    const saltRounds = 10;
+    const isPasswordValid = await bcrypt.compare(Password, userLogged.Password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    // Create a session or token (if using JWT, generate a token here)
+    // Example using JWT:
+    const token = createToken(userLogged.Username);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ Username: Username, Type: user.Type });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred during login" });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1186,4 +1263,5 @@ module.exports = {
   flagEventOrItinerary,
   getAllUsernames,
   getDistinctOwners,
+  login,
 };

@@ -8,7 +8,16 @@ const PdfDetails = require("../Models/pdfDetails.js");
 const TourGuide = require("../Models/tourGuide.js");
 const RatingsModel = require("../Models/rating.js");
 const bookingSchema = require("../Models/bookings.js");
+const jwt = require("jsonwebtoken");
+
 // Creating a tourGuide
+
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+  return jwt.sign({ name }, "supersecret", {
+    expiresIn: maxAge,
+  });
+};
 const createTourGuide = async (req, res) => {
   try {
     const { Username, Password, Email } = req.body;
@@ -41,7 +50,9 @@ const createTourGuide = async (req, res) => {
 
     const userID = tourGuide._id;
     await userModel.create({ Username: Username, userID, Type: "TourGuide" });
+    const token = createToken(Username);
 
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(200).json(tourGuide);
   } catch (err) {
     console.error(err);
@@ -419,9 +430,10 @@ const deactivateItinerary = async (req, res) => {
     if (itinerary.Bookings.length > 0) {
       itinerary.isActive = false; // Deactivate the itinerary
       await itinerary.save();
-      
+
       return res.status(200).json({
-        message: "Itinerary deactivated successfully. Existing bookings remain active, but the itinerary is hidden for new bookings.",
+        message:
+          "Itinerary deactivated successfully. Existing bookings remain active, but the itinerary is hidden for new bookings.",
       });
     } else {
       return res.status(400).json({
@@ -442,7 +454,9 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     // Ensure the tour guide exists and is not already marked as deleted
     const tourGuide = await tourGuideModel.findById(guideID);
     if (!tourGuide || tourGuide.isDeleted) {
-      return res.status(404).json({ message: "Tour Guide not found or already deleted" });
+      return res
+        .status(404)
+        .json({ message: "Tour Guide not found or already deleted" });
     }
 
     // Check for upcoming bookings related to the tour guide's itineraries or attractions
@@ -450,30 +464,38 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     const upcomingBookings = await bookingSchema.find({
       userId: guideID,
       paid: true,
-      bookedDate: { $gte: currentDate } // Filter for future bookings
+      bookedDate: { $gte: currentDate }, // Filter for future bookings
     });
 
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
-        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+        message:
+          "Account cannot be deleted. There are upcoming bookings that are paid for.",
       });
     }
 
     // Mark the account as deleted (soft delete)
-    await tourGuideModel.findByIdAndUpdate(guideID, { isDeleted: true }, { new: true });
+    await tourGuideModel.findByIdAndUpdate(
+      guideID,
+      { isDeleted: true },
+      { new: true }
+    );
 
     // Optionally hide all associated events, activities, and itineraries
     await Promise.all([
       Itinerary.updateMany({ Creator: guideID }, { isVisible: false }),
-      Attraction.updateMany({ Creator: guideID }, { isVisible: false })
+      Attraction.updateMany({ Creator: guideID }, { isVisible: false }),
     ]);
 
     res.status(200).json({
-      message: "Account deletion requested successfully. Profile and associated data will no longer be visible."
+      message:
+        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -534,8 +556,6 @@ const gettourGuideImage = async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve image." });
   }
 };
-
-
 
 module.exports = {
   createTourGuide,
