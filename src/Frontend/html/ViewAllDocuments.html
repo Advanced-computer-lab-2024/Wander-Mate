@@ -4,13 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View All Documents</title>
-  <link rel="stylesheet" href="../styles/register.css"> <!-- Assuming your CSS is in 'styles.css' -->
+  <link rel="stylesheet" href="../styles/register.css"> <!-- Assuming your CSS is in 'styles/register.css' -->
+  <style>
+    /* Additional styling for document display */
+    .wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .owner-section {
+      margin-bottom: 20px;
+    }
+    .document h3 {
+      margin: 5px 0;
+      font-size: 18px;
+    }
+    .document a {
+      text-decoration: none;
+      color: blue;
+    }
+    .owner-divider {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 20px 0;
+    }
+  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="title">All Documents</div>
+    <div class="title">All Documents by Owner</div>
     <div id="documentList" class="content">
-      <!-- All documents will be displayed here -->
+      <!-- All documents grouped by Owner will be displayed here -->
     </div>
   </div>
 
@@ -32,27 +62,47 @@
       }
     }
 
-    // Display documents in the list
+    // Display documents grouped by Owner
     function displayDocuments(documents) {
       const documentList = document.getElementById('documentList');
       documentList.innerHTML = ''; // Clear previous results if any
 
-      documents.forEach(doc => {
-        const docElement = document.createElement('div');
-        docElement.classList.add('document');
+      // Loop through each ownerId in documents
+      for (const ownerId in documents) {
+        const ownerSection = document.createElement('div');
+        ownerSection.classList.add('owner-section');
 
-        const title = document.createElement('h3');
-        title.textContent = doc.Title;
-        docElement.appendChild(title);
+        const ownerTitle = document.createElement('h2');
+        ownerTitle.textContent = `Owner: ${ownerId}`;
+        ownerSection.appendChild(ownerTitle);
 
-        const pdfLink = document.createElement('a');
-        pdfLink.href = `data:application/pdf;base64,${doc.pdf}`;
-        pdfLink.textContent = 'Download PDF';
-        pdfLink.target = '_blank';
-        docElement.appendChild(pdfLink);
+        // List each document for this owner
+        documents[ownerId].forEach(doc => {
+          const docElement = document.createElement('div');
+          docElement.classList.add('document');
 
-        documentList.appendChild(docElement);
-      });
+          const title = document.createElement('h3');
+          title.textContent = doc.Title;
+          docElement.appendChild(title);
+
+          const pdfLink = document.createElement('a');
+          pdfLink.href = `data:application/pdf;base64,${doc.pdf}`;
+          pdfLink.textContent = 'Download PDF';
+          pdfLink.target = '_blank';
+          pdfLink.download = `${doc.Title}.pdf`; // Set download attribute with a filename
+          docElement.appendChild(pdfLink);
+
+          ownerSection.appendChild(docElement);
+        });
+
+        // Append the owner section to the document list
+        documentList.appendChild(ownerSection);
+
+        // Add a horizontal line after each owner section
+        const hr = document.createElement('hr');
+        hr.classList.add('owner-divider');
+        documentList.appendChild(hr);
+      }
     }
 
     // Load all documents when the page loads

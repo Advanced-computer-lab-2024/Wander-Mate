@@ -68,9 +68,9 @@ const touristRegister = async (req, res) => {
     // 3. Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
-    
+
     let parsedPoints = 0;
-    
+
     if (Points) {
       // 4. Ensure Points is an integer and validate the input
       parsedPoints = parseInt(Points); // Convert Points to an integer
@@ -111,7 +111,7 @@ const touristRegister = async (req, res) => {
       Badge: badge,
     });
     const userID = newUser._id;
-    await Usernames.create({ Username: Username, userID });
+    await Usernames.create({ Username: Username, userID, Type: "Tourist" });
     // 7. Send success response
     res
       .status(200)
@@ -652,7 +652,7 @@ const SearchFlights = async (req, res) => {
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-    const {flightID, price, departureDate, arrivalDate} = req.body; // This should be the flight offer object
+    const { flightID, price, departureDate, arrivalDate } = req.body; // This should be the flight offer object
     const touristID = req.params.touristID;
 
     // Check if the flight order is valid
@@ -665,8 +665,8 @@ const BookFlight = async (req, res) => {
       flightID: flightID,
       price: price,
       bookingDate: new Date(),
-      departureDate:departureDate,
-      arrivalDate:arrivalDate,
+      departureDate: departureDate,
+      arrivalDate: arrivalDate,
     };
 
     // Simulate booking API call
@@ -871,7 +871,7 @@ const commentOnGuide = async (req, res) => {
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-      console.log("Commented");
+    console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
@@ -931,7 +931,6 @@ const makeComplaint = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
-
 
 const addCommentONEvent = async (req, res) => {
   const { comment, eventId, touristID } = req.body;
@@ -1144,7 +1143,9 @@ const viewAllTransportations = async (req, res) => {
 
     // Check if there are transportations available
     if (transportations.length === 0) {
-      return res.status(404).json({ message: "No transportation options available." });
+      return res
+        .status(404)
+        .json({ message: "No transportation options available." });
     }
 
     // Respond with the list of transportations
@@ -1157,7 +1158,6 @@ const viewAllTransportations = async (req, res) => {
     res.status(500).json({ message: "Failed to retrieve transportations." });
   }
 };
-
 
 const bookTransportation = async (req, res) => {
   try {
@@ -1173,7 +1173,7 @@ const bookTransportation = async (req, res) => {
     // Create a new booking record
     const newBooking = new bookingSchema({
       itemId,
-      itemModel :"Transportation",
+      itemModel: "Transportation",
       userId,
       bookedDate,
       // You can add more details if needed
@@ -1518,7 +1518,9 @@ const getMyBookings = async (req, res) => {
 
     // Check if any bookings are found
     if (bookings.length === 0) {
-      return res.status(404).json({ error: "No bookings found for this tourist." });
+      return res
+        .status(404)
+        .json({ error: "No bookings found for this tourist." });
     }
 
     // Return the list of bookings
@@ -1528,7 +1530,6 @@ const getMyBookings = async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve bookings." });
   }
 };
-
 
 const cancelBooking = async (req, res) => {
   const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
@@ -1564,7 +1565,6 @@ const cancelBooking = async (req, res) => {
     res.status(500).json({ error: "Failed to cancel booking." });
   }
 };
-
 
 const shareActivity = async (req, res) => {
   const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
@@ -1795,6 +1795,34 @@ const currencyConverter = async (req, res) => {
     });
   }
 };
+const getProductReviews = async (req, res) => {
+  const { productId } = req.params; // Get productId from the request parameters
+  try {
+    // Find reviews related to the specific productId, and select only the 'review' field
+    const reviews = await ReviewModel.find({ itemId: productId }).select(
+      "review"
+    );
+
+    // If no reviews found, send a message indicating that
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({
+        message: "No reviews found for this product.",
+      });
+    }
+
+    // Return the reviews in the response (only the 'review' field)
+    res.status(200).json({
+      message: "Reviews fetched successfully",
+      reviews: reviews.map((review) => review.review), // Send only the review text
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error.message);
+    res.status(400).json({
+      message: "Error fetching reviews",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -1845,4 +1873,5 @@ module.exports = {
   currencyConverter,
   viewAllTransportations,
   getMyBookings,
+  getProductReviews,
 };

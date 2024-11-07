@@ -52,7 +52,7 @@ const createAdmin = async (req, res) => {
       Password: hashedPassword,
     });
     const userId = admin._id;
-    await userModel.create({ Username: Username, userId });
+    await userModel.create({ Username: Username, userId, Type: "Admin" });
 
     res.status(200).json(admin);
   } catch (err) {
@@ -306,7 +306,11 @@ const createTourismGov = async (req, res) => {
       Password: hashedPassword,
     });
     const userId = TourismGov._id;
-    await userModel.create({ Username: Username, userId });
+    await userModel.create({
+      Username: Username,
+      userId,
+      Type: "TourismGoverner",
+    });
 
     res.status(200).json(TourismGov);
   } catch (err) {
@@ -706,35 +710,36 @@ const replytoComplaints = async (req, res) => {
   const { Body } = req.body;
 
   if (!Body) {
-      return res.status(400).json({ message: "Body is required for the reply" });
+    return res.status(400).json({ message: "Body is required for the reply" });
   }
 
   try {
-      // Find the complaint by its ID
-      const complaint = await Complaints.findById(complaintId);
-      if (!complaint) {
-          return res.status(404).json({ message: "Complaint not found" });
-      }
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
 
-      // Create the reply object
-      const reply = {
-          Body,
-          Date: Date.now(),
-      };
+    // Create the reply object
+    const reply = {
+      Body,
+      Date: Date.now(),
+    };
 
-      // Update the reply field in the complaint
-      complaint.reply = reply;
+    // Update the reply field in the complaint
+    complaint.reply = reply;
 
-      // Save the updated complaint with the reply
-      await complaint.save();
+    // Save the updated complaint with the reply
+    await complaint.save();
 
-      return res.status(200).json({ message: "Reply added successfully", complaint });
+    return res
+      .status(200)
+      .json({ message: "Reply added successfully", complaint });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Internal server error" });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -844,29 +849,28 @@ const uploadProductImage = async (req, res) => {
 };
 
 const viewDocuments = async (req, res) => {
-  const ownerId = req.params.ownerId; // Fetch ownerId from request params
-
   try {
-    // Step 1: Fetch all documents for the specific owner based on ownerId
-    const documents = await PdfDetails.find({ Owner: ownerId });
+    // Step 1: Get all unique ownerIds in the collection
+    const distinctOwners = await PdfDetails.distinct("Owner");
 
-    // Step 2: Check if any documents are found
-    if (!documents || documents.length === 0) {
-      return res
-        .status(404)
-        .json({ message: `No documents found for user with ID: ${ownerId}.` });
+    // Step 2: Prepare a response object to hold all documents grouped by ownerId
+    const allDocuments = {};
+
+    // Step 3: Fetch documents for each distinct ownerId
+    for (const ownerId of distinctOwners) {
+      const documents = await PdfDetails.find({ Owner: ownerId });
+
+      // Map through each document to extract necessary fields
+      allDocuments[ownerId] = documents.map((doc) => ({
+        Title: doc.Title,
+        pdf: doc.pdf, // Base64 string of the PDF
+      }));
     }
 
-    // Step 3: Prepare and return the documents in the response
-    const responseDocs = documents.map((doc) => ({
-      Title: doc.Title,
-      pdf: doc.pdf, // This contains the base64 string of the PDF
-    }));
-
-    // Step 4: Send the list of documents back to the client
+    // Step 4: Send back all documents grouped by ownerId
     return res.status(200).json({
       message: "Documents retrieved successfully.",
-      documents: responseDocs, // Send back the documents as JSON
+      documents: allDocuments,
     });
   } catch (error) {
     console.error(error);
@@ -888,7 +892,7 @@ const markComplaintAsResolved = async (req, res) => {
 
     // Update the status to "Resolved"
     complaint.Status = "Resolved";
-    
+
     // Save the updated complaint
     const updatedComplaint = await complaint.save();
 
@@ -902,8 +906,6 @@ const markComplaintAsResolved = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 const viewAllComplaints = async (req, res) => {
   try {
@@ -941,11 +943,9 @@ const changePasswordAdmin = async (req, res) => {
 
     // Validate inputs
     if (!id || !oldPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({
-          message: "All fields (id, oldPassword, newPassword) are required",
-        });
+      return res.status(400).json({
+        message: "All fields (id, oldPassword, newPassword) are required",
+      });
     }
 
     // Find the admin by id
@@ -1021,7 +1021,7 @@ const viewComplaintDetails = async (req, res) => {
 const viewProductSalesAndQuantity = async (req, res) => {
   try {
     // Fetch all products with their available quantity and sales information
-    const products = await productModel.find({}, 'name quantity sales'); // Adjust the fields as necessary
+    const products = await productModel.find({}, "name quantity sales"); // Adjust the fields as necessary
 
     // Check if products exist
     if (!products || products.length === 0) {
@@ -1029,17 +1029,19 @@ const viewProductSalesAndQuantity = async (req, res) => {
     }
 
     // Prepare the response to include only relevant information
-    const productDetails = products.map(product => ({
+    const productDetails = products.map((product) => ({
       name: product.name,
       availableQuantity: product.quantity,
-       // Assuming 'sales' is a field in your product schema
+      // Assuming 'sales' is a field in your product schema
     }));
 
     // Return the product details
     res.status(200).json(productDetails);
   } catch (error) {
     console.error("Error fetching product sales and quantity:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 const flagEventOrItinerary = async (req, res) => {
@@ -1063,17 +1065,25 @@ const flagEventOrItinerary = async (req, res) => {
 
     // Check if the item exists
     if (!item) {
-      return res.status(404).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found.` });
+      return res.status(404).json({
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found.`,
+      });
     }
 
     // Flag the item
     item.isFlagged = true; // Set the isFlagged field to true
     await item.save(); // Save the updated item
 
-    res.status(200).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} flagged successfully.` });
+    res.status(200).json({
+      message: `${
+        type.charAt(0).toUpperCase() + type.slice(1)
+      } flagged successfully.`,
+    });
   } catch (error) {
     console.error("Error flagging item:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1083,14 +1093,14 @@ const getAllUsernames = async (req, res) => {
     const [advertisers, tourGuides, sellers] = await Promise.all([
       Advertiser.find().select("Username"), // Only select the "Username" field
       tourGuide.find().select("Username"),
-      Seller.find().select("Username")
+      Seller.find().select("Username"),
     ]);
 
     // Extract usernames from each collection
     const usernames = [
       ...advertisers.map((advertiser) => advertiser.Username),
       ...tourGuides.map((tourGuide) => tourGuide.Username),
-      ...sellers.map((seller) => seller.Username)
+      ...sellers.map((seller) => seller.Username),
     ];
 
     // Respond with the collected usernames
@@ -1100,6 +1110,40 @@ const getAllUsernames = async (req, res) => {
   }
 };
 
+const getDistinctOwners = async (req, res) => {
+  try {
+    // Step 1: Fetch distinct owner IDs from the PdfDetails collection
+    const distinctOwnerIds = await PdfDetails.distinct("Owner");
+
+    // Step 2: Check if there are any owners found
+    if (!distinctOwnerIds || distinctOwnerIds.length === 0) {
+      return res.status(404).json({ message: "No distinct owner IDs found." });
+    }
+
+    // Step 3: Fetch usernames for each distinct ownerId
+    const ownersWithUsernames = await userModel.find(
+      { _id: { $in: distinctOwnerIds } }, // Find users whose _id is in the list of distinct ownerIds
+      "Username" // Only retrieve the Username field
+    );
+
+    // Step 4: Map the results to match ownerId with Username
+    const ownerDetails = ownersWithUsernames.map((user) => ({
+      ownerId: user._id,
+      username: user.Username,
+    }));
+
+    // Step 5: Send the owner details back to the client
+    return res.status(200).json({
+      message: "Owner usernames retrieved successfully.",
+      owners: ownerDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Error retrieving owner usernames." });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -1141,4 +1185,5 @@ module.exports = {
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
   getAllUsernames,
+  getDistinctOwners,
 };

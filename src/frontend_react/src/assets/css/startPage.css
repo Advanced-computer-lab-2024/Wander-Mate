@@ -18,6 +18,10 @@
   z-index: 1; 
 }
 
+.full {
+  overflow-x: hidden;
+}
+
 /* Container */
 .inner-container {
   display: flex;

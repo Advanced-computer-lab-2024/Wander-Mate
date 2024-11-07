@@ -1,5 +1,5 @@
 import React from "react";
-import ServiceCard from "../ui/serviceCard";
+import ServiceCard from "./ui/serviceCard";
 
 const OurService = ({ id }) => {
   return (
