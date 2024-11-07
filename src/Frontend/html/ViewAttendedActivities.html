@@ -188,9 +188,9 @@
         const { userID } = x;
 
         const data = {
-          comment,
+          Body: comment,
           eventId: currentEventId,
-          touristID: username, // Assuming username is used as touristID
+          touristID: userID,
         };
 
         try {
@@ -214,7 +214,6 @@
             alert(result.message || "Error posting comment");
           }
         } catch (error) {
-          console.error("Error posting comment:", error);
           alert("Error posting comment");
         }
       }

@@ -133,7 +133,8 @@ const {
   flagEventOrItinerary,
   getAllUsernames,
   getDistinctOwners,
-  login
+  login,
+  getAdminID
 } = require("./Routes/adminController.js");
 
 const {
@@ -447,3 +448,4 @@ app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
 app.get("/getProductReviews/:productId",getProductReviews);
 app.post("/login",login);
+app.get("/getAdminID", getAdminID);

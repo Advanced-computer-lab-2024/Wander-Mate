@@ -937,17 +937,18 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { comment, eventId, touristID } = req.body;
+  const { Body, eventId, touristID } = req.body;
   try {
     const newComment = await CommentModel.create({
       touristID,
-      comment,
+      Body,
       aboutId: eventId,
     });
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Error posting comment" });
   }
 };
@@ -1051,7 +1052,7 @@ const commentOnItinerary = async (req, res) => {
 
 const viewAttendedActivities = async (req, res) => {
   const touristId = req.params.touristId; // Get the touristId from params
-  const model = "Activity";
+  const model = "Attraction";
 
   try {
     // Fetch activities using the filter
@@ -1060,14 +1061,12 @@ const viewAttendedActivities = async (req, res) => {
       .populate("itemId")
       .populate({ path: "itemId", populate: { path: "Creator" } });
     const currentDate = new Date();
-
     // Check if any activities were found
     if (activities.length === 0) {
       return res.status(404).json({ message: "No past activities found." });
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = activities.filter((activity) => {
-      console.log(activity.userId);
       return (
         activity.userId.toString() === id.toString() &&
         activity.bookedDate < currentDate
@@ -1099,7 +1098,6 @@ const viewAttendedItineraries = async (req, res) => {
     }
     const id = new mongoose.Types.ObjectId(touristId);
     const attended = itineraries.filter((itinerary) => {
-      console.log(itinerary.userId);
       return (
         itinerary.userId.toString() === id.toString() &&
         itinerary.bookedDate < currentDate
@@ -1750,7 +1748,6 @@ const bookItinerary = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-    console.log(itinerary);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1765,11 +1762,9 @@ const bookItinerary = async (req, res) => {
     // Update the itinerary document to include the new booking ID
     itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving itinerary:", itinerary.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await itinerary.save();
-    console.log(itinerary);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -1794,7 +1789,6 @@ const bookActivity = async (req, res) => {
       return res.status(40).json({ message: "Activity not found." });
     }
 
-    console.log(activity);
 
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
@@ -1809,11 +1803,9 @@ const bookActivity = async (req, res) => {
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-    console.log("Bookings array before saving Activity:", activity.Bookings); // Log before saving
 
     // Attempt to save the updated itinerary document
     await activity.save();
-    console.log(activity);
 
     // Respond back with success message and booking details
     res.status(200).json({

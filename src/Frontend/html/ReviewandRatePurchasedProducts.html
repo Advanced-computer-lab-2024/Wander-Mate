@@ -9,17 +9,11 @@
       /* Star rating styles */
       .star-rating span {
         font-size: 1.5em;
-        color: black; /* Initial color (white) */
+        color: black;
         cursor: pointer;
         transition: color 0.3s;
         padding: 5px;
         margin-right: 2px;
-      }
-
-      /* Hover effect starting from the left */
-      .star-rating span:hover,
-      .star-rating span:hover ~ span {
-        color: rgb(0, 0, 0);
       }
 
       .star-rating span:hover,
@@ -27,7 +21,6 @@
         color: gold;
       }
 
-      /* Selected stars should remain yellow */
       .star-rating .selected {
         color: gold;
       }
@@ -42,12 +35,10 @@
   <body>
     <div class="wrapper">
       <div class="title">Available Products</div>
-
       <div class="search-section">
         <label for="productName">Search by Product Name:</label>
         <input type="text" id="productName" placeholder="Enter product name" />
       </div>
-
       <div class="filter-section">
         <label for="minPrice">Min Price:</label>
         <input type="number" id="minPrice" placeholder="0" />
@@ -57,16 +48,33 @@
         <button id="resetButton">Reset</button>
         <button id="sortButton">Sort by Ratings</button>
       </div>
-
-      <div class="product-list" id="productList">
-        <!-- Products will be dynamically inserted here -->
-      </div>
+      <div class="product-list" id="productList"></div>
     </div>
 
     <script>
       let allProducts = [];
       let allSellers = [];
       let sellerMap = {};
+      let userID = null; // Variable to store the fetched user ID
+
+      async function initializeUser() {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          alert("You must be logged in to rate and review products.");
+          return;
+        }
+        try {
+          const response = await fetch(`http://localhost:8000/getID/${username}`);
+          const data = await response.json();
+          if (response.ok && data.userID) {
+            userID = data.userID; // Set the user ID once during initialization
+          } else {
+            alert("Failed to retrieve user ID.");
+          }
+        } catch (error) {
+          console.error("Error fetching user ID:", error);
+        }
+      }
 
       async function fetchSellers() {
         try {
@@ -88,28 +96,23 @@
 
       async function fetchProducts() {
         try {
-          const response = await fetch(
-            "http://localhost:8000/viewSellerProducts"
-          );
+          const response = await fetch("http://localhost:8000/viewSellerProducts");
           const products = await response.json();
-
           if (response.ok) {
             allProducts = products;
-            applyFilters(); // Apply initial filters to show all products
+            applyFilters(); // Show all products initially
           } else {
-            document.getElementById("productList").innerHTML =
-              "<p>No products available</p>";
+            document.getElementById("productList").innerHTML = "<p>No products available</p>";
           }
         } catch (error) {
           console.error("Error fetching products:", error);
-          document.getElementById("productList").innerHTML =
-            "<p>An error occurred while fetching products.</p>";
+          document.getElementById("productList").innerHTML = "<p>An error occurred while fetching products.</p>";
         }
       }
 
       function displayProducts(products) {
         const productList = document.getElementById("productList");
-        productList.innerHTML = ""; 
+        productList.innerHTML = "";
 
         products.forEach((product) => {
           const productItem = document.createElement("div");
@@ -126,23 +129,17 @@
               <p class="product-seller">Seller: ${sellerMap[product.seller] || "Unknown"}</p>
               <p class="product-ratings">Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}</p>
 
-              <!-- Star Rating Section -->
               <div class="star-rating" id="rating-${product._id}">
-                ${[1, 2, 3, 4, 5]
-                  .map((star) => `<span onclick="rateProduct('${product._id}', ${star})">&#9733;</span>`)
-                  .join("")}
+                ${[1, 2, 3, 4, 5].map((star) => `<span onclick="rateProduct('${product._id}', ${star})">&#9733;</span>`).join("")}
                 <span id="rating-message-${product._id}" class="rating-message"></span>
               </div>
 
-              <!-- Review Section -->
               <div class="review-section">
                 <input type="text" class="review-input" id="review-${product._id}" placeholder="Add a review">
                 <button onclick="submitReview('${product._id}')">Submit Review</button>
               </div>
-              <p class="product-reviews">Reviews: 
-                  <ul id="reviews-list-${product._id}">
-                    <!-- Reviews will be dynamically loaded here -->
-                  </ul>
+              <p class="product-reviews">Reviews:
+                <ul id="reviews-list-${product._id}"></ul>
               </p>
             </div>
           `;
@@ -155,8 +152,7 @@
       }
 
       async function rateProduct(productId, rating) {
-        const userId = sessionStorage.getItem("userId"); // Retrieve user ID from session storage
-        if (!userId) {
+        if (!userID) {
           alert("You must be logged in to rate a product.");
           return;
         }
@@ -165,17 +161,15 @@
           const response = await fetch("http://localhost:8000/rateProduct", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, productId, rating }),
+            body: JSON.stringify({ userId: userID, productId, rating }),
           });
-
-          const data = await response.json();
 
           if (response.ok) {
             document.getElementById(`rating-message-${productId}`).textContent = "Thank you for your rating!";
-            setStarRating(productId, rating); // Set the star colors based on rating
-            await updateProductRatingsDisplay(productId); // Fetch and display updated ratings
+            setStarRating(productId, rating);
+            await updateProductRatingsDisplay(productId);
           } else {
-            alert(data.message || "Failed to post rating.");
+            alert("Failed to post rating.");
           }
         } catch (error) {
           console.error("Error posting rating:", error);
@@ -183,7 +177,6 @@
         }
       }
 
-      // Helper function to apply the "selected" class to stars up to the rating given
       function setStarRating(productId, rating) {
         const stars = document.querySelectorAll(`#rating-${productId} span`);
         stars.forEach((star, index) => {
@@ -201,13 +194,10 @@
           const product = await response.json();
 
           if (response.ok) {
-            // Update the rating display in the UI
             const productElement = document.getElementById(`rating-${productId}`);
             if (productElement) {
               productElement.previousElementSibling.textContent = `Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}`;
             }
-          } else {
-            console.error("Failed to fetch updated product rating:", response.statusText);
           }
         } catch (error) {
           console.error("Error fetching updated product rating:", error);
@@ -216,9 +206,7 @@
 
       async function submitReview(productId) {
         const reviewText = document.getElementById(`review-${productId}`).value;
-        const userId = sessionStorage.getItem("userId"); // Retrieve user ID from session storage
-
-        if (!userId || !reviewText) {
+        if (!userID || !reviewText) {
           alert("You must be logged in and enter a review to submit.");
           return;
         }
@@ -227,18 +215,13 @@
           const response = await fetch("http://localhost:8000/reviewProduct", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              productId,
-              userId,
-              review: reviewText,
-            }),
+            body: JSON.stringify({ productId, userId: userID, review: reviewText }),
           });
-          const data = await response.json();
 
           if (response.ok) {
-            alert(data.message);
-            document.getElementById(`review-${productId}`).value = ""; // Clear input after submitting
-            await fetchProductReviews(productId); // Fetch and display updated reviews
+            alert("Review submitted successfully.");
+            document.getElementById(`review-${productId}`).value = "";
+            await fetchProductReviews(productId);
           } else {
             alert("Failed to post review.");
           }
@@ -254,60 +237,46 @@
           const data = await response.json();
 
           if (response.ok) {
-            // Update the reviews section with the fetched reviews
             const reviewsList = document.getElementById(`reviews-list-${productId}`);
-            if (reviewsList) {
-              reviewsList.innerHTML = data.reviews
-                .map((review) => `<li>${review}</li>`)
-                .join("");
-            }
-          } else {
-            console.error("Failed to fetch reviews:", response.statusText);
+            reviewsList.innerHTML = data.reviews.map((review) => `<li>${review}</li>`).join("");
           }
         } catch (error) {
           console.error("Error fetching reviews:", error);
         }
       }
 
-      // Apply filters
       function applyFilters() {
         const productName = document.getElementById("productName").value.toLowerCase();
-        const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-        const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+        const minPrice = parseFloat(document.getElementById("minPrice").value);
+        const maxPrice = parseFloat(document.getElementById("maxPrice").value);
 
         const filteredProducts = allProducts.filter((product) => {
-          return (
-            product.name.toLowerCase().includes(productName) &&
-            product.price >= minPrice &&
-            product.price <= maxPrice
-          );
+          const matchesName = product.name.toLowerCase().includes(productName);
+          const matchesMinPrice = isNaN(minPrice) || product.price >= minPrice;
+          const matchesMaxPrice = isNaN(maxPrice) || product.price <= maxPrice;
+          return matchesName && matchesMinPrice && matchesMaxPrice;
         });
 
         displayProducts(filteredProducts);
       }
 
-      // Reset filters
-      function resetFilters() {
+      document.getElementById("applyFiltersButton").addEventListener("click", applyFilters);
+      document.getElementById("resetButton").addEventListener("click", () => {
         document.getElementById("productName").value = "";
         document.getElementById("minPrice").value = "";
         document.getElementById("maxPrice").value = "";
-        displayProducts(allProducts); // Reset to show all products
-      }
+        applyFilters();
+      });
 
-      // Sort products by ratings
-      function sortProductsByRatings() {
+      document.getElementById("sortButton").addEventListener("click", () => {
         const sortedProducts = [...allProducts].sort((a, b) => b.ratings - a.ratings);
         displayProducts(sortedProducts);
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchSellers(); // Fetch all sellers
-        fetchProducts(); // Fetch all products
-
-        document.getElementById("applyFiltersButton").addEventListener("click", applyFilters);
-        document.getElementById("resetButton").addEventListener("click", resetFilters);
-        document.getElementById("sortButton").addEventListener("click", sortProductsByRatings);
       });
+
+      // Initialize functions on page load
+      initializeUser();
+      fetchSellers();
+      fetchProducts();
     </script>
   </body>
 </html>

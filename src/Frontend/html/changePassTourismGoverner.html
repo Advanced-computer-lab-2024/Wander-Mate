@@ -37,8 +37,8 @@
                 console.error('No username found in session storage.');
                 return;
             }
-
             try {
+                console.log("WWAAAAAWWW");
                 const response = await fetch(`http://localhost:8000/getID/${username}`);
                 if (!response.ok) throw new Error('Failed to get tourism governer ID');
 
@@ -52,13 +52,16 @@
         }
 
         window.onload = () => {
-            const tourismGovernerID = sessionStorage.getItem('tourismGovernerID');
+            const tourismGovernerID = sessionStorage.getItem("tourismGovernerID");
+
             if (tourismGovernerID) {
-                document.getElementById('id').value = tourismGovernerID;
+                document.getElementById("id").value = tourismGovernerID;
             } else {
                 fetchTourismGovernerID();
             }
-        };
+            };
+
+
 
         document.getElementById("changePasswordForm").addEventListener("submit", async (event) => {
             event.preventDefault();
