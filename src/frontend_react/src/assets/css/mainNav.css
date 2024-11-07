@@ -123,6 +123,19 @@
   flex-grow: 0;
 }
 
+.startGroup {
+  margin: 0 auto;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+  display: flex;       /* Set flex layout */
+  gap: 10px;           /* Optional: Add some space between the buttons */
+  justify-content: center; /* Center the buttons horizontally */
+  margin: 0 auto;
+}
+
 /* Group */
 .group {
   position: absolute;

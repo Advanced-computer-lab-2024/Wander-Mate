@@ -482,6 +482,7 @@ const Registration = () => {
             </Button>
             <Button
               onClick={activestep === steps.length - 1 ? onSubmit : handleNext}
+              disabled={!selectedRole}
             >
               {activestep === steps.length - 1 ? "Submit" : "Next"}
             </Button>
