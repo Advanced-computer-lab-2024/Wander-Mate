@@ -387,6 +387,41 @@
           }
         }
       });
+      const shareLinkButton = document.getElementById("share-link-button");
+        const shareEmailButton = document.getElementById("share-email-button");
+        const flagButton = document.getElementById("flag-button");
+
+        shareLinkButton.addEventListener("click", async () => {
+            const activityId = attractions._id || getQueryParams().id;
+            console.log(activityId);
+            const response = await fetch("http://localhost:8000/shareActivity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ activityId, shareMethod: "link" }),
+            });
+           
+            const result = await response.json();
+            alert(`Activity shared successfully! Link: ${result.link}`);
+        });
+
+        shareEmailButton.addEventListener("click", async () => {
+            const activityId = attractions.id || getQueryParams().id;
+            const email = prompt("Enter the recipient's email address:");
+            if (!email) return;
+
+            const response = await fetch("http://localhost:8000/shareActivity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ activityId, shareMethod: "email", email }),
+            });
+
+            const result = await response.json();
+            alert(`Activity shared successfully! ${result.link}`);
+        });
     </script>
   </body>
 </html>

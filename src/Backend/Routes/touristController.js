@@ -1584,6 +1584,77 @@ const shareActivity = async (req, res) => {
     }
 
     // Find the activity by ID
+    const activity = await attractionModel.findById(activityId);
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found." });
+    }
+
+    // Generate a shareable link
+    const shareableLink = `${req.protocol}://${req.get(
+      "host"
+    )}/activities/${activityId}`;
+
+    if (shareMethod === "link") {
+      // If sharing via link, return the link
+      return res.status(200).json({
+        message: "Shareable link generated successfully.",
+        link: shareableLink,
+      });
+    } else if (shareMethod === "email") {
+      if (!email) {
+        return res.status(400).json({
+          message: "Email address is required for sharing via email.",
+        });
+      }
+
+      // Here you can implement the logic to send an email
+      // For demonstration purposes, we will just return the link
+      // You can use a library like nodemailer to send emails
+
+      // Example of sending an email (you need to configure nodemailer)
+      /*
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'your-email@gmail.com',
+          pass: 'your-email-password'
+        }
+      });
+
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'Check out this activity!',
+        text: `I thought you might be interested in this activity: ${shareableLink}`
+      };
+
+      await transporter.sendMail(mailOptions);
+      */
+
+      return res.status(200).json({
+        message: "Email sent successfully.",
+        link: shareableLink,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Invalid share method. Use 'link' or 'email'." });
+    }
+  } catch (error) {
+    console.error("Error sharing activity:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+const shareItenerary = async (req, res) => {
+  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
+
+  try {
+    // Validate input
+    if (!activityId) {
+      return res.status(400).json({ message: "Activity ID is required." });
+    }
+
+    // Find the activity by ID
     const activity = await itineraryModel.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: "Activity not found." });
@@ -1645,6 +1716,9 @@ const shareActivity = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1927,4 +2001,5 @@ module.exports = {
   getMyBookings,
   getProductReviews,
   bookActivity,
+  shareItenerary,
 };

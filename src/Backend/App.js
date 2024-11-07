@@ -68,6 +68,7 @@ const {
   getMyBookings,
   getProductReviews,
   bookActivity,
+  shareItenerary,
 } = require("./Routes/touristController");
 
 const {
@@ -435,6 +436,7 @@ app.get(
 app.get("/getMyBookings/:touristID",getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
+app.post("/shareItinerary", shareItenerary);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
 app.post("/bookActivity",bookActivity);

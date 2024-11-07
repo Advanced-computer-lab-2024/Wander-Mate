@@ -23,7 +23,6 @@
         <button id="applyFiltersButton">Apply Filters</button>
         <button id="resetButton">Reset</button>
         <button id="sortButton">Sort by Ratings</button>
-        <!-- Sort button added here -->
       </div>
 
       <div class="product-list" id="productList">
@@ -91,6 +90,7 @@
               <h2 class="product-name">${product.name}</h2>
               <p class="product-description">${product.description}</p>
               <p class="product-price">Price: $${product.price.toFixed(2)}</p>
+              <p class="product-quantity">Quantity: ${product.quantity}</p> <!-- Quantity added here -->
               <p class="product-seller">Seller: ${
                 sellerMap[product.seller] || "Unknown"
               }</p>
@@ -106,8 +106,8 @@
               </p>
             </div>
             <div class="edit-button">
-          <a href="editProduct.html?id=${product._id}">Edit</a>
-      </div>
+              <a href="editProduct.html?id=${product._id}">Edit</a>
+            </div>
           `;
 
           productList.appendChild(productItem);

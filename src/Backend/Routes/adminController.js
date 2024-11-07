@@ -1062,40 +1062,54 @@ const flagEventOrItinerary = async (req, res) => {
   }
 
   try {
-    let item;
+    let updateData = {};
 
     // Determine which model to use based on the type
     if (type === "event") {
-      item = await attractions.findById(id); // Assuming events are stored in attractionModel
+      // Use findByIdAndUpdate to update the flag for an event
+      updateData.isFlagged = true;
+      const updatedItem = await attractions.findByIdAndUpdate(
+        id,
+        { $set: {isFlagged: true} }, // Dynamically update the field `isFlagged`
+        { new: true, runValidators: true } // Return the updated document and run validations
+      );
+
+      // Check if the event exists
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Event not found." });
+      }
+
+      res.status(200).json({
+        message: "Event flagged successfully.",
+        updatedItem, // Return the updated item with the `isFlagged` field
+      });
     } else if (type === "itinerary") {
-      item = await Itinerary.findById(id);
+      // Use findByIdAndUpdate to update the flag for an itinerary
+      updateData.isFlagged = true;
+      const updatedItem = await Itinerary.findByIdAndUpdate(
+        id,
+        { $set: updateData }, // Dynamically update the field `isFlagged`
+        { new: true, runValidators: true } // Return the updated document and run validations
+      );
+
+      // Check if the itinerary exists
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Itinerary not found." });
+      }
+
+      res.status(200).json({
+        message: "Itinerary flagged successfully.",
+        updatedItem, // Return the updated item with the `isFlagged` field
+      });
     } else {
       return res.status(400).json({ message: "Invalid type specified." });
     }
-
-    // Check if the item exists
-    if (!item) {
-      return res.status(404).json({
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found.`,
-      });
-    }
-
-    // Flag the item
-    item.isFlagged = true; // Set the isFlagged field to true
-    await item.save(); // Save the updated item
-
-    res.status(200).json({
-      message: `${
-        type.charAt(0).toUpperCase() + type.slice(1)
-      } flagged successfully.`,
-    });
   } catch (error) {
     console.error("Error flagging item:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const getAllUsernames = async (req, res) => {
   try {
