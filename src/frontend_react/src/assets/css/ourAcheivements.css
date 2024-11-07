@@ -24,7 +24,7 @@
   height: auto; /* Height will adjust based on content */
   max-width: 1022.39px; /* Maintain max width */
   opacity: 1;
-  background: url("../images/world_map.png") no-repeat center center; /* Center the background image */
+  background: url("../../public/images/world_map.png") no-repeat center center; /* Center the background image */
 }
 
 /* Main Title */
