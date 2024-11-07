@@ -8,6 +8,8 @@ const PdfDetails = require("../Models/pdfDetails.js");
 const TourGuide = require("../Models/tourGuide.js");
 const RatingsModel = require("../Models/rating.js");
 const bookingSchema = require("../Models/bookings.js");
+const jwt = require("jsonwebtoken");
+
 // Creating a tourGuide
 
 const maxAge = 3 * 24 * 60 * 60;

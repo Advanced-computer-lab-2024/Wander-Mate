@@ -18,6 +18,7 @@ const touristModel = require("../Models/tourist.js");
 const advertiserModel = require("../Models/advertiser.js");
 const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
+const jwt = require("jsonwebtoken");
 
 // Creating an admin
 const createAdmin = async (req, res) => {

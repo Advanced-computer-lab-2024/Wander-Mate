@@ -17,6 +17,8 @@ const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
+const jwt = require("jsonwebtoken");
+
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
