@@ -44,7 +44,7 @@
 .vector {
   width: 100%; /* Adjust width to fill the container */
   height: auto; /* Keep the aspect ratio */
-  background: #ff7a00;
+  background: #826AF9;
   padding: 15% 0; /* Add padding to create space */
   margin-bottom: 16px; /* Space below the vector */
 }
