@@ -5,10 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Bookings | Wander-Mate</title>
   <link rel="stylesheet" href="../styles/register.css" />
+  <style>
+    .cancel-button {
+      color: white;
+      background-color: red;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="title">My Bookings</div>
+
+    <!-- Tourist ID Display Section -->
+    <div class="tourist-id-section">
+      <label for="touristID">Tourist ID:</label>
+      <input type="text" id="touristID" readonly />
+    </div>
 
     <!-- Bookings section -->
     <div class="bookings">
@@ -20,30 +35,22 @@
   </div>
 
   <script>
-
-
     async function fetchTouristID() {
-      const username = sessionStorage.getItem("username"); // Retrieve the username from session storage
+      const username = sessionStorage.getItem('username');  // Retrieve the username from session storage
       if (!username) {
-        console.error("No username found in session storage.");
+        console.error('No username found in session storage.');
         return; // Exit if no username is found
       }
 
       try {
-        // Fetch the tourist ID using the /getid endpoint
         const response = await fetch(`http://localhost:8000/getID/${username}`);
         
         if (!response.ok) throw new Error("Failed to fetch tourist ID");
 
-        const { touristID } = await response.json(); // Assuming response is in form { touristID: "..." }
-
-        if (touristID) {
-          // Fetch bookings using the retrieved touristID
-          fetchBookings(touristID);
-        } else {
-          console.error("Tourist ID not found.");
-          alert("Tourist not found. Please log in.");
-        }
+        const { touristID } = await response.json();
+        sessionStorage.setItem('touristID', touristID);
+        document.getElementById("touristID").value = touristID;
+        fetchBookings(touristID);
       } catch (error) {
         console.error("Error fetching tourist ID:", error);
         alert("Could not load tourist information.");
@@ -51,35 +58,68 @@
     }
 
     async function fetchBookings(touristID) {
-  try {
-    const response = await fetch(`http://localhost:8000/getMyBookings/${touristID}`);
-    console.log("Bookings response status:", response.status); // Log response status
+      try {
+        const response = await fetch(`http://localhost:8000/getMyBookings/${touristID}`);
+        if (!response.ok) throw new Error("Failed to fetch bookings");
 
-    if (!response.ok) throw new Error("Failed to fetch bookings");
+        const bookings = await response.json();
+        const bookingList = document.getElementById("bookingList");
 
-    const bookings = await response.json();
-    console.log("Bookings data:", bookings); // Log fetched bookings data
-
-    if (bookings.length === 0) {
-      document.getElementById("bookingList").innerHTML = "<li>No bookings found.</li>";
-    } else {
-      const bookingList = document.getElementById("bookingList");
-      bookingList.innerHTML = bookings.map((booking) => `
-        <li>
-          <strong>Booking ID:</strong> ${booking._id} <br>
-          <strong>Item ID:</strong> ${booking.itemId} <br>
-          <strong>Item Model:</strong> ${booking.itemModel} <br>
-          <strong>Booked Date:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
-          <strong>Created At:</strong> ${new Date(booking.createdAt).toLocaleDateString()}
-        </li>
-      `).join("");
+        if (bookings.length === 0) {
+          bookingList.innerHTML = "<li>No bookings found.</li>";
+        } else {
+          bookingList.innerHTML = bookings.map((booking) => `
+            <li>
+              <strong>Booking ID:</strong> ${booking._id} <br>
+              <strong>Item ID:</strong> ${booking.itemId} <br>
+              <strong>Item Model:</strong> ${booking.itemModel} <br>
+              <strong>Booked Date:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
+              <strong>Created At:</strong> ${new Date(booking.createdAt).toLocaleDateString()} <br>
+              <button class="cancel-button" onclick="cancelBooking('${booking._id}')">Cancel Booking</button>
+            </li>
+          `).join("");
+        }
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+        alert("No bookings found");
+      }
     }
-  } catch (error) {
-    console.error("Error fetching bookings:", error);
-    alert("Could not load bookings.");
-  }
-}
 
+    async function cancelBooking(bookingID) {
+      if (!confirm("Are you sure you want to cancel this booking?")) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8000/cancelBooking/${bookingID}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(errorData.error || "Failed to cancel booking.");
+        } else {
+          alert("Booking cancelled successfully.");
+          // Reload bookings to update the list
+          const touristID = sessionStorage.getItem('touristID');
+          if (touristID) fetchBookings(touristID);
+        }
+      } catch (error) {
+        console.error("Error cancelling booking:", error);
+        alert("Could not cancel booking. Please try again later.");
+      }
+    }
+
+    // Retrieve and set the tourist ID when the page loads
+    window.onload = () => {
+      const touristID = sessionStorage.getItem('touristID');
+      if (touristID) {
+        document.getElementById("touristID").value = touristID;
+        fetchBookings(touristID);
+      } else {
+        fetchTouristID();
+      }
+    };
   </script>
 </body>
 </html>

@@ -1543,18 +1543,15 @@ const cancelBooking = async (req, res) => {
     }
 
     const currentDate = new Date();
-    const bookedDate = new Date(booking.bookedDate);
+    const createdAt = new Date(booking.createdAt); // Use the booking's creation date to check if it's within 48 hours
 
-    // Calculate the time difference
-    const timeDifference = bookedDate - currentDate;
+    // Calculate the time difference in hours
+    const hoursSinceBooking = (currentDate - createdAt) / (1000 * 60 * 60);
 
-    // Convert time difference to hours
-    const hoursDifference = timeDifference / (1000 * 60 * 60);
-
-    // Check if the cancellation is within the allowed period
-    if (hoursDifference < 48) {
+    // Check if the booking was made within the last 48 hours
+    if (hoursSinceBooking > 48) {
       return res.status(400).json({
-        error: "You can only cancel bookings 48 hours prior to the event.",
+        error: "You can only cancel bookings within 48 hours of making them.",
       });
     }
 
@@ -1567,6 +1564,7 @@ const cancelBooking = async (req, res) => {
     res.status(500).json({ error: "Failed to cancel booking." });
   }
 };
+
 
 const shareActivity = async (req, res) => {
   const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
