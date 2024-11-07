@@ -1263,4 +1263,5 @@ module.exports = {
   flagEventOrItinerary,
   getAllUsernames,
   getDistinctOwners,
+  login
 };
