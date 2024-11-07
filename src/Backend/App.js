@@ -131,7 +131,8 @@ const {
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
   getAllUsernames,
-  getDistinctOwners
+  getDistinctOwners,
+  login
 } = require("./Routes/adminController.js");
 
 const {
@@ -443,3 +444,4 @@ app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
 app.get("/getProductReviews/:productId",getProductReviews);
+app.post("/login",login);
