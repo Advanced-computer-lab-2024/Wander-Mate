@@ -1576,7 +1576,7 @@ const shareActivity = async (req, res) => {
     }
 
     // Find the activity by ID
-    const activity = await attractionModel.findById(activityId);
+    const activity = await itineraryModel.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: "Activity not found." });
     }
