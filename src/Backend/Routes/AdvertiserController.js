@@ -202,7 +202,7 @@ const createAdvertiser = async (req, res) => {
 
     const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username, userID });
+    await userModel.create({ Username: Username, userID, Type:"Advertiser" });
 
     res.status(200).json(advertiser);
   } catch (err) {
