@@ -119,6 +119,7 @@
             });
 
             const data = await response.json();
+            sessionStorage.setItem("username", data.Username);
 
             if (response.ok) {
               // Check user type and redirect accordingly
