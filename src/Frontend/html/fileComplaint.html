@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Complaint | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="title">Submit a Complaint</div>
+        <form id="complaintForm" onsubmit="submitComplaint(event)">
+            <div class="field">
+                <label for="Title">Title:</label>
+                <input type="text" id="Title" name="Title" required />
+            </div>
+            <div class="field">
+                <label for="Body">Complaint Body:</label>
+                <textarea id="Body" name="Body" rows="5" cols="40" required></textarea>
+            </div>
+            <div class="field">
+                <input type="submit" value="Submit Complaint" />
+            </div>
+        </form>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function submitComplaint(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Retrieve touristID from sessionStorage
+            const touristID = sessionStorage.getItem("touristID");
+            console.log("Retrieved TouristID:", touristID);
+
+            const title = document.getElementById("Title").value;
+            const body = document.getElementById("Body").value;
+
+            try {
+                const response = await axios.post(`http://localhost:8000/makeComplaint`, {
+                    Title: title,
+                    Body: body,
+                    touristID: touristID,
+                    reply: { Body: "No reply yet", Date: new Date() } // Optional placeholder
+                });
+                displayResults(response.data);
+            } catch (error) {
+                console.error("Error submitting complaint", error);
+                document.getElementById("results").innerHTML = "<p>Failed to submit complaint.</p>";
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById("results").innerHTML = `<p>${data.message}</p>`;
+        }
+    </script>
+</body>
+</html>

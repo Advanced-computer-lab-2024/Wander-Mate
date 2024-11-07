@@ -844,29 +844,28 @@ const uploadProductImage = async (req, res) => {
 };
 
 const viewDocuments = async (req, res) => {
-  const ownerId = req.params.ownerId; // Fetch ownerId from request params
-
   try {
-    // Step 1: Fetch all documents for the specific owner based on ownerId
-    const documents = await PdfDetails.find({ Owner: ownerId });
+    // Step 1: Get all unique ownerIds in the collection
+    const distinctOwners = await PdfDetails.distinct("Owner");
 
-    // Step 2: Check if any documents are found
-    if (!documents || documents.length === 0) {
-      return res
-        .status(404)
-        .json({ message: `No documents found for user with ID: ${ownerId}.` });
+    // Step 2: Prepare a response object to hold all documents grouped by ownerId
+    const allDocuments = {};
+
+    // Step 3: Fetch documents for each distinct ownerId
+    for (const ownerId of distinctOwners) {
+      const documents = await PdfDetails.find({ Owner: ownerId });
+
+      // Map through each document to extract necessary fields
+      allDocuments[ownerId] = documents.map((doc) => ({
+        Title: doc.Title,
+        pdf: doc.pdf, // Base64 string of the PDF
+      }));
     }
 
-    // Step 3: Prepare and return the documents in the response
-    const responseDocs = documents.map((doc) => ({
-      Title: doc.Title,
-      pdf: doc.pdf, // This contains the base64 string of the PDF
-    }));
-
-    // Step 4: Send the list of documents back to the client
+    // Step 4: Send back all documents grouped by ownerId
     return res.status(200).json({
       message: "Documents retrieved successfully.",
-      documents: responseDocs, // Send back the documents as JSON
+      documents: allDocuments,
     });
   } catch (error) {
     console.error(error);
@@ -1101,6 +1100,43 @@ const getAllUsernames = async (req, res) => {
 };
 
 
+
+const getDistinctOwners = async (req, res) => {
+  try {
+    // Step 1: Fetch distinct owner IDs from the PdfDetails collection
+    const distinctOwnerIds = await PdfDetails.distinct("Owner");
+
+    // Step 2: Check if there are any owners found
+    if (!distinctOwnerIds || distinctOwnerIds.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No distinct owner IDs found." });
+    }
+
+    // Step 3: Fetch usernames for each distinct ownerId
+    const ownersWithUsernames = await userModel.find(
+      { _id: { $in: distinctOwnerIds } }, // Find users whose _id is in the list of distinct ownerIds
+      "Username" // Only retrieve the Username field
+    );
+
+    // Step 4: Map the results to match ownerId with Username
+    const ownerDetails = ownersWithUsernames.map((user) => ({
+      ownerId: user._id,
+      username: user.Username,
+    }));
+
+    // Step 5: Send the owner details back to the client
+    return res.status(200).json({
+      message: "Owner usernames retrieved successfully.",
+      owners: ownerDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error retrieving owner usernames." });
+  }
+};
+
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1141,4 +1177,5 @@ module.exports = {
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
   getAllUsernames,
+  getDistinctOwners
 };

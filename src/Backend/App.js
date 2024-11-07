@@ -66,6 +66,7 @@ const {
   currencyConverter,
   viewAllTransportations,
   getMyBookings,
+  getProductReviews,
 } = require("./Routes/touristController");
 
 const {
@@ -128,7 +129,8 @@ const {
   markComplaintAsResolved,
   viewProductSalesAndQuantity,
   flagEventOrItinerary,
-  getAllUsernames
+  getAllUsernames,
+  getDistinctOwners
 } = require("./Routes/adminController.js");
 
 const {
@@ -329,7 +331,8 @@ app.post("/makeComplaint", makeComplaint);
 app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
-app.get("/viewDocuments/:ownerId", viewDocuments);
+app.get("/viewDocuments", viewDocuments);
+app.get("/getDistinctOwners",getDistinctOwners);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
@@ -437,3 +440,4 @@ app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations",viewAllTransportations);
 app.get("/getAllUsernames",getAllUsernames);
+app.get("/getProductReviews/:productId",getProductReviews);
