@@ -1,427 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All Places | Wander-Mate</title>
-    <link rel="stylesheet" href="../styles/register.css" />
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
-    <style>
-      .map-container {
-        width: 100%;
-        height: 200px;
-        margin-top: 10px;
-      }
-      .activity-item {
-        margin-bottom: 20px;
-      }
-      .activity-images img {
-        max-width: 100%;
-        height: auto;
-      }
-      .button-container {
-        margin-top: 10px;
-      }
-      .delete-btn {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-right: 10px;
-      }
-      .update-btn {
-        background-color: #27ae60;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="title">All Places</div>
 
-      <div class="search-section">
-        <label for="ActivityName">Search by Place Name:</label>
-        <input type="text" id="ActivityName" placeholder="Enter place name" />
-        <button id="searchButton">Search</button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Places | Wander-Mate</title>
+  <link rel="stylesheet" href="../styles/register.css" />
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY"></script>
+  <style>
+    .map-container {
+      width: 100%;
+      height: 200px;
+      margin-top: 10px;
+    }
 
-      <div class="filter-section">
-        <label for="category">Category:</label>
-        <select name="category" id="category">
-          <option value="all">All Categories</option>
-        </select>
+    .activity-item {
+      margin-bottom: 20px;
+    }
 
-        <div id="tagsSection">
-          <label>Tags:</label>
-          <div id="tagsContainer"></div>
-        </div>
-        <button id="filterButton">Apply Filter</button>
-        <button id="resetButton">Reset</button>
-      </div>
+    .activity-images img {
+      max-width: 100%;
+      height: auto;
+    }
 
-      <div class="activity-list" id="activityList"></div>
+    .button-container {
+      margin-top: 10px;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .update-btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="title">All Places</div>
+
+    <!-- Currency Selector -->
+    <div class="currency-section">
+      <label for="currencySelector">Select Currency:</label>
+      <select id="currencySelector">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+        <option value="JPY">JPY</option>
+        <option value="EGP">EGP</option> <!-- Added EGP option -->
+      </select>
     </div>
 
-    <script>
-      let allActivities = [];
-      let displayedActivities = [];
-      let categories = [];
-      let tags = [];
+    <div class="search-section">
+      <label for="ActivityName">Search by Place Name:</label>
+      <input type="text" id="ActivityName" placeholder="Enter place name" />
+      <button id="searchButton">Search</button>
+    </div>
 
-      async function fetchCategories() {
-        const categorySelect = document.getElementById("category");
-        try {
-          const response = await fetch("http://localhost:8000/getCategories");
-          if (!response.ok) throw new Error("Network response was not ok");
-          categories = await response.json();
-          categories.forEach((category) => {
-            const option = document.createElement("option");
-            option.value = category._id;
-            option.textContent = category.Name;
-            categorySelect.appendChild(option);
-          });
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-          alert("Could not load categories. Please try again later.");
-        }
-      }
+    <div class="filter-section">
+      <label for="category">Category:</label>
+      <select name="category" id="category">
+        <option value="all">All Categories</option>
+      </select>
 
-      async function fetchTags() {
-        const tagsContainer = document.getElementById("tagsContainer");
-        try {
-          const response = await fetch(
-            "http://localhost:8000/readHistoricalTags"
-          );
-          if (!response.ok) throw new Error("Network response was not ok");
-          tags = await response.json();
-          tags.forEach((tag) => {
-            const tagCheckbox = document.createElement("div");
-            tagCheckbox.innerHTML = `
-                        <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
-                        <label for="tag-${tag._id}">${tag.Name}</label>
-                    `;
-            tagsContainer.appendChild(tagCheckbox);
-          });
-        } catch (error) {
-          console.error("Error fetching tags:", error);
-          alert("Could not load tags. Please try again later.");
-        }
-      }
-
-      async function fetchActivities() {
-        try {
-          const response = await fetch("http://localhost:8000/readPlaces");
-          const Activities = await response.json();
-          if (response.ok) {
-            allActivities = Activities;
-            displayedActivities = allActivities;
-            displayActivities(displayedActivities);
-          } else {
-            document.getElementById("activityList").innerHTML =
-              "<p>No Places available</p>";
-          }
-        } catch (error) {
-          console.error("Error fetching Places:", error);
-          document.getElementById("activityList").innerHTML =
-            "<p>An error occurred while fetching Places.</p>";
-        }
-      }
-
-      async function fetchImages(activityId) {
-        try {
-          const response = await fetch(
-            `http://localhost:8000/getPlaceImage/${activityId}`
-          );
-          if (response.ok) {
-            return await response.json();
-          } else {
-            console.error("Error fetching images for place:", activityId);
-          }
-        } catch (error) {
-          console.error("Error fetching images:", error);
-        }
-        return [];
-      }
-
-      async function displayActivities(activities) {
-        const activityList = document.getElementById("activityList");
-        activityList.innerHTML = ""; // Clear existing Places
-
-        for (const activity of activities) {
-          const activityItem = document.createElement("div");
-          activityItem.className = "activity-item";
-
-          // Fetch images for each place
-          const images = await fetchImages(activity._id);
-
-          // Create image container
-          const imageContainer = document.createElement("div");
-          imageContainer.className = "activity-images";
-          images.forEach((image) => {
-            const imgElement = document.createElement("img");
-            imgElement.src = `data:${image.contentType};base64,${image.data}`;
-            imgElement.alt = `${activity.Name} image`;
-            imageContainer.appendChild(imgElement);
-          });
-          const category = activity.Category
-            ? categories.find((cat) => cat._id === activity.Category)
-            : null;
-          const categoryName = category ? category.Name : "No category"; // Fallback if no category
-          let tagNames = "No tags"; // Default message if no tags
-          if (Array.isArray(activity.Tags) && activity.Tags.length > 0) {
-            const matchedTags = activity.Tags.map((tagId) => {
-              const tag = tags.find((t) => t._id === tagId); // Find tag by ID
-              return tag ? tag.Name : null; // Return the tag name if found
-            }).filter((name) => name !== null); // Remove nulls for missing tags
-
-            tagNames =
-              matchedTags.length > 0 ? matchedTags.join(", ") : "No tags"; // Join tag names with commas
-          }
-
-          activityItem.innerHTML = `
-      <div class="activity-details">
-       <div class="field">
-           <label for="placeName">Place Name</label>
-          <input type="text" id="placeName-${
-            activity._id
-          }" name="placeName" placeholder="Place Name" value="${
-            activity.Name
-          }" readonly />
-        </div>
-        <p class="activity-category">Category: ${categoryName}</p>
-          <p class="activity-tags">Tags: ${tagNames}</p>
-        <div class="field">
-          <label for="newDescription">Description</label>
-          <input type="text" id="newDescription-${
-            activity._id
-          }" name="newDescription" placeholder="Description" value="${
-            activity.Description || "No description available"
-          }" readonly />
-        </div>
-        <div class="field">
-          <label for="newLocation">Location</label>
-          <input type="text" id="newLocation-${
-            activity._id
-          }" name="newLocation" placeholder="Location" value="${
-            activity.Location?.coordinates
-              ? activity.Location.coordinates.join(", ")
-              : "Location not available"
-          }" readonly />
-        </div>
-        <div class="field">
-          <label for="newOpeningHours">Opening Hours</label>
-          <input type="text" id="newOpeningHours-${
-            activity._id
-          }" name="newOpeningHours" placeholder="Opening Hours" value="${
-            activity.OpeningHours || "No hours available"
-          }" readonly />
-        </div>
-        <div class="field">
-          <label for="newTicketPrices">Ticket Prices</label>
-          <input type="text" id="newTicketPrices-${
-            activity._id
-          }" name="newTicketPrices" placeholder="Ticket Prices" value="${
-            activity.TicketPrices || "Price not available"
-          }" readonly />
-        </div>
-        <div class="field">
-          <label for="newPictures">Pictures</label>
-          <div id="pictures-${activity._id}" class="activity-images">${
-            imageContainer.innerHTML
-          }</div>
-        </div>
+      <div id="tagsSection">
+        <label>Tags:</label>
+        <div id="tagsContainer"></div>
       </div>
+      <button id="filterButton">Apply Filter</button>
+      <button id="resetButton">Reset</button>
+    </div>
 
-      <div class="map-container" id="map-${activity._id}"></div>
-      <div class="edit-button">
-                        <a href="" class="buy-button" >Book</a>
-                    </div>
-    `;
+    <div class="activity-list" id="activityList"></div>
+  </div>
 
-          activityList.appendChild(activityItem);
-          initMap(activity.Location, `map-${activity._id}`); // Initialize map for this place
+  <script>
+    let allActivities = [];
+    let displayedActivities = [];
+    let categories = [];
+    let tags = [];
+    let exchangeRates = {}; // Store exchange rates
+    let currentCurrency = "USD"; // Default currency
+
+    // Fetch exchange rates for currency conversion
+    async function fetchExchangeRates() {
+      try {
+        const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+        const data = await response.json();
+        exchangeRates = data.rates;
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+
+    // Convert prices to the selected currency
+    function convertPrice(priceInUSD) {
+      const rate = exchangeRates[currentCurrency] || 1; // Default to 1 if rate not found
+      return (priceInUSD * rate).toFixed(2);
+    }
+
+    async function fetchCategories() {
+      const categorySelect = document.getElementById("category");
+      try {
+        const response = await fetch("http://localhost:8000/getCategories");
+        if (!response.ok) throw new Error("Network response was not ok");
+        categories = await response.json();
+        categories.forEach((category) => {
+          const option = document.createElement("option");
+          option.value = category._id;
+          option.textContent = category.Name;
+          categorySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        alert("Could not load categories. Please try again later.");
+      }
+    }
+
+    async function fetchTags() {
+      const tagsContainer = document.getElementById("tagsContainer");
+      try {
+        const response = await fetch("http://localhost:8000/readHistoricalTags");
+        if (!response.ok) throw new Error("Network response was not ok");
+        tags = await response.json();
+        tags.forEach((tag) => {
+          const tagCheckbox = document.createElement("div");
+          tagCheckbox.innerHTML = `
+            <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+            <label for="tag-${tag._id}">${tag.Name}</label>
+          `;
+          tagsContainer.appendChild(tagCheckbox);
+        });
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+        alert("Could not load tags. Please try again later.");
+      }
+    }
+
+    async function fetchActivities() {
+      try {
+        const response = await fetch("http://localhost:8000/readPlaces");
+        const Activities = await response.json();
+        if (response.ok) {
+          allActivities = Activities;
+          displayedActivities = allActivities;
+          displayActivities(displayedActivities);
+        } else {
+          document.getElementById("activityList").innerHTML = "<p>No Places available</p>";
         }
+      } catch (error) {
+        console.error("Error fetching Places:", error);
+        document.getElementById("activityList").innerHTML = "<p>An error occurred while fetching Places.</p>";
       }
+    }
 
-      function initMap(location, elementId) {
-        const map = new google.maps.Map(document.getElementById(elementId), {
-          zoom: 10,
-          center: {
-            lat: location.coordinates[1], // latitude
-            lng: location.coordinates[0], // longitude
-          },
-        });
-
-        new google.maps.Marker({
-          position: {
-            lat: location.coordinates[1],
-            lng: location.coordinates[0],
-          },
-          map: map,
-        });
-      }
-
-      // Delete function to remove a place from the database
-      async function deleteActivity(activityId) {
-        const confirmDelete = confirm(
-          "Are you sure you want to delete this place?"
-        );
-        if (!confirmDelete) return;
-
-        try {
-          const response = await fetch(
-            `http://localhost:8000/deletePlace/${activityId}`,
-            {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (response.ok) {
-            alert("Place deleted successfully.");
-            fetchActivities(); // Refresh the list after deletion
-          } else {
-            alert("Error deleting place.");
-          }
-        } catch (error) {
-          console.error("Error deleting place:", error);
-          alert("An error occurred while deleting the place.");
+    async function fetchImages(activityId) {
+      try {
+        const response = await fetch(`http://localhost:8000/getPlaceImage/${activityId}`);
+        if (response.ok) {
+          return await response.json();
+        } else {
+          console.error("Error fetching images for place:", activityId);
         }
+      } catch (error) {
+        console.error("Error fetching images:", error);
       }
+      return [];
+    }
 
-      // Redirect to update page with the placeId in the URL
-      function updateActivity(activityId) {
-        window.location.href = `updatePlace.html?placeId=${activityId}`;
-      }
+    async function displayActivities(activities) {
+      const activityList = document.getElementById("activityList");
+      activityList.innerHTML = ""; // Clear existing Places
 
-      function applyFiltersAndSearch() {
-        const activityName = document
-          .getElementById("ActivityName")
-          .value.trim()
-          .toLowerCase();
-        const selectedCategory = document.getElementById("category").value;
+      for (const activity of activities) {
+        const activityItem = document.createElement("div");
+        activityItem.className = "activity-item";
 
-        const selectedTags = Array.from(
-          document.querySelectorAll(
-            "#tagsContainer input[type='checkbox']:checked"
-          )
-        ).map((checkbox) => checkbox.value);
+        // Fetch images for each place
+        const images = await fetchImages(activity._id);
 
-        displayedActivities = allActivities.filter((activity) => {
-          const matchesName =
-            activity.Name && activity.Name.toLowerCase().includes(activityName);
-          const matchesCategory =
-            selectedCategory === "all" ||
-            (selectedCategory ? activity.Category === selectedCategory : true);
-          const matchesTags =
-            selectedTags.length === 0 ||
-            (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false);
-          return matchesName && matchesCategory && matchesTags;
+        // Create image container
+        const imageContainer = document.createElement("div");
+        imageContainer.className = "activity-images";
+        images.forEach((image) => {
+          const imgElement = document.createElement("img");
+          imgElement.src = `data:${image.contentType};base64,${image.data}`;
+          imgElement.alt = `${activity.Name} image`;
+          imageContainer.appendChild(imgElement);
         });
 
-        displayActivities(displayedActivities); // Display filtered and searched Places
-      }
+        const category = activity.Category ? categories.find((cat) => cat._id === activity.Category) : null;
+        const categoryName = category ? category.Name : "No category"; // Fallback if no category
 
-      document.addEventListener("DOMContentLoaded", async () => {
-        fetchCategories(); // Fetch categories
-        fetchTags(); // Fetch tags
-        await fetchActivities(); // Then fetch Places
+        let tagNames = "No tags"; // Default message if no tags
+        if (Array.isArray(activity.Tags) && activity.Tags.length > 0) {
+          const matchedTags = activity.Tags.map((tagId) => {
+            const tag = tags.find((t) => t._id === tagId); // Find tag by ID
+            return tag ? tag.Name : null; // Return the tag name if found
+          }).filter((name) => name !== null); // Remove nulls for missing tags
+
+          tagNames = matchedTags.length > 0 ? matchedTags.join(", ") : "No tags"; // Join tag names with commas
+        }
+
+        activityItem.innerHTML = `
+          <div class="activity-details">
+            <div class="field">
+              <label for="placeName">Place Name</label>
+              <input type="text" id="placeName-${activity._id}" name="placeName" placeholder="Place Name" value="${activity.Name}" readonly />
+            </div>
+            <p class="activity-category">Category: ${categoryName}</p>
+            <p class="activity-tags">Tags: ${tagNames}</p>
+            <div class="field">
+              <label for="newDescription">Description</label>
+              <input type="text" id="newDescription-${activity._id}" name="newDescription" placeholder="Description" value="${activity.Description || "No description available"}" readonly />
+            </div>
+            <div class="field">
+              <label for="newLocation">Location</label>
+              <input type="text" id="newLocation-${activity._id}" name="newLocation" placeholder="Location" value="${activity.Location?.coordinates ? activity.Location.coordinates.join(", ") : "Location not available"}" readonly />
+            </div>
+            <div class="field">
+              <label for="newOpeningHours">Opening Hours</label>
+              <input type="text" id="newOpeningHours-${activity._id}" name="newOpeningHours" placeholder="Opening Hours" value="${activity.OpeningHours || "No hours available"}" readonly />
+            </div>
+            <div class="field">
+              <label for="newTicketPrices">Ticket Prices</label>
+              <input type="text" id="newTicketPrices-${activity._id}" name="newTicketPrices" placeholder="Ticket Prices" value="${convertPrice(activity.TicketPrices || 0)} ${currentCurrency}" readonly />
+            </div>
+            <div class="field">
+              <label for="newPictures">Pictures</label>
+              <div id="pictures-${activity._id}" class="activity-images">${imageContainer.innerHTML}</div>
+            </div>
+          </div>
+
+          <div class="map-container" id="map-${activity._id}"></div>
+          <div class="edit-button">
+            <a href="" class="buy-button">Book</a>
+          </div>
+        `;
+
+        activityList.appendChild(activityItem);
+        initMap(activity.Location, `map-${activity._id}`);
+      }
+    }
+
+    function initMap(location, elementId) {
+      const map = new google.maps.Map(document.getElementById(elementId), {
+        zoom: 10,
+        center: {
+          lat: location.coordinates[1],
+          lng: location.coordinates[0],
+        },
       });
 
-      document
-        .getElementById("searchButton")
-        .addEventListener("click", applyFiltersAndSearch);
-      document
-        .getElementById("filterButton")
-        .addEventListener("click", applyFiltersAndSearch);
-
-      document.getElementById("resetButton").addEventListener("click", () => {
-        document.getElementById("ActivityName").value = ""; // Clear the search input
-        document.getElementById("category").selectedIndex = 0; // Reset the category dropdown
-
-        const tagCheckboxes = document.querySelectorAll(
-          "#tagsContainer input[type='checkbox']"
-        );
-        tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
-        displayedActivities = allActivities; // Reset displayed activities
-        displayActivities(displayedActivities); // Display all Places
+      new google.maps.Marker({
+        position: {
+          lat: location.coordinates[1],
+          lng: location.coordinates[0],
+        },
+        map: map,
       });
-      document.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("buy-button")) {
-          event.preventDefault(); // Prevent default link behavior
+    }
 
-          const Username = sessionStorage.getItem("username");
-          console.log("haha");
+    function applyFiltersAndSearch() {
+      const activityName = document.getElementById("ActivityName").value.trim().toLowerCase();
+      const selectedCategory = document.getElementById("category").value;
 
-          // Call the backend to check age
-          try {
-            const body = JSON.stringify({ Username });
-            console.log(body);
-            const response = await fetch("http://localhost:8000/getAge", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json", // Set the Content-Type to application/json
-              },
-              body: body,
-            });
+      const selectedTags = Array.from(
+        document.querySelectorAll("#tagsContainer input[type='checkbox']:checked")
+      ).map((checkbox) => checkbox.value);
 
-            const data = await response.json();
-
-            if (!data.eligible) {
-              alert("You can't buy; you are under 18");
-            } else {
-              // Proceed to the next page or perform the buy action
-              window.location.href = "nextPage.html"; // Replace with your target page
-            }
-          } catch (error) {
-            console.error("Error checking age:", error);
-            alert("An error occurred while checking your age.");
-          }
-        }
+      displayedActivities = allActivities.filter((activity) => {
+        const matchesName = activity.Name && activity.Name.toLowerCase().includes(activityName);
+        const matchesCategory = selectedCategory === "all" || (selectedCategory ? activity.Category === selectedCategory : true);
+        const matchesTags =
+          selectedTags.length === 0 || (activity.Tags?.some((tag) => selectedTags.includes(tag)) ?? false);
+        return matchesName && matchesCategory && matchesTags;
       });
-      const shareLinkButton = document.getElementById("share-link-button");
-        const shareEmailButton = document.getElementById("share-email-button");
-        const flagButton = document.getElementById("flag-button");
 
-        shareLinkButton.addEventListener("click", async () => {
-            const activityId = attractions._id || getQueryParams().id;
-            console.log(activityId);
-            const response = await fetch("http://localhost:8000/shareActivity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "link" }),
-            });
-           
-            const result = await response.json();
-            alert(`Activity shared successfully! Link: ${result.link}`);
-        });
+      displayActivities(displayedActivities);
+    }
 
-        shareEmailButton.addEventListener("click", async () => {
-            const activityId = attractions.id || getQueryParams().id;
-            const email = prompt("Enter the recipient's email address:");
-            if (!email) return;
+    document.addEventListener("DOMContentLoaded", async () => {
+      await fetchExchangeRates(); // Fetch exchange rates
+      fetchCategories();
+      fetchTags();
+      await fetchActivities();
+    });
 
-            const response = await fetch("http://localhost:8000/shareActivity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "email", email }),
-            });
+    // Currency selection listener
+    document.getElementById("currencySelector").addEventListener("change", (event) => {
+      currentCurrency = event.target.value;
+      displayActivities(displayedActivities); // Re-display activities with updated currency
+    });
 
-            const result = await response.json();
-            alert(`Activity shared successfully! ${result.link}`);
-        });
-    </script>
-  </body>
+    document.getElementById("searchButton").addEventListener("click", applyFiltersAndSearch);
+    document.getElementById("filterButton").addEventListener("click", applyFiltersAndSearch);
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      document.getElementById("ActivityName").value = "";
+      document.getElementById("category").selectedIndex = 0;
+
+      const tagCheckboxes = document.querySelectorAll("#tagsContainer input[type='checkbox']");
+      tagCheckboxes.forEach((checkbox) => (checkbox.checked = false));
+      displayedActivities = allActivities;
+      displayActivities(displayedActivities);
+    });
+  </script>
+</body>
+
 </html>
