@@ -58,34 +58,59 @@
     }
 
     async function fetchBookings(touristID) {
+    try {
+      const response = await fetch(`http://localhost:8000/getMyBookings/${touristID}`);
+      if (!response.ok) throw new Error("Failed to fetch bookings");
+
+      const bookings = await response.json();
+      const bookingList = document.getElementById("bookingList");
+
+      if (bookings.length === 0) {
+        bookingList.innerHTML = "<li>No bookings found.</li>";
+      } else {
+        bookingList.innerHTML = bookings.map((booking) => `
+          <li>
+            <strong>Booking ID:</strong> ${booking._id} <br>
+            <strong>Item ID:</strong> ${booking.itemId} <br>
+            <strong>Item Model:</strong> ${booking.itemModel} <br>
+            <strong>Created at:</strong> ${new Date(booking.createdAt).toLocaleDateString()} <br>
+            <strong>Booked Date:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
+            <button class="cancel-button" onclick="cancelBooking('${booking._id}', '${booking.bookedDate}')">Cancel Booking</button>
+          </li>
+        `).join("");
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      alert("No bookings found");
+    }
+  }
+
+  async function cancelBooking(bookingID, createdAt) {
+    const createdDate = new Date(createdAt);
+    const currentDate = new Date();
+    const hoursDifference = Math.abs(createdDate - currentDate) / 36e5; // Convert milliseconds to hours
+    console.log("Far2 el waaaa2t", hoursDifference);
+    if (hoursDifference > 48) {
+      // Automatically cancel booking if more than 48 hours have passed
       try {
-        const response = await fetch(`http://localhost:8000/getMyBookings/${touristID}`);
-        if (!response.ok) throw new Error("Failed to fetch bookings");
-
-        const bookings = await response.json();
-        const bookingList = document.getElementById("bookingList");
-
-        if (bookings.length === 0) {
-          bookingList.innerHTML = "<li>No bookings found.</li>";
+        const response = await fetch(`http://localhost:8000/cancelBooking/${bookingID}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(errorData.error || "Failed to cancel booking.");
         } else {
-          bookingList.innerHTML = bookings.map((booking) => `
-            <li>
-              <strong>Booking ID:</strong> ${booking._id} <br>
-              <strong>Item ID:</strong> ${booking.itemId} <br>
-              <strong>Item Model:</strong> ${booking.itemModel} <br>
-              <strong>Created at:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
-              <strong>Booked Date:</strong> ${new Date(booking.createdAt).toLocaleDateString()} <br>
-              <button class="cancel-button" onclick="cancelBooking('${booking._id}')">Cancel Booking</button>
-            </li>
-          `).join("");
+          alert("Booking cancelled automatically as it was created more than 48 hours ago.");
+          // Reload bookings to update the list
+          const touristID = sessionStorage.getItem('touristID');
+          if (touristID) fetchBookings(touristID);
         }
       } catch (error) {
-        console.error("Error fetching bookings:", error);
-        alert("No bookings found");
+        console.error("Error cancelling booking:", error);
+        alert("Could not cancel booking. Please try again later.");
       }
-    }
-
-    async function cancelBooking(bookingID) {
+    } else {
+      // Ask for confirmation if within 48 hours
       if (!confirm("Are you sure you want to cancel this booking?")) {
         return;
       }
@@ -109,17 +134,18 @@
         alert("Could not cancel booking. Please try again later.");
       }
     }
+  }
 
-    // Retrieve and set the tourist ID when the page loads
-    window.onload = () => {
-      const touristID = sessionStorage.getItem('touristID');
-      if (touristID) {
-        document.getElementById("touristID").value = touristID;
-        fetchBookings(touristID);
-      } else {
-        fetchTouristID();
-      }
-    };
+  // Retrieve and set the tourist ID when the page loads
+  window.onload = () => {
+    const touristID = sessionStorage.getItem('touristID');
+    if (touristID) {
+      document.getElementById("touristID").value = touristID;
+      fetchBookings(touristID);
+    } else {
+      fetchTouristID();
+    }
+  };
   </script>
 </body>
 </html>
