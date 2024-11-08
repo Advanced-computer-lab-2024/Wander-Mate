@@ -777,10 +777,12 @@ const searchHotel = async (req, res) => {
     // Retrieve the first 5 hotels and extract relevant details
     const hotels = hotelData.data.slice(0, 5).map(hotel => ({
       title: hotel.title,
-      price: hotel.price ? hotel.price : 'N/A',  // Price information if available
-      rating: hotel.rating ? hotel.rating : 'N/A', // Rating if available
-      address: hotel.address ? hotel.address : 'N/A', // Address if available
-      imageUrl: hotel.imageUrl ? hotel.imageUrl : 'N/A' // Image URL if available
+      price: hotel.priceForDisplay || 'N/A',
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : 'N/A',
+      provider: hotel.provider || 'N/A',
+      cancellationPolicy: hotel.priceDetails || 'N/A',
+      isSponsored: hotel.isSponsored || false,
+      imageUrl: hotel.cardPhotos && hotel.cardPhotos[0] ? hotel.cardPhotos[0].url : 'N/A'
     }));
 
     res.status(200).json(hotels);
