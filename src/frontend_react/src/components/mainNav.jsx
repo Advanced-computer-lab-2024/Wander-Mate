@@ -17,6 +17,9 @@ const MainNav = ({ targetId1, targetId2 }) => {
   const handleRegister = () => {
     navigate("/registerPage");
   };
+  const handleLogin = () => {
+    navigate("/loginPage");
+  }
 
   const [isVisible, setIsVisible] = useState(true);
   const [color, setColor] = useState(false);
@@ -85,7 +88,7 @@ const MainNav = ({ targetId1, targetId2 }) => {
         </a>
       </div>
       <div className="startGroup">
-        <Button variant="outline" size="xs" style={{ left: "88%" }}>
+        <Button variant="outline" size="xs" style={{ left: "88%" }} onClick={handleLogin}>
           Login
         </Button>
         <Button size="xs" style={{ left: "82.5%" }} onClick={handleRegister}>

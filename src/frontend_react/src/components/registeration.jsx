@@ -487,6 +487,16 @@ const Registration = () => {
               {activestep === steps.length - 1 ? "Submit" : "Next"}
             </Button>
           </div>
+          <div className="mt-5 2xl:mt-8 text-center text-base text-default-600">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/loginPage")}
+              className="text-primary"
+              type="button"
+            >
+              Sign In
+            </button>
+          </div>
         </React.Fragment>
       )}
     </div>

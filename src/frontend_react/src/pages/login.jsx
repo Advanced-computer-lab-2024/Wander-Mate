@@ -11,10 +11,12 @@ import { signIn } from "next-auth/react"; // Consider switching to your own auth
 import toast from "react-hot-toast";
 import { cn } from "../lib/utils";
 import { Icon } from "@iconify/react";
-import { Checkbox } from "../components/ui/checkbox";
 import { useMediaQuery } from "../hooks/use-media-query";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Toaster, toast as reToast } from "react-hot-toast";
+import { useState } from "react";
 
+import axios from "axios";
 const SiteLogo = () => (
   <svg
     id="Layer_1"
@@ -40,15 +42,16 @@ const SiteLogo = () => (
 );
 
 const schema = z.object({
-  email: z.string().email({ message: "Your email is invalid." }),
-  password: z.string().min(4),
+  Username: z.string().min(1),
+  password: z.string().min(1),
 });
 
 const LogInForm = () => {
   const [isPending, startTransition] = React.useTransition();
   const [passwordType, setPasswordType] = React.useState("password");
   const isDesktop2xl = useMediaQuery("(max-width: 1530px)");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
+  const [rememberMe, setRememberMe] = useState(false);
 
   const togglePasswordType = () => {
     setPasswordType((prev) => (prev === "text" ? "password" : "text"));
@@ -62,29 +65,86 @@ const LogInForm = () => {
   } = useForm({
     resolver: zodResolver(schema),
     mode: "all",
-    
   });
 
-  const onSubmit = (data) => {
-    startTransition(async () => {
-      let response = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
+  const onSubmit = async (data) => {
+    const toastId = reToast.loading("Logging in...");
+    try {
+      const response = await axios.post("http://localhost:8000/logIn", {
+        Username: data.Username,
+        Password: data.password,
+        rememberMe: rememberMe,
       });
-      if (response?.ok) {
-        toast.success("Login Successful");
-        navigate("/dashboard"); // Use navigate for navigation
-        reset();
-      } else if (response?.error) {
-        toast.error(response?.error);
+      if (response.status === 200) {
+        sessionStorage.setItem("username", response.data.Username);
+        switch (response.data.Type) {
+          case "Admin":
+            reToast.success("Logged in successfully!", { id: toastId });
+
+            setTimeout(() => {
+              navigate("/admin");
+            }, 1000);
+            break;
+          case "Tourist":
+            reToast.success("Logged in successfully!", {
+              id: toastId,
+            });
+
+            setTimeout(() => {
+              navigate("/tourist");
+            }, 1000);
+            break;
+          case "Seller":
+            reToast.success("Logged in successfully!", {
+              id: toastId,
+            });
+
+            setTimeout(() => {
+              navigate("/seller");
+            }, 1000);
+            break;
+          case "TourGuide":
+            reToast.success("Logged in successfully!", {
+              id: toastId,
+            });
+
+            setTimeout(() => {
+              navigate("/tourGuide");
+            }, 1000);
+            break;
+          case "TourismGoverner":
+            reToast.success("Logged in successfully!", {
+              id: toastId,
+            });
+
+            setTimeout(() => {
+              navigate("/tourismGoverner");
+            }, 1000);
+            break;
+          case "Advertiser":
+            reToast.success("Logged in successfully!", {
+              id: toastId,
+            });
+
+            setTimeout(() => {
+              navigate("/advertiser");
+            }, 1000);
+            break;
+          default:
+            reToast.error("Wrong username or password", { id: toastId });
+
+            throw new Error("Username or Password is incorrect");
+        }
       }
-    });
+    } catch (error) {
+      reToast.error("Wrong username or password.", { id: toastId });
+    }
   };
 
   return (
     <div className="w-full py-10">
-      <button onClick={() => navigate("/dashboard")} className="inline-block">
+      <Toaster />
+      <button onClick={() => navigate("/")} className="inline-block">
         <SiteLogo className="h-10 w-10 2xl:w-14 2xl:h-14 text-primary" />
       </button>
       <div className="2xl:mt-8 mt-6 2xl:text-3xl text-2xl font-bold text-default-900">
@@ -95,23 +155,24 @@ const LogInForm = () => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 2xl:mt-7">
         <div>
-          <Label htmlFor="email" className="mb-2 font-medium text-default-600">
-            Email
+          <Label
+            htmlFor="Username"
+            className="mb-2 font-medium text-default-600"
+          >
+            Username
           </Label>
           <Input
             disabled={isPending}
-            {...register("email")}
-            type="email"
-            id="email"
-            placeholder="JohnDoe@wandermate.com"
-            className={cn("", {
-              "border-destructive": errors.email,
-            })}
+            {...register("Username")}
+            type="Username"
+            id="Username"
+            placeholder="Username"
+            className={errors.Username ? "border-destructive" : ""}
             size={!isDesktop2xl ? "xl" : "lg"}
           />
         </div>
-        {errors.email && (
-          <div className="text-destructive mt-2">{errors.email.message}</div>
+        {errors.Username && (
+          <div className="text-destructive mt-2">Please enter you username</div>
         )}
 
         <div className="mt-3.5">
@@ -127,7 +188,7 @@ const LogInForm = () => {
               {...register("password")}
               type={passwordType}
               id="password"
-              className="peer"
+              className={errors.password ? "border-destructive" : ""}
               size={!isDesktop2xl ? "xl" : "lg"}
               placeholder="password"
             />
@@ -150,22 +211,18 @@ const LogInForm = () => {
           </div>
         </div>
         {errors.password && (
-          <div className="text-destructive mt-2">{errors.password.message}</div>
+          <div className="text-destructive mt-2">Please enter you password</div>
         )}
 
         <div className="mt-5 mb-8 flex flex-wrap gap-2">
           <div className="flex-1 flex items-center gap-1.5">
-            <Checkbox
-              size="sm"
-              className="border-default-300 mt-[1px]"
+            <label htmlFor="isRemebered">Remember me</label>
+            <input
+              type="checkbox"
               id="isRemebered"
+              style={{ marginTop: "4px" }}
+              onChange={() => setRememberMe(!rememberMe)}
             />
-            <Label
-              htmlFor="isRemebered"
-              className="text-sm text-default-600 cursor-pointer whitespace-nowrap"
-            >
-              Remember me
-            </Label>
           </div>
           <button
             onClick={() => navigate("/auth/forgot2")} // Use button for navigation
@@ -188,7 +245,7 @@ const LogInForm = () => {
       <div className="mt-5 2xl:mt-8 text-center text-base text-default-600">
         Don't have an account?{" "}
         <button
-          onClick={() => navigate("/auth/register2")} // Use button for navigation
+          onClick={() => navigate("/registerPage")}
           className="text-primary"
           type="button"
         >

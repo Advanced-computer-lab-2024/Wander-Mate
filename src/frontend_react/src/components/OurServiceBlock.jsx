@@ -24,7 +24,7 @@ const OurService = ({ id }) => {
           flexWrap: "wrap",
         }}
       >
-        <ServiceCard style={{ background: "#E7E7E7" }}>
+        <ServiceCard style={{ background: "#E7E7E7" }} title={"Ticket Booking"} subTitle={"We book all kind of national or international ticket for your destinaion."}>
           <svg
             width="45"
             height="45"
@@ -39,7 +39,7 @@ const OurService = ({ id }) => {
             />
           </svg>
         </ServiceCard>
-        <ServiceCard>
+        <ServiceCard title={"Hotel Booking"} subTitle={"You can easily book your according to your budget hotel by our website."}>
           <svg
             width="45"
             height="45"
@@ -57,7 +57,7 @@ const OurService = ({ id }) => {
             />
           </svg>
         </ServiceCard>
-        <ServiceCard style={{ background: "#E7E7E7" }}>
+        <ServiceCard style={{ background: "#E7E7E7" }} title={"Tour Plan"} subTitle={"We provide you the best plan within a short time to explore more."}>
           <svg
             width="41"
             height="41"

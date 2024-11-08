@@ -1,54 +1,39 @@
-import React from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "../../src/components/ui/table"; // adjust the import path as needed
+import { Fragment } from "react";
+import { columns } from "./table/columns";
+import { DataTable } from "./table/data-table";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const ViewAllComplaints = () => {
-  // Example data, you can replace this with your actual data source
-  const complaints = [
-    { id: 1, name: "John Doe", issue: "Late delivery", status: "Resolved" },
-    { id: 2, name: "Jane Smith", issue: "Damaged item", status: "Pending" },
-    { id: 3, name: "Sam Wilson", issue: "Incorrect order", status: "In Progress" },
-  ];
-
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/viewAllComplaints"
+        );
+        if (response.status === 200) {
+          console.log(response);
+          setComplaints(response.data.complaints);
+        } else {
+          setError("No complaints found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch complaints.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchComplaints();
+    console.log(complaints);
+  }, []);
   return (
-    <div className="p-4">
-      <Table wrapperClass="my-4">
-        <TableCaption>List of all complaints</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Issue</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {complaints.map((complaint) => (
-            <TableRow key={complaint.id}>
-              <TableCell>{complaint.id}</TableCell>
-              <TableCell>{complaint.name}</TableCell>
-              <TableCell>{complaint.issue}</TableCell>
-              <TableCell>{complaint.status}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={4} className="text-center">
-              Showing {complaints.length} complaints
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </div>
+    <Fragment>
+      <DataTable data={complaints} columns={columns} />
+    </Fragment>
   );
 };
 
