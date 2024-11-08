@@ -1,7 +1,7 @@
 import React from "react";
 import "../../assets/css/serviceCard.css";
 
-const ServiceCard = ({children, style}) => {
+const ServiceCard = ({children, style, title, subTitle}) => {
   return (
     <div className="group-593">
       <div className="rectangle-5" style={style}>
@@ -10,10 +10,9 @@ const ServiceCard = ({children, style}) => {
           </div>
         <div className="frame-7">
 
-          <h2 className="hotel-booking">Hotel Booking</h2>
+          <h2 className="hotel-booking">{title}</h2>
           <p className="description">
-            You can easily book your according to your budget hotel by our
-            website.
+            {subTitle}
           </p>
         </div>
       </div>

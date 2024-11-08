@@ -1,7 +1,32 @@
 import React from "react";
 import SmallCard from "./ui/smallCard";
 import "../assets/css/ourAcheivements.css";
+import { useState, useEffect, useRef } from "react";
 const OurAcheivementsBlock = () => {
+  const [isVisible, setIsVisible] = useState(false);
+    const handleVisibilityChange = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        } else {
+          entry.target.classList.remove("visible");
+        }
+      });
+    };
+
+     useEffect(() => {
+       const observer = new IntersectionObserver(handleVisibilityChange, {
+         threshold: 0.5, // Trigger when 50% of the card is visible
+       });
+
+       const elements = document.querySelectorAll(".card");
+       elements.forEach((element) => observer.observe(element));
+
+       return () => {
+         elements.forEach((element) => observer.unobserve(element));
+       };
+     }, []);
+
   return (
     <div className="rectangle">
       <div className="world-map">

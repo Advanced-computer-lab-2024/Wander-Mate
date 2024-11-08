@@ -57,7 +57,11 @@ const createAdmin = async (req, res) => {
       Password: hashedPassword,
     });
     const userId = admin._id;
-    await userModel.create({ Username: Username, userID: userId, Type: "Admin" });
+    await userModel.create({
+      Username: Username,
+      userID: userId,
+      Type: "Admin",
+    });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -692,8 +696,8 @@ const getID = async (req, res) => {
 
 const getAdminID = async (req, res) => {
   try {
-    const {Username} = req.body;
-    
+    const { Username } = req.body;
+
     const user = await userModel.findOne({ Username: Username });
     res.status(200).json({ userID: user.userId }); // Send user as JSON response
   } catch (error) {
@@ -1081,7 +1085,7 @@ const flagEventOrItinerary = async (req, res) => {
       updateData.isFlagged = true;
       const updatedItem = await attractions.findByIdAndUpdate(
         id,
-        { $set: {isFlagged: true} }, // Dynamically update the field `isFlagged`
+        { $set: { isFlagged: true } }, // Dynamically update the field `isFlagged`
         { new: true, runValidators: true } // Return the updated document and run validations
       );
 
@@ -1117,10 +1121,11 @@ const flagEventOrItinerary = async (req, res) => {
     }
   } catch (error) {
     console.error("Error flagging item:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 const getAllUsernames = async (req, res) => {
   try {
@@ -1189,7 +1194,7 @@ const createToken = (name) => {
 
 const login = async (req, res) => {
   try {
-    const { Username, Password } = req.body;
+    const { Username, Password, rememberMe } = req.body;
 
     // Check if both fields are provided
     if (!Username || !Password) {
@@ -1238,8 +1243,12 @@ const login = async (req, res) => {
     // Create a session or token (if using JWT, generate a token here)
     // Example using JWT:
     const token = createToken(userLogged.Username);
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
+    };
 
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.cookie("jwt", token, cookieOptions);
     res.status(200).json({ Username: Username, Type: user.Type });
   } catch (err) {
     console.error(err);

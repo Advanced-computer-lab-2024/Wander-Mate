@@ -3,7 +3,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
 import { cva } from "class-variance-authority";
 import { cn } from "../../lib/utils";
-import { Label } from "../../components/ui/label";
+import { Label } from "./label";
 import { Check } from "lucide-react";
 
 const checkboxVariants = cva(
@@ -138,7 +138,7 @@ const Checkbox = React.forwardRef(
                 "text-xs": size === "xs",
                 "text-sm": size === "sm",
                 "text-base": size === "md",
-                // "text-lg": size === "lg",
+                "text-lg": size === "lg",
                 "text-lg": size === "xl",
                 "relative  select-none text-medium inline-flex items-center justify-center before:content-[''] before:absolute before:bg-foreground before:w-0 before:h-0.5 peer-data-[state=checked]:opacity-60 peer-data-[state=checked]:before:w-full ":
                   lineThrough,

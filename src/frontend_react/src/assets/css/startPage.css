@@ -7,7 +7,7 @@
   gap: 10px;
   position: relative; /* Keep it as relative */
   width: 100vw;
-  min-height: 100vh; /* Use min-height */
+  height: 100vh; /* Use min-height */
   padding: 0; /* Remove padding */
   background: linear-gradient(
       180deg,
@@ -15,11 +15,13 @@
       rgba(0, 0, 0, 0) 100%
     ),
     url("../../public/images/pyramids.jpg") center center / cover no-repeat;
-  z-index: 1; 
+  z-index: 1;
+  overflow-y: hidden;
 }
 
 .full {
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 /* Container */
@@ -30,14 +32,15 @@
   padding: 0px;
   gap: 48px;
   width: 100%;
-  height: 218px;
+  height: 100vh;
+  margin-top: 35vh;
 }
 
 /* QUALITY & PASSION */
 .title {
   width: 100%;
   height: auto; /* Adjust height to auto for better flexibility */
-  font-family: 'Josefin Sans', sans-serif; /* Replace with your desired font */
+  font-family: "Josefin Sans", sans-serif; /* Replace with your desired font */
   font-style: normal;
   font-weight: 700;
   font-size: 96px; /* Adjust size as needed */
@@ -48,7 +51,7 @@
   text-align: center; /* Ensure text is centered */
   letter-spacing: 0.105em;
   text-transform: uppercase;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 20px; /* Added margin to raise the title */
 }
 
@@ -59,7 +62,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 16px ;
+  padding: 16px;
   gap: 10px;
   width: 198px;
   height: 50px;
@@ -84,6 +87,17 @@
   line-height: 100%;
   text-align: center;
   color: #ffffff;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Media Queries (adjust breakpoints as needed) */
