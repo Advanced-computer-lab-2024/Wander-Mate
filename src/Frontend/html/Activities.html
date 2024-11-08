@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All Activities | Wander-Mate</title>
-  <link rel="stylesheet" href="../styles/register.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Activities | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
-    async defer></script>
-  <style>
-    .map-container {
-      width: 100%;
-      height: 200px;
-      margin-top: 10px;
-    }
+    async
+      defer
+    ></script>
+    <style>
+      .map-container {
+        width: 100%;
+        height: 200px;
+        margin-top: 10px;
+      }
 
-    .activity-item {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-    }
-  </style>
-</head>
+      .activity-item {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="wrapper">
-    <div class="title">All Activities</div>
+  <body>
+    <div class="wrapper">
+      <div class="title">All Activities</div>
     <!-- Currency Selection -->
     <div class="currency-section">
       <label for="currencySelector">Select Currency:</label>
@@ -38,52 +39,56 @@
       </select>
     </div>
 
-    <!-- Search Section -->
-    <div class="search-section">
-      <label for="ActivityName">Search by Activity Name:</label>
-      <input type="text" id="ActivityName" placeholder="Enter activity name" />
-      <button id="searchButton">Search</button>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="filter-section">
-      <label for="minPrice">Min Price:</label>
-      <input type="number" id="minPrice" placeholder="0" />
-      <label for="maxPrice">Max Price:</label>
-      <input type="number" id="maxPrice" placeholder="1000" />
-
-      <label for="minDate">Min Date:</label>
-      <input type="date" id="minDate" />
-      <label for="maxDate">Max Date:</label>
-      <input type="date" id="maxDate" />
-
-      <label for="category">Category:</label>
-      <select name="category" id="category">
-        <option value="all">All Categories</option>
-      </select>
-
-      <div id="tagsSection">
-        <label>Tags:</label>
-        <div id="tagsContainer"></div>
+      <!-- Search Section -->
+      <div class="search-section">
+        <label for="ActivityName">Search by Activity Name:</label>
+        <input
+          type="text"
+          id="ActivityName"
+          placeholder="Enter activity name"
+        />
+        <button id="searchButton">Search</button>
       </div>
 
-      <button id="filterButton">Apply Filter</button>
-      <button id="resetButton">Reset</button>
-      <button id="sortButton">Sort by Ratings</button>
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" placeholder="0" />
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" placeholder="1000" />
+
+        <label for="minDate">Min Date:</label>
+        <input type="date" id="minDate" />
+        <label for="maxDate">Max Date:</label>
+        <input type="date" id="maxDate" />
+
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+          <option value="all">All Categories</option>
+        </select>
+
+        <div id="tagsSection">
+          <label>Tags:</label>
+          <div id="tagsContainer"></div>
+        </div>
+
+        <button id="filterButton">Apply Filter</button>
+        <button id="resetButton">Reset</button>
+        <button id="sortButton">Sort by Ratings</button>
+      </div>
+
+      <!-- Activity List Section -->
+      <div class="activity-list" id="activityList"></div>
     </div>
 
-    <!-- Activity List Section -->
-    <div class="activity-list" id="activityList"></div>
-  </div>
-
-  <script>
-    // Global variables
-    let allActivities = [];
-    let displayedActivities = [];
-    let allAdvertisers = [];
-    let advertiserMap = {};
-    let categories = [];
-    let tags = [];
+    <script>
+      // Global variables
+      let allActivities = [];
+      let displayedActivities = [];
+      let allAdvertisers = [];
+      let advertiserMap = {};
+      let categories = [];
+      let tags = [];
     let exchangeRates = {}; // Store exchange rates
     let currentCurrency = "USD"; // Default currency
 
@@ -104,129 +109,145 @@
       return (priceInUSD * rate).toFixed(2);
     }
 
-    // Fetch and display categories in the filter
-    async function fetchCategories() {
-      const categorySelect = document.getElementById("category");
-      try {
-        const response = await fetch("http://localhost:8000/getCategories");
-        categories = await response.json();
-        categories.forEach((category) => {
-          const option = document.createElement("option");
-          option.value = category._id;
-          option.textContent = category.Name;
-          categorySelect.appendChild(option);
-        });
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+      // Fetch and display categories in the filter
+      async function fetchCategories() {
+        const categorySelect = document.getElementById("category");
+        try {
+          const response = await fetch("http://localhost:8000/getCategories");
+          categories = await response.json();
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id;
+            option.textContent = category.Name;
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
       }
-    }
 
-    // Fetch and display tags in the filter
-    async function fetchTags() {
-      const tagsContainer = document.getElementById("tagsContainer");
-      try {
-        const response = await fetch("http://localhost:8000/readPreferenceTags");
-        tags = await response.json();
-        tags.forEach((tag) => {
-          const tagCheckbox = document.createElement("div");
-          tagCheckbox.innerHTML = `
+      // Fetch and display tags in the filter
+      async function fetchTags() {
+        const tagsContainer = document.getElementById("tagsContainer");
+        try {
+          const response = await fetch(
+            "http://localhost:8000/readPreferenceTags"
+          );
+          tags = await response.json();
+          tags.forEach((tag) => {
+            const tagCheckbox = document.createElement("div");
+            tagCheckbox.innerHTML = `
             <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
             <label for="tag-${tag._id}">${tag.Name}</label>
           `;
-          tagsContainer.appendChild(tagCheckbox);
+            tagsContainer.appendChild(tagCheckbox);
+          });
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+        }
+      }
+
+      // Fetch and store advertisers
+      async function fetchAdvertisers() {
+        try {
+          const response = await fetch("http://localhost:8000/getAdvertisers");
+          const data = await response.json();
+          allAdvertisers = data.Creator;
+          advertiserMap = allAdvertisers.reduce((map, Creator) => {
+            map[Creator._id] = Creator.Username;
+            return map;
+          }, {});
+        } catch (error) {
+          console.error("Error fetching advertisers:", error);
+        }
+      }
+
+      // Fetch and display activities
+      async function fetchActivities() {
+        try {
+          const response = await fetch("http://localhost:8000/readActivities");
+          allActivities = await response.json();
+          displayedActivities = allActivities;
+          displayActivities(displayedActivities);
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+        }
+      }
+
+      // Initialize the map for each activity location
+      function initMap(location, elementId) {
+        const map = new google.maps.Map(document.getElementById(elementId), {
+          zoom: 10,
+          center: {
+            lat: location.coordinates[1],
+            lng: location.coordinates[0],
+          },
         });
-      } catch (error) {
-        console.error("Error fetching tags:", error);
+
+        new google.maps.Marker({
+          position: {
+            lat: location.coordinates[1],
+            lng: location.coordinates[0],
+          },
+          map: map,
+        });
       }
-    }
 
-    // Fetch and store advertisers
-    async function fetchAdvertisers() {
-      try {
-        const response = await fetch("http://localhost:8000/getAdvertisers");
-        const data = await response.json();
-        allAdvertisers = data.Creator;
-        advertiserMap = allAdvertisers.reduce((map, Creator) => {
-          map[Creator._id] = Creator.Username;
-          return map;
-        }, {});
-      } catch (error) {
-        console.error("Error fetching advertisers:", error);
-      }
-    }
+      // Display activities in the DOM
+            function displayActivities(activities) {
+            const activityList = document.getElementById("activityList");
+            activityList.innerHTML = "";
 
-    // Fetch and display activities
-    async function fetchActivities() {
-      try {
-        const response = await fetch("http://localhost:8000/readActivities");
-        allActivities = await response.json();
-        displayedActivities = allActivities;
-        displayActivities(displayedActivities);
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      }
-    }
+            activities.forEach((activity) => {
+              const activityItem = document.createElement("div");
+              activityItem.className = "activity-item";
 
-    // Initialize the map for each activity location
-    function initMap(location, elementId) {
-      const map = new google.maps.Map(document.getElementById(elementId), {
-        zoom: 10,
-        center: {
-          lat: location.coordinates[1],
-          lng: location.coordinates[0],
-        },
-      });
+              const category = activity.Category
+                ? categories.find((cat) => cat._id === activity.Category)
+                : null;
+              const categoryName = category ? category.Name : "No category";
+              const tagNames =
+            activity.Tags?.map(
+                  (tagId) =>
+                tags.find((tag) => tag._id === tagId)?.Name || "No tags"
+                ).join(", ") || "No tags";
 
-      new google.maps.Marker({
-        position: {
-          lat: location.coordinates[1],
-          lng: location.coordinates[0],
-        },
-        map: map,
-      });
-    }
-
-    // Display activities in the DOM
-    function displayActivities(activities) {
-      const activityList = document.getElementById("activityList");
-      activityList.innerHTML = "";
-
-      activities.forEach((activity) => {
-        const activityItem = document.createElement("div");
-        activityItem.className = "activity-item";
-
-        const category = activity.Category
-          ? categories.find((cat) => cat._id === activity.Category)
-          : null;
-        const categoryName = category ? category.Name : "No category";
-        const tagNames = activity.Tags?.map(
-          (tagId) => tags.find((tag) => tag._id === tagId)?.Name || "No tags"
-        ).join(", ") || "No tags";
-
-        activityItem.innerHTML = `
+              activityItem.innerHTML = `
           <div class="activity-details">
             <h2 class="activity-name">${activity.Name}</h2>
             <p class="activity-price">Price: ${convertPrice(activity.Price)} ${currentCurrency}</p>
             <p class="activity-category">Category: ${categoryName}</p>
             <p class="activity-tags">Tags: ${tagNames}</p>
-            <p class="activity-creator">Advertiser: ${advertiserMap[activity.Creator] || "Unknown"}</p>
-            <p class="activity-ratings">Ratings: ${"★".repeat(activity.Ratings)}${"☆".repeat(5 - activity.Ratings)}</p>
-            <p class="activity-date">Date: ${new Date(activity.Date).toLocaleDateString()}</p>
+            <p class="activity-creator">Advertiser: ${
+          advertiserMap[activity.Creator] || "Unknown"
+        }</p>
+            <p class="activity-ratings">Ratings: ${"★".repeat(
+          activity.Ratings
+        )}${"☆".repeat(5 - activity.Ratings)}</p>
+            <p class="activity-date">Date: ${new Date(
+          activity.Date
+        ).toLocaleDateString()}</p>
           </div>
           <div class="edit-button">
-            <button class="buy-button" data-id="${activity._id}">Book</button>
+            <button class="buy-button" data-id="${activity._id}" data-date="${
+            activity.Date
+          }">Book</button>
           </div>
           <div class="share-buttons">
-            <button class="share-link-button" data-id="${activity._id}">Share via Link</button>
-            <button class="share-email-button" data-id="${activity._id}">Share via Email</button>
+            <button class="share-link-button" data-id="${
+          activity._id
+        }">Share via Link</button>
+            <button class="share-email-button" data-id="${
+          activity._id
+        }">Share via Email</button>
           </div>
           <div class="map-container" id="map-${activity._id}"></div>
         `;
 
-        activityList.appendChild(activityItem);
-        initMap(activity.Location, `map-${activity._id}`);
-      });
-    }
+              activityList.appendChild(activityItem);
+              initMap(activity.Location, `map-${activity._id}`);
+            });
+          }
 
     // Filter and search function with currency conversion for price
     function applyFiltersAndSearch() {
@@ -261,48 +282,59 @@
       displayActivities(displayedActivities);
     }
 
-    // Event delegation for share buttons
-    document.getElementById("activityList").addEventListener("click", async (event) => {
-      const activityId = event.target.getAttribute("data-id");
+          // Event delegation for share buttons
+          document
+        .getElementById("activityList")
+        .addEventListener("click", async (event) => {
+              const activityId = event.target.getAttribute("data-id");
 
-      if (event.target.classList.contains("share-link-button")) {
-        try {
-          const response = await fetch("http://localhost:8000/shareActivity", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ activityId, shareMethod: "link" }),
-          });
+              if (event.target.classList.contains("share-link-button")) {
+                try {
+                  const response = await fetch(
+                "http://localhost:8000/shareActivity",
+                {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({ activityId, shareMethod: "link" }),
+                    }
+              );
 
-          const result = await response.json();
-          alert(`Activity shared successfully! Link: ${result.link}`);
-        } catch (error) {
-          console.error("Error sharing activity via link:", error);
-        }
-      }
+                  const result = await response.json();
+                  alert(`Activity shared successfully! Link: ${result.link}`);
+                } catch (error) {
+                  console.error("Error sharing activity via link:", error);
+                }
+              }
 
-      if (event.target.classList.contains("share-email-button")) {
-        const email = prompt("Enter the recipient's email address:");
-        if (!email) return;
+              if (event.target.classList.contains("share-email-button")) {
+                const email = prompt("Enter the recipient's email address:");
+                if (!email) return;
 
-        try {
-          const response = await fetch("http://localhost:8000/shareActivity", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ activityId, shareMethod: "email", email }),
-          });
+                try {
+                  const response = await fetch(
+                "http://localhost:8000/shareActivity",
+                {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                    activityId,
+                    shareMethod: "email",
+                    email,
+                  }),
+                    }
+              );
 
-          const result = await response.json();
-          alert(`Activity shared successfully via email!`);
-        } catch (error) {
-          console.error("Error sharing activity via email:", error);
-        }
-      }
-    });
-
+                  const result = await response.json();
+                  alert(`Activity shared successfully via email!`);
+                } catch (error) {
+                  console.error("Error sharing activity via email:", error);
+                }
+              }
+            });
     // Currency selection listener
     document.getElementById("currencySelector").addEventListener("change", (event) => {
       currentCurrency = event.target.value;
@@ -346,79 +378,205 @@
       }
     });
 
-    // Handle booking activity with age verification
-    async function handleBookActivity(activityId) {
-      const Username = sessionStorage.getItem("username");
+      // Handle booking activity with age verification
+        async function handleBookActivity(activityId, activityDate) {
+          const Username = sessionStorage.getItem("username");
 
-      if (!Username) {
-        alert("You must be logged in to book an activity.");
-        return;
-      }
+          if (!Username) {
+            alert("You must be logged in to book an activity.");
+            return;
+          }
 
-      try {
-        // Fetch the tourist ID
-        const userID = await fetchTouristID(Username);
-        if (!userID) {
-          alert("Could not retrieve tourist ID.");
-          return;
+          try {
+            // Fetch the tourist ID
+            const userID = await fetchTouristID(Username);
+            if (!userID) {
+              alert("Could not retrieve tourist ID.");
+              return;
+            }
+
+            // Check the age eligibility
+            const ageCheckResponse = await fetch("http://localhost:8000/getAge", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ Username }),
+            });
+
+            const ageData = await ageCheckResponse.json();
+
+            if (!ageData.eligible) {
+              alert("You can't book this activity; you are under 18.");
+              return;
+            }
+
+            // Book the activity using the fetched tourist ID
+            const bookingResponse = await fetch(
+            "http://localhost:8000/bookActivity",
+            {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  activityId,
+                  userId: userID, // Use the fetched tourist ID here
+                  bookedDate: new Date(activityDate),
+                }),
+              }
+          );
+
+            if (bookingResponse.ok) {
+              const bookingData = await bookingResponse.json();
+              alert(bookingData.message);
+            } else {
+              alert("Booking failed. Please try again.");
+            }
+          } catch (error) {
+            console.error("Error during booking:", error);
+            alert("An error occurred while booking the activity.");
+          }
         }
 
-        // Check the age eligibility
-        const ageCheckResponse = await fetch("http://localhost:8000/getAge", {
+        async function fetchTouristID(username) {
+          try {
+            const response = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+            if (!response.ok) throw new Error("Failed to get tourist ID");
+
+          const { userID } = await response.json();
+          sessionStorage.setItem("touristID", userID); // Save to sessionStorage
+          return userID;
+        } catch (error) {
+          console.error("Error fetching tourist ID:", error);
+          alert("Could not load tourist ID.");
+          return null;
+        }
+      }
+
+      // Initialize and load data on page load
+      document.addEventListener("DOMContentLoaded", async () => {
+        await fetchAdvertisers();
+        fetchCategories();
+        fetchTags();
+        await fetchActivities();
+      });
+
+      // Event listeners for filters and sorting
+      document
+        .getElementById("searchButton")
+        .addEventListener("click", applyFiltersAndSearch);
+      document
+        .getElementById("filterButton")
+        .addEventListener("click", applyFiltersAndSearch);
+      document.getElementById("sortButton").addEventListener("click", () => {
+        displayedActivities.sort((a, b) => b.Ratings - a.Ratings);
+        displayActivities(displayedActivities);
+      });
+      document.getElementById("resetButton").addEventListener("click", () => {
+        document.getElementById("minPrice").value = "";
+        document.getElementById("maxPrice").value = "";
+        document.getElementById("ActivityName").value = "";
+        document.getElementById("minDate").value = "";
+        document.getElementById("maxDate").value = "";
+        document.getElementById("category").value = "all";
+        document
+          .querySelectorAll("#tagsContainer input")
+          .forEach((tagCheckbox) => {
+            tagCheckbox.checked = false;
+          });
+        displayActivities(allActivities);
+      });
+
+      // Booking event delegation
+      document
+        .getElementById("activityList")
+        .addEventListener("click", (event) => {
+          if (event.target.classList.contains("buy-button")) {
+            const activityId = event.target.getAttribute("data-id");
+            const activityDate = event.target.getAttribute("data-date");
+            handleBookActivity(activityId, activityDate);
+          }
+        });
+
+      // Filter and search function
+      function applyFiltersAndSearch() {
+        const searchQuery = document
+          .getElementById("ActivityName")
+          .value.toLowerCase();
+        const minPrice =
+          parseFloat(document.getElementById("minPrice").value) || 0;
+        const maxPrice =
+          parseFloat(document.getElementById("maxPrice").value) || Infinity;
+        const minDate = document.getElementById("minDate").value;
+        const maxDate = document.getElementById("maxDate").value;
+        const selectedCategory = document.getElementById("category").value;
+        const selectedTags = Array.from(
+          document.querySelectorAll("#tagsContainer input:checked")
+        ).map((tagCheckbox) => tagCheckbox.value);
+
+        displayedActivities = allActivities.filter((activity) => {
+          const isNameMatch = activity.Name.toLowerCase().includes(searchQuery);
+          const isPriceMatch =
+            activity.Price >= minPrice && activity.Price <= maxPrice;
+          const isCategoryMatch =
+            selectedCategory === "all" ||
+            activity.Category === selectedCategory;
+          const isDateMatch =
+            (!minDate || new Date(activity.Date) >= new Date(minDate)) &&
+            (!maxDate || new Date(activity.Date) <= new Date(maxDate));
+          const isTagMatch = selectedTags.every((tag) =>
+            activity.Tags.includes(tag)
+          );
+
+          return (
+            isNameMatch &&
+            isPriceMatch &&
+            isCategoryMatch &&
+            isDateMatch &&
+            isTagMatch
+          );
+        });
+
+        displayActivities(displayedActivities);
+      }
+      const shareLinkButton = document.getElementById("share-link-button");
+      const shareEmailButton = document.getElementById("share-email-button");
+      const flagButton = document.getElementById("flag-button");
+
+      shareLinkButton.addEventListener("click", async () => {
+        const activityId = attractions._id || getQueryParams().id;
+        console.log(activityId);
+        const response = await fetch("http://localhost:8000/shareActivity", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ Username }),
+          body: JSON.stringify({ activityId, shareMethod: "link" }),
         });
 
-        const ageData = await ageCheckResponse.json();
+        const result = await response.json();
+        alert(`Activity shared successfully! Link: ${result.link}`);
+      });
 
-        if (!ageData.eligible) {
-          alert("You can't book this activity; you are under 18.");
-          return;
-        }
+      shareEmailButton.addEventListener("click", async () => {
+        const activityId = attractions.id || getQueryParams().id;
+        const email = prompt("Enter the recipient's email address:");
+        if (!email) return;
 
-        // Book the activity using the fetched tourist ID
-        const bookingResponse = await fetch("http://localhost:8000/bookActivity", {
+        const response = await fetch("http://localhost:8000/shareActivity", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            activityId,
-            userId: userID, // Use the fetched tourist ID here
-            bookedDate: new Date(),
-          }),
+          body: JSON.stringify({ activityId, shareMethod: "email", email }),
         });
 
-        if (bookingResponse.ok) {
-          const bookingData = await bookingResponse.json();
-          alert(bookingData.message);
-        } else {
-          alert("Booking failed. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error during booking:", error);
-        alert("An error occurred while booking the activity.");
-      }
-    }
-
-    async function fetchTouristID(username) {
-      try {
-        const response = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!response.ok) throw new Error('Failed to get tourist ID');
-
-        const { userID } = await response.json();
-        sessionStorage.setItem('touristID', userID); // Save to sessionStorage
-        return userID;
-      } catch (error) {
-        console.error('Error fetching tourist ID:', error);
-        alert('Could not load tourist ID.');
-        return null;
-      }
-    }
-  </script>
-</body>
-
+        const result = await response.json();
+        alert(`Activity shared successfully! ${result.link}`);
+      });
+    </script>
+  </body>
 </html>

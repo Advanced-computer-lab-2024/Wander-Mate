@@ -1728,7 +1728,7 @@ const bookActivity = async (req, res) => {
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: activityId,
-      itemModel: "Itinerary", // Use 'Itinerary' since you're booking an itinerary
+      itemModel: "Attraction", // Use 'Itinerary' since you're booking an itinerary
       userId, // Make sure userId is correctly passed from the request
       bookedDate,
     });
