@@ -34,6 +34,21 @@
       border-top: 1px solid #ccc;
       margin: 20px 0;
     }
+    /* Style for accept and reject buttons */
+    .owner-section button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .accept-btn {
+      background-color: green;
+    }
+    .reject-btn {
+      background-color: red;
+    }
   </style>
 </head>
 <body>
@@ -65,10 +80,13 @@
     // Fetch username based on ownerId
     async function fetchUsername(ownerId) {
       try {
+        let arr =[];
         const response = await fetch(`http://localhost:8000/getUsername/${ownerId}`);
         if (!response.ok) throw new Error("User not found");
-        const username = await response.json();
-        return username;
+        const username = await response.Username;
+        const status = await response.status;
+        arr=[username,status]
+        return arr;
       } catch (error) {
         console.error("Failed to fetch username for ownerId:", ownerId, error);
         return `Unknown User (${ownerId})`; // Fallback if username fetch fails
@@ -85,7 +103,11 @@
         ownerSection.classList.add('owner-section');
 
         // Fetch and display the username for each ownerId
-        const username = await fetchUsername(ownerId);
+        const arr = await fetchUsername(ownerId);
+        const username = arr[0];
+        const status = arr[1];
+        if(status !== "pending"){
+
         const ownerTitle = document.createElement('h2');
         ownerTitle.textContent = `Owner: ${username}`;
         ownerSection.appendChild(ownerTitle);
@@ -109,6 +131,20 @@
           ownerSection.appendChild(docElement);
         });
 
+        // Add Accept and Reject buttons
+        const acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Accept';
+        acceptButton.classList.add('accept-btn');
+        acceptButton.onclick = () => updateUserStatus(ownerId, 'accept');
+
+        const rejectButton = document.createElement('button');
+        rejectButton.textContent = 'Reject';
+        rejectButton.classList.add('reject-btn');
+        rejectButton.onclick = () => updateUserStatus(ownerId, 'reject');
+
+        ownerSection.appendChild(acceptButton);
+        ownerSection.appendChild(rejectButton);
+
         // Append the owner section to the document list
         documentList.appendChild(ownerSection);
 
@@ -116,6 +152,32 @@
         const hr = document.createElement('hr');
         hr.classList.add('owner-divider');
         documentList.appendChild(hr);
+      }
+      }
+    }
+
+    // Update user status based on decision
+    async function updateUserStatus(userId, decision) {
+      try {
+        const response = await fetch('http://localhost:8000/acceptRejectUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId, decision })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message);
+          // Optionally, reload the documents to reflect changes
+          fetchAllDocuments();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Failed to update user status.");
       }
     }
 
