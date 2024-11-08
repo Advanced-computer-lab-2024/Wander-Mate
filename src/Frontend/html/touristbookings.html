@@ -73,8 +73,8 @@
               <strong>Booking ID:</strong> ${booking._id} <br>
               <strong>Item ID:</strong> ${booking.itemId} <br>
               <strong>Item Model:</strong> ${booking.itemModel} <br>
-              <strong>Booked Date:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
-              <strong>Created At:</strong> ${new Date(booking.createdAt).toLocaleDateString()} <br>
+              <strong>Created at:</strong> ${new Date(booking.bookedDate).toLocaleDateString()} <br>
+              <strong>Booked Date:</strong> ${new Date(booking.createdAt).toLocaleDateString()} <br>
               <button class="cancel-button" onclick="cancelBooking('${booking._id}')">Cancel Booking</button>
             </li>
           `).join("");
