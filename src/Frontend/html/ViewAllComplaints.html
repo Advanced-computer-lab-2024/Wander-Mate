@@ -111,33 +111,35 @@
       }
 
       async function resolveComplaint(complaintId) {
-        try {
-          const response = await fetch(
-            `http://localhost:8000/markComplaintAsResolved/${complaintId}`,
-            {
-              method: "PUT",
-            }
-          );
-
-          if (response.ok) {
-            const { complaint } = await response.json();
-            alert("Complaint marked as resolved.");
-
-            // Update the status in the local data and re-render the complaints list
-            complaintsData = complaintsData.map((c) =>
-              c._id === complaintId ? { ...c, Status: "Resolved" } : c
-            );
-
-            displayComplaints(); // Refresh the displayed list to show the updated status
-          } else {
-            const data = await response.json();
-            alert(`Error: ${data.message}`);
-          }
-        } catch (error) {
-          console.error("Error marking complaint as resolved:", error);
-          alert("An error occurred while marking the complaint as resolved.");
-        }
+  try {
+    const response = await fetch(
+      `http://localhost:8000/markComplaintAsResolved/${complaintId}`,
+      {
+        method: "PUT",
       }
+    );
+
+    if (response.ok) {
+      const { complaint } = await response.json();
+      alert("Complaint marked as resolved.");
+
+      // Update the status in the local data and re-render the complaints list
+      complaintsData = complaintsData.map((c) =>
+        c._id === complaintId ? { ...c, Status: "Resolved" } : c
+      );
+
+      // Refresh the page to show the updated status
+      location.reload(); // <-- This line reloads the page
+    } else {
+      const data = await response.json();
+      alert(`Error: ${data.message}`);
+    }
+  } catch (error) {
+    console.error("Error marking complaint as resolved:", error);
+    alert("An error occurred while marking the complaint as resolved.");
+  }
+}
+
 
       // Function to fetch and display complaint details in a modal
       async function viewComplaintDetails(complaintId) {
