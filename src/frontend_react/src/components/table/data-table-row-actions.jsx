@@ -1,7 +1,6 @@
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
-import { Row } from "@tanstack/react-table";
 import { z } from "zod";
 
 import { Button } from "../ui/button";
@@ -27,7 +26,7 @@ export function DataTableRowActions({ row }) {
     id: z.string(),
     Title: z.string(),
     Status: z.string(),
-    Date : z.string(),
+    Date: z.string(),
     // label: z.string(),
     // priority: z.string(),
   });
