@@ -56,6 +56,10 @@
           <input type="text" id="badge" name="Badge" readonly />
           <label for="badge">My badge</label>
         </div>
+        <div class="field">
+          <input type="text" id="points" name="points" readonly />
+          <label for="points">My Points</label>
+        </div>
 
         <div class="field">
           <input type="submit" value="Update" />
@@ -111,6 +115,7 @@
           document.getElementById("touristDOB").value = formattedDOB; // Assuming DOB is in the correct format
           document.getElementById("walletBalance").value = tourist.Wallet; // Assuming Wallet is the balance field
           document.getElementById("badge").value = tourist.Badge;
+          document.getElementById("points").value = tourist.Points;
           // Set the nationality after loading the dropdown options
           const nationalityDropdown = document.getElementById("nationality");
           nationalityDropdown.value = tourist.Nationality; // Assuming Nationality contains the ID

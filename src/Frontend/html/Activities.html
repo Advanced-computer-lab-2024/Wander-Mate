@@ -237,7 +237,7 @@
           <div class="edit-button">
             <button class="buy-button" data-id="${activity._id}" data-date="${
             activity.Date
-          }">Book</button>
+          }" data-price="${activity.Price}">Book</button>
           </div>
           <div class="share-buttons">
             <button class="share-link-button" data-id="${
@@ -409,7 +409,7 @@
         });
 
       // Handle booking activity with age verification
-      async function handleBookActivity(activityId, activityDate) {
+      async function handleBookActivity(activityId, activityDate, amountPaid) {
         const Username = sessionStorage.getItem("username");
 
         if (!Username) {
@@ -456,6 +456,17 @@
               }),
             }
           );
+
+          await fetch("http://localhost:8000/calculateLoyaltyPoints", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              touristID: userID,
+              amountPaid,
+            }),
+          });
 
           if (bookingResponse.ok) {
             const bookingData = await bookingResponse.json();
@@ -527,7 +538,8 @@
           if (event.target.classList.contains("buy-button")) {
             const activityId = event.target.getAttribute("data-id");
             const activityDate = event.target.getAttribute("data-date");
-            handleBookActivity(activityId, activityDate);
+            const activityPrice = event.target.getAttribute("data-price");
+            handleBookActivity(activityId, activityDate, activityPrice);
           }
         });
 
