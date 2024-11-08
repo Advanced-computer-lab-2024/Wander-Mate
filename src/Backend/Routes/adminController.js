@@ -1256,6 +1256,20 @@ const login = async (req, res) => {
   }
 };
 
+const getUsername = async (req, res) => {
+  const { userid } = req.params;
+  try {
+    const user = await userModel.findOne({ userID: userid });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "User not found" });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1299,4 +1313,5 @@ module.exports = {
   getDistinctOwners,
   login,
   getAdminID,
+  getUsername,
 };
