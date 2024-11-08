@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View All Documents</title>
-  <link rel="stylesheet" href="../styles/register.css"> <!-- Assuming your CSS is in 'styles/register.css' -->
+  <link rel="stylesheet" href="../styles/register.css">
   <style>
     /* Additional styling for document display */
     .wrapper {
@@ -48,7 +48,7 @@
     // Fetch all documents on page load
     async function fetchAllDocuments() {
       try {
-        const response = await fetch('http://localhost:8000/viewDocuments'); // Assuming this endpoint fetches all documents
+        const response = await fetch('http://localhost:8000/viewDocuments');
         const data = await response.json();
 
         if (data.message === "Documents retrieved successfully.") {
@@ -62,18 +62,32 @@
       }
     }
 
+    // Fetch username based on ownerId
+    async function fetchUsername(ownerId) {
+      try {
+        const response = await fetch(`http://localhost:8000/getUsername/${ownerId}`);
+        if (!response.ok) throw new Error("User not found");
+        const username = await response.json();
+        return username;
+      } catch (error) {
+        console.error("Failed to fetch username for ownerId:", ownerId, error);
+        return `Unknown User (${ownerId})`; // Fallback if username fetch fails
+      }
+    }
+
     // Display documents grouped by Owner
-    function displayDocuments(documents) {
+    async function displayDocuments(documents) {
       const documentList = document.getElementById('documentList');
       documentList.innerHTML = ''; // Clear previous results if any
 
-      // Loop through each ownerId in documents
       for (const ownerId in documents) {
         const ownerSection = document.createElement('div');
         ownerSection.classList.add('owner-section');
 
+        // Fetch and display the username for each ownerId
+        const username = await fetchUsername(ownerId);
         const ownerTitle = document.createElement('h2');
-        ownerTitle.textContent = `Owner: ${ownerId}`;
+        ownerTitle.textContent = `Owner: ${username}`;
         ownerSection.appendChild(ownerTitle);
 
         // List each document for this owner
@@ -89,7 +103,7 @@
           pdfLink.href = `data:application/pdf;base64,${doc.pdf}`;
           pdfLink.textContent = 'Download PDF';
           pdfLink.target = '_blank';
-          pdfLink.download = `${doc.Title}.pdf`; // Set download attribute with a filename
+          pdfLink.download = `${doc.Title}.pdf`;
           docElement.appendChild(pdfLink);
 
           ownerSection.appendChild(docElement);
