@@ -54,11 +54,15 @@ const itinerarySchema = new Schema(
       },
     },
     Bookings: {
-      type: [ObjectId]
+      type: [ObjectId],
     },
     isFlagged: {
       type: Boolean,
       default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true, strict: false }
