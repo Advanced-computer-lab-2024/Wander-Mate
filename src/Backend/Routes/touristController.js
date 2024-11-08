@@ -736,7 +736,6 @@ const searchHotellocation = async (place) => {
 
     if (!response.ok) throw new Error(`Error: ${response.status}`);
     
-    // Return the response data here
     const data = await response.json();
     return data;
   } catch (error) {
@@ -749,34 +748,44 @@ const searchHotel = async (req, res) => {
   const { place, checkInDate, checkOutdate } = req.body;
   
   try {
-    // Await the result of searchHotellocation
-    const data = await searchHotellocation(place);
+    const locationData = await searchHotellocation(place);
     
-    // Ensure that data and data.data exist before accessing
-    if (!data || !data.data || data.data.length === 0) {
+    if (!locationData || !locationData.data || locationData.data.length === 0) {
       return res.status(400).json({ message: 'No location data found' });
     }
     
-    const geoId = data.data[0].geoId;
+    const geoId = locationData.data[0].geoId;
     const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
 
-    // Proceed with making the search hotel API call or any further logic
-   
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': '1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e',
-          'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
-        }
-      });
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e',
+        'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
+      }
+    });
   
-      if (!response.ok) throw new Error(`Error: ${response.status}`);
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
       
-      // Return the response data here
-      const responseData = await response.json();
-      return responseData.data.data.slice(0, 5).map(hotel => hotel.title);
-   
-    
+    const hotelData = await response.json();
+
+    // Check if the response data has hotels
+    if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      return res.status(400).json({ message: 'No hotels found' });
+    }
+
+    // Retrieve the first 5 hotels and extract relevant details
+    const hotels = hotelData.data.data.slice(0, 5).map(hotel => ({
+      title: hotel.title,
+      price: hotel.priceForDisplay || 'N/A',
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : 'N/A',
+      provider: hotel.provider || 'N/A',
+      cancellationPolicy: hotel.priceDetails || 'N/A',
+      isSponsored: hotel.isSponsored || false,
+      imageUrl: hotel.cardPhotos && hotel.cardPhotos[0] ? hotel.cardPhotos[0].url : 'N/A'
+    }));
+
+    res.status(200).json(hotels);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
