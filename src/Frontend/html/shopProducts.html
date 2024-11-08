@@ -10,6 +10,18 @@
     <div class="wrapper">
       <div class="title">Available Products</div>
 
+      <!-- Currency selector -->
+      <div class="currency-section">
+        <label for="currencySelector">Select Currency:</label>
+        <select id="currencySelector">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="JPY">JPY</option>
+          <option value="EGP">EGP</option> <!-- Added EGP option -->
+        </select>
+      </div>
+
       <div class="search-section">
         <label for="productName">Search by Product Name:</label>
         <input type="text" id="productName" placeholder="Enter product name" />
@@ -23,7 +35,6 @@
         <button id="applyFiltersButton">Apply Filters</button>
         <button id="resetButton">Reset</button>
         <button id="sortButton">Sort by Ratings</button>
-        <!-- Sort button added here -->
       </div>
 
       <div class="product-list" id="productList">
@@ -32,9 +43,11 @@
     </div>
 
     <script>
-      let allProducts = []; // Variable to store all fetched products
-      let allSellers = []; // Variable to store all fetched sellers
-      let sellerMap = {}; // Map to associate seller IDs with names
+      let allProducts = [];
+      let allSellers = [];
+      let sellerMap = {};
+      let exchangeRates = {};
+      let currentCurrency = "USD";
 
       async function fetchSellers() {
         try {
@@ -55,42 +68,55 @@
       }
 
       async function fetchProducts() {
-  try {
-    const response = await fetch("http://localhost:8000/viewSellerProducts"); // Fetch all products
-    const products = await response.json();
+        try {
+          const response = await fetch("http://localhost:8000/viewSellerProducts");
+          const products = await response.json();
 
-    if (response.ok) {
-      // Filter out archived products on the frontend
-      const unarchivedProducts = products.filter(product => !product.isArchived);
+          if (response.ok) {
+            const unarchivedProducts = products.filter(product => !product.isArchived);
+            allProducts = unarchivedProducts;
+            applyFilters(); // Apply initial filters
+          } else {
+            document.getElementById("productList").innerHTML = "<p>No products available</p>";
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
+          document.getElementById("productList").innerHTML = "<p>An error occurred while fetching products.</p>";
+        }
+      }
 
-      allProducts = unarchivedProducts; // Store only unarchived products
-      applyFilters(); // Apply initial filters to show all unarchived products
-    } else {
-      document.getElementById("productList").innerHTML = "<p>No products available</p>";
-    }
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    document.getElementById("productList").innerHTML = "<p>An error occurred while fetching products.</p>";
-  }
-}
+      async function fetchExchangeRates() {
+        try {
+          const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+          const data = await response.json();
+          exchangeRates = data.rates;
+        } catch (error) {
+          console.error("Error fetching exchange rates:", error);
+        }
+      }
 
+      function convertPrice(priceInUSD) {
+        const rate = exchangeRates[currentCurrency] || 1;
+        return (priceInUSD * rate).toFixed(2);
+      }
 
       function displayProducts(products) {
         const productList = document.getElementById("productList");
-        productList.innerHTML = ""; // Clear existing products
+        productList.innerHTML = "";
 
         products.forEach((product) => {
           const productItem = document.createElement("div");
           productItem.className = "product-item";
 
           const productImage = `http://localhost:8000/products/${product._id}/image`;
+          const convertedPrice = convertPrice(product.price);
 
           productItem.innerHTML = `
             <img src="${productImage}" alt="Product Image" class="product-image">
             <div class="product-details">
               <h2 class="product-name">${product.name}</h2>
               <p class="product-description">${product.description}</p>
-              <p class="product-price">Price: $${product.price.toFixed(2)}</p>
+              <p class="product-price">Price: ${convertedPrice} ${currentCurrency}</p>
               <p class="product-seller">Seller: ${
                 sellerMap[product.seller] || "Unknown"
               }</p>
@@ -115,119 +141,51 @@
       }
 
       // Combined search and filter function
-      function applyFilters() {
-        const productName = document
-          .getElementById("productName")
-          .value.trim()
-          .toLowerCase();
-        const minPrice =
-          parseFloat(document.getElementById("minPrice").value) || 0;
-        const maxPrice =
-          parseFloat(document.getElementById("maxPrice").value) || Infinity;
+function applyFilters() {
+  const productName = document
+    .getElementById("productName")
+    .value.trim()
+    .toLowerCase();
+  const minPriceInput = parseFloat(document.getElementById("minPrice").value) || 0;
+  const maxPriceInput = parseFloat(document.getElementById("maxPrice").value) || Infinity;
 
-        // Filter by product name
-        let filteredProducts = allProducts.filter((product) =>
-          product.name.toLowerCase().includes(productName)
-        );
+  // Convert min and max prices to USD for consistent filtering
+  const conversionRate = exchangeRates[currentCurrency] || 1;
+  const minPriceInUSD = minPriceInput / conversionRate;
+  const maxPriceInUSD = maxPriceInput / conversionRate;
 
-        // Filter by price range
-        filteredProducts = filteredProducts.filter(
-          (product) => product.price >= minPrice && product.price <= maxPrice
-        );
+  // Filter by product name
+  let filteredProducts = allProducts.filter((product) =>
+    product.name.toLowerCase().includes(productName)
+  );
 
-        // Display the filtered products without sorting
-        displayProducts(filteredProducts);
-      }
+  // Filter by price range in USD
+  filteredProducts = filteredProducts.filter(
+    (product) => product.price >= minPriceInUSD && product.price <= maxPriceInUSD
+  );
 
-      // Function to sort products by ratings
-      function sortProductsByRatings() {
-        const productName = document
-          .getElementById("productName")
-          .value.trim()
-          .toLowerCase();
-        const minPrice =
-          parseFloat(document.getElementById("minPrice").value) || 0;
-        const maxPrice =
-          parseFloat(document.getElementById("maxPrice").value) || Infinity;
+  displayProducts(filteredProducts);
+}
 
-        // Filter by product name
-        let filteredProducts = allProducts.filter((product) =>
-          product.name.toLowerCase().includes(productName)
-        );
 
-        // Filter by price range
-        filteredProducts = filteredProducts.filter(
-          (product) => product.price >= minPrice && product.price <= maxPrice
-        );
+      document.getElementById("currencySelector").addEventListener("change", (event) => {
+        currentCurrency = event.target.value;
+        displayProducts(allProducts);
+      });
 
-        // Sort by ratings
-        filteredProducts = filteredProducts.sort(
-          (a, b) => b.ratings - a.ratings
-        );
-
-        // Display sorted products
-        displayProducts(filteredProducts);
-      }
-
-      // Fetch products and sellers when the page loads
       document.addEventListener("DOMContentLoaded", async () => {
-        await fetchSellers(); // Fetch sellers first
-        await fetchProducts(); // Then fetch products
+        await fetchSellers();
+        await fetchProducts();
+        await fetchExchangeRates();
       });
 
-      // Event listener for the apply filters button
-      document
-        .getElementById("applyFiltersButton")
-        .addEventListener("click", () => {
-          applyFilters(); // Apply the filters and search
-        });
-
-      // Event listener for the sort button
-      document.getElementById("sortButton").addEventListener("click", () => {
-        sortProductsByRatings(); // Sort by ratings
-      });
-
-      // Reset event listener
+      document.getElementById("applyFiltersButton").addEventListener("click", () => applyFilters());
+      document.getElementById("sortButton").addEventListener("click", () => sortProductsByRatings());
       document.getElementById("resetButton").addEventListener("click", () => {
-        // Reset the filter and display all products again
         document.getElementById("minPrice").value = "";
         document.getElementById("maxPrice").value = "";
-        document.getElementById("productName").value = ""; // Clear the search input
-        displayProducts(allProducts); // Display all products
-      });
-      // Event listener for Buy button clicks
-      document.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("buy-button")) {
-          event.preventDefault(); // Prevent default link behavior
-
-          const Username = sessionStorage.getItem("username");
-          console.log("haha");
-
-          // Call the backend to check age
-          try {
-            const body = JSON.stringify({ Username });
-            console.log(body);
-            const response = await fetch("http://localhost:8000/getAge", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json", // Set the Content-Type to application/json
-              },
-              body: body,
-            });
-
-            const data = await response.json();
-
-            if (!data.eligible) {
-              alert("You can't buy; you are under 18");
-            } else {
-              // Proceed to the next page or perform the buy action
-              window.location.href = "nextPage.html"; // Replace with your target page
-            }
-          } catch (error) {
-            console.error("Error checking age:", error);
-            alert("An error occurred while checking your age.");
-          }
-        }
+        document.getElementById("productName").value = "";
+        displayProducts(allProducts);
       });
     </script>
   </body>
