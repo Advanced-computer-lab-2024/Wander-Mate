@@ -771,42 +771,43 @@ const replytoComplaints = async (req, res) => {
 //////////////////Sprint 2 Donny
 const acceptRejectUser = async (req, res) => {
   try {
-    const { userId, userType, decision } = req.body; // userType can be 'tourGuide', 'advertiser', or 'seller'
-    let user;
+    const { userId, decision } = req.body; // userType can be 'tourGuide', 'advertiser', or 'seller'
     // Find the user based on userType
-    switch (userType) {
-      case "tourGuide":
-        user = await tourGuide.findById(userId);
-        break;
-      case "advertiser":
-        user = await Advertiser.findById(userId);
-        break;
-      case "seller":
-        user = await Seller.findById(userId);
-        break;
-      default:
-        return res.status(400).json({ message: "Invalid user type" });
-    }
-
-    // Check if the user exists
+    const user = await userModel.findOne({ userID: userId });
     if (!user) {
-      return res.status(404).json({ message: `${userType} not found` });
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+    let userLogged;
+    switch (user.Type) {   
+      case "Seller":
+        userLogged = await sellerModel.findOne({ _id: userId });
+        break;
+      case "TourGuide":
+        userLogged = await tourGuideModel.findOne({ _id: userId });
+        break;
+      case "Advertiser":
+        userLogged = await advertiserModel.findOne({ _id: userId });
+        break;
+    }
+    // Check if the user exists
+    if (!userLogged) {
+      return res.status(404).json({ message: `not found` });
     }
 
     // Update the user status based on decision
     if (decision === "accept") {
-      user.status = "accepted";
+      userLogged.status = "accepted";
     } else if (decision === "reject") {
-      user.status = "rejected";
+      userLogged.status = "rejected";
     } else {
       return res.status(400).json({ message: "Invalid decision" });
     }
 
     // Save the updated user
-    await user.save();
+    await userLogged.save();
     res
       .status(200)
-      .json({ message: `${userType} status updated successfully`, user });
+      .json({ message: "status updated successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error updating user status" });
