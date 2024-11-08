@@ -1263,7 +1263,7 @@ const getUsername = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
-    res.status(200).json(user);
+    res.status(200).json(user.Username);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "User not found" });
