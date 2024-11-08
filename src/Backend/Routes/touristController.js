@@ -1524,9 +1524,7 @@ const shareActivity = async (req, res) => {
     }
 
     // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
+    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
 
     if (shareMethod === "link") {
       // If sharing via link, return the link
@@ -1541,29 +1539,25 @@ const shareActivity = async (req, res) => {
         });
       }
 
-      // Here you can implement the logic to send an email
-      // For demonstration purposes, we will just return the link
-      // You can use a library like nodemailer to send emails
-
-      // Example of sending an email (you need to configure nodemailer)
-      /*
+      // Configure nodemailer transporter
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'your-email@gmail.com',
-          pass: 'your-email-password'
-        }
+          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
+          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
+        },
       });
 
+      // Set email options
       const mailOptions = {
-        from: 'your-email@gmail.com',
+        from: process.env.EMAIL_USER,
         to: email,
         subject: 'Check out this activity!',
-        text: `I thought you might be interested in this activity: ${shareableLink}`
+        text: `I thought you might be interested in this activity: ${shareableLink}`,
       };
 
+      // Send email
       await transporter.sendMail(mailOptions);
-      */
 
       return res.status(200).json({
         message: "Email sent successfully.",
@@ -1579,8 +1573,10 @@ const shareActivity = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+const nodemailer = require("nodemailer");
+
 const shareItenerary = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
+  const { activityId, shareMethod, email } = req.body;
 
   try {
     // Validate input
@@ -1595,9 +1591,7 @@ const shareItenerary = async (req, res) => {
     }
 
     // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
+    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
 
     if (shareMethod === "link") {
       // If sharing via link, return the link
@@ -1612,29 +1606,25 @@ const shareItenerary = async (req, res) => {
         });
       }
 
-      // Here you can implement the logic to send an email
-      // For demonstration purposes, we will just return the link
-      // You can use a library like nodemailer to send emails
-
-      // Example of sending an email (you need to configure nodemailer)
-      /*
+      // Configure nodemailer transporter
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'your-email@gmail.com',
-          pass: 'your-email-password'
-        }
+          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
+          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
+        },
       });
 
+      // Set email options
       const mailOptions = {
-        from: 'your-email@gmail.com',
+        from: process.env.EMAIL_USER,
         to: email,
         subject: 'Check out this activity!',
-        text: `I thought you might be interested in this activity: ${shareableLink}`
+        text: `I thought you might be interested in this activity: ${shareableLink}`,
       };
 
+      // Send email
       await transporter.sendMail(mailOptions);
-      */
 
       return res.status(200).json({
         message: "Email sent successfully.",
@@ -1650,6 +1640,7 @@ const shareItenerary = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
 
 
 
