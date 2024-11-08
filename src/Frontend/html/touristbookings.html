@@ -100,7 +100,7 @@
           const errorData = await response.json();
           alert(errorData.error || "Failed to cancel booking.");
         } else {
-          alert("Booking cancelled automatically as it was created more than 48 hours ago.");
+          alert("Booking cancelled successfully.");
           // Reload bookings to update the list
           const touristID = sessionStorage.getItem('touristID');
           if (touristID) fetchBookings(touristID);

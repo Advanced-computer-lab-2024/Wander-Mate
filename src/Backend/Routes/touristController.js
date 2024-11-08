@@ -1508,7 +1508,7 @@ const cancelBooking = async (req, res) => {
     // Check if the booking was made within the last 48 hours
     if (hoursSinceBooking < 48) {
       return res.status(400).json({
-        error: "You can only cancel bookings within 48 hours of making them.",
+        error: "The Booking already passed or there is less than 48 hours remaining until the booking",
       });
     }
 
