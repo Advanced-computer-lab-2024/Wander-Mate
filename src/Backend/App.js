@@ -135,7 +135,8 @@ const {
   getAllUsernames,
   getDistinctOwners,
   login,
-  getAdminID
+  getAdminID,
+  getUsername,
 } = require("./Routes/adminController.js");
 
 const {
@@ -338,7 +339,7 @@ app.post("/uploadTourGuideDocuments", uploadPdfs, uploadTourGuideDocuments);
 app.post("/uploadAdvertiserDocuments", uploadPdfs, uploadAdvertiserDocuments);
 app.post("/uploadSellerDocuments", uploadPdfs, uploadSellerDocuments);
 app.get("/viewDocuments", viewDocuments);
-app.get("/getDistinctOwners",getDistinctOwners);
+app.get("/getDistinctOwners", getDistinctOwners);
 //////////////
 app.put("/updateGuideRatings/:guideID", updateGuideRatings);
 app.post("/RateGuide", RateGuide);
@@ -436,18 +437,19 @@ app.get(
   "/viewSellerProductSalesAndQuantity/:sellerId",
   viewSellerProductSalesAndQuantity
 );
-app.get("/getMyBookings/:touristID",getMyBookings);
+app.get("/getMyBookings/:touristID", getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
 app.post("/shareActivity", shareActivity);
 app.post("/shareItinerary", shareItenerary);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
-app.post("/bookActivity",bookActivity);
+app.post("/bookActivity", bookActivity);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
 app.put("/currencyConverter", currencyConverter);
-app.get("/viewAllTransportations",viewAllTransportations);
-app.get("/getAllUsernames",getAllUsernames);
-app.get("/getProductReviews/:productId",getProductReviews);
-app.post("/login",login);
+app.get("/viewAllTransportations", viewAllTransportations);
+app.get("/getAllUsernames", getAllUsernames);
+app.get("/getProductReviews/:productId", getProductReviews);
+app.post("/login", login);
 app.get("/getAdminID", getAdminID);
+app.get("/getUsername/:userid", getUsername);

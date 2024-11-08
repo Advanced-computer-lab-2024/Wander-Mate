@@ -727,15 +727,15 @@ const searchHotellocation = async (place) => {
 
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'X-RapidAPI-Key': '684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4',
-        'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
-      }
+        "X-RapidAPI-Key": "684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4",
+        "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
+      },
     });
 
     if (!response.ok) throw new Error(`Error: ${response.status}`);
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -746,50 +746,54 @@ const searchHotellocation = async (place) => {
 
 const searchHotel = async (req, res) => {
   const { place, checkInDate, checkOutdate } = req.body;
-  
+
   try {
     const locationData = await searchHotellocation(place);
-    
+
     if (!locationData || !locationData.data || locationData.data.length === 0) {
-      return res.status(400).json({ message: 'No location data found' });
+      return res.status(400).json({ message: "No location data found" });
     }
-    
+
     const geoId = locationData.data[0].geoId;
     const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
 
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'X-RapidAPI-Key': '684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4',
-        'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
-      }
+        "X-RapidAPI-Key": "684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4",
+        "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
+      },
     });
-  
+
     if (!response.ok) throw new Error(`Error: ${response.status}`);
-      
+
     const hotelData = await response.json();
 
     // Check if the response data has hotels
     if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
-      return res.status(400).json({ message: 'No hotels found' });
+      return res.status(400).json({ message: "No hotels found" });
     }
 
     // Retrieve the first 5 hotels and extract relevant details
-    const hotels = hotelData.data.data.slice(0, 5).map(hotel => ({
-      id: hotel.id,
+    const hotels = hotelData.data.data.slice(0, 5).map((hotel) => ({
       title: hotel.title,
-      price: hotel.priceForDisplay || 'N/A',
-      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : 'N/A',
-      provider: hotel.provider || 'N/A',
-      cancellationPolicy: hotel.priceDetails || 'N/A',
+      price: hotel.priceForDisplay || "N/A",
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : "N/A",
+      provider: hotel.provider || "N/A",
+      cancellationPolicy: hotel.priceDetails || "N/A",
       isSponsored: hotel.isSponsored || false,
-      imageUrl: hotel.cardPhotos && hotel.cardPhotos[0] ? hotel.cardPhotos[0].url : 'N/A'
+      imageUrl:
+        hotel.cardPhotos && hotel.cardPhotos[0]
+          ? hotel.cardPhotos[0].url
+          : "N/A",
     }));
 
     res.status(200).json(hotels);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1496,15 +1500,15 @@ const cancelBooking = async (req, res) => {
     }
 
     const currentDate = new Date();
-    const createdAt = new Date(booking.createdAt); // Use the booking's creation date to check if it's within 48 hours
+    const createdAt = new Date(booking.bookedDate); // Use the booking's creation date to check if it's within 48 hours
 
     // Calculate the time difference in hours
-    const hoursSinceBooking = (currentDate - createdAt) / (1000 * 60 * 60);
+    const hoursSinceBooking = (createdAt - currentDate) / 36e5;
 
     // Check if the booking was made within the last 48 hours
     if (hoursSinceBooking < 48) {
       return res.status(400).json({
-        error: "You can only cancel bookings within 48 hours of making them.",
+        error: "The Booking already passed or there is less than 48 hours remaining until the booking",
       });
     }
 
@@ -1534,7 +1538,9 @@ const shareActivity = async (req, res) => {
     }
 
     // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
+    const shareableLink = `${req.protocol}://${req.get(
+      "host"
+    )}/activities/${activityId}`;
 
     if (shareMethod === "link") {
       // If sharing via link, return the link
@@ -1551,7 +1557,7 @@ const shareActivity = async (req, res) => {
 
       // Configure nodemailer transporter
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
           user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
           pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
@@ -1562,7 +1568,7 @@ const shareActivity = async (req, res) => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'Check out this activity!',
+        subject: "Check out this activity!",
         text: `I thought you might be interested in this activity: ${shareableLink}`,
       };
 
@@ -1601,7 +1607,9 @@ const shareItenerary = async (req, res) => {
     }
 
     // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get("host")}/activities/${activityId}`;
+    const shareableLink = `${req.protocol}://${req.get(
+      "host"
+    )}/activities/${activityId}`;
 
     if (shareMethod === "link") {
       // If sharing via link, return the link
@@ -1618,7 +1626,7 @@ const shareItenerary = async (req, res) => {
 
       // Configure nodemailer transporter
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
           user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
           pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
@@ -1629,7 +1637,7 @@ const shareItenerary = async (req, res) => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'Check out this activity!',
+        subject: "Check out this activity!",
         text: `I thought you might be interested in this activity: ${shareableLink}`,
       };
 
@@ -1650,9 +1658,6 @@ const shareItenerary = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
-
-
-
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1684,7 +1689,6 @@ const bookItinerary = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: itineraryId,
@@ -1697,7 +1701,6 @@ const bookItinerary = async (req, res) => {
 
     // Update the itinerary document to include the new booking ID
     itinerary.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
-
 
     // Attempt to save the updated itinerary document
     await itinerary.save();
@@ -1725,7 +1728,6 @@ const bookActivity = async (req, res) => {
       return res.status(40).json({ message: "Itinerary not found." });
     }
 
-
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: activityId,
@@ -1734,14 +1736,12 @@ const bookActivity = async (req, res) => {
       bookedDate,
     });
 
-    await newBooking.save();
-
     // Update the itinerary document to include the new booking ID
     activity.Bookings.push(newBooking._id); // Push the new booking ID to the Bookings array
 
-
     // Attempt to save the updated itinerary document
     await activity.save();
+    await newBooking.save();
 
     // Respond back with success message and booking details
     res.status(200).json({

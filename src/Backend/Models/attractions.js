@@ -34,8 +34,12 @@ const attractionSchema = new Schema(
       type: [[String, Number]],
     },
     Price: {
-      type: Number
-    }
+      type: Number,
+    },
+    Bookings: {
+      type: [ObjectId],
+      default: [],
+    },
   },
   { timestamps: true, strict: false }
 );

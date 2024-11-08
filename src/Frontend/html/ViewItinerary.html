@@ -1,119 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Itinerary Details</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-        #itinerary-details {
-            margin-top: 20px;
-        }
-        h2,
-        h3 {
-            margin: 0;
-        }
-        .share-buttons, .edit-button {
-            margin-top: 20px;
-        }
-        button {
-            margin-right: 10px;
-        }
-        #comment-section {
-            margin-top: 20px;
-            border-top: 1px solid #ccc;
-            padding-top: 20px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+      #itinerary-details {
+        margin-top: 20px;
+      }
+      h2,
+      h3 {
+        margin: 0;
+      }
+      .share-buttons,
+      .edit-button {
+        margin-top: 20px;
+      }
+      button {
+        margin-right: 10px;
+      }
+      #comment-section {
+        margin-top: 20px;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+      }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap" async defer></script>
-</head>
-<body>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap"
+      async
+      defer
+    ></script>
+  </head>
+  <body>
     <h1>Itinerary Details</h1>
     <div id="map"></div>
     <div id="itinerary-details"></div>
 
     <div class="share-buttons">
-        <button id="share-link-button">Share via Link</button>
-        <button id="share-email-button">Share via Email</button>
-        
+      <button id="share-link-button">Share via Link</button>
+      <button id="share-email-button">Share via Email</button>
     </div>
 
     <div class="edit-button">
-        <button class="book-button">Book</button>
+      <button class="book-button">Book</button>
     </div>
 
     <div id="comment-section">
-        <h3>Comment on this Itinerary</h3>
-        <p id="tourist-id-display"></p>
-        <p id="itinerary-id-display"></p>
-        <textarea id="comment-body" placeholder="Enter your comment here..." rows="4" style="width: 100%;"></textarea>
-        <button id="submit-comment-button">Submit Comment</button>
+      <h3>Comment on this Itinerary</h3>
+      <p id="tourist-id-display"></p>
+      <p id="itinerary-id-display"></p>
+      <textarea
+        id="comment-body"
+        placeholder="Enter your comment here..."
+        rows="4"
+        style="width: 100%"
+      ></textarea>
+      <button id="submit-comment-button">Submit Comment</button>
     </div>
 
     <script>
-        let itineraryData;
+      let itineraryData;
 
-        // Function to get query parameters from the URL
-        function getQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                id: params.get("id"),
-            };
+      // Function to get query parameters from the URL
+      function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          id: params.get("id"),
+        };
+      }
+
+      // Fetch itinerary data from the API
+      async function fetchItineraryData(itineraryId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/readItinerary/${itineraryId}`
+          );
+          if (!response.ok) throw new Error("Network response was not ok");
+          itineraryData = await response.json();
+          console.log(itineraryData); // Debugging to check if isFlagged is available in the response
+          itineraryData.id = itineraryId; // Ensure itineraryData includes activityId
+          if (!itineraryData.isFlagged) {
+            initMap();
+            displayItineraryDetails();
+            displayItineraryID(itineraryId);
+          }
+        } catch (error) {
+          console.error("Error fetching itinerary data:", error);
+          document.getElementById("itinerary-details").innerText =
+            "Error loading itinerary details.";
         }
+      }
 
-        // Fetch itinerary data from the API
-        async function fetchItineraryData(itineraryId) {
-            try {
-                const response = await fetch(`http://localhost:8000/readItinerary/${itineraryId}`);
-                if (!response.ok) throw new Error("Network response was not ok");
-                itineraryData = await response.json();
-                console.log(itineraryData);  // Debugging to check if isFlagged is available in the response
-                itineraryData.id = itineraryId; // Ensure itineraryData includes activityId
-                if(!itineraryData.isFlagged){
-                    initMap();
-                    displayItineraryDetails();
-                    displayItineraryID(itineraryId);
-                }
-                
-            } catch (error) {
-                console.error("Error fetching itinerary data:", error);
-                document.getElementById("itinerary-details").innerText = "Error loading itinerary details.";
-            }
-        }
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 5,
+          center: {
+            lat: itineraryData.PickUpLocation.coordinates[0],
+            lng: itineraryData.PickUpLocation.coordinates[1],
+          },
+        });
 
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 5,
-                center: {
-                    lat: itineraryData.PickUpLocation.coordinates[0],
-                    lng: itineraryData.PickUpLocation.coordinates[1],
-                },
-            });
+        addMarker(
+          map,
+          itineraryData.PickUpLocation.coordinates,
+          "Pick-Up Location"
+        );
+        addMarker(
+          map,
+          itineraryData.DropOffLocation.coordinates,
+          "Drop-Off Location"
+        );
+      }
 
-            addMarker(map, itineraryData.PickUpLocation.coordinates, "Pick-Up Location");
-            addMarker(map, itineraryData.DropOffLocation.coordinates, "Drop-Off Location");
-        }
+      function addMarker(map, coordinates, title) {
+        new google.maps.Marker({
+          position: {
+            lat: coordinates[0],
+            lng: coordinates[1],
+          },
+          map: map,
+          title: title,
+        });
+      }
 
-        function addMarker(map, coordinates, title) {
-            new google.maps.Marker({
-                position: {
-                    lat: coordinates[0],
-                    lng: coordinates[1],
-                },
-                map: map,
-                title: title,
-            });
-        }
-
-        function displayItineraryDetails() {
-            const detailsDiv = document.getElementById("itinerary-details");
-            detailsDiv.innerHTML = `
+      function displayItineraryDetails() {
+        const detailsDiv = document.getElementById("itinerary-details");
+        detailsDiv.innerHTML = `
                 <h3>Name: ${itineraryData.Name}</h3>
                 <h3>Language: ${itineraryData.Language}</h3>
                 <h3>Price: $${itineraryData.Price}</h3>
@@ -121,156 +140,187 @@
                 <p>${itineraryData.TimeLine}</p>
                 <h3>Available Dates:</h3>
                 <ul>
-                    ${itineraryData.AvailableDates.map(date => `<li>${new Date(date).toLocaleDateString()}</li>`).join("")}
+                    ${itineraryData.AvailableDates.map(
+                      (date) =>
+                        `<li>${new Date(date).toLocaleDateString()}</li>`
+                    ).join("")}
                 </ul>
                 <h3>Activities:</h3>
                 <ul>
-                    ${itineraryData.Activities.map(activity => `<li><strong>Name:</strong> ${activity.Name}<br></li>`).join("")}
+                    ${itineraryData.Activities.map(
+                      (activity) =>
+                        `<li><strong>Name:</strong> ${activity.Name}<br></li>`
+                    ).join("")}
                 </ul>
                 <h3>Locations To Visit:</h3>
                 <ul>
-                    ${itineraryData.LocationsToVisit.map(location => `<li><strong>Name:</strong> ${location.Name}<br></li>`).join("")}
+                    ${itineraryData.LocationsToVisit.map(
+                      (location) =>
+                        `<li><strong>Name:</strong> ${location.Name}<br></li>`
+                    ).join("")}
                 </ul>
             `;
+      }
+
+      function displayItineraryID(itineraryId) {
+        document.getElementById(
+          "itinerary-id-display"
+        ).textContent = `Itinerary ID: ${itineraryId}`;
+      }
+
+      async function fetchTouristID() {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          console.error("No username found in session storage.");
+          return;
         }
 
-        function displayItineraryID(itineraryId) {
-            document.getElementById("itinerary-id-display").textContent = `Itinerary ID: ${itineraryId}`;
+        try {
+          const response = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
+          if (!response.ok) throw new Error("Failed to get tourist ID");
+
+          const { userID } = await response.json();
+          sessionStorage.setItem("touristID", userID);
+          document.getElementById(
+            "tourist-id-display"
+          ).textContent = `Tourist ID: ${userID}`;
+        } catch (error) {
+          console.error("Error fetching tourist ID:", error);
+          alert("Could not load tourist ID.");
+        }
+      }
+
+      // Frontend function to book the itinerary
+      async function handleBookItinerary() {
+        const itineraryId = itineraryData.id;
+        const userId = sessionStorage.getItem("touristID");
+        const bookedDate = new Date().toISOString().split("T")[0]; // Using today's date
+
+        if (!userId) {
+          alert("Tourist ID not available. Please log in.");
+          return;
         }
 
-        async function fetchTouristID() {
-            const username = sessionStorage.getItem('username');
-            if (!username) {
-                console.error('No username found in session storage.');
-                return;
-            }
+        try {
+          const response = await fetch("http://localhost:8000/bookItinerary", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ itineraryId, userId, bookedDate }),
+          });
 
-            try {
-                const response = await fetch(`http://localhost:8000/getID/${username}`);
-                if (!response.ok) throw new Error('Failed to get tourist ID');
+          await fetch("http://localhost:8000/calculateLoyaltyPoints", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              touristID: userId,
+              amountPaid: itineraryData.Price,
+            }),
+          });
 
-                const { userID } = await response.json();
-                sessionStorage.setItem('touristID', userID);
-                document.getElementById('tourist-id-display').textContent = `Tourist ID: ${userID}`;
-            } catch (error) {
-                console.error('Error fetching tourist ID:', error);
-                alert('Could not load tourist ID.');
-            }
+          const data = await response.json();
+
+          if (response.ok) {
+            alert("Booked successfully!"); // Show popup message
+            console.log("Booking details:", data.booking);
+          } else {
+            alert(data.message || "Error booking itinerary.");
+          }
+        } catch (error) {
+          console.error("Error booking itinerary:", error);
+          alert("An error occurred while booking the itinerary.");
+        }
+      }
+
+      async function submitComment() {
+        const itineraryID = itineraryData.id;
+        const touristID = sessionStorage.getItem("touristID");
+        const Body = document.getElementById("comment-body").value;
+
+        if (!Body) {
+          alert("Please enter a comment.");
+          return;
         }
 
-        // Frontend function to book the itinerary
-        async function handleBookItinerary() {
-            const itineraryId = itineraryData.id;
-            const userId = sessionStorage.getItem('touristID');
-            const bookedDate = new Date().toISOString().split("T")[0]; // Using today's date
-
-            if (!userId) {
-                alert("Tourist ID not available. Please log in.");
-                return;
+        try {
+          const response = await fetch(
+            "http://localhost:8000/comment-on-itinerary/" + touristID,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ itineraryID, Body }),
             }
+          );
 
-            try {
-                const response = await fetch("http://localhost:8000/bookItinerary", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ itineraryId, userId, bookedDate }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert("Booked successfully!"); // Show popup message
-                    console.log("Booking details:", data.booking);
-                } else {
-                    alert(data.message || "Error booking itinerary.");
-                }
-            } catch (error) {
-                console.error("Error booking itinerary:", error);
-                alert("An error occurred while booking the itinerary.");
-            }
-        }
-
-        async function submitComment() {
-            const itineraryID = itineraryData.id;
-            const touristID = sessionStorage.getItem('touristID');
-            const Body = document.getElementById("comment-body").value;
-
-            if (!Body) {
-                alert("Please enter a comment.");
-                return;
-            }
-
-            try {
-                const response = await fetch("http://localhost:8000/comment-on-itinerary/" + touristID, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ itineraryID, Body }),
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    alert(`Comment posted successfully: ${result.message}`);
-                    document.getElementById("comment-body").value = ""; // Clear the comment box
-                } else {
-                    const errorResult = await response.json();
-                    alert(`Error posting comment: ${errorResult.message}`);
-                }
-            } catch (error) {
-                console.error("Error posting comment:", error);
-                alert("There was an error posting the comment. Please try again.");
-            }
-        }
-
-        window.onload = () => {
-            const { id } = getQueryParams();
-            fetchItineraryData(id);
-            fetchTouristID();
-        };
-
-        document.getElementById("submit-comment-button").addEventListener("click", submitComment);
-        document.querySelector(".book-button").addEventListener("click", handleBookItinerary);
-
-        const shareLinkButton = document.getElementById("share-link-button");
-        const shareEmailButton = document.getElementById("share-email-button");
-        const flagButton = document.getElementById("flag-button");
-
-        shareLinkButton.addEventListener("click", async () => {
-            const activityId = itineraryData._id || getQueryParams().id;
-            console.log(activityId);
-            const response = await fetch("http://localhost:8000/shareItinerary", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "link" }),
-            });
-           
+          if (response.ok) {
             const result = await response.json();
-            alert(`Activity shared successfully! Link: ${result.link}`);
+            alert(`Comment posted successfully: ${result.message}`);
+            document.getElementById("comment-body").value = ""; // Clear the comment box
+          } else {
+            const errorResult = await response.json();
+            alert(`Error posting comment: ${errorResult.message}`);
+          }
+        } catch (error) {
+          console.error("Error posting comment:", error);
+          alert("There was an error posting the comment. Please try again.");
+        }
+      }
+
+      window.onload = () => {
+        const { id } = getQueryParams();
+        fetchItineraryData(id);
+        fetchTouristID();
+      };
+
+      document
+        .getElementById("submit-comment-button")
+        .addEventListener("click", submitComment);
+      document
+        .querySelector(".book-button")
+        .addEventListener("click", handleBookItinerary);
+
+      const shareLinkButton = document.getElementById("share-link-button");
+      const shareEmailButton = document.getElementById("share-email-button");
+      const flagButton = document.getElementById("flag-button");
+
+      shareLinkButton.addEventListener("click", async () => {
+        const activityId = itineraryData._id || getQueryParams().id;
+        console.log(activityId);
+        const response = await fetch("http://localhost:8000/shareItinerary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ activityId, shareMethod: "link" }),
         });
 
-        shareEmailButton.addEventListener("click", async () => {
-            const activityId = itineraryData.id || getQueryParams().id;
-            const email = prompt("Enter the recipient's email address:");
-            if (!email) return;
+        const result = await response.json();
+        alert(`Activity shared successfully! Link: ${result.link}`);
+      });
 
-            const response = await fetch("http://localhost:8000/shareItenerary", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ activityId, shareMethod: "email", email }),
-            });
+      shareEmailButton.addEventListener("click", async () => {
+        const activityId = itineraryData.id || getQueryParams().id;
+        const email = prompt("Enter the recipient's email address:");
+        if (!email) return;
 
-            const result = await response.json();
-            alert(`Activity shared successfully! ${result.link}`);
+        const response = await fetch("http://localhost:8000/shareItenerary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ activityId, shareMethod: "email", email }),
         });
 
-        
+        const result = await response.json();
+        alert(`Activity shared successfully! ${result.link}`);
+      });
     </script>
-</body>
+  </body>
 </html>

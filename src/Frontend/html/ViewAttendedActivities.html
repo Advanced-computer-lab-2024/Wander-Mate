@@ -48,6 +48,20 @@
       .comment-form button:hover {
         background-color: #45a049;
       }
+      .star-rating span {
+  font-size: 1.5em;
+  color: black;
+  cursor: pointer;
+  transition: color 0.3s;
+  padding: 5px;
+  margin-right: 2px;
+}
+
+/* Highlight stars up to the selected rating */
+.star-rating .selected {
+  color: gold;
+}
+
     </style>
   </head>
   <body>
@@ -62,6 +76,7 @@
           <th>Creator</th>
           <th>Booked Date</th>
           <th>Add Comment</th>
+          <th>Rate Activity</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -130,15 +145,20 @@
             <td>${activity.itemId.Name}</td>
             <td>${activity.itemId.Creator.Username}</td>
             <td>${new Date(activity.bookedDate).toLocaleDateString()}</td>
-            <td><button onclick="prepareCommentForm('${
-              activity.itemId._id
-            }')">Add Comment</button></td>
+            <td><button onclick="prepareCommentForm('${activity.itemId._id}')">Add Comment</button></td>
+            <td>
+              <div class="star-rating" id="rating-${activity.itemId._id}">
+                ${[1, 2, 3, 4, 5].map((star) => `<span onclick="rateActivity('${activity.itemId._id}', ${star})">&#9733;</span>`).join("")}
+                <span id="rating-message-${activity.itemId._id}" class="rating-message"></span>
+              </div>
+            </td>
           `;
           tbody.appendChild(row);
         });
 
         table.style.display = "table";
       }
+
 
       function displayError(message) {
         const errorMessage = document.getElementById("error-message");
@@ -214,6 +234,43 @@
           alert("Error posting comment");
         }
       }
+      async function rateActivity(eventId, rating) {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          alert("You must be logged in to rate an activity.");
+          return;
+        }
+
+        try {
+          const response1 = await fetch(`http://localhost:8000/getID/${username}`);
+          if (!response1.ok) throw new Error("Failed to get user ID");
+          const { userID } = await response1.json();
+
+          const response = await fetch("http://localhost:8000/rateEvent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: userID, eventId, rating }),
+          });
+
+          if (response.ok) {
+            document.getElementById(`rating-message-${eventId}`).textContent = "Thank you for your rating!";
+            setStarRating(eventId, rating);
+          } else {
+            alert("Failed to post rating.");
+          }
+        } catch (error) {
+          alert("Error posting rating");
+        }
+      }
+
+      function setStarRating(eventId, rating) {
+        const stars = document.querySelectorAll(`#rating-${eventId} span`);
+        stars.forEach((star, index) => {
+          if (index < rating) star.classList.add("selected");
+          else star.classList.remove("selected");
+        });
+      }
+
 
       // Call the fetch function when the page loads
       window.onload = fetchActivities;
