@@ -80,13 +80,10 @@
     // Fetch username based on ownerId
     async function fetchUsername(ownerId) {
       try {
-        let arr =[];
         const response = await fetch(`http://localhost:8000/getUsername/${ownerId}`);
         if (!response.ok) throw new Error("User not found");
-        const username = await response.Username;
-        const status = await response.status;
-        arr=[username,status]
-        return arr;
+        const username = await response.json();
+        return username;
       } catch (error) {
         console.error("Failed to fetch username for ownerId:", ownerId, error);
         return `Unknown User (${ownerId})`; // Fallback if username fetch fails
@@ -103,11 +100,7 @@
         ownerSection.classList.add('owner-section');
 
         // Fetch and display the username for each ownerId
-        const arr = await fetchUsername(ownerId);
-        const username = arr[0];
-        const status = arr[1];
-        if(status !== "pending"){
-
+        const username = await fetchUsername(ownerId);
         const ownerTitle = document.createElement('h2');
         ownerTitle.textContent = `Owner: ${username}`;
         ownerSection.appendChild(ownerTitle);
@@ -152,7 +145,6 @@
         const hr = document.createElement('hr');
         hr.classList.add('owner-divider');
         documentList.appendChild(hr);
-      }
       }
     }
 
