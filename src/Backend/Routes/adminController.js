@@ -778,7 +778,7 @@ const acceptRejectUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid username or password" });
     }
     let userLogged;
-    switch (user.Type) {   
+    switch (user.Type) {
       case "Seller":
         userLogged = await sellerModel.findOne({ _id: userId });
         break;
@@ -805,9 +805,7 @@ const acceptRejectUser = async (req, res) => {
 
     // Save the updated user
     await userLogged.save();
-    res
-      .status(200)
-      .json({ message: "status updated successfully" });
+    res.status(200).json({ message: "status updated successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error updating user status" });
@@ -1264,7 +1262,7 @@ const getUsername = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
-    res.status(200).json(user.Username);
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "User not found" });
