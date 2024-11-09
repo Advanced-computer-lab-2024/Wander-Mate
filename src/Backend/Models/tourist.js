@@ -44,6 +44,11 @@ const touristSchema = new Schema(
       type: Number,
       required: true,
     },
+    PreferenceTags: {
+      type: [ObjectId],
+      default: [],
+    },
+    
   },
   { timestamps: true, strict: false }
 );
