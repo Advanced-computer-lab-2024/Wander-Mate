@@ -730,7 +730,7 @@ const searchHotellocation = async (place) => {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4",
+        "X-RapidAPI-Key": "1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e",
         "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
       },
     });
@@ -761,7 +761,7 @@ const searchHotel = async (req, res) => {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "684b518fd4msh6abdc4f9636114dp126cf9jsn5683c38d57f4",
+        "X-RapidAPI-Key": "1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e",
         "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
       },
     });

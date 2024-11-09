@@ -98,7 +98,8 @@
 
             const checkInDate = document.getElementById('checkin').value;
             const checkOutdate = document.getElementById('checkout').value;
-
+            let amount = parseInt(price.replace("$", ""));
+            console.log(hotelId, title, price, provider, userId, checkInDate, checkOutdate);
 
             try {
                 const response = await axios.post(`http://localhost:8000/bookHotel`,{
@@ -107,7 +108,7 @@
                 title,
                 checkIn: new Date(checkInDate),
                 checkOut: new Date(checkOutdate),
-                price,
+                price: amount,
                 provider
                 });
                 alert("Hotel booked successfully!");
