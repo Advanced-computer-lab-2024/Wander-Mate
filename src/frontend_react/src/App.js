@@ -22,6 +22,7 @@ import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
 import CheckOut from "./components/checkout";
+import TourismGovHomePage from "./pages/TourismGovHomePage";
 function App() {
   return (
     <Router>
@@ -45,6 +46,7 @@ function App() {
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
         <Route path="/updateTouristInfo" element={<UpdateTouristProfile />} />
         <Route path="/checkout" element={<CheckOut />} />
+        <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
       </Routes>
     </Router>
   );
