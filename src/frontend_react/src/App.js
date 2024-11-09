@@ -20,6 +20,7 @@ import StartPage from "./pages/startPage";
 import BookFlight from "./pages/bookFlight";
 import "./App.css"
 import UpdateProfile from "./pages/updateTouristProfile";
+import UpdateTouristProfile from "./pages/updateTourist";
 function App() {
   return (
     <Router>
@@ -41,6 +42,8 @@ function App() {
         <Route path="/" element={<StartPage />} />
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
+        <Route path="/updateTouristProfile" element={<UpdateProfile />} />
+        <Route path="/updateTourist" element={<UpdateTouristProfile />} />
       </Routes>
     </Router>
   );
