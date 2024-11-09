@@ -19,11 +19,7 @@
   <div class="wrapper">
     <div class="title">My Bookings</div>
 
-    <!-- Tourist ID Display Section -->
-    <div class="tourist-id-section">
-      <label for="touristID">Tourist ID:</label>
-      <input type="text" id="touristID" readonly />
-    </div>
+
 
     <!-- Bookings section -->
     <div class="bookings">
@@ -50,7 +46,7 @@
 
         const { userID } = await response.json();
         
-        document.getElementById("touristID").value = touristID;
+        
         fetchBookings(userID);
       } catch (error) {
         console.error("Error fetching tourist ID:", error);
