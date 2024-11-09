@@ -16,6 +16,7 @@ const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
 const HotelBooked = require("../Models/bookedHotel.js");
+const BookedFlight = require ("../Models/bookedFlights.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
@@ -664,63 +665,48 @@ const SearchFlights = async (req, res) => {
 // Book Flight Function
 const BookFlight = async (req, res) => {
   try {
-    const { flightID, price, departureDate, arrivalDate } = req.body; // This should be the flight offer object
-    const touristID = req.params.touristID;
+    const { flightID, price, departureDate, arrivalDate } = req.body;
+    const { touristID } = req.params;
 
-    // Check if the flight order is valid
+    console.log("Received data:", { flightID, price, departureDate, arrivalDate, touristID });
+
     if (!flightID || !price || !departureDate || !arrivalDate) {
+      console.error("Invalid flight order data");
       return res.status(400).json({ error: "Invalid flight order data" });
     }
 
-    // Constructing the booking data
-    const bookingData = {
-      flightID: flightID,
-      price: price,
-      bookingDate: new Date(),
-      departureDate: departureDate,
-      arrivalDate: arrivalDate,
-    };
+    const bookedFlight = new BookedFlight({
+      userId: touristID,
+      flightID,
+      price,
+      departureDate: new Date(departureDate),
+      arrivalDate: new Date(arrivalDate),
+      bookedDate: Date.now()
+    });
 
-    // Simulate booking API call
-    const bookingResponse = await bookFlightWithAPI(bookingData);
+    console.log("Saving bookedFlight...");
+    await bookedFlight.save();
+    console.log("bookedFlight saved successfully.");
 
-    if (bookingResponse.success) {
-      const updatedTourist = await userModel.findByIdAndUpdate(
-        touristID,
-        { $push: { bookedFlights: bookingData } },
-        { new: true }
-      );
+    const newBooking = new bookingSchema({
+      itemId: bookedFlight._id,
+      itemModel: "BookedFlights",
+      userId: touristID,
+      bookedDate: bookedFlight.bookedDate
+    });
 
-      return res.status(200).json({
-        message: "Flight booked successfully!",
-        bookingDetails: bookingResponse.details,
-        updatedTourist,
-      });
-    } else {
-      return res.status(500).json({ error: "Failed to book the flight." });
-    }
+    console.log("Saving newBooking...");
+    await newBooking.save();
+    console.log("newBooking saved successfully.");
+
+    res.status(201).json({ 
+      message: "Flight booked successfully", 
+      bookingDetails: { confirmationNumber: bookedFlight._id }  // Add confirmation number
+    });
   } catch (error) {
     console.error("Error processing flight order:", error);
     return res.status(500).json({ error: "Internal server error." });
   }
-};
-
-module.exports = { BookFlight };
-
-// Mock function to simulate an API booking call
-const bookFlightWithAPI = async (bookingData) => {
-  // Simulate a successful booking response
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        details: {
-          confirmationNumber: "ABC123",
-          flightInfo: bookingData.flightOffer,
-        },
-      });
-    }, 1000);
-  });
 };
 
 const searchHotellocation = async (place) => {
@@ -1968,4 +1954,5 @@ module.exports = {
   getProductReviews,
   bookActivity,
   shareItenerary,
+  BookFlight,
 };
