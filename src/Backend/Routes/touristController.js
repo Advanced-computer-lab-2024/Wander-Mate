@@ -1231,43 +1231,6 @@ const updateProductRatings = async (req, res) => {
   }
 };
 
-const selectPreferences = async (req, res) => {
-  try {
-    const { userId, historicAreas, beaches, familyFriendly, shopping, budget } =
-      req.body; // Retrieve preferences from request body
-
-    // Check if preferences already exist for the user
-
-    let preferences = await PreferenceTags.findOne({ userId });
-    if (preferences) {
-      // Update existing preferences
-      preferences.historicAreas = historicAreas;
-      preferences.beaches = beaches;
-      preferences.familyFriendly = familyFriendly;
-      preferences.shopping = shopping;
-      preferences.budget = budget;
-      await preferences.save();
-    } else {
-      // Create new preferences if not existing
-      preferences = new PreferenceTags({
-        userId,
-        historicAreas,
-        beaches,
-        familyFriendly,
-        shopping,
-        budget,
-      });
-      await preferences.save();
-    }
-    res.status(200).json({
-      message: "Preferences saved successfully!",
-      preferences,
-    });
-  } catch (error) {
-    console.error("Error saving preferences:", error);
-    res.status(500).json({ message: "Unable to save preferences." });
-  }
-};
 
 const requestTouristAccountDeletion = async (req, res) => {
   const { touristID } = req.params;
@@ -1900,6 +1863,35 @@ const getProductReviews = async (req, res) => {
     });
   }
 };
+// Method to select preferences
+const selectPreferences = async (req, res) => {
+  try {
+    const { touristId, preferences } = req.body;
+
+    if (!touristId || !preferences) {
+      return res.status(400).json({ message: "Tourist ID and preferences are required." });
+    }
+
+    // Update the tourist's preferences
+    const updatedTourist = await userModel.findByIdAndUpdate(
+      touristId,
+      { PreferenceTags: preferences },
+      { new: true }
+    );
+
+    if (!updatedTourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    return res.status(200).json({ message: "Preferences updated successfully.", data: updatedTourist });
+  } catch (error) {
+    console.error("Error updating preferences:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
 
 module.exports = {
   touristRegister,

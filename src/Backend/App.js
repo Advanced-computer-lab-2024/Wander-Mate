@@ -413,7 +413,7 @@ app.put("/checkUserName", checkUserName);
 app.post("/bookTransportation", bookTransportation);
 app.post("/addTransportation", addTransportation);
 app.put("/deactivateItinerary", deactivateItinerary);
-app.put("/selectPreferences", selectPreferences);
+app.post("/selectPreferences", selectPreferences);
 app.delete(
   "/requestTouristAccountDeletion/:touristID",
   requestTouristAccountDeletion
