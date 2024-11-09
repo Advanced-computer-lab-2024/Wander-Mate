@@ -9,7 +9,7 @@ const styles = {
   }),
 };
 
-const NationalitySelect = ({value, onChange, error}) => {
+const NationalitySelect = ({ value, onChange, error }) => {
   const [nations, setNations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ const NationalitySelect = ({value, onChange, error}) => {
     <div>
       <Select
         classNamePrefix="select"
-        placeholder="Nationality"
+        placeholder="Nation"
         options={nations}
         isLoading={loading}
         styles={customStyles}
