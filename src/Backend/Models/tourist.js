@@ -44,31 +44,6 @@ const touristSchema = new Schema(
       type: Number,
       required: true,
     },
-    // New field to store booked flights
-    bookedFlights: [
-      {
-        flightID: {
-          type: Object,
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-        bookingDate: {
-          type: Date,
-          default: Date.now,
-        },
-        departureDate: {
-          type: Date,
-          required:true,
-        },
-        arrivalDate: {
-          type:Date,
-          required:true,
-        },
-      },
-    ],
   },
   { timestamps: true, strict: false }
 );
