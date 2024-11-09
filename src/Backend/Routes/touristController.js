@@ -775,7 +775,7 @@ const searchHotel = async (req, res) => {
     }
 
     // Retrieve the first 5 hotels and extract relevant details
-    const hotels = hotelData.data.data.slice(0, 5).map((hotel) => ({
+    const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
       id: hotel.id,
       title: hotel.title,
       price: hotel.priceForDisplay || "N/A",
