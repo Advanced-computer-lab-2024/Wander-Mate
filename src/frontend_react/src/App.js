@@ -1,6 +1,6 @@
 import "./assets/scss/globals.scss";
 import "./assets/scss/theme.scss";
-import "./assets/scss/partials/extra/_scrollbar.scss"
+import "./assets/scss/partials/extra/_scrollbar.scss";
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -18,8 +18,10 @@ import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
 import BookFlight from "./pages/bookFlight";
-import "./App.css"
+import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
+import Cart from "./pages/cart";
+import CheckOut from "./components/checkout";
 function App() {
   return (
     <Router>
@@ -41,6 +43,7 @@ function App() {
         <Route path="/" element={<StartPage />} />
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
+        <Route path="/checkout" element={<CheckOut />} />
       </Routes>
     </Router>
   );
