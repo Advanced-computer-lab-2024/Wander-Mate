@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Book Hotel | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Book Hotel</div>
+        <form id="flightSearchForm" enctype="multipart/form-data">
+            <div class="field">
+                <input type="text" id="place" name="place" required />
+                <label for="place">Place:</label>
+            </div>
+            <div class="field">
+                <input type="date" id="checkin" name="checkin" required />
+                <label for="checkin">CheckIn Date:</label>
+            </div>
+            <div class="field">
+                <input type="date" id="checkout" name="checkout" required />
+                <label for="checkout">CheckOut Date:</label>
+            </div>
+            <div class="field">
+                <button type="button" onclick="searchHotels()">Search Hotels</button>
+            </div>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script>
+        async function searchHotels() {
+            const place = document.getElementById('place').value;
+            const checkInDate = document.getElementById('checkin').value;
+            const checkOutdate = document.getElementById('checkout').value;
+
+            try {
+                const response = await axios.put('http://localhost:8000/searchHotel', {
+                    place,
+                    checkInDate,
+                    checkOutdate,
+                });
+                console.log(response.data);
+                displayResults(response.data);
+            } catch (error) {
+                console.error("Error searching hotels:", error);
+                document.getElementById("results").innerHTML =
+                    "<p>Failed to search hotels. Please try again later.</p>";
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<h2>Available Hotels:</h2>";
+            data.forEach((hotel) => {
+                const hotelDiv = document.createElement("div");
+                hotelDiv.className = "hotel-card";
+
+                hotelDiv.innerHTML = `
+                    <img src="${hotel.imageUrl !== 'N/A' ? hotel.imageUrl : 'placeholder.jpg'}" alt="${hotel.title}" class="hotel-image">
+                    <h3>${hotel.title}</h3>
+                    <p><strong>Price:</strong> ${hotel.price}</p>
+                    <p><strong>Rating:</strong> ${hotel.rating}</p>
+                    <p><strong>Provider:</strong> ${hotel.provider}</p>
+                    <p><strong>Cancellation Policy:</strong> ${hotel.cancellationPolicy}</p>
+                    <button onclick="bookHotel('${hotel.id}', '${hotel.title}', '${hotel.price}', '${hotel.provider}')">Book</button>
+                `;
+
+                resultsDiv.appendChild(hotelDiv);
+            });
+        }
+
+        async function fetchUserID() {
+            const username = sessionStorage.getItem("username");
+            if (!username) {
+                console.error("No username found in session storage.");
+                return null;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) throw new Error("Failed to get user ID");
+
+                const { userID } = await response.json();
+                sessionStorage.setItem("userID", userID);
+                return userID;
+            } catch (error) {
+                console.error("Error fetching user ID:", error);
+                document.getElementById("results").innerHTML =
+                    "<p>Could not load user ID. Please try again later.</p>";
+                return null;
+            }
+        }
+
+        async function bookHotel(hotelId, title, price, provider) {
+            const userId = await fetchUserID();
+            if (!userId) return;
+
+            const checkInDate = document.getElementById('checkin').value;
+            const checkOutdate = document.getElementById('checkout').value;
+
+
+            try {
+                const response = await axios.post(`http://localhost:8000/bookHotel`,{
+                userId,
+                hotelId,
+                title,
+                checkIn: new Date(checkInDate),
+                checkOut: new Date(checkOutdate),
+                price,
+                provider
+                });
+                alert("Hotel booked successfully!");
+            } catch (error) {
+                console.error("Error booking Hotel:", error);
+                alert("Failed to book the hotel. Please try again later.");
+            }
+        }
+    </script>
+</body>
+</html>
