@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Activities | Wander-Mate</title>
+    <link rel="stylesheet" href="../styles/register.css" />
+    <style>
+      .filter-section {
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="title">All Activities</div>
+      
+      <!-- Preference Tags Section -->
+      <div class="filter-section">
+        <label>Tags:</label>
+        <div id="tagsContainer"></div>
+      </div>
+
+      <!-- Button to Submit Selected Preferences -->
+      <button id="submitPreferencesButton">Submit Preferences</button>
+
+      <script>
+        let tags = [];
+
+        // Fetch and display tags in the filter
+        async function fetchPreferenceTags() {
+          const tagsContainer = document.getElementById("tagsContainer");
+          try {
+            const response = await fetch("http://localhost:8000/readPreferenceTags");
+            tags = await response.json();
+            tags.forEach((tag) => {
+              const tagCheckbox = document.createElement("div");
+              tagCheckbox.innerHTML = `
+                <input type="checkbox" id="tag-${tag._id}" value="${tag._id}" />
+                <label for="tag-${tag._id}">${tag.Name}</label>
+              `;
+              tagsContainer.appendChild(tagCheckbox);
+            });
+          } catch (error) {
+            console.error("Error fetching tags:", error);
+          }
+        }
+
+        // Function to fetch the user ID based on the username from session or input
+        async function fetchUserID(username) {
+          try {
+            const response = await fetch(`http://localhost:8000/getID/${username}`);
+            if (!response.ok) {
+              throw new Error("Failed to get user ID");
+            }
+            const { userID } = await response.json();
+            return userID;
+          } catch (error) {
+            console.error("Error fetching user ID:", error);
+            alert("Could not retrieve user ID. Please ensure you are logged in.");
+            return null;
+          }
+        }
+
+        // Function to submit selected tags as preferences
+        async function submitPreferences() {
+          // Get the selected tags
+          const selectedTags = Array.from(document.querySelectorAll("#tagsContainer input:checked")).map(
+            (checkbox) => checkbox.value
+          );
+
+          if (selectedTags.length === 0) {
+            alert("Please select at least one preference.");
+            return;
+          }
+
+          // Replace with actual method to get the username (e.g., sessionStorage or input)
+          const username = sessionStorage.getItem("username"); // Assuming username is stored in sessionStorage
+          if (!username) {
+            alert("You need to be logged in to submit preferences.");
+            return;
+          }
+
+          // Fetch the user ID based on the username
+          const userID = await fetchUserID(username);
+          if (!userID) return;
+
+          try {
+            // Send selected tags to the backend
+            const response = await fetch("http://localhost:8000/selectPreferences", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                touristId: userID,
+                preferences: selectedTags,
+              }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+              alert(result.message); // Success message
+            } else {
+              alert(result.message || "Failed to update preferences.");
+            }
+          } catch (error) {
+            console.error("Error submitting preferences:", error);
+            alert("An error occurred while submitting preferences.");
+          }
+        }
+
+        // Event listener for the submit button
+        document.getElementById("submitPreferencesButton").addEventListener("click", submitPreferences);
+
+        // Initialize and load tags on page load
+        document.addEventListener("DOMContentLoaded", fetchPreferenceTags);
+      </script>
+    </div>
+  </body>
+</html>
