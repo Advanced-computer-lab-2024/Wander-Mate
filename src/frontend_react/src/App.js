@@ -4,7 +4,7 @@ import "./assets/scss/partials/extra/_scrollbar.scss"
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavigationMenuBar from "./pages/NavigationMenuBar";
+import NavigationMenuBar from "./components/NavigationMenuBar";
 import Places from "./pages/places";
 import ErrorPage from "./pages/errorPage";
 import Products from "./pages/products";
@@ -20,6 +20,7 @@ import StartPage from "./pages/startPage";
 import BookFlight from "./pages/bookFlight";
 import "./App.css"
 import UpdateProfile from "./pages/updateTouristProfile";
+import UpdateTouristProfile from "./pages/updateTourist";
 function App() {
   return (
     <Router>
@@ -41,6 +42,8 @@ function App() {
         <Route path="/" element={<StartPage />} />
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
+        <Route path="/updateTouristProfile" element={<UpdateProfile />} />
+        <Route path="/updateTourist" element={<UpdateTouristProfile />} />
       </Routes>
     </Router>
   );
