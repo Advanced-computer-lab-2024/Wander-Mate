@@ -89,7 +89,6 @@
     const createdDate = new Date(createdAt);
     const currentDate = new Date();
     const hoursDifference = Math.abs(createdDate - currentDate) / 36e5; // Convert milliseconds to hours
-    console.log("Far2 el waaaa2t", hoursDifference);
     if (hoursDifference > 48) {
       // Automatically cancel booking if more than 48 hours have passed
       try {
