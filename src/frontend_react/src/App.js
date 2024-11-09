@@ -19,6 +19,7 @@ import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
 import BookFlight from "./pages/bookFlight";
 import "./App.css"
+import UpdateProfile from "./pages/updateTouristProfile";
 function App() {
   return (
     <Router>
@@ -39,6 +40,7 @@ function App() {
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
         <Route path="/bookFlight" element={<BookFlight />} />
+        <Route path="/updateTouristProfile" element={<UpdateProfile />} />
       </Routes>
     </Router>
   );
