@@ -4,7 +4,7 @@ import "./assets/scss/partials/extra/_scrollbar.scss"
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavigationMenuBar from "./pages/NavigationMenuBar";
+import NavigationMenuBar from "./components/NavigationMenuBar";
 import Places from "./pages/places";
 import ErrorPage from "./pages/errorPage";
 import Products from "./pages/products";
