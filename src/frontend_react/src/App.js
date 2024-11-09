@@ -21,7 +21,6 @@ import BookFlight from "./pages/bookFlight";
 import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
-import Cart from "./pages/cart";
 import CheckOut from "./components/checkout";
 function App() {
   return (
