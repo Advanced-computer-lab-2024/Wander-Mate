@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import "../assets/scss/partials/extra/_scrollbar.scss";
 import { Stepper, Step, StepLabel } from "./ui/steps";
 import { toast } from "./ui/use-toast";
 import { Button } from "./ui/button";
@@ -13,11 +14,20 @@ import { useMediaQuery } from "../hooks/use-media-query";
 import { useNavigate } from "react-router-dom";
 import NationalitySelect from "./nationsSelect";
 import axios from "axios";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTrigger,
+} from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
 
 const Registration = () => {
   const [activestep, setActiveStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState(""); // State for tracking selected role in Step 1
   const [birthdate, setBirthdate] = useState(null);
+  const [accepted, setAccepeted] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -142,6 +152,8 @@ const Registration = () => {
     } else if (activestep === 2) {
       if (!formData.username) newErrors.username = "Username is required.";
       if (!formData.password) newErrors.password = "Password is required.";
+      if (!accepted)
+        newErrors.accepted = "Please accept our terms & conditions to continue";
     }
 
     setErrors(newErrors);
@@ -404,7 +416,7 @@ const Registration = () => {
                         </Label>
                         <Input
                           type="email"
-                          placeholder="Email"
+                          placeholder="example@wandermate.com"
                           required
                           value={formData.email}
                           onChange={(e) =>
@@ -434,7 +446,7 @@ const Registration = () => {
                     </Label>
                     <Input
                       type="text"
-                      placeholder="Username"
+                      placeholder="Unique Username"
                       required
                       value={formData.username}
                       onChange={(e) =>
@@ -468,7 +480,106 @@ const Registration = () => {
                       </p>
                     )}
                   </div>
+                  <div className="flex flex-wrap  gap-x-5 gap-y-4 ">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Label
+                          htmlFor="terms"
+                          className="text-sm text-default-600 cursor-pointer whitespace-nowrap underline"
+                        >
+                          Our Terms & Conditions
+                        </Label>
+                      </DialogTrigger>
+                      <DialogContent className="overflow-y-auto max-h-[80vh] p-0">
+                        <div className=" w-full">
+                          <ScrollArea className="h-full p-5 ">
+                            <h3 className="text-lg font-semibold text-default-950 dark:text-primary-foreground mt-5">
+                              Terms and Conditions
+                            </h3>
+                            <div className="mt-4 space-y-6">
+                              <p>
+                                Welcome to our platform. By accessing or using
+                                our services for flight booking, hotel booking,
+                                purchasing products, booking activities, and
+                                custom itineraries, you agree to comply with and
+                                be bound by the following terms and conditions.
+                              </p>
+                              <p>
+                                Our services are designed to offer convenience
+                                and value by providing a variety of
+                                travel-related bookings and products. Users are
+                                responsible for ensuring the accuracy of all
+                                booking details, including traveler information,
+                                dates, and selections. Payments, cancellations,
+                                and refunds are subject to our specific policies
+                                outlined at checkout and in the confirmation
+                                emails you receive.
+                              </p>
+                              <p>
+                                Flight and hotel bookings are managed through
+                                our partner networks, and availability is
+                                subject to change. Please review all details
+                                carefully, as changes or cancellations may incur
+                                fees or restrictions according to each
+                                provider’s policies.
+                              </p>
+                              <p>
+                                For activity bookings and itineraries,
+                                descriptions, schedules, and pricing are
+                                provided based on the latest available
+                                information but are subject to adjustments due
+                                to local conditions or provider changes.
+                              </p>
+                              <p>
+                                The purchase of products through our site is
+                                subject to availability, delivery conditions,
+                                and return policies. Please refer to our return
+                                policy for guidelines on eligible returns.
+                              </p>
+                              <p>
+                                By using this site, you acknowledge that our
+                                liability is limited, and we are not responsible
+                                for any damages, delays, or losses incurred due
+                                to changes, cancellations, or interruptions in
+                                service. We reserve the right to modify these
+                                terms at any time. Continued use of our site
+                                following any modifications signifies acceptance
+                                of the updated terms.
+                              </p>
+                            </div>
+                          </ScrollArea>
+                        </div>
+                        <DialogFooter className="px-5 py-3 pt-0 gap-2">
+                          <DialogClose asChild>
+                            <Button type="button" variant="outline">
+                              Close
+                            </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                            <Button
+                              type="submit"
+                              className="underline"
+                              onClick={() => setAccepeted(true)}
+                            >
+                              Accept
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    {/* <input
+                    type="checkbox"
+                      size="sm"
+                      className="border-default-300 mt-[1px]"
+                      id="terms"
+                    /> */}
+                  </div>
                 </>
+              )}
+              {errors.accepted && (
+                <p className="text-sm text-destructive mt-2">
+                  {errors.accepted}
+                </p>
               )}
             </div>
           </form>

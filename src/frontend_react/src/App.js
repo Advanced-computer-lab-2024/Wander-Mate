@@ -1,5 +1,6 @@
 import "./assets/scss/globals.scss";
 import "./assets/scss/theme.scss";
+import "./assets/scss/partials/extra/_scrollbar.scss"
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -17,6 +18,7 @@ import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
 import BookFlight from "./pages/bookFlight";
+import "./App.css"
 function App() {
   return (
     <Router>

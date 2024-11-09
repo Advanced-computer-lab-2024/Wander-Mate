@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+/* Apply to all scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.2) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+/* Hide scrollbar for elements with class "no-scrollbar" */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+}
+
