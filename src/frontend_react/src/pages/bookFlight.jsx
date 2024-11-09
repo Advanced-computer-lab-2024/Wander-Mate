@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import NavigationMenuBar from './NavigationMenuBar';
+import NavigationMenuBar from '../components/NavigationMenuBar';
 
 const BookFlight = () => {
     return ( 
