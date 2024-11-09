@@ -126,7 +126,7 @@ const deleteItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    if (itinerary.Creator !== Creator) {
+    if (itinerary.Creator.toString() !== Creator.toString()) {
       return res.status(403).json({ message: "You are not the creator." });
     }
     if (itinerary.Bookings && itinerary.Bookings.length > 0) {

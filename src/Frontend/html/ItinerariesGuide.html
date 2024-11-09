@@ -182,11 +182,36 @@
 
     async function deleteItinerary(id) {
       if (confirm("Are you sure you want to delete this itinerary?")) {
+        const username = sessionStorage.getItem('username'); // Retrieve the username from session storage
+            console.log(username);
+            let x;
+            if (!username) {
+                console.error('No username found in session storage.');
+                return; // Exit if no username is found
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to get advertiser ID');
+                }
+
+                x = await response.json();
+                
+                // Store the advertiser ID in session storage
+                
+               
+            } catch (error) {
+                console.error('Error fetching advertiser ID:', error);
+                alert('Could not load advertiser ID.');
+            }
         try {
+          const { userID } = x;
+          console.log(id, userID);  
           const response = await fetch(`http://localhost:8000/deleteItinerary`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id }),
+            body: JSON.stringify({ id, Creator: userID }),
           });
 
           if (response.ok) {
