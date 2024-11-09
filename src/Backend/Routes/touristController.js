@@ -15,6 +15,7 @@ const TransportationModel = require("../Models/transportation.js");
 const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
+const HotelBooked = require("../Models/bookedHotel.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
@@ -775,7 +776,7 @@ const searchHotel = async (req, res) => {
     }
 
     // Retrieve the first 5 hotels and extract relevant details
-    const hotels = hotelData.data.data.slice(0, 5).map((hotel) => ({
+    const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
       id: hotel.id,
       title: hotel.title,
       price: hotel.priceForDisplay || "N/A",
@@ -795,6 +796,41 @@ const searchHotel = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const bookHotel = async (req, res) => {
+  const { userId, hotelId, title, checkIn, checkOut, price, provider } = req.body;
+
+  try {
+    // Create a new booking with the given details
+    const hotelbooked = new HotelBooked({
+      userId,
+      hotelId,
+      title,
+      checkIn: new Date(checkIn),
+      checkOut: new Date(checkOut),
+      price,
+      provider,
+    });
+
+    // Save to the database
+    await hotelbooked.save();
+
+    const newBooking = new bookingSchema({
+      itemId: hotelbooked._id,
+      itemModel: "HotelBooked", // Use 'Itinerary' since you're booking an itinerary
+      userId, // Make sure userId is correctly passed from the request
+      bookedDate : hotelbooked.checkIn,
+    });
+
+    await newBooking.save();
+
+
+    res.status(201).json({ message: "Hotel booked successfully", booking: newBooking });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1918,6 +1954,7 @@ module.exports = {
   viewMyComplaints,
   searchHotellocation,
   searchHotel,
+  bookHotel,
   redeemPoints,
   reviewProduct,
   cancelBooking,

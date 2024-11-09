@@ -81,8 +81,22 @@
 
         // Function to book a flight
         async function bookFlight(flightID, price, departureDate, arrivalDate) {
-            const userID = sessionStorage.getItem("userId");
-            console.log("Retrieved UserID:", userID);
+        // Get the username from sessionStorage or another input
+        const username = sessionStorage.getItem("username"); // Ensure userName exists
+        if (!username) {
+            alert("Username is required to book a flight.");
+            return;
+        }
+
+        try {
+            // Call the backend to get the user ID based on the username
+            const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+            if (!idResponse.ok) {
+                throw new Error("Failed to get user ID");
+            }
+
+            const { userID } = await idResponse.json();
+            console.log("Retrieved UserID:", userID); // Ensure userID is valid
 
             const bookingData = {
                 flightID,
@@ -98,6 +112,10 @@
                 console.error("Error booking flight:", error);
                 alert("Failed to book the flight. Please try again later.");
             }
+        } catch (error) {
+            console.error("Error retrieving user ID:", error);
+            alert("Failed to retrieve user ID. Please try again later.");
         }
+    }
     </script>
 </body>

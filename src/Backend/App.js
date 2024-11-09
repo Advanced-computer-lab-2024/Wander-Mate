@@ -58,6 +58,7 @@ const {
   redeemPoints,
   searchHotel,
   searchHotellocation,
+  bookHotel,
   reviewProduct,
   cancelBooking,
   shareActivity,
@@ -330,6 +331,7 @@ app.post("/search-flights", SearchFlights);
 app.post("/book-flight/:touristID", BookFlight);
 app.put("/searchHotel", searchHotel);
 app.put("/searchHotellocation", searchHotellocation);
+app.post("/bookHotel",bookHotel);
 // // app.post("/BookHotel", BookHotel);
 app.post("/comment-on-itinerary/:id", commentOnItinerary);
 app.post("/commentOnGuide/:id", commentOnGuide);
