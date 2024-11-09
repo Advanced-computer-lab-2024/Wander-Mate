@@ -82,7 +82,6 @@
                 if (!response.ok) throw new Error("Failed to get user ID");
 
                 const { userID } = await response.json();
-                sessionStorage.setItem("userID", userID);
                 return userID;
             } catch (error) {
                 console.error("Error fetching user ID:", error);

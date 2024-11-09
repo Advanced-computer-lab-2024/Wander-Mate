@@ -36,7 +36,8 @@
 
   <script>
     async function fetchTouristID() {
-      const username = sessionStorage.getItem('username');  // Retrieve the username from session storage
+      const username = sessionStorage.getItem('username');
+      console.log(username);  // Retrieve the username from session storage
       if (!username) {
         console.error('No username found in session storage.');
         return; // Exit if no username is found
@@ -44,13 +45,13 @@
 
       try {
         const response = await fetch(`http://localhost:8000/getID/${username}`);
-        
+        console.log(response);
         if (!response.ok) throw new Error("Failed to fetch tourist ID");
 
-        const { touristID } = await response.json();
-        sessionStorage.setItem('touristID', touristID);
+        const { userID } = await response.json();
+        
         document.getElementById("touristID").value = touristID;
-        fetchBookings(touristID);
+        fetchBookings(userID);
       } catch (error) {
         console.error("Error fetching tourist ID:", error);
         alert("Could not load tourist information.");
@@ -137,13 +138,7 @@
 
   // Retrieve and set the tourist ID when the page loads
   window.onload = () => {
-    const touristID = sessionStorage.getItem('touristID');
-    if (touristID) {
-      document.getElementById("touristID").value = touristID;
-      fetchBookings(touristID);
-    } else {
-      fetchTouristID();
-    }
+    fetchTouristID();
   };
   </script>
 </body>
