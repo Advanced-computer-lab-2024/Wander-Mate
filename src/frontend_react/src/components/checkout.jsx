@@ -24,7 +24,7 @@ import { Textarea } from "./ui/textarea";
 import NationalitySelect from "./nationsSelect";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { cn } from "../lib/utils";
-
+import CreditCard from "../public/images/CreditCard.png";
 const CheckOut = () => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -145,20 +145,42 @@ const CheckOut = () => {
 
               {activeIndex === 2 && selected === "rwb_1" && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Credit Card Details</h3>
-                  <div className="flex flex-col gap-2">
-                    <Label>Card Number</Label>
-                    <Input type="text" placeholder="Card Number" />
+                <h3 className="text-lg font-medium">Credit Card Details</h3>
+              
+                {/* Credit Card Section */}
+                <div className="flex items-center gap-4">
+                  {/* Credit Card Image */}
+                  <div className="w-1/4">
+                    <img src={CreditCard} alt="Credit Card" className="w-full h-auto" />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>Expiration Date</Label>
-                    <Input type="text" placeholder="MM/YY" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>CVV</Label>
-                    <Input type="text" placeholder="CVV" />
+              
+                  {/* Credit Card Information */}
+                  <div className="flex flex-col gap-2 w-3/4">
+                    <div className="flex flex-col gap-2">
+                      <Label>Card Holder Name</Label>
+                      <Input type="text" placeholder="Card Holder Name" />
+                    </div>
+              
+                    <div className="flex flex-col gap-2">
+                      <Label>Card Number</Label>
+                      <Input type="text" placeholder="Card Number" />
+                    </div>
+              
+                    {/* Expiration Date and CVV side by side */}
+                    <div className="flex gap-4">
+                      <div className="flex flex-col gap-2 w-1/2">
+                        <Label>Expiration Date</Label>
+                        <Input type="text" placeholder="MM/YY" />
+                      </div>
+                      <div className="flex flex-col gap-2 w-1/2">
+                        <Label>CVV</Label>
+                        <Input type="text" placeholder="CVV" />
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+              
               )}
 
               {activeIndex === totalSlide && (
