@@ -1,4 +1,3 @@
-"use client";
 import { Icon } from "@iconify/react";
 import { Button } from "./ui/button";
 import {
@@ -19,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Textarea } from "./ui/textarea";
 import NationalitySelect from "./nationsSelect";
@@ -29,12 +28,19 @@ import { cn } from "../lib/utils";
 const CheckOut = () => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const totalSlide = 3;
+  const [totalSlide, setTotalSlide] = useState(3); // Default step count
 
   const [selected, setSelected] = useState("rwb_1");
+
   const handleValueChange = (value) => {
     setSelected(value);
+    setPaymentMethod(value === "rwb_2" ? "cash" : "credit");
   };
+
+  useEffect(() => {
+    setTotalSlide(paymentMethod === "cash" ? 2 : 3);
+  }, [paymentMethod]);
+
   const handleNextSlide = () => {
     setActiveIndex(activeIndex + 1);
   };
@@ -49,7 +55,7 @@ const CheckOut = () => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Basic Modal</Button>
+          <Button>Checkout</Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
           <DialogHeader className="p-6 pb-2">
@@ -61,14 +67,6 @@ const CheckOut = () => {
             <ScrollArea className="h-full px-6">
               {activeIndex === 1 && (
                 <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
-                  {/* <div className="flex flex-col gap-2">
-                    <Label>First Name</Label>
-                    <Input type="text" placeholder="Enter first name" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>Last Name</Label>
-                    <Input type="text" placeholder="Enter last name" />
-                  </div> */}
                   <div className="flex flex-col gap-2">
                     <Label>Country</Label>
                     <NationalitySelect />
@@ -94,49 +92,58 @@ const CheckOut = () => {
                       <Label
                         htmlFor="rwb_1"
                         className={cn(
-                          "flex justify-between items-center gap-1 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
                           { "bg-primary": selected === "rwb_1" }
                         )}
                       >
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_1",
-                          })}
-                        >
-                          Credit/Debit Card.
+                        <span className="flex items-center gap-2">
+                          <Icon
+                            icon="mdi:credit-card-outline"
+                            className="text-lg"
+                          />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_1",
+                            })}
+                          >
+                            Credit/Debit Card
+                          </span>
                         </span>
                         <RadioGroupItem
                           value="rwb_1"
                           id="rwb_1"
                           className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                        ></RadioGroupItem>
+                        />
                       </Label>
                       <Label
                         htmlFor="rwb_2"
                         className={cn(
-                          "flex justify-between items-center gap-1 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
                           { "bg-primary": selected === "rwb_2" }
                         )}
                       >
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_2",
-                          })}
-                        >
-                          Cash on Delivery.
+                        <span className="flex items-center gap-2">
+                          <Icon icon="mdi:cash-multiple" className="text-lg" />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_2",
+                            })}
+                          >
+                            Cash on Delivery
+                          </span>
                         </span>
                         <RadioGroupItem
                           value="rwb_2"
                           id="rwb_2"
                           className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                        ></RadioGroupItem>
+                        />
                       </Label>
                     </RadioGroup>
                   </div>
                 </div>
               )}
 
-              {activeIndex === 2 && paymentMethod === "credit" && (
+              {activeIndex === 2 && selected === "rwb_1" && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Credit Card Details</h3>
                   <div className="flex flex-col gap-2">
@@ -174,7 +181,7 @@ const CheckOut = () => {
               type="button"
               variant="outline"
               onClick={handlePrevSlide}
-              disabled={activeIndex === 1}
+              disabled={activeIndex === 1 || activeIndex === totalSlide}
             >
               Previous
             </Button>
@@ -186,7 +193,7 @@ const CheckOut = () => {
               <Button
                 type="button"
                 onClick={handleNextSlide}
-                disabled={activeIndex === 2 && paymentMethod !== "credit"}
+                disabled={activeIndex === 2 && selected !== "rwb_1"}
               >
                 Next
               </Button>
