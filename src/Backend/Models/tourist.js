@@ -44,6 +44,10 @@ const touristSchema = new Schema(
       type: Number,
       required: true,
     },
+    PreferenceTags: {
+      type: [ObjectId],
+      default: [],
+    },
     // New field to store booked flights
     bookedFlights: [
       {
@@ -61,11 +65,11 @@ const touristSchema = new Schema(
         },
         departureDate: {
           type: Date,
-          required:true,
+          required: true,
         },
         arrivalDate: {
-          type:Date,
-          required:true,
+          type: Date,
+          required: true,
         },
       },
     ],
