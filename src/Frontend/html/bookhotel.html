@@ -9,6 +9,19 @@
 <body>
     <div class="wrapper">
         <div class="title">Book Hotel</div>
+
+        <!-- Currency Selector -->
+        <div class="currency-section">
+            <label for="currencySelector">Select Currency:</label>
+            <select id="currencySelector">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+                <option value="EGP">EGP</option> <!-- Added EGP option -->
+            </select>
+        </div>
+
         <form id="flightSearchForm" enctype="multipart/form-data">
             <div class="field">
                 <input type="text" id="place" name="place" required />
@@ -29,6 +42,26 @@
         <div id="results"></div>
     </div>
     <script>
+        let exchangeRates = {}; // Store exchange rates
+        let currentCurrency = "USD"; // Default currency
+
+        // Fetch exchange rates for currency conversion
+        async function fetchExchangeRates() {
+            try {
+                const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+                const data = await response.json();
+                exchangeRates = data.rates;
+            } catch (error) {
+                console.error("Error fetching exchange rates:", error);
+            }
+        }
+
+        // Convert prices to the selected currency
+        function convertPrice(priceInUSD) {
+            const rate = exchangeRates[currentCurrency] || 1; // Default to 1 if rate not found
+            return (priceInUSD * rate).toFixed(2);
+        }
+
         async function searchHotels() {
             const place = document.getElementById('place').value;
             const checkInDate = document.getElementById('checkin').value;
@@ -41,6 +74,7 @@
                     checkOutdate,
                 });
                 console.log(response.data);
+                sessionStorage.setItem("hotelData", JSON.stringify(response.data)); // Store data
                 displayResults(response.data);
             } catch (error) {
                 console.error("Error searching hotels:", error);
@@ -56,14 +90,16 @@
                 const hotelDiv = document.createElement("div");
                 hotelDiv.className = "hotel-card";
 
+                const convertedPrice = convertPrice(parseFloat(hotel.price.replace("$", "")));
+
                 hotelDiv.innerHTML = `
                     <img src="${hotel.imageUrl !== 'N/A' ? hotel.imageUrl : 'placeholder.jpg'}" alt="${hotel.title}" class="hotel-image">
                     <h3>${hotel.title}</h3>
-                    <p><strong>Price:</strong> ${hotel.price}</p>
+                    <p><strong>Price:</strong> ${convertedPrice} ${currentCurrency}</p>
                     <p><strong>Rating:</strong> ${hotel.rating}</p>
                     <p><strong>Provider:</strong> ${hotel.provider}</p>
                     <p><strong>Cancellation Policy:</strong> ${hotel.cancellationPolicy}</p>
-                    <button onclick="bookHotel('${hotel.id}', '${hotel.title}', '${hotel.price}', '${hotel.provider}')">Book</button>
+                    <button onclick="bookHotel('${hotel.id}', '${hotel.title}', '${convertedPrice}', '${hotel.provider}')">Book</button>
                 `;
 
                 resultsDiv.appendChild(hotelDiv);
@@ -97,7 +133,8 @@
 
             const checkInDate = document.getElementById('checkin').value;
             const checkOutdate = document.getElementById('checkout').value;
-            let amount = parseInt(price.replace("$", ""));
+            let amount = parseFloat(price); // Price is already converted
+
             console.log(hotelId, title, price, provider, userId, checkInDate, checkOutdate);
 
             try {
@@ -116,6 +153,21 @@
                 alert("Failed to book the hotel. Please try again later.");
             }
         }
+
+        // Initialize and load exchange rates when the page loads
+        document.addEventListener("DOMContentLoaded", async () => {
+            await fetchExchangeRates();
+        });
+
+        // Currency selection listener
+        document.getElementById("currencySelector").addEventListener("change", (event) => {
+            currentCurrency = event.target.value;
+            const resultsDiv = document.getElementById("results");
+            if (resultsDiv.innerHTML) {
+                // Re-display results with updated currency if results already exist
+                displayResults(JSON.parse(sessionStorage.getItem("hotelData")));
+            }
+        });
     </script>
 </body>
 </html>
