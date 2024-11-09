@@ -81,23 +81,42 @@
 
         // Function to book a flight
         async function bookFlight(flightID, price, departureDate, arrivalDate) {
-            const userID = sessionStorage.getItem("userId");
-            console.log("Retrieved UserID:", userID);
-
-            const bookingData = {
-                flightID,
-                price,
-                departureDate,
-                arrivalDate,
-            };
+            const username = sessionStorage.getItem("username");
+            if (!username) {
+                alert("Username is required to book a flight.");
+                return;
+            }
 
             try {
-                const response = await axios.post(`http://localhost:8000/book-flight/${userID}`, bookingData);
-                alert("Flight booked successfully! Confirmation Number: " + response.data.bookingDetails.confirmationNumber);
+                const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+                if (!idResponse.ok) {
+                    throw new Error("Failed to get user ID");
+                }
+
+                const { userID } = await idResponse.json();
+                console.log("Retrieved UserID:", userID);
+
+                const bookingData = {
+                    userID,
+                    flightID,
+                    price,
+                    departureDate,
+                    arrivalDate,
+                };
+
+                try {
+                    const response = await axios.post(`http://localhost:8000/book-flight/${userID}`, bookingData);
+                    // Access confirmationNumber in bookingDetails
+                    alert("Flight booked successfully! Confirmation Number: " + response.data.bookingDetails.confirmationNumber);
+                } catch (error) {
+                    console.error("Error booking flight:", error);
+                    alert("Failed to book the flight. Please try again later.");
+                }
             } catch (error) {
-                console.error("Error booking flight:", error);
-                alert("Failed to book the flight. Please try again later.");
+                console.error("Error retrieving user ID:", error);
+                alert("Failed to retrieve user ID. Please try again later.");
             }
         }
+
     </script>
 </body>
