@@ -392,25 +392,27 @@ const requestSellerAccountDeletion = async (req, res) => {
     }
 
     // Check for upcoming paid bookings
-    const currentDate = new Date();
-    const upcomingBookings = await bookingSchema.find({
-      userId: sellerID,
-      paid: true,
-      bookedDate: { $gte: currentDate }
-    });
+    // const currentDate = new Date();
+    // const upcomingBookings = await bookingSchema.find({
+    //   userId: sellerID,
+    //   paid: true,
+    //   bookedDate: { $gte: currentDate }
+    // });
 
-    if (upcomingBookings.length > 0) {
-      return res.status(400).json({
-        message: "Account cannot be deleted. There are upcoming bookings that are paid for."
-      });
-    }
+    // if (upcomingBookings.length > 0) {
+    //   return res.status(400).json({
+    //     message: "Account cannot be deleted. There are upcoming bookings that are paid for."
+    //   });
+    // }
 
-    // Mark the account as deleted (soft delete)
-    seller.isDeleted = true;
-    await seller.save();
+    // // Mark the account as deleted (soft delete)
+    // seller.isDeleted = true;
+    // await seller.save();
 
     // Hide all associated products
-    await ProductModel.updateMany({ Seller: sellerID }, { isVisible: false });
+    await sellerModel.findByIdAndDelete(sellerID);
+    await userModel.findByIdAndDelete(sellerID);
+    await ProductModel.findByIdAndDelete({ seller: sellerID });
 
     res.status(200).json({
       message: "Account deletion requested successfully. Profile and associated products will no longer be visible."

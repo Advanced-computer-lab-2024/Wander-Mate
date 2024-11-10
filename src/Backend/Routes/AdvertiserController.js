@@ -459,11 +459,14 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
       });
     }
 
-    // Mark the advertiser's account as deleted
-    await advertiserModel.findByIdAndUpdate(advertiserID, { isDeleted: true }, { new: true });
+   
+    await advertiserModel.findByIdAndDelete(advertiserID);
+    await userModel.findByIdAndDelete(advertiserID);
+    await attractionModel.findByIdAndDelete({ Creator: advertiserID });
+    
 
     // Hide associated attractions
-    await Attraction.updateMany({ Creator: advertiserID }, { isVisible: false });
+    //await Attraction.updateMany({ Creator: advertiserID }, { isVisible: false });
 
     res.status(200).json({
       message:
