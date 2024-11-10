@@ -484,8 +484,9 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     }
 
     // Delete the tour guide's account and associated data
-    await tourGuideModel.findByIdAndUpdate(guideID, { isDeleted: true }, { new: true });
-
+    await tourGuideModel.findByIdAndDelete(guideID);
+    await userModel.findByIdAndDelete(guideID);
+    await Itinerary.findByIdAndDelete({ Creator: guideID });
 
     // Hide associated itineraries and activities
     await Promise.all([

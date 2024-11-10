@@ -427,7 +427,9 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
   const { advertiserID } = req.params;
 
   try {
-    // Ensure the advertiser exists
+    console.log("Received request for advertiser ID:", advertiserID);
+
+    // Check if the advertiser exists and isn't already marked as deleted
     const advertiser = await advertiserModel.findById(advertiserID);
     if (!advertiser || advertiser.isDeleted) {
       return res
@@ -435,31 +437,33 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
         .json({ message: "Advertiser not found or already deleted" });
     }
 
-    // Check for upcoming paid bookings
+    // Set current date for comparison
     const currentDate = new Date();
-    const upcomingBookings = await bookingSchema.find({
-      userId: advertiserID,
-      paid: true,
+
+    // Find all attractions created by this advertiser
+    const attractions = await Attraction.find({ Creator: advertiserID });
+
+    // Gather all booking IDs from the attractions
+    const allBookingIds = attractions.flatMap((attraction) => attraction.Bookings);
+
+    // Query the booking schema for any future bookings
+    const futureBookings = await bookingSchema.find({
+      _id: { $in: allBookingIds },
       bookedDate: { $gte: currentDate },
     });
 
-    if (upcomingBookings.length > 0) {
+    // Prevent deletion if there are any future bookings
+    if (futureBookings.length > 0) {
       return res.status(400).json({
-        message:
-          "Account cannot be deleted. There are upcoming bookings that are paid for.",
+        message: "Account cannot be deleted. Upcoming bookings exist.",
       });
     }
 
-    // Mark the account as deleted without any "pending" status
-    advertiser.isDeleted = true;
-    await advertiser.save();
+    // Mark the advertiser's account as deleted
+    await advertiserModel.findByIdAndUpdate(advertiserID, { isDeleted: true }, { new: true });
 
-    // Hide all associated events, activities, and itineraries
-    await attractionModel.updateMany(
-      { Creator: advertiserID },
-      { isVisible: false }
-    );
-    await Itinerary.updateMany({ Creator: advertiserID }, { isVisible: false });
+    // Hide associated attractions
+    await Attraction.updateMany({ Creator: advertiserID }, { isVisible: false });
 
     res.status(200).json({
       message:
@@ -467,11 +471,10 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const uploadPictureadvertiser = async (req, res) => {
   try {
