@@ -1236,9 +1236,9 @@ const requestTouristAccountDeletion = async (req, res) => {
   const { touristID } = req.params;
 
   try {
-    console.log("Received request for tourist ID:", touristID); // Debug log
+    console.log("Received request for tourist ID:", touristID);
 
-    // Ensure the tourist exists without altering other fields
+    // Verify the tourist exists and isn't already deleted
     const tourist = await userModel.findById(touristID);
     if (!tourist || tourist.isDeleted) {
       return res
@@ -1246,29 +1246,39 @@ const requestTouristAccountDeletion = async (req, res) => {
         .json({ message: "Tourist not found or already deleted" });
     }
 
-    // Check for upcoming bookings for events, activities, or itineraries
+    // Set current date for comparison
     const currentDate = new Date();
+    console.log("Current Date:", currentDate);
+
+  
+    // Check for any upcoming bookings by this tourist for itineraries or activities
     const upcomingBookings = await bookingSchema.find({
-      userId: touristID,
-      paid: true,
-      bookedDate: { $gte: currentDate },
+      userId: touristID, // Ensures userId format matches in MongoDB
+      itemModel: { $in: ["Itinerary", "Attraction"] },
+      bookedDate: { $gte: currentDate } // Only future or present bookings
     });
 
+    // Debugging output to confirm query results
+    console.log("Upcoming bookings found:", upcomingBookings);
+
+    // Prevent deletion if there are any future bookings
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
-        message:
-          "Account cannot be deleted. There are upcoming bookings that are paid for.",
+        message: "Account cannot be deleted. Upcoming bookings exist.",
       });
     }
 
-    // Mark the account as deleted (soft delete) using `findByIdAndUpdate`
-    await userModel.findByIdAndUpdate(
-      touristID,
-      { isDeleted: true },
-      { new: true }
-    );
+    await userModel.findByIdAndDelete(touristID);
+    await Usernames.findByIdAndDelete(touristID);
 
-    // Optionally hide all associated events, activities, and itineraries
+    // Proceed to delete if no future bookings found
+    // await userModel.findByIdAndUpdate(
+    //   touristID,
+    //   { isDeleted: true },
+    //   { new: true }
+    // );
+
+    // Hide associated attractions and itineraries
     await Promise.all([
       attractionModel.updateMany({ Creator: touristID }, { isVisible: false }),
       itineraryModel.updateMany({ Creator: touristID }, { isVisible: false }),
@@ -1280,9 +1290,7 @@ const requestTouristAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 

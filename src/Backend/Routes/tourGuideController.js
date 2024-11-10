@@ -126,7 +126,7 @@ const deleteItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    if (itinerary.Creator.toString() !== Creator.toString()) {
+    if (itinerary.Creator !== Creator) {
       return res.status(403).json({ message: "You are not the creator." });
     }
     if (itinerary.Bookings && itinerary.Bookings.length > 0) {
@@ -445,13 +445,15 @@ const deactivateItinerary = async (req, res) => {
     res.status(500).json({ message: "Unable to deactivate itinerary." });
   }
 };
+
+
 const requestTourGuideAccountDeletion = async (req, res) => {
   const { guideID } = req.params;
 
   try {
-    console.log("Received request for tour guide ID:", guideID); // Debug log
+    console.log("Received request for tour guide ID:", guideID);
 
-    // Ensure the tour guide exists and is not already marked as deleted
+    // Check if the tour guide exists and isn't already marked as deleted
     const tourGuide = await tourGuideModel.findById(guideID);
     if (!tourGuide || tourGuide.isDeleted) {
       return res
@@ -459,29 +461,33 @@ const requestTourGuideAccountDeletion = async (req, res) => {
         .json({ message: "Tour Guide not found or already deleted" });
     }
 
-    // Check for upcoming bookings related to the tour guide's itineraries or attractions
+    // Set current date for comparison
     const currentDate = new Date();
-    const upcomingBookings = await bookingSchema.find({
-      userId: guideID,
-      paid: true,
-      bookedDate: { $gte: currentDate }, // Filter for future bookings
+
+    // Find all itineraries created by this tour guide
+    const itineraries = await Itinerary.find({ Creator: guideID });
+
+    // Gather all booking IDs from the itineraries
+    const allBookingIds = itineraries.flatMap((itinerary) => itinerary.Bookings);
+
+    // Query the booking schema for any future bookings
+    const futureBookings = await bookingSchema.find({
+      _id: { $in: allBookingIds },
+      bookedDate: { $gte: currentDate },
     });
 
-    if (upcomingBookings.length > 0) {
+    // Prevent deletion if there are any future bookings
+    if (futureBookings.length > 0) {
       return res.status(400).json({
-        message:
-          "Account cannot be deleted. There are upcoming bookings that are paid for.",
+        message: "Account cannot be deleted. Upcoming bookings exist.",
       });
     }
 
-    // Mark the account as deleted (soft delete)
-    await tourGuideModel.findByIdAndUpdate(
-      guideID,
-      { isDeleted: true },
-      { new: true }
-    );
+    // Delete the tour guide's account and associated data
+    await tourGuideModel.findByIdAndUpdate(guideID, { isDeleted: true }, { new: true });
 
-    // Optionally hide all associated events, activities, and itineraries
+
+    // Hide associated itineraries and activities
     await Promise.all([
       Itinerary.updateMany({ Creator: guideID }, { isVisible: false }),
       Attraction.updateMany({ Creator: guideID }, { isVisible: false }),
@@ -493,11 +499,10 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const uploadPicturetourguide = async (req, res) => {
   try {
