@@ -150,7 +150,7 @@ const CheckOut = () => {
                 {/* Credit Card Section */}
                 <div className="flex items-center gap-4">
                   {/* Credit Card Image */}
-                  <div className="w-1/4">
+                  <div className="w-1/2">
                     <img src={CreditCard} alt="Credit Card" className="w-full h-auto" />
                   </div>
               
