@@ -22,7 +22,7 @@ import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
 import TourismGovHomePage from "./pages/TourismGovHomePage";
-import Cart from "./pages/cart";
+import Cart from "./components/Cart";
 function App() {
   return (
     <Router>
