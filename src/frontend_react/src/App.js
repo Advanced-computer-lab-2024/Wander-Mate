@@ -22,6 +22,7 @@ import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
 import TourismGovHomePage from "./pages/TourismGovHomePage";
+import Cart from "./pages/cart";
 function App() {
   return (
     <Router>
@@ -44,7 +45,7 @@ function App() {
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
         <Route path="/updateTouristInfo" element={<UpdateTouristProfile />} />
-
+        <Route path="/cart" element={<Cart />} />
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
       </Routes>
     </Router>
