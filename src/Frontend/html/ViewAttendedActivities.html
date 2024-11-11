@@ -49,19 +49,18 @@
         background-color: #45a049;
       }
       .star-rating span {
-  font-size: 1.5em;
-  color: black;
-  cursor: pointer;
-  transition: color 0.3s;
-  padding: 5px;
-  margin-right: 2px;
-}
+        font-size: 1.5em;
+        color: black;
+        cursor: pointer;
+        transition: color 0.3s;
+        padding: 5px;
+        margin-right: 2px;
+      }
 
-/* Highlight stars up to the selected rating */
-.star-rating .selected {
-  color: gold;
-}
-
+      /* Highlight stars up to the selected rating */
+      .star-rating .selected {
+        color: gold;
+      }
     </style>
   </head>
   <body>
@@ -96,6 +95,7 @@
     <script>
       async function fetchActivities() {
         const username = sessionStorage.getItem("username");
+       
         if (!username) {
           displayError("Username not found in session storage.");
           return;
@@ -140,16 +140,26 @@
         tbody.innerHTML = ""; // Clear existing rows
 
         activities.forEach((activity) => {
+          console.log(activity);
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${activity.itemId.Name}</td>
             <td>${activity.itemId.Creator.Username}</td>
             <td>${new Date(activity.bookedDate).toLocaleDateString()}</td>
-            <td><button onclick="prepareCommentForm('${activity.itemId._id}')">Add Comment</button></td>
+            <td><button onclick="prepareCommentForm('${
+              activity.itemId._id
+            }')">Add Comment</button></td>
             <td>
               <div class="star-rating" id="rating-${activity.itemId._id}">
-                ${[1, 2, 3, 4, 5].map((star) => `<span onclick="rateActivity('${activity.itemId._id}', ${star})">&#9733;</span>`).join("")}
-                <span id="rating-message-${activity.itemId._id}" class="rating-message"></span>
+                ${[1, 2, 3, 4, 5]
+                  .map(
+                    (star) =>
+                      `<span onclick="rateActivity('${activity.itemId._id}', ${star})">&#9733;</span>`
+                  )
+                  .join("")}
+                <span id="rating-message-${
+                  activity.itemId._id
+                }" class="rating-message"></span>
               </div>
             </td>
           `;
@@ -158,7 +168,6 @@
 
         table.style.display = "table";
       }
-
 
       function displayError(message) {
         const errorMessage = document.getElementById("error-message");
@@ -242,7 +251,9 @@
         }
 
         try {
-          const response1 = await fetch(`http://localhost:8000/getID/${username}`);
+          const response1 = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
           if (!response1.ok) throw new Error("Failed to get user ID");
           const { userID } = await response1.json();
 
@@ -253,7 +264,8 @@
           });
 
           if (response.ok) {
-            document.getElementById(`rating-message-${eventId}`).textContent = "Thank you for your rating!";
+            document.getElementById(`rating-message-${eventId}`).textContent =
+              "Thank you for your rating!";
             setStarRating(eventId, rating);
           } else {
             alert("Failed to post rating.");
@@ -270,7 +282,6 @@
           else star.classList.remove("selected");
         });
       }
-
 
       // Call the fetch function when the page loads
       window.onload = fetchActivities;
