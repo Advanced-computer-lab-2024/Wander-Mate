@@ -205,7 +205,7 @@ const handleTourist = async (req, res) => {
             return "level 3"; // More than 500K points
           }
         };
-        tourist.Badge = assignBadge(tourist.Points);
+        tourist.Badge = assignBadge(Points);
         console.log(tourist.Badge);
       }
 
@@ -593,9 +593,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
