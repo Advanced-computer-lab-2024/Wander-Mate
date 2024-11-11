@@ -5,7 +5,7 @@ export default function ShoppingCart() {
   return (
     <div className="bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      {/* <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="bg-blue-500 w-10 h-10 rounded-full flex items-center justify-center">
@@ -21,10 +21,10 @@ export default function ShoppingCart() {
             <a href="#" className="text-gray-700 font-medium">CONTACT</a>
           </nav>
         </div>
-      </header>
+      </header> */}
 
       {/* Breadcrumbs */}
-      <div className="bg-gray-100 py-4">
+      {/* <div className="bg-gray-100 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center space-x-2 text-sm">
             <a href="#" className="text-blue-500">Home</a>
@@ -34,7 +34,7 @@ export default function ShoppingCart() {
             <span className="text-gray-700">Nike Airmax 270 React</span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
@@ -109,7 +109,7 @@ export default function ShoppingCart() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-blue-100 py-12">
+      {/* <footer className="bg-blue-100 py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -135,7 +135,7 @@ export default function ShoppingCart() {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   )
 }
