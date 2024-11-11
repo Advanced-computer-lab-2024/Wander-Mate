@@ -136,6 +136,18 @@ const handleTourist = async (req, res) => {
       if (!tourist) {
         return res.status(404).json({ message: "Tourist not found" });
       }
+      let Points = tourist.Points;
+      const assignBadge = (points) => {
+        if (points <= 100000) {
+          return "level 1"; // Up to 100K points
+        } else if (points <= 500000) {
+          return "level 2"; // Up to 500K points
+        } else {
+          return "level 3"; // More than 500K points
+        }
+      };
+      const badge = assignBadge(Points);
+      tourist.Badge = badge;
 
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
