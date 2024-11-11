@@ -44,11 +44,15 @@ const touristSchema = new Schema(
       type: Number,
       required: true,
     },
+    Badge: {
+      type: String,
+      required: true,
+    },
     PreferenceTags: {
       type: [ObjectId],
       default: [],
     },
-    
+
   },
   { timestamps: true, strict: false }
 );
