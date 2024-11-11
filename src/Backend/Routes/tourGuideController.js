@@ -446,7 +446,6 @@ const deactivateItinerary = async (req, res) => {
   }
 };
 
-
 const requestTourGuideAccountDeletion = async (req, res) => {
   const { guideID } = req.params;
 
@@ -454,13 +453,12 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     console.log("Received request for tour guide ID:", guideID);
 
     // Check if the tour guide exists and isn't already marked as deleted
-    const tourGuide = await tourGuideModel.findById(guideID);
-    if (!tourGuide || tourGuide.isDeleted) {
+    const tourGuide = await tourGuideModel.findOne({ _id: guideID });
+    if (!tourGuide) {
       return res
-        .status(404)
+        .status(400)
         .json({ message: "Tour Guide not found or already deleted" });
     }
-
     // Set current date for comparison
     const currentDate = new Date();
 
@@ -468,7 +466,9 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     const itineraries = await Itinerary.find({ Creator: guideID });
 
     // Gather all booking IDs from the itineraries
-    const allBookingIds = itineraries.flatMap((itinerary) => itinerary.Bookings);
+    const allBookingIds = itineraries.flatMap(
+      (itinerary) => itinerary.Bookings
+    );
 
     // Query the booking schema for any future bookings
     const futureBookings = await bookingSchema.find({
@@ -484,15 +484,16 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     }
 
     // Delete the tour guide's account and associated data
-    await tourGuideModel.findByIdAndDelete(guideID);
-    await userModel.findByIdAndDelete(guideID);
-    await Itinerary.findByIdAndDelete({ Creator: guideID });
 
-    // Hide associated itineraries and activities
-    await Promise.all([
-      Itinerary.updateMany({ Creator: guideID }, { isVisible: false }),
-      Attraction.updateMany({ Creator: guideID }, { isVisible: false }),
-    ]);
+    await Itinerary.deleteMany({ Creator: guideID });
+    await userModel.findOneAndDelete({ userID: guideID });
+    await tourGuideModel.findByIdAndDelete(guideID);
+
+    // // Hide associated itineraries and activities
+    // await Promise.all([
+    //   Itinerary.updateMany({ Creator: guideID }, { isVisible: false }),
+    //   Attraction.updateMany({ Creator: guideID }, { isVisible: false }),
+    // ]);
 
     res.status(200).json({
       message:
@@ -500,10 +501,11 @@ const requestTourGuideAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 const uploadPicturetourguide = async (req, res) => {
   try {

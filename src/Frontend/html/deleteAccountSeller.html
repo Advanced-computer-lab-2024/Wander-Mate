@@ -46,12 +46,7 @@
     
         // Load Seller ID on page load
         window.onload = () => {
-            const sellerID = sessionStorage.getItem('sellerID');
-            if (sellerID) {
-                document.getElementById('id').value = sellerID;
-            } else {
-                fetchSellerID();
-            }
+            fetchSellerID();
         };
     
         document.getElementById("deleteAccountForm").addEventListener("submit", async (event) => {

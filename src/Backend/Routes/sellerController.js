@@ -5,13 +5,11 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const { query } = require("express");
 const multer = require("multer");
-const storage = multer.memoryStorage(); 
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const bookingSchema = require("../Models/bookings.js"); 
+const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const jwt = require("jsonwebtoken");
-
-
 
 // Creating a seller
 // const createSeller = async (req, res) => {
@@ -319,7 +317,9 @@ const uploadProductImageSeller = async (req, res) => {
     // Save the updated product
     await product.save();
 
-    res.status(200).json({ message: "Product image uploaded successfully!", product });
+    res
+      .status(200)
+      .json({ message: "Product image uploaded successfully!", product });
   } catch (err) {
     console.error("Error uploading product image:", err);
     res.status(500).json({ error: "Failed to upload product image." });
@@ -329,7 +329,7 @@ const uploadProductImageSeller = async (req, res) => {
 const SellerarchiveProduct = async (req, res) => {
   try {
     const { productId } = req.params; // Get product ID from request parameters
-    const { isArchived } = req.body;  // Get the new archive status from request body
+    const { isArchived } = req.body; // Get the new archive status from request body
 
     // Find the product by ID and update its isArchived status
     const product = await ProductModel.findByIdAndUpdate(
@@ -343,7 +343,9 @@ const SellerarchiveProduct = async (req, res) => {
     }
 
     const status = isArchived ? "archived" : "unarchived";
-    res.status(200).json({ message: `Product ${status} successfully!`, product });
+    res
+      .status(200)
+      .json({ message: `Product ${status} successfully!`, product });
   } catch (err) {
     console.error("Error archiving/unarchiving product:", err);
     res.status(400).json({ error: "Failed to archive/unarchive product." });
@@ -388,7 +390,9 @@ const requestSellerAccountDeletion = async (req, res) => {
     // Ensure the seller exists
     const seller = await sellerModel.findById(sellerID);
     if (!seller || seller.isDeleted) {
-      return res.status(404).json({ message: "Seller not found or already deleted" });
+      return res
+        .status(404)
+        .json({ message: "Seller not found or already deleted" });
     }
 
     // Check for upcoming paid bookings
@@ -411,15 +415,18 @@ const requestSellerAccountDeletion = async (req, res) => {
 
     // Hide all associated products
     await sellerModel.findByIdAndDelete(sellerID);
-    await userModel.findByIdAndDelete(sellerID);
-    await ProductModel.findByIdAndDelete({ seller: sellerID });
+    await userModel.findOneAndDelete({ userID: sellerID });
+    await ProductModel.deleteMany({ seller: sellerID });
 
     res.status(200).json({
-      message: "Account deletion requested successfully. Profile and associated products will no longer be visible."
+      message:
+        "Account deletion requested successfully. Profile and associated products will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -464,25 +471,32 @@ const viewSellerProductSalesAndQuantity = async (req, res) => {
     const { sellerID } = req.params; // Get the seller ID from the request parameters
 
     // Fetch all products for the specific seller with their available quantity and sales information
-    const products = await ProductModel.find({ Seller: sellerID }, 'name quantity sales'); // Adjust the fields as necessary
+    const products = await ProductModel.find(
+      { Seller: sellerID },
+      "name quantity sales"
+    ); // Adjust the fields as necessary
 
     // Check if products exist
     if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found for this seller." });
+      return res
+        .status(404)
+        .json({ message: "No products found for this seller." });
     }
 
     // Prepare the response to include only relevant information
-    const productDetails = products.map(product => ({
+    const productDetails = products.map((product) => ({
       name: product.name,
       availableQuantity: product.quantity,
-      sales: product.sales // Assuming 'sales' is a field in your product schema
+      sales: product.sales, // Assuming 'sales' is a field in your product schema
     }));
 
     // Return the product details
     res.status(200).json(productDetails);
   } catch (error) {
     console.error("Error fetching seller product sales and quantity:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 const getSellerImage = async (req, res) => {

@@ -50,13 +50,7 @@
     
         // Retrieve the tourist ID from session storage when the page loads
         window.onload = () => {
-            const touristID = sessionStorage.getItem('touristID');
-            console.log('Session Storage Tourist ID:', touristID); // Debugging log
-            if (touristID) {
-                document.getElementById('id').value = touristID; // Automatically set the tourist ID field
-            } else {
-                fetchTouristID(); // Fetch and store the tourist ID if not already in session storage
-            }
+            fetchTouristID();
         };
     
         document.getElementById("deleteAccountForm").addEventListener("submit", async (event) => {

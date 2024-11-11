@@ -16,7 +16,7 @@ const PreferenceTags = require("../Models/preferenceTags.js");
 const ReviewModel = require("../Models/review.js");
 const Booking = require("../Models/bookings.js");
 const HotelBooked = require("../Models/bookedHotel.js");
-const BookedFlight = require ("../Models/bookedFlights.js");
+const BookedFlight = require("../Models/bookedFlights.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
@@ -668,7 +668,13 @@ const BookFlight = async (req, res) => {
     const { flightID, price, departureDate, arrivalDate } = req.body;
     const { touristID } = req.params;
 
-    console.log("Received data:", { flightID, price, departureDate, arrivalDate, touristID });
+    console.log("Received data:", {
+      flightID,
+      price,
+      departureDate,
+      arrivalDate,
+      touristID,
+    });
 
     if (!flightID || !price || !departureDate || !arrivalDate) {
       console.error("Invalid flight order data");
@@ -681,7 +687,7 @@ const BookFlight = async (req, res) => {
       price,
       departureDate: new Date(departureDate),
       arrivalDate: new Date(arrivalDate),
-      bookedDate: Date.now()
+      bookedDate: Date.now(),
     });
 
     console.log("Saving bookedFlight...");
@@ -692,16 +698,16 @@ const BookFlight = async (req, res) => {
       itemId: bookedFlight._id,
       itemModel: "BookedFlights",
       userId: touristID,
-      bookedDate: bookedFlight.bookedDate
+      bookedDate: bookedFlight.bookedDate,
     });
 
     console.log("Saving newBooking...");
     await newBooking.save();
     console.log("newBooking saved successfully.");
 
-    res.status(201).json({ 
-      message: "Flight booked successfully", 
-      bookingDetails: { confirmationNumber: bookedFlight._id }  // Add confirmation number
+    res.status(201).json({
+      message: "Flight booked successfully",
+      bookingDetails: { confirmationNumber: bookedFlight._id }, // Add confirmation number
     });
   } catch (error) {
     console.error("Error processing flight order:", error);
@@ -786,7 +792,8 @@ const searchHotel = async (req, res) => {
 };
 
 const bookHotel = async (req, res) => {
-  const { userId, hotelId, title, checkIn, checkOut, price, provider } = req.body;
+  const { userId, hotelId, title, checkIn, checkOut, price, provider } =
+    req.body;
 
   try {
     // Create a new booking with the given details
@@ -807,16 +814,19 @@ const bookHotel = async (req, res) => {
       itemId: hotelbooked._id,
       itemModel: "HotelBooked", // Use 'Itinerary' since you're booking an itinerary
       userId, // Make sure userId is correctly passed from the request
-      bookedDate : hotelbooked.checkIn,
+      bookedDate: hotelbooked.checkIn,
     });
 
     await newBooking.save();
 
-
-    res.status(201).json({ message: "Hotel booked successfully", booking: newBooking });
+    res
+      .status(201)
+      .json({ message: "Hotel booked successfully", booking: newBooking });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1231,7 +1241,6 @@ const updateProductRatings = async (req, res) => {
   }
 };
 
-
 const requestTouristAccountDeletion = async (req, res) => {
   const { touristID } = req.params;
 
@@ -1250,12 +1259,11 @@ const requestTouristAccountDeletion = async (req, res) => {
     const currentDate = new Date();
     console.log("Current Date:", currentDate);
 
-  
     // Check for any upcoming bookings by this tourist for itineraries or activities
     const upcomingBookings = await bookingSchema.find({
       userId: touristID, // Ensures userId format matches in MongoDB
       itemModel: { $in: ["Itinerary", "Attraction"] },
-      bookedDate: { $gte: currentDate } // Only future or present bookings
+      bookedDate: { $gte: currentDate }, // Only future or present bookings
     });
 
     // Debugging output to confirm query results
@@ -1268,8 +1276,8 @@ const requestTouristAccountDeletion = async (req, res) => {
       });
     }
 
-    await userModel.findByIdAndDelete(touristID);
-    await Usernames.findByIdAndDelete(touristID);
+    await userModel.findOneAndDelete(touristID);
+    await Usernames.findByIdAndDelete({ userID: touristID });
 
     // Proceed to delete if no future bookings found
     // await userModel.findByIdAndUpdate(
@@ -1290,7 +1298,9 @@ const requestTouristAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1502,7 +1512,8 @@ const cancelBooking = async (req, res) => {
     // Check if the booking was made within the last 48 hours
     if (hoursSinceBooking < 48) {
       return res.status(400).json({
-        error: "The Booking already passed or there is less than 48 hours remaining until the booking",
+        error:
+          "The Booking already passed or there is less than 48 hours remaining until the booking",
       });
     }
 
@@ -1877,7 +1888,9 @@ const selectPreferences = async (req, res) => {
     const { touristId, preferences } = req.body;
 
     if (!touristId || !preferences) {
-      return res.status(400).json({ message: "Tourist ID and preferences are required." });
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and preferences are required." });
     }
 
     // Update the tourist's preferences
@@ -1891,15 +1904,15 @@ const selectPreferences = async (req, res) => {
       return res.status(404).json({ message: "Tourist not found." });
     }
 
-    return res.status(200).json({ message: "Preferences updated successfully.", data: updatedTourist });
+    return res.status(200).json({
+      message: "Preferences updated successfully.",
+      data: updatedTourist,
+    });
   } catch (error) {
     console.error("Error updating preferences:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
-
-
 
 module.exports = {
   touristRegister,

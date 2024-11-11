@@ -11,7 +11,6 @@ const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const jwt = require("jsonwebtoken");
 
-
 const createActivity = async (req, res) => {
   const Bookings = [];
   const {
@@ -211,7 +210,7 @@ const createAdvertiser = async (req, res) => {
 
     const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username, userID, Type:"Advertiser" });
+    await userModel.create({ Username: Username, userID, Type: "Advertiser" });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -403,8 +402,8 @@ const addTransportation = async (req, res) => {
     }
 
     // Ensure availability is a boolean
-    const isAvailable = availability === 'true'; // Convert 'true' to true, 'false' to false
-    console.log('Parsed Availability:', isAvailable); // Debugging log
+    const isAvailable = availability === "true"; // Convert 'true' to true, 'false' to false
+    console.log("Parsed Availability:", isAvailable); // Debugging log
 
     // Create a new transportation instance
     const transportation = await TransportationModel.create({
@@ -444,7 +443,9 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     const attractions = await Attraction.find({ Creator: advertiserID });
 
     // Gather all booking IDs from the attractions
-    const allBookingIds = attractions.flatMap((attraction) => attraction.Bookings);
+    const allBookingIds = attractions.flatMap(
+      (attraction) => attraction.Bookings
+    );
 
     // Query the booking schema for any future bookings
     const futureBookings = await bookingSchema.find({
@@ -459,11 +460,9 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
       });
     }
 
-   
     await advertiserModel.findByIdAndDelete(advertiserID);
-    await userModel.findByIdAndDelete(advertiserID);
-    await attractionModel.findByIdAndDelete({ Creator: advertiserID });
-    
+    await userModel.findOneAndDelete({ userID: advertiserID });
+    await attractionModel.deleteMany({ Creator: advertiserID });
 
     // Hide associated attractions
     //await Attraction.updateMany({ Creator: advertiserID }, { isVisible: false });
@@ -474,10 +473,11 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 const uploadPictureadvertiser = async (req, res) => {
   try {
