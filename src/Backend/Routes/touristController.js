@@ -78,19 +78,6 @@ const touristRegister = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
-    let parsedPoints = 0;
-
-    if (Points) {
-      // 4. Ensure Points is an integer and validate the input
-      parsedPoints = parseInt(Points); // Convert Points to an integer
-      if (isNaN(parsedPoints) || parsedPoints < 0) {
-        // Check if the input is not a number or if it's negative
-        parsedPoints = 0; // Default to 0 points if invalid input
-      }
-    } else {
-      parsedPoints = 0;
-    }
-
     // Badge assignment logic based on points
     const assignBadge = (points) => {
       if (points <= 100000) {
@@ -103,7 +90,7 @@ const touristRegister = async (req, res) => {
     };
 
     // Call the assignBadge function to get the badge based on Points
-    let badge = assignBadge(parsedPoints);
+    let badge = assignBadge(Points);
 
     // 5. Create new user
     const newUser = await userModel.create({
@@ -192,9 +179,15 @@ const handleTourist = async (req, res) => {
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
       if (FullName) tourist.FullName = FullName;
-      if (Points) {
-        tourist.Points = Points;
-        console.log(tourist.Points);
+      if (Points !== undefined) { // Check if Points is provided
+        const parsedPoints = parseFloat(Points); // Ensure it's a number
+        if (isNaN(parsedPoints) || parsedPoints < 0) {
+          return res.status(400).json({ message: "Invalid Points value." });
+        }
+
+        tourist.Points = parsedPoints;
+        console.log("Updated Points:", tourist.Points);
+
         // Update Badge according to the Points
         const assignBadge = (points) => {
           if (points <= 100000) {
@@ -205,8 +198,9 @@ const handleTourist = async (req, res) => {
             return "level 3"; // More than 500K points
           }
         };
-        tourist.Badge = assignBadge(Points);
-        console.log(tourist.Badge);
+
+        tourist.Badge = assignBadge(parsedPoints); // Use parsed points
+        console.log("Updated Badge:", tourist.Badge);
       }
 
       // Save the updated tourist
