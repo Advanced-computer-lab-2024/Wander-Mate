@@ -45,7 +45,7 @@ function App() {
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
         <Route path="/updateTouristInfo" element={<UpdateTouristProfile />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/Cart" element={<Cart />} />
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
       </Routes>
     </Router>
