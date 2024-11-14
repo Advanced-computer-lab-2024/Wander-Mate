@@ -23,6 +23,7 @@ const UploadDocs = () => {
             const { userID } = await response.json();
 
             setUserId(userID);
+            navigate("/");
           } else {
             navigate("*");
           }

@@ -3,7 +3,7 @@ import bg from "../public/images/auth/bg-2.jpg";
 import slider1 from "../public/images/auth/slide-1.png";
 import slider2 from "../public/images/auth/slide-2.png";
 import slider3 from "../public/images/auth/slide-3.png";
-import LogInForm from "./login";
+import ForgotForm from "../components/forgetPasswordForm";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -11,7 +11,7 @@ import "swiper/css/pagination";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { useThemeStore } from "../store";
 
-const LoginPage = () => {
+const ForgotPage = () => {
   const { isRtl } = useThemeStore();
 
   return (
@@ -63,7 +63,7 @@ const LoginPage = () => {
         </div>
         <div className="px-4 py-5 flex justify-center items-center">
           <div className="lg:w-[480px]">
-            <LogInForm />
+            <ForgotForm />
           </div>
         </div>
       </div>
@@ -71,4 +71,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPage;

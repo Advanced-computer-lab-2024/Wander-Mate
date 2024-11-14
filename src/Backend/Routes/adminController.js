@@ -1248,7 +1248,9 @@ const login = async (req, res) => {
     };
 
     res.cookie("jwt", token, cookieOptions);
-    res.status(200).json({ Username: Username, Type: user.Type });
+    res
+      .status(200)
+      .json({ Username: Username, Type: user.Type, Status: user.status });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An error occurred during login" });
