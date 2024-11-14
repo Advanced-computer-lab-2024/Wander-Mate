@@ -4,11 +4,13 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 51px;
-  padding-left: 0px;
-  gap: 20vw;
+  padding: 14px;
+  gap: 257px;
+  margin-top: 4px;
+  margin-left: 1vw;
   position: fixed;
-  width: 100vw;
+  width: 98%;
+  height: 76px;
   top: 0;
   z-index: 1000;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -17,6 +19,8 @@
 
 .main-nav-bg {
   background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5.5px); /* Glassy blur effect */
+  border-radius: 14px;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 

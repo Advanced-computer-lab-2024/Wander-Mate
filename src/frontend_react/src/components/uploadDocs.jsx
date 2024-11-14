@@ -9,9 +9,14 @@ import axios from "axios";
 
 const FileUploaderMultiple = ({ ownerId, httpRequest }) => {
   const [files, setFiles] = useState([]);
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
-      setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+      if (acceptedFiles.length + files.length > 2) {
+        reToast.error("You can only upload two files: ID and docs.");
+        return;
+      }
+      setFiles((prevFiles) => [...prevFiles, ...acceptedFiles].slice(0, 2));
     },
   });
 
@@ -31,65 +36,25 @@ const FileUploaderMultiple = ({ ownerId, httpRequest }) => {
     }
   };
 
-  const handleRemoveFile = (file) => {
-    const updatedFiles = files.filter((i) => i.name !== file.name);
-    setFiles([...updatedFiles]);
-  };
-
-  const fileList = files.map((file) => (
-    <div
-      key={file.name}
-      className="flex justify-between border px-3.5 py-3 my-6 rounded-md"
-    >
-      <div className="flex space-x-3 items-center">
-        <div className="file-preview">{renderFilePreview(file)}</div>
-        <div>
-          <div className="text-sm text-card-foreground">{file.name}</div>
-          <div className="text-xs font-light text-muted-foreground">
-            {Math.round(file.size / 100) / 10 > 1000 ? (
-              <>{(Math.round(file.size / 100) / 10000).toFixed(1)}</>
-            ) : (
-              <>{(Math.round(file.size / 100) / 10).toFixed(1)}</>
-            )}
-            {" kb"}
-          </div>
-        </div>
-      </div>
-      <Button
-        size="icon"
-        color="destructive"
-        variant="outline"
-        className="border-none rounded-full"
-        onClick={() => handleRemoveFile(file)}
-      >
-        <Icon icon="tabler:x" className="h-5 w-5" />
-      </Button>
-    </div>
-  ));
-
-  const handleRemoveAllFiles = () => {
-    setFiles([]);
+  const handleRemoveFile = (index) => {
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
   };
 
   const handleUploadFiles = async () => {
-    const idFile = files.find((file) => file.name.toLowerCase().includes("id"));
-    const docsFile = files.find((file) =>
-      file.name.toLowerCase().includes("docs")
-    );
-
-    if (!idFile || !docsFile) {
-      reToast.error("Please upload both ID and Taxation Registry documents.");
+    if (files.length < 2) {
+      reToast.error("Please upload both ID and docs files.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("ID", idFile); // Append ID file
-    formData.append("docs", docsFile); // Append docs file
+    formData.append("ID", files[0]); // First file as ID
+    formData.append("docs", files[1]); // Second file as docs
     formData.append("ownerId", ownerId); // Add ownerId to the form data
 
     const toastId = reToast.loading("Uploading files...");
     try {
-      const response = await axios.post(httpRequest, formData, {
+      await axios.post(httpRequest, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -114,22 +79,47 @@ const FileUploaderMultiple = ({ ownerId, httpRequest }) => {
             Drop files here or click to upload.
           </h4>
           <div className="text-xs text-muted-foreground">
-            (This is just a demo drop zone. Selected files are not actually
-            uploaded.)
+            Upload two files: the first as "ID" and the second as "docs."
           </div>
         </div>
       </div>
-      {files.length ? (
-        <Fragment>
-          <div>{fileList}</div>
+      {files.length > 0 && (
+        <div className="space-y-4 mt-4">
+          {files.map((file, index) => (
+            <div
+              key={file.name}
+              className="flex justify-between items-center border px-3.5 py-3 rounded-md"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="file-preview">{renderFilePreview(file)}</div>
+                <div>
+                  <div className="text-sm text-card-foreground">
+                    {index === 0 ? "ID: " : "Docs: "} {file.name}
+                  </div>
+                  <div className="text-xs font-light text-muted-foreground">
+                    {(file.size / 1024).toFixed(1)} KB
+                  </div>
+                </div>
+              </div>
+              <Button
+                size="icon"
+                color="destructive"
+                variant="outline"
+                className="border-none rounded-full"
+                onClick={() => handleRemoveFile(index)}
+              >
+                <Icon icon="tabler:x" className="h-5 w-5" />
+              </Button>
+            </div>
+          ))}
           <div className="flex justify-end space-x-2">
-            <Button color="destructive" onClick={handleRemoveAllFiles}>
+            <Button color="destructive" onClick={() => setFiles([])}>
               Remove All
             </Button>
             <Button onClick={handleUploadFiles}>Upload Files</Button>
           </div>
-        </Fragment>
-      ) : null}
+        </div>
+      )}
     </Fragment>
   );
 };

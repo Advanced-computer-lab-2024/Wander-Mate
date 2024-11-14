@@ -24,6 +24,11 @@ import UpdateTouristProfile from "./components/updateTouristInfo";
 import TourismGovHomePage from "./pages/TourismGovHomePage";
 import Cart from "./components/Cart";
 import ProductDetails from "./components/productsDetails";
+import ForgotPage from "./pages/forgetPassword";
+import FlightOrHotelSearch from "./components/flightOrHotelSearch";
+import NewPasswordPage from "./pages/newPasswordPage";
+import Rejected from "./pages/rejected";
+import Pending from "./pages/pending";
 function App() {
   return (
     <Router>
@@ -49,6 +54,11 @@ function App() {
         <Route path="/Cart" element={<Cart />} />
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
         <Route path="/productsDetails" element={<ProductDetails />} />
+        <Route path="/forgot" element={<ForgotPage />} />
+        <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/newPassword" element={<NewPasswordPage/>} />
+        <Route path="/rejected" element={<Rejected/>} />
+        <Route path="pending" element={<Pending/>} />
       </Routes>
     </Router>
   );

@@ -7,9 +7,6 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Loader2 } from "lucide-react";
-import { signIn } from "next-auth/react"; // Consider switching to your own auth method
-import toast from "react-hot-toast";
-import { cn } from "../lib/utils";
 import { Icon } from "@iconify/react";
 import { useMediaQuery } from "../hooks/use-media-query";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -100,7 +97,15 @@ const LogInForm = () => {
             });
 
             setTimeout(() => {
-              navigate("/seller");
+              if (response.data.Status === "accepted") {
+                navigate("/seller");
+              } else {
+                if (response.data.Status === "rejected") {
+                  navigate("/rejected");
+                } else {
+                  navigate("/pending");
+                }
+              }
             }, 1000);
             break;
           case "TourGuide":
@@ -109,7 +114,15 @@ const LogInForm = () => {
             });
 
             setTimeout(() => {
-              navigate("/tourGuide");
+              if (response.data.Status === "accepted") {
+                navigate("/tourGuide");
+              } else {
+                if (response.data.Status === "rejected") {
+                  navigate("/rejected");
+                } else {
+                  navigate("/pending");
+                }
+              }
             }, 1000);
             break;
           case "TourismGoverner":
@@ -127,7 +140,15 @@ const LogInForm = () => {
             });
 
             setTimeout(() => {
-              navigate("/advertiser");
+              if (response.data.Status === "accepted") {
+                navigate("/advertiser");
+              } else {
+                if (response.data.Status === "rejected") {
+                  navigate("/rejected");
+                } else {
+                  navigate("/pending");
+                }
+              }
             }, 1000);
             break;
           default:
@@ -225,7 +246,7 @@ const LogInForm = () => {
             />
           </div>
           <button
-            onClick={() => navigate("/auth/forgot2")} // Use button for navigation
+            onClick={() => navigate("/forgot")} // Use button for navigation
             className="flex-none text-sm text-primary"
             type="button"
           >

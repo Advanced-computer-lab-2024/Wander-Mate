@@ -22,12 +22,17 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
+import UserPhoto from "./userPhoto";
 
 const Registration = () => {
   const [activestep, setActiveStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState(""); // State for tracking selected role in Step 1
   const [birthdate, setBirthdate] = useState(null);
   const [accepted, setAccepeted] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const handleImageSelect = (file) => {
+    setProfileImage(file);
+  };
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -54,6 +59,33 @@ const Registration = () => {
       desc: "Username & Password",
     },
   ];
+
+  const sendProfileImage = async (userID) => {
+    let URL = "http://localhost:8000/";
+
+    // Use formData.user to determine the correct URL
+    switch (selectedRole) {
+      case "Advertiser":
+        URL += `uploadPictureadvertiser/${userID}`;
+        break;
+      case "Seller":
+        URL += `uploadPictureseller/${userID}`;
+        break;
+      case "Tour Guide":
+        URL += `uploadPicturetourguide/${userID}`;
+        break;
+      default:
+        URL = ""; // Handle case where no role is selected
+        break;
+    }
+    try {
+      const dataToSend = new FormData();
+      dataToSend.append("image", profileImage);
+      await axios.put(URL, dataToSend);
+    } catch (error) {
+      throw new Error("Couldn't upload image");
+    }
+  };
 
   const sendRegisterationRequest = async (data) => {
     let URL = "http://localhost:8000/";
@@ -88,6 +120,9 @@ const Registration = () => {
       const response = await axios.post(URL, data);
       if (response.status === 200) {
         sessionStorage.setItem("username", response.data.Username);
+        if (profileImage) {
+          await sendProfileImage(response.data._id);
+        }
         toast({
           title: "Registration successful!",
           description: "You have successfully registered.",
@@ -385,6 +420,12 @@ const Registration = () => {
                     selectedRole
                   ) && (
                     <div className="col-span-12 space-y-4 mb-4">
+                      <div className="flex flex-col items-center">
+                        <Label className="mb-2 text-center" htmlFor="fullName">
+                          Upload a photo
+                        </Label>
+                        <UserPhoto onImageSelect={handleImageSelect} />
+                      </div>
                       <div className="col-span-12 lg:col-span-6">
                         <Label className="mb-2" htmlFor="fullName">
                           Enter Full Name
