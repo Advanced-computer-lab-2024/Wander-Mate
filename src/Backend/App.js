@@ -158,6 +158,7 @@ const {
   requestTourGuideAccountDeletion,
   uploadPicturetourguide,
   gettourGuideImage,
+  viewItineraryReport
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -455,3 +456,4 @@ app.get("/getProductReviews/:productId", getProductReviews);
 app.post("/login", login);
 app.get("/getAdminID", getAdminID);
 app.get("/getUsername/:userid", getUsername);
+app.get("/viewItineraryReport/:guideID", viewItineraryReport);

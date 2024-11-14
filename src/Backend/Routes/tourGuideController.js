@@ -565,6 +565,30 @@ const gettourGuideImage = async (req, res) => {
   }
 };
 
+const viewItineraryReport = async (req, res) => {
+  try {
+    const { guideID } = req.params; // Assuming guideID is passed as a parameter
+
+    // Find all itineraries created by this tour guide
+    const itineraries = await Itinerary.find({ Creator: guideID });
+
+    // Map through itineraries to calculate the number of tourists for each
+    const report = await Promise.all(itineraries.map(async (itinerary) => {
+      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" });
+      return {
+        itineraryName: itinerary.Name,
+        totalTourists: bookings.length,
+      };
+    }));
+
+    res.status(200).json({ report });
+  } catch (error) {
+    console.error("Error generating itinerary usage report:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -583,4 +607,5 @@ module.exports = {
   requestTourGuideAccountDeletion,
   uploadPicturetourguide,
   gettourGuideImage,
+  viewItineraryReport,
 };
