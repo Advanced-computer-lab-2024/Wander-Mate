@@ -71,6 +71,7 @@ const {
   getProductReviews,
   bookActivity,
   shareItenerary,
+  addDeliveryAddress,
 } = require("./Routes/touristController");
 
 const {
@@ -459,3 +460,4 @@ app.get("/getAdminID", getAdminID);
 app.get("/getUsername/:userid", getUsername);
 app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
+app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);

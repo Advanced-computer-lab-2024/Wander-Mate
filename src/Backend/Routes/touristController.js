@@ -20,6 +20,7 @@ const BookedFlight = require("../Models/bookedFlights.js");
 const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
+const Address = require("../Models/address.js");
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
@@ -1920,6 +1921,40 @@ const selectPreferences = async (req, res) => {
   }
 };
 
+const addDeliveryAddress = async (req, res) => {
+  const { touristId } = req.params;
+  const { street, city, state, zipCode, country } = req.body;
+
+  try {
+    // Check if the tourist exists
+    const tourist = await userModel.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Create a new address
+    const newAddress = new Address({
+      street,
+      city,
+      state,
+      zipCode,
+      country,
+      userId: touristId, // Associate the address with the tourist
+    });
+
+    // Save the address
+    await newAddress.save();
+
+    res.status(200).json({
+      message: "Address added successfully",
+      address: newAddress,
+    });
+  } catch (error) {
+    console.error("Error adding address:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -1974,4 +2009,5 @@ module.exports = {
   bookActivity,
   shareItenerary,
   BookFlight,
+  addDeliveryAddress,
 };
