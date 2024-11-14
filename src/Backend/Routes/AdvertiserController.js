@@ -537,6 +537,29 @@ const getadvertiserImage = async (req, res) => {
   }
 };
 
+const viewActivityReport = async (req, res) => {
+  try {
+    const { advertiserID } = req.params; // Assuming advertiserID is passed as a parameter
+
+    // Find all activities created by this advertiser
+    const activities = await attractionModel.find({ Creator: advertiserID });
+
+    // Map through activities to calculate the number of tourists for each
+    const report = await Promise.all(activities.map(async (activity) => {
+      const bookings = await bookingSchema.find({ itemId: activity._id, itemModel: "Attraction" });
+      return {
+        activityName: activity.Name,
+        totalTourists: bookings.length,
+      };
+    }));
+
+    res.status(200).json({ report });
+  } catch (error) {
+    console.error("Error generating activity usage report:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -556,4 +579,5 @@ module.exports = {
   requestAdvertiserAccountDeletion,
   uploadPictureadvertiser,
   getadvertiserImage,
+  viewActivityReport,
 };

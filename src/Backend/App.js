@@ -179,6 +179,7 @@ const {
   requestAdvertiserAccountDeletion,
   uploadPictureadvertiser,
   getadvertiserImage,
+  viewActivityReport,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -457,3 +458,4 @@ app.post("/login", login);
 app.get("/getAdminID", getAdminID);
 app.get("/getUsername/:userid", getUsername);
 app.get("/viewItineraryReport/:guideID", viewItineraryReport);
+app.get("/viewActivityReport/:advertiserID", viewActivityReport);
