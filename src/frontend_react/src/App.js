@@ -56,9 +56,9 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flight" element={<FlightOrHotelSearch />} />
-        <Route path="/newPassword" element={<NewPasswordPage/>} />
-        <Route path="/rejected" element={<Rejected/>} />
-        <Route path="pending" element={<Pending/>} />
+        <Route path="/newPassword" element={<NewPasswordPage />} />
+        <Route path="/rejected" element={<Rejected />} />
+        <Route path="pending" element={<Pending />} />
       </Routes>
     </Router>
   );

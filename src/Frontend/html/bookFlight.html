@@ -42,7 +42,7 @@
             const returnDate = document.getElementById("returnDate").value;
 
             try {
-                const response = await axios.post("http://localhost:8000/search-flights", {
+                const response = await axios.get("http://localhost:8000/search-flights", {
                     origin,
                     destination,
                     departureDate,

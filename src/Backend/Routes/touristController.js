@@ -594,8 +594,8 @@ const getAge = async (req, res) => {
 
 // Get OAuth token from Amadeus
 const getAmadeusToken = async () => {
-  const apiKey = "DoIUa8fmCDsZiacWJB3up5U5rg0iIrT3"; // Replace with your Amadeus API key
-  const apiSecret = "QkndHmfmxPgUlPDU"; // Replace with your Amadeus API secret
+  const apiKey = "4p6AGJtMeInZOhszW4eOyfVEtxScS606"; // Replace with your Amadeus API key
+  const apiSecret = "ixlYRS7f0eExPsEL"; // Replace with your Amadeus API secret
 
   try {
     const tokenResponse = await axios.post(
@@ -623,7 +623,7 @@ const getAmadeusToken = async () => {
 
 // Search for flights
 const SearchFlights = async (req, res) => {
-  const { origin, destination, departureDate, returnDate } = req.body;
+  const { origin, destination, departureDate, returnDate } = req.query;
 
   // Validate input
   if (!origin || !destination || !departureDate) {
