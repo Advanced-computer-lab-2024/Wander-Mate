@@ -29,6 +29,15 @@ const productSchema = new mongoose.Schema(
       max: 5,
     },
     isArchived: { type: Boolean, default: false },
+    attributes: {
+      type: Map, // Key-value pairs for product-specific attributes like size, color
+      of: String,
+      default: {},
+    },
+    sales: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true, strict: false }
 );

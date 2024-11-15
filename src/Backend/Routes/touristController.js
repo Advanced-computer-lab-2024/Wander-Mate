@@ -22,7 +22,7 @@ const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
 const Address = require("../Models/address.js");
 const PromoCode = require("../Models/promoCode.js");
-
+const Cart = require("../Models/cart.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -193,7 +193,8 @@ const handleTourist = async (req, res) => {
       if (Nationality) tourist.Nationality = Nationality;
       if (Role) tourist.Role = Role;
       if (FullName) tourist.FullName = FullName;
-      if (Points !== undefined) { // Check if Points is provided
+      if (Points !== undefined) {
+        // Check if Points is provided
         const parsedPoints = parseFloat(Points); // Ensure it's a number
         if (isNaN(parsedPoints) || parsedPoints < 0) {
           return res.status(400).json({ message: "Invalid Points value." });
@@ -601,9 +602,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-      apiKey +
-      "&client_secret=" +
-      apiSecret,
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1983,7 +1984,7 @@ const assignBirthdayPromo = async () => {
       code: promoCode.code,
       expiryDate: promoCode.expiryDate,
       isUsed: false,
-    })
+    });
     await tourist.save();
 
     ///////////Need to make sure that this could work////////
@@ -1991,15 +1992,55 @@ const assignBirthdayPromo = async () => {
       tourist.Email,
       "Happy Birthday",
       `Your promo code is ${promoCode.code}. Use it before ${promoCode.expiryDate}`
-    )
-    console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Email}`)
+    );
+    console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Email}`);
     ///////////Need to make sure that this could work////////
   }
-}
+};
 
+const addItemToCart = async (req, res) => {
+  const { touristID, productId, name, price } = req.body;
+  let { quantity, attributes } = req.body;
+  if (!touristID || !productId || !name || !price) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  if (!quantity) {
+    quantity = 1;
+  }
+  if(!attributes) {
+    attributes = {};
+  }
+  try {
+    // Find the user's cart
+    let cart = await Cart.findOne({ touristID });
 
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
 
+    // Check if the product with the same attributes is already in the cart
+    const existingItem = cart.items.find(
+      (item) =>
+        item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes)
+    );
 
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += quantity;
+    } else {
+      // Add a new item with attributes
+      cart.items.push({ productId, name, price, quantity, attributes });
+    }
+
+    // Save the updated cart
+    await cart.save();
+    return res.status(200).json({ message: "Item added to cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error adding item to cart" });
+  }
+};
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
@@ -2059,4 +2100,5 @@ module.exports = {
   BookFlight,
   addDeliveryAddress,
   assignBirthdayPromo,
+  addItemToCart,
 };
