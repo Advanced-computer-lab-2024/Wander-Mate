@@ -52,6 +52,19 @@ const touristSchema = new Schema(
       type: [ObjectId],
       default: [],
     },
+    PromoCodes: {
+      type: [
+        {
+          code: String,
+          expiryDate: Date,
+          isUsed: {
+            type: Boolean,
+            default: false,
+          },
+        }
+      ],
+      default: [],
+    }
 
   },
   { timestamps: true, strict: false }
