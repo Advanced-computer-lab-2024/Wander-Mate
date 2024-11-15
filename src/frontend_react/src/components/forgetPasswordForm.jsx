@@ -16,6 +16,8 @@ import VerifyOtp from "./verifyOtp";
 import ReactDOMServer from "react-dom/server";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
+import emailjs from "@emailjs/browser";
+
 const SiteLogo = () => (
   <svg
     id="Layer_1"
@@ -74,25 +76,36 @@ const ForgotForm = () => {
   };
 
   const sendOTP = async () => {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const expirationTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
     try {
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      const htmlContent = ReactDOMServer.renderToStaticMarkup(
-        <VerifyOtp otp={otp} />
+      // EmailJS template parameters
+      const emailParams = {
+        service_id: "service_lgocjep", // Your EmailJS service ID
+        template_id: "template_hqq4tb4", // Your EmailJS template ID
+        user_id: "nj7p7ceElN_P2_8v_", // Your EmailJS user ID
+        template_params: {
+          to_email: email, // Recipient email address
+          name: "WanderMate", // Recipient's name
+          otp: otp, // OTP value
+          logo_url:
+            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo", // Your logo URL (dynamic if needed)
+        },
+      };
+
+      // Send OTP email using EmailJS
+      const response = await emailjs.send(
+        emailParams.service_id,
+        emailParams.template_id,
+        emailParams.template_params,
+        emailParams.user_id,
+        emailParams.to_email
       );
-      const response = await axios.post("http://localhost:8000/send-otp", {
-        email,
-        htmlContent,
-        otp
-      });
-      if (response.status === 200) {
-        setTimeout(() => {
-          navigate("/newPassword");
-        }, 1000);
-      }else{
-        throw new Error("Sorry!");
-      }
+
+      // Save OTP data to the database
     } catch (error) {
-      throw new Error("Sorry!");
+      console.error("Error sending OTP email:", error);
+      throw new Error(error);
     } finally {
       setLoading(false);
     }
@@ -100,7 +113,7 @@ const ForgotForm = () => {
 
   return (
     <div className="w-full">
-        <Toaster/>
+      <Toaster />
       <a href="/dashboard" className="inline-block">
         {" "}
         {/* Replace Link with an anchor tag */}
