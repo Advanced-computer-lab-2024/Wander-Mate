@@ -72,6 +72,7 @@ const {
   bookActivity,
   shareItenerary,
   addDeliveryAddress,
+  addItemToCart,
 } = require("./Routes/touristController");
 
 const {
@@ -159,7 +160,7 @@ const {
   requestTourGuideAccountDeletion,
   uploadPicturetourguide,
   gettourGuideImage,
-  viewItineraryReport
+  viewItineraryReport,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -461,3 +462,4 @@ app.get("/getUsername/:userid", getUsername);
 app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
+app.post("/addItemToCart", addItemToCart);
