@@ -21,6 +21,7 @@ const apiKey = "b485c7b5c42a8362ccedd69ab6fe973e";
 const baseUrl = "http://data.fixer.io/api/latest";
 const jwt = require("jsonwebtoken");
 const Address = require("../Models/address.js");
+const PromoCode = require("../Models/promoCode.js");
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
@@ -1954,6 +1955,53 @@ const addDeliveryAddress = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+////////////////////////////Nadeem Sprint 3///////////////////////////
+const assignBirthdayPromo = async () => {
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentDate = today.getDate();
+
+  const touristsWithBirthdays = await userModel.find({
+    $expr: {
+      $and: [
+        { $eq: [{ $month: "$DOB" }, currentMonth] },
+        { $eq: [{ $dayOfMonth: "$DOB" }, currentDate] },
+      ],
+    },
+  });
+
+  for (const tourist of touristsWithBirthdays) {
+    const promoCode = await PromoCode.findOne({ assignedTo: null });
+    if (!promoCode) {
+      console.log("No available promo codes to assign");
+      continue;
+    }
+    promoCode.assignedTo = tourist._id;
+    await promoCode.save();
+
+    tourist.PromoCodes.push({
+      code: promoCode.code,
+      expiryDate: promoCode.expiryDate,
+      isUsed: false,
+    })
+    await tourist.save();
+
+    ///////////Need to make sure that this could work////////
+    await sendEmail(
+      tourist.Email,
+      "Happy Birthday",
+      `Your promo code is ${promoCode.code}. Use it before ${promoCode.expiryDate}`
+    )
+    console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Email}`)
+    ///////////Need to make sure that this could work////////
+  }
+}
+
+
+
+
+
+////////////////////////////Nadeem Sprint 3///////////////////////////
 
 module.exports = {
   touristRegister,
@@ -2010,4 +2058,5 @@ module.exports = {
   shareItenerary,
   BookFlight,
   addDeliveryAddress,
+  assignBirthdayPromo,
 };
