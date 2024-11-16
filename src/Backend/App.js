@@ -73,6 +73,7 @@ const {
   shareItenerary,
   addDeliveryAddress,
   addItemToCart,
+  showCart,
 } = require("./Routes/touristController");
 
 const {
@@ -467,8 +468,8 @@ app.get("/getUsername/:userid", getUsername);
 app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
-app.post("/addItemToCart", addItemToCart);
+app.post("/addItemToCart", upload.single("picture"), addItemToCart);
 app.post("/forgetPassword", forgetPassword);
 app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
-
+app.get("/showCart/:touristID", showCart);

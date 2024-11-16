@@ -105,11 +105,16 @@ const touristRegister = async (req, res) => {
       DOB,
       Role,
       Wallet,
-      Points: parsedPoints,
+      Points: 0,
       Badge: badge,
     });
     const userID = newUser._id;
-    await Usernames.create({ Username: Username, userID, Type: "Tourist", Email });
+    await Usernames.create({
+      Username: Username,
+      userID,
+      Type: "Tourist",
+      Email,
+    });
 
     const token = createToken(Username);
 
@@ -117,7 +122,11 @@ const touristRegister = async (req, res) => {
     // 7. Send success response
     res
       .status(200)
-      .json({ message: "User registered successfully", userID: newUser._id });
+      .json({
+        message: "User registered successfully",
+        userID: newUser._id,
+        Username: newUser.Username,
+      });
   } catch (error) {
     // Handle errors (e.g., database issues)
     console.log(error);
@@ -1999,7 +2008,7 @@ const assignBirthdayPromo = async () => {
 };
 
 const addItemToCart = async (req, res) => {
-  const { touristID, productId, name, price } = req.body;
+  const { touristID, productId, name, price, picture } = req.body;
   let { quantity, attributes } = req.body;
   if (!touristID || !productId || !name || !price) {
     return res.status(400).json({ message: "Missing required fields" });
@@ -2007,7 +2016,7 @@ const addItemToCart = async (req, res) => {
   if (!quantity) {
     quantity = 1;
   }
-  if(!attributes) {
+  if (!attributes) {
     attributes = {};
   }
   try {
@@ -2020,18 +2029,24 @@ const addItemToCart = async (req, res) => {
     }
 
     // Check if the product with the same attributes is already in the cart
-    const existingItem = cart.items.find(
-      (item) =>
-        item.productId.toString() === productId &&
-        JSON.stringify(item.attributes) === JSON.stringify(attributes)
-    );
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
 
     if (existingItem) {
       // Increment the quantity if the same product with the same attributes exists
       existingItem.quantity += quantity;
     } else {
       // Add a new item with attributes
-      cart.items.push({ productId, name, price, quantity, attributes });
+      cart.items.push({
+        productId,
+        name,
+        price,
+        quantity,
+        attributes,
+        picture,
+      });
     }
 
     // Save the updated cart
@@ -2039,6 +2054,21 @@ const addItemToCart = async (req, res) => {
     return res.status(200).json({ message: "Item added to cart successfully" });
   } catch (error) {
     return res.status(400).json({ message: "Error adding item to cart" });
+  }
+};
+
+const showCart = async (req, res) => {
+  const { touristID } = req.params;
+  try {
+    // Find the user's cart
+    let cart = await Cart.findOne({ touristID });
+    if (!cart) {
+      // If no cart exists, return an empty cart
+      return res.status(200).json({ items: [] });
+    }
+    return res.status(200).json({ items: cart.items });
+  } catch (error) {
+    return res.status(400).json({ message: "Error fetching cart" });
   }
 };
 
@@ -2101,4 +2131,5 @@ module.exports = {
   addDeliveryAddress,
   assignBirthdayPromo,
   addItemToCart,
+  showCart,
 };

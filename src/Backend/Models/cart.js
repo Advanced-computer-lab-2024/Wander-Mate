@@ -27,6 +27,9 @@ const CartItemSchema = new mongoose.Schema({
     of: String,
     default: {},
   },
+  picture: {
+    type: String,
+  },
 });
 
 CartItemSchema.pre("save", function (next) {

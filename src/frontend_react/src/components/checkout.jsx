@@ -55,7 +55,9 @@ const CheckOut = () => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Checkout</Button>
+          <Button className="w-full text-white py-2 rounded mt-4">
+            Checkout
+          </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
           <DialogHeader className="p-6 pb-2">
@@ -145,42 +147,45 @@ const CheckOut = () => {
 
               {activeIndex === 2 && selected === "rwb_1" && (
                 <div className="space-y-4">
-                <h3 className="text-lg font-medium">Credit Card Details</h3>
-              
-                {/* Credit Card Section */}
-                <div className="flex items-center gap-4">
-                  {/* Credit Card Image */}
-                  <div className="w-1/2">
-                    <img src={CreditCard} alt="Credit Card" className="w-full h-auto" />
-                  </div>
-              
-                  {/* Credit Card Information */}
-                  <div className="flex flex-col gap-2 w-3/4">
-                    <div className="flex flex-col gap-2">
-                      <Label>Card Holder Name</Label>
-                      <Input type="text" placeholder="Card Holder Name" />
+                  <h3 className="text-lg font-medium">Credit Card Details</h3>
+
+                  {/* Credit Card Section */}
+                  <div className="flex items-center gap-4">
+                    {/* Credit Card Image */}
+                    <div className="w-1/2">
+                      <img
+                        src={CreditCard}
+                        alt="Credit Card"
+                        className="w-full h-auto"
+                      />
                     </div>
-              
-                    <div className="flex flex-col gap-2">
-                      <Label>Card Number</Label>
-                      <Input type="text" placeholder="Card Number" />
-                    </div>
-              
-                    {/* Expiration Date and CVV side by side */}
-                    <div className="flex gap-4">
-                      <div className="flex flex-col gap-2 w-1/2">
-                        <Label>Expiration Date</Label>
-                        <Input type="text" placeholder="MM/YY" />
+
+                    {/* Credit Card Information */}
+                    <div className="flex flex-col gap-2 w-3/4">
+                      <div className="flex flex-col gap-2">
+                        <Label>Card Holder Name</Label>
+                        <Input type="text" placeholder="Card Holder Name" />
                       </div>
-                      <div className="flex flex-col gap-2 w-1/2">
-                        <Label>CVV</Label>
-                        <Input type="text" placeholder="CVV" />
+
+                      <div className="flex flex-col gap-2">
+                        <Label>Card Number</Label>
+                        <Input type="text" placeholder="Card Number" />
+                      </div>
+
+                      {/* Expiration Date and CVV side by side */}
+                      <div className="flex gap-4">
+                        <div className="flex flex-col gap-2 w-1/2">
+                          <Label>Expiration Date</Label>
+                          <Input type="text" placeholder="MM/YY" />
+                        </div>
+                        <div className="flex flex-col gap-2 w-1/2">
+                          <Label>CVV</Label>
+                          <Input type="text" placeholder="CVV" />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              
               )}
 
               {activeIndex === totalSlide && (

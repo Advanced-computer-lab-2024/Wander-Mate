@@ -3,8 +3,9 @@ import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useState } from "react";
-
+import axios from "axios";
 const ProductCard = ({
+  productId,
   name, // add the name prop here
   image,
   description,
@@ -16,12 +17,44 @@ const ProductCard = ({
   const [count, setCount] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setIsAdded(true);
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(`http://localhost:8000/addItemToCart`, {
+        touristID: userID,
+        productId,
+        name,
+        price,
+        picture: image,
+      }); // Adjust the URL as per your backend route
+    } catch (error) {
+      console.error("Error adding to cart data:", error);
+    }
   };
 
-  const incrementCount = () => {
+  const incrementCount = async () => {
     setCount((prevCount) => prevCount + 1);
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(`http://localhost:8000/addItemToCart`, {
+        touristID: userID,
+        productId,
+        name,
+        price,
+        picture: image,
+      }); // Adjust the URL as per your backend route
+    } catch (error) {
+      console.error("Error adding to cart data:", error);
+    }
   };
 
   const handleLike = () => {
@@ -41,10 +74,12 @@ const ProductCard = ({
   return (
     <Card className="p-4 rounded-md">
       <div className="relative h-[191px] flex flex-col justify-center items-center mb-3 rounded-md">
-        <div className="w-full overflow-hidden rounded-md relative z-10 bg-default-100 dark:bg-default-200 h-full group">
+        <div
+          className="w-full overflow-hidden rounded-md relative z-10 bg-default-100 dark:bg-default-200 h-full group"
+          style={{ left: "0%", top: "0%" }}
+        >
           <img
-            
-            className="h-full w-full object-contain p-6 transition-all duration-300 group-hover:scale-105"
+            className=" h-full w-full  object-contain p-6   transition-all duration-300 group-hover:scale-105"
             src={image}
           />
           {discount && (
@@ -81,17 +116,15 @@ const ProductCard = ({
             <span>{ratings}</span>
           </span>
         </div>
-        <h6 className="text-secondary-foreground text-base font-medium mb-[6px] truncate">
-          
-        </h6>
-        
+        <h6 className="text-secondary-foreground text-base font-medium mb-[6px] truncate"></h6>
+
         {/* Add the name in bold above the description */}
         <p className="font-bold text-base mb-2">{name}</p>
-        
+
         <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
           {description}
         </p>
-        
+
         <p className="mb-4 space-x-4">
           <span className="text-secondary-foreground text-base font-medium mt-2">
             ${price}

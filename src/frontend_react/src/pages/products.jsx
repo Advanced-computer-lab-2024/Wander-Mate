@@ -74,8 +74,10 @@ const Products = () => {
 
   const handleSearch = (e) => setSearchTerm(e.target.value);
   const handleSortChange = (e) => setSortOrder(e.target.value);
-  const handleMinPriceChange = (e) => setPriceRange([Number(e.target.value), priceRange[1]]);
-  const handleMaxPriceChange = (e) => setPriceRange([priceRange[0], Number(e.target.value)]);
+  const handleMinPriceChange = (e) =>
+    setPriceRange([Number(e.target.value), priceRange[1]]);
+  const handleMaxPriceChange = (e) =>
+    setPriceRange([priceRange[0], Number(e.target.value)]);
 
   return (
     <div className="container mx-auto p-4">
@@ -89,10 +91,12 @@ const Products = () => {
             onChange={handleSearch}
             className="border p-2 rounded w-full max-w-sm"
           />
-          
+
           <div className="flex space-x-4">
             <div>
-              <label className="block text-sm font-medium">Filter by Price:</label>
+              <label className="block text-sm font-medium">
+                Filter by Price:
+              </label>
               <div className="w-64">
                 <Slider
                   defaultValue={priceRange}
@@ -140,6 +144,7 @@ const Products = () => {
             filteredProducts.map((product) => (
               <ProductCard
                 key={product._id}
+                productId={product._id}
                 name={product.name}
                 description={product.description}
                 price={product.price}
