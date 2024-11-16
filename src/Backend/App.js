@@ -143,6 +143,7 @@ const {
   forgetPassword,
   validateOtp,
   resetPassword,
+  getAirports,
 } = require("./Routes/adminController.js");
 
 const {
@@ -321,6 +322,7 @@ app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
+app.get("/getairports", getAirports);
 app.get("/getCategories", getCategories);
 app.get("/getTags", getTags);
 app.get("/getID/:Username", getID);
@@ -469,3 +471,4 @@ app.post("/addItemToCart", addItemToCart);
 app.post("/forgetPassword", forgetPassword);
 app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
+

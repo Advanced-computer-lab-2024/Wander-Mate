@@ -683,6 +683,18 @@ const getNations = async (req, res) => {
     res.status(500).json({ message: "Error fetching nations", error });
   }
 };
+const getAirports = async (req, res) => {
+  try {
+    const db = mongoose.connection; // Get the current database connection
+    const collection = db.collection("AirportsLookUp"); // Access the AirportsLookUp collection
+    console.log(collection);
+    const airports = await collection.find({}).toArray(); // Convert cursor to an array
+    res.status(200).json(airports); // Send the airports as a JSON response
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching airports", error }); // Handle any errors
+  }
+};
+
 
 const getID = async (req, res) => {
   try {
@@ -1338,7 +1350,7 @@ const validateOtp = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const { username,type, newPassword } = req.body;
+    const { username, type, newPassword } = req.body;
 
     // Validate inputs
     if (!newPassword) {
@@ -1349,13 +1361,13 @@ const resetPassword = async (req, res) => {
 
     let user;
 
-    switch(type){
-      case "Admin": user = await adminModel.findOne({Username: username});break;
-      case "Tourist": user = await touristModel.findOne({ Username: username });break;
+    switch (type) {
+      case "Admin": user = await adminModel.findOne({ Username: username }); break;
+      case "Tourist": user = await touristModel.findOne({ Username: username }); break;
       case "TourGuide": user = await tourGuideModel.findOne({ Username: username }); break;
-      case "Seller": user = await sellerModel.findOne({ Username: username });break;
-      case "Advertiser": user = await advertiserModel.findOne({ Username: username });break;
-      case "TourismGoverner": user = await TourismGoverner.findOne(TourismGoverner);break;
+      case "Seller": user = await sellerModel.findOne({ Username: username }); break;
+      case "Advertiser": user = await advertiserModel.findOne({ Username: username }); break;
+      case "TourismGoverner": user = await TourismGoverner.findOne(TourismGoverner); break;
     }
 
     // Find the admin by id
@@ -1432,4 +1444,5 @@ module.exports = {
   forgetPassword,
   validateOtp,
   resetPassword,
+  getAirports,
 };

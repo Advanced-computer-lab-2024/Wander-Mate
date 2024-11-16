@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const Flight = (props) => {
   const [isBooking, setIsBooking] = useState(false);
@@ -71,13 +72,13 @@ const Flight = (props) => {
         Price: {props.flight.price?.total ?? "N/A"}
         {props.flight.price?.currency ?? ""}
       </p>
-      <button
+      <Button
         className="btn btn-primary"
         onClick={handleBooking}
         disabled={isBooking}
       >
         {isBooking ? "Booking..." : "Book"}
-      </button>
+      </Button>
       {bookingError && <p className="text-danger mt-2">{bookingError}</p>}
     </div>
   );
