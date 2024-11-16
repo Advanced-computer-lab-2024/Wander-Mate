@@ -30,6 +30,7 @@ import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
 
+import CommentPage from "./pages/commentPage";
 function App() {
   return (
     <Router>
@@ -60,6 +61,7 @@ function App() {
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
         <Route path="verifyOtp" element={<VerifyPage/>} />
+        <Route path="/comment" element={<CommentPage />} />
       </Routes>
     </Router>
   );
