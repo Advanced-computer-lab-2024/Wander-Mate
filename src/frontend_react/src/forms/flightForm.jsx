@@ -35,31 +35,35 @@ const FlightForm = (props) => {
               required
             />
           </div>
-          <div className="col">
-            <label className="form-control m-2" htmlFor="departureDate">
-              Departure:
-              <input
-                onChange={handleChange}
-                type="date"
-                id="departureDate"
-                name="departureDate"
-                value={props.flightData.departureDate}
-                required
-              />
-            </label>
+          <div className="w-full max-w-[270px] ">
+            <div className="col">
+              <label className="form-control m-2" htmlFor="departureDate">
+                Departure:
+                <input
+                  onChange={handleChange}
+                  type="date"
+                  id="departureDate"
+                  name="departureDate"
+                  value={props.flightData.departureDate}
+                  required
+                />
+              </label>
+            </div>
           </div>
-          <div className="col">
-            <label className="form-control m-2" htmlFor="departureDate">
-              Arrival:
-              <input
-                onChange={handleChange}
-                type="date"
-                id="departureDate"
-                name="arrivalDate"
-                value={props.flightData.arrivalDate}
-                required
-              />
-            </label>
+          <div className="w-full max-w-[250px] ">
+            <div className="col">
+              <label className="form-control m-2" htmlFor="departureDate">
+                Arrival:
+                <input
+                  onChange={handleChange}
+                  type="date"
+                  id="departureDate"
+                  name="arrivalDate"
+                  value={props.flightData.arrivalDate}
+                  required
+                />
+              </label>
+            </div>
           </div>
         </div>
         <div className="text-center">
