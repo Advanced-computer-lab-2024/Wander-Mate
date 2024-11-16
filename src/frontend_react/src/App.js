@@ -29,6 +29,7 @@ import FlightOrHotelSearch from "./components/flightOrHotelSearch";
 import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
+import CommentPage from "./pages/commentPage";
 function App() {
   return (
     <Router>
@@ -59,6 +60,7 @@ function App() {
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
+        <Route path="/comment" element={<CommentPage />} />
       </Routes>
     </Router>
   );
