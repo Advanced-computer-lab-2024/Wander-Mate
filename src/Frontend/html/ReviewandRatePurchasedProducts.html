@@ -64,7 +64,9 @@
           return;
         }
         try {
-          const response = await fetch(`http://localhost:8000/getID/${username}`);
+          const response = await fetch(
+            `http://localhost:8000/getID/${username}`
+          );
           const data = await response.json();
           if (response.ok && data.userID) {
             userID = data.userID; // Set the user ID once during initialization
@@ -96,17 +98,21 @@
 
       async function fetchProducts() {
         try {
-          const response = await fetch("http://localhost:8000/viewSellerProducts");
+          const response = await fetch(
+            "http://localhost:8000/viewSellerProducts"
+          );
           const products = await response.json();
           if (response.ok) {
             allProducts = products;
             applyFilters(); // Show all products initially
           } else {
-            document.getElementById("productList").innerHTML = "<p>No products available</p>";
+            document.getElementById("productList").innerHTML =
+              "<p>No products available</p>";
           }
         } catch (error) {
           console.error("Error fetching products:", error);
-          document.getElementById("productList").innerHTML = "<p>An error occurred while fetching products.</p>";
+          document.getElementById("productList").innerHTML =
+            "<p>An error occurred while fetching products.</p>";
         }
       }
 
@@ -126,17 +132,32 @@
               <h2 class="product-name">${product.name}</h2>
               <p class="product-description">${product.description}</p>
               <p class="product-price">Price: $${product.price.toFixed(2)}</p>
-              <p class="product-seller">Seller: ${sellerMap[product.seller] || "Unknown"}</p>
-              <p class="product-ratings">Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}</p>
+              <p class="product-seller">Seller: ${
+                sellerMap[product.seller] || "Unknown"
+              }</p>
+              <p class="product-ratings">Ratings: ${
+                product.ratings ? product.ratings.toFixed(2) : "No ratings yet"
+              }</p>
 
               <div class="star-rating" id="rating-${product._id}">
-                ${[1, 2, 3, 4, 5].map((star) => `<span onclick="rateProduct('${product._id}', ${star})">&#9733;</span>`).join("")}
-                <span id="rating-message-${product._id}" class="rating-message"></span>
+                ${[1, 2, 3, 4, 5]
+                  .map(
+                    (star) =>
+                      `<span onclick="rateProduct('${product._id}', ${star})">&#9733;</span>`
+                  )
+                  .join("")}
+                <span id="rating-message-${
+                  product._id
+                }" class="rating-message"></span>
               </div>
 
               <div class="review-section">
-                <input type="text" class="review-input" id="review-${product._id}" placeholder="Add a review">
-                <button onclick="submitReview('${product._id}')">Submit Review</button>
+                <input type="text" class="review-input" id="review-${
+                  product._id
+                }" placeholder="Add a review">
+                <button onclick="submitReview('${
+                  product._id
+                }')">Submit Review</button>
               </div>
               <p class="product-reviews">Reviews:
                 <ul id="reviews-list-${product._id}"></ul>
@@ -165,7 +186,8 @@
           });
 
           if (response.ok) {
-            document.getElementById(`rating-message-${productId}`).textContent = "Thank you for your rating!";
+            document.getElementById(`rating-message-${productId}`).textContent =
+              "Thank you for your rating!";
             setStarRating(productId, rating);
             await updateProductRatingsDisplay(productId);
           } else {
@@ -190,13 +212,19 @@
 
       async function updateProductRatingsDisplay(productId) {
         try {
-          const response = await fetch(`http://localhost:8000/viewProduct/${productId}`);
+          const response = await fetch(
+            `http://localhost:8000/viewProduct/${productId}`
+          );
           const product = await response.json();
 
           if (response.ok) {
-            const productElement = document.getElementById(`rating-${productId}`);
+            const productElement = document.getElementById(
+              `rating-${productId}`
+            );
             if (productElement) {
-              productElement.previousElementSibling.textContent = `Ratings: ${product.ratings ? product.ratings.toFixed(2) : 'No ratings yet'}`;
+              productElement.previousElementSibling.textContent = `Ratings: ${
+                product.ratings ? product.ratings.toFixed(2) : "No ratings yet"
+              }`;
             }
           }
         } catch (error) {
@@ -212,10 +240,16 @@
         }
 
         try {
+          const username = sessionStorage.getItem("username");
           const response = await fetch("http://localhost:8000/reviewProduct", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId, userId: userID, review: reviewText }),
+            body: JSON.stringify({
+              productId,
+              userId: userID,
+              review: reviewText,
+              username,
+            }),
           });
 
           if (response.ok) {
@@ -233,12 +267,18 @@
 
       async function fetchProductReviews(productId) {
         try {
-          const response = await fetch(`http://localhost:8000/getProductReviews/${productId}`);
+          const response = await fetch(
+            `http://localhost:8000/getProductReviews/${productId}`
+          );
           const data = await response.json();
 
           if (response.ok) {
-            const reviewsList = document.getElementById(`reviews-list-${productId}`);
-            reviewsList.innerHTML = data.reviews.map((review) => `<li>${review}</li>`).join("");
+            const reviewsList = document.getElementById(
+              `reviews-list-${productId}`
+            );
+            reviewsList.innerHTML = data.reviews
+              .map((review) => `<li>${review}</li>`)
+              .join("");
           }
         } catch (error) {
           console.error("Error fetching reviews:", error);
@@ -246,7 +286,9 @@
       }
 
       function applyFilters() {
-        const productName = document.getElementById("productName").value.toLowerCase();
+        const productName = document
+          .getElementById("productName")
+          .value.toLowerCase();
         const minPrice = parseFloat(document.getElementById("minPrice").value);
         const maxPrice = parseFloat(document.getElementById("maxPrice").value);
 
@@ -260,7 +302,9 @@
         displayProducts(filteredProducts);
       }
 
-      document.getElementById("applyFiltersButton").addEventListener("click", applyFilters);
+      document
+        .getElementById("applyFiltersButton")
+        .addEventListener("click", applyFilters);
       document.getElementById("resetButton").addEventListener("click", () => {
         document.getElementById("productName").value = "";
         document.getElementById("minPrice").value = "";
@@ -269,7 +313,9 @@
       });
 
       document.getElementById("sortButton").addEventListener("click", () => {
-        const sortedProducts = [...allProducts].sort((a, b) => b.ratings - a.ratings);
+        const sortedProducts = [...allProducts].sort(
+          (a, b) => b.ratings - a.ratings
+        );
         displayProducts(sortedProducts);
       });
 

@@ -8,7 +8,10 @@ const reviewSchema = new Schema({
     ref: "Tourist",
     required: true,
   }, // Reference to the user who rated
-  review: { type: String, required: true}, // Rating value (1 to 5 stars)
+  username: {
+    type: String,
+  },
+  review: { type: String, required: true }, // Rating value (1 to 5 stars)
   createdAt: { type: Date, default: Date.now }, // Timestamp for when the rating was created
 });
 

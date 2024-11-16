@@ -2,11 +2,26 @@ import { useState, useEffect } from "react";
 import ProductCard from "../components/productCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Slider } from "../components/ui/slider";
+import { Input } from "../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Label } from "../components/ui/label";
+import { Card, CardContent } from "../components/ui/card";
+import { Search, ArrowUpDown } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000]); // Set initial price range
-  const [sortOrder, setSortOrder] = useState("rating");
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000);
+  const [sortCriteria, setSortCriteria] = useState("rating");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [sellerMap, setSellerMap] = useState({});
@@ -52,12 +67,18 @@ const Products = () => {
       .filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          product.price >= priceRange[0] &&
-          product.price <= priceRange[1]
+          product.price >= minPrice &&
+          product.price <= maxPrice
       )
       .sort((a, b) => {
-        if (sortOrder === "rating") return b.ratings - a.ratings;
-        if (sortOrder === "price") return a.price - b.price;
+        if (sortCriteria === "rating") {
+          return sortOrder === "asc"
+            ? a.ratings - b.ratings
+            : b.ratings - a.ratings;
+        }
+        if (sortCriteria === "price") {
+          return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+        }
         return 0;
       });
     setFilteredProducts(updatedProducts);
@@ -70,94 +91,138 @@ const Products = () => {
 
   useEffect(() => {
     handleFilterAndSort();
-  }, [searchTerm, priceRange, sortOrder, allProducts]);
+  }, [searchTerm, minPrice, maxPrice, sortCriteria, sortOrder, allProducts]);
 
   const handleSearch = (e) => setSearchTerm(e.target.value);
-  const handleSortChange = (e) => setSortOrder(e.target.value);
-  const handleMinPriceChange = (e) =>
-    setPriceRange([Number(e.target.value), priceRange[1]]);
-  const handleMaxPriceChange = (e) =>
-    setPriceRange([priceRange[0], Number(e.target.value)]);
+  const handleSortChange = (value) => setSortCriteria(value);
+  const handleSortOrderToggle = () =>
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  const handlePriceRangeChange = (value) => {
+    setPriceRange(value);
+    setMinPrice(value[0]);
+    setMaxPrice(value[1]);
+  };
+  const handleMinPriceChange = (e) => {
+    const value = Number(e.target.value);
+    setMinPrice(value);
+    setPriceRange([value, maxPrice]);
+  };
+  const handleMaxPriceChange = (e) => {
+    const value = Number(e.target.value);
+    setMaxPrice(value);
+    setPriceRange([minPrice, value]);
+  };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Products</h1>
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="border p-2 rounded w-full max-w-sm"
-          />
-
-          <div className="flex space-x-4">
-            <div>
-              <label className="block text-sm font-medium">
-                Filter by Price:
-              </label>
-              <div className="w-64">
+      <h1 className="text-3xl font-bold mb-6">Products</h1>
+      <Card className="mb-8">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="w-full md:w-1/3 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="w-full md:w-64">
+                <Label
+                  htmlFor="price-range"
+                  className="text-sm font-medium mb-2 block"
+                >
+                  Price Range
+                </Label>
                 <Slider
-                  defaultValue={priceRange}
-                  max={1000} // Set max value for the slider
-                  onValueChange={(value) => setPriceRange(value)}
-                  className="h-4"
+                  id="price-range"
+                  value={priceRange}
+                  max={1000}
+                  step={1}
+                  onValueChange={handlePriceRangeChange}
+                  className="mb-2"
                 />
-                <div className="flex justify-between text-sm mt-2 space-x-2">
-                  <input
+                <div className="flex justify-between text-sm">
+                  <Input
                     type="number"
-                    value={priceRange[0]}
+                    value={minPrice}
                     onChange={handleMinPriceChange}
-                    className="border p-1 rounded w-20"
+                    className="w-20 text-right"
                   />
-                  <input
+                  <Input
                     type="number"
-                    value={priceRange[1]}
+                    value={maxPrice}
                     onChange={handleMaxPriceChange}
-                    className="border p-1 rounded w-20"
+                    className="w-20 text-right"
                   />
                 </div>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Sort by:</label>
-              <select
-                value={sortOrder}
-                onChange={handleSortChange}
-                className="border p-2 rounded"
-              >
-                <option value="rating">Rating</option>
-                <option value="price">Price</option>
-              </select>
+              <div className="flex items-center gap-2">
+                <div>
+                  <Label
+                    htmlFor="sort-criteria"
+                    className="text-sm font-medium mb-2 block"
+                  >
+                    Sort by
+                  </Label>
+                  <Select
+                    onValueChange={handleSortChange}
+                    defaultValue={sortCriteria}
+                  >
+                    <SelectTrigger id="sort-criteria" className="w-[120px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rating">Rating</SelectItem>
+                      <SelectItem value="price">Price</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleSortOrderToggle}
+                  className="mt-6"
+                >
+                  <ArrowUpDown
+                    className={`h-4 w-4 ${
+                      sortOrder === "asc" ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <ECommerceDefaultSkeleton key={index} />
-            ))
-          ) : filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product._id}
-                productId={product._id}
-                name={product.name}
-                description={product.description}
-                price={product.price}
-                seller={sellerMap[product.seller] || "Unknown"}
-                ratings={product.ratings}
-                reviews={product.reviews}
-                image={`http://localhost:8000/products/${product._id}/image`}
-              />
-            ))
-          ) : (
-            <p>No products found</p>
-          )}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, index) => (
+            <ECommerceDefaultSkeleton key={index} />
+          ))
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <ProductCard
+              key={product._id}
+              productId={product._id}
+              name={product.name}
+              description={product.description}
+              price={product.price}
+              seller={sellerMap[product.seller] || "Unknown"}
+              ratings={product.ratings}
+              reviews={product.reviews}
+              image={`http://localhost:8000/products/${product._id}/image`}
+            />
+          ))
+        ) : (
+          <p className="col-span-full text-center text-gray-500">
+            No products found
+          </p>
+        )}
       </div>
     </div>
   );

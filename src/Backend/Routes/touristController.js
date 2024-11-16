@@ -120,13 +120,11 @@ const touristRegister = async (req, res) => {
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     // 7. Send success response
-    res
-      .status(200)
-      .json({
-        message: "User registered successfully",
-        userID: newUser._id,
-        Username: newUser.Username,
-      });
+    res.status(200).json({
+      message: "User registered successfully",
+      userID: newUser._id,
+      Username: newUser.Username,
+    });
   } catch (error) {
     // Handle errors (e.g., database issues)
     console.log(error);
@@ -1466,14 +1464,21 @@ const redeemPoints = async (req, res) => {
   }
 };
 const reviewProduct = async (req, res) => {
-  const { productId, userId, review } = req.body; // Only productId and review as a string
+  const { productId, userId, review, username } = req.body; // Only productId and review as a string
   try {
     // Create a new review entry
     const newReview = await ReviewModel.create({
       itemId: productId, // Refers to the product being reviewed
       userId,
       review, // Only store the review string
+      username,
     });
+
+    await ProductModel.findByIdAndUpdate(
+      productId,
+      { $push: { reviews: newReview._id } }, // Push the new review ID to the reviews array
+      { new: true } // Optionally return the updated product
+    );
 
     res.status(200).json({
       message: "Review posted successfully",
@@ -2072,6 +2077,26 @@ const showCart = async (req, res) => {
   }
 };
 
+const getReviews = async (req, res) => {
+  const { reviewIds } = req.body; // Assuming you're sending the array in the request body
+  try {
+    // Ensure reviewIds is an array
+    if (!Array.isArray(reviewIds)) {
+      return res.status(400).json({ message: "reviewIds must be an array" });
+    }
+
+    // Find all reviews for the given array of product IDs
+    const reviews = await ReviewModel.find({ _id: { $in: reviewIds } });
+
+    return res.status(200).json({ reviews });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({ message: "Error fetching reviews", error: err.message });
+  }
+};
+
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
 module.exports = {
@@ -2132,4 +2157,5 @@ module.exports = {
   assignBirthdayPromo,
   addItemToCart,
   showCart,
+  getReviews,
 };
