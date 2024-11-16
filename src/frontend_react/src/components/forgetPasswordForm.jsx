@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom"; // Use React Router for navigati
 import logo from "../public/images/logo/logo-1.png";
 import { useMediaQuery } from "../hooks/use-media-query";
 import { useState } from "react";
-import VerifyOtp from "./verifyOtp";
 import ReactDOMServer from "react-dom/server";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
@@ -43,7 +42,7 @@ const SiteLogo = () => (
 );
 
 const schema = z.object({
-  email: z.string().email({ message: "Your email is invalid." }),
+  username: z.string().min(1, { message: "Please enter you username." }),
 });
 
 const ForgotForm = () => {
@@ -51,7 +50,7 @@ const ForgotForm = () => {
   const navigate = useNavigate(); // Use navigate from React Router
   const isDesktop2xl = useMediaQuery("(max-width: 1530px)");
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
 
   const {
     register,
@@ -71,7 +70,7 @@ const ForgotForm = () => {
     toast.promise(sendOTP(), {
       loading: "Sending...", // Loading state
       success: "OTP sent successfully!", // Success message
-      error: "OTP couldn't be sent!", // Error message
+      error: "Please check you username!", // Error message
     });
   };
 
@@ -80,16 +79,24 @@ const ForgotForm = () => {
     const expirationTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
     try {
       // EmailJS template parameters
+      const reply = await axios.post("http://localhost:8000/forgetPassword", {
+        OTP: otp,
+        Username: username,
+        ExpirationTime: expirationTime,
+      });
+      if (reply.status !== 200) {
+        throw new Error("Please check your username!");
+      }
       const emailParams = {
         service_id: "service_lgocjep", // Your EmailJS service ID
         template_id: "template_hqq4tb4", // Your EmailJS template ID
         user_id: "nj7p7ceElN_P2_8v_", // Your EmailJS user ID
         template_params: {
-          to_email: email, // Recipient email address
+          to_email: reply.data.Email, // Recipient email address
           name: "WanderMate", // Recipient's name
           otp: otp, // OTP value
           logo_url:
-            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo", // Your logo URL (dynamic if needed)
+            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
         },
       };
 
@@ -101,6 +108,13 @@ const ForgotForm = () => {
         emailParams.user_id,
         emailParams.to_email
       );
+
+      sessionStorage.setItem("username", username);
+      sessionStorage.setItem("Type", reply.data.Type);
+
+      setTimeout(() => {
+        navigate("/verifyOtp");
+      }, 1000);
 
       // Save OTP data to the database
     } catch (error) {
@@ -123,28 +137,31 @@ const ForgotForm = () => {
         Forget Your Password?
       </div>
       <div className="2xl:text-lg text-base text-default-600 mt-2 leading-6">
-        Enter your email & an OTP will be sent to you!
+        Enter your username & an OTP will be sent to your email!
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 xl:mt-7">
         <div>
-          <Label htmlFor="email" className="mb-2 font-medium text-default-600">
-            Email{" "}
+          <Label
+            htmlFor="username"
+            className="mb-2 font-medium text-default-600"
+          >
+            Username{" "}
           </Label>
           <Input
             disabled={isPending}
-            {...register("email")}
-            type="email"
-            id="email"
+            {...register("username")}
+            type="text"
+            id="username"
             className={cn("", {
-              "border-destructive": errors.email,
+              "border-destructive": errors.username,
             })}
             size={!isDesktop2xl ? "xl" : "lg"}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </div>
-        {errors.email && (
-          <div className="text-destructive mt-2">{errors.email.message}</div>
+        {errors.username && (
+          <div className="text-destructive mt-2">{errors.username.message}</div>
         )}
 
         <Button className="w-full mt-6" size={!isDesktop2xl ? "xl" : "lg"}>

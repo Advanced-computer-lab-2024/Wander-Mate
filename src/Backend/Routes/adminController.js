@@ -18,6 +18,7 @@ const touristModel = require("../Models/tourist.js");
 const advertiserModel = require("../Models/advertiser.js");
 const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
+const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
 
 // Creating an admin
@@ -1271,6 +1272,119 @@ const getUsername = async (req, res) => {
   }
 };
 
+const forgetPassword = async (req, res) => {
+  const { Username, OTP, ExpirationTime } = req.body;
+  try {
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    const email = user.Email;
+    const type = user.Type;
+    await otpModel.create({
+      email,
+      otp: OTP,
+      expiration: ExpirationTime,
+    });
+    res.status(200).json({ Email: email, Type: type });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(400)
+      .json({ message: "An error occurred during OTP generation" });
+  }
+};
+
+const validateOtp = async (req, res) => {
+  const { Username, OTP } = req.body;
+
+  try {
+    // Find the user by Username
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const email = user.Email;
+
+    // Find the OTP record for the user's email
+    const otpRecord = await otpModel.findOne({ email });
+
+    if (!otpRecord) {
+      return res.status(400).json({ message: "OTP not found" });
+    }
+
+    // Check if the OTP matches
+    if (otpRecord.otp !== OTP) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    // Check if the OTP has expired
+    const currentTime = new Date();
+    if (currentTime > otpRecord.expiration) {
+      return res.status(400).json({ message: "OTP has expired" });
+    }
+
+    await otpModel.deleteOne({ email });
+    // OTP is valid
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred during OTP validation" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { username,type, newPassword } = req.body;
+
+    // Validate inputs
+    if (!newPassword) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    let user;
+
+    switch(type){
+      case "Admin": user = await adminModel.findOne({Username: username});break;
+      case "Tourist": user = await touristModel.findOne({ Username: username });break;
+      case "TourGuide": user = await tourGuideModel.findOne({ Username: username }); break;
+      case "Seller": user = await sellerModel.findOne({ Username: username });break;
+      case "Advertiser": user = await advertiserModel.findOne({ Username: username });break;
+      case "TourismGoverner": user = await TourismGoverner.findOne(TourismGoverner);break;
+    }
+
+    // Find the admin by id
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    if (!salt || !newPassword) {
+      console.error("Salt or newPassword is not defined");
+      return res
+        .status(500)
+        .json({ message: "Server error during password hashing" });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password
+    user.Password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1315,4 +1429,7 @@ module.exports = {
   login,
   getAdminID,
   getUsername,
+  forgetPassword,
+  validateOtp,
+  resetPassword,
 };

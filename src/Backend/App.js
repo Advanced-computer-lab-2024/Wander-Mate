@@ -140,6 +140,9 @@ const {
   login,
   getAdminID,
   getUsername,
+  forgetPassword,
+  validateOtp,
+  resetPassword,
 } = require("./Routes/adminController.js");
 
 const {
@@ -463,3 +466,6 @@ app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", addItemToCart);
+app.post("/forgetPassword", forgetPassword);
+app.put("/validateOtp", validateOtp);
+app.put("/resetPassword", resetPassword);

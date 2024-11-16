@@ -8,11 +8,11 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { cn } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
-
+import axios from "axios";
 import { useMediaQuery } from "../hooks/use-media-query";
 
 const SiteLogo = () => (
@@ -46,7 +46,6 @@ const schema = z.object({
   confirmPassword: z
     .string()
     .min(4, { message: "Your password must be at least 4 characters." }),
-  otp: z.string().length(6, { message: "OTP must be a 6 digit number." }),
 });
 const CreatePasswordForm = () => {
   const [isPending, startTransition] = React.useTransition();
@@ -76,15 +75,35 @@ const CreatePasswordForm = () => {
       setError("Passwords do not match!");
     } else {
       setError("");
-      startTransition(async () => {
-        toast.success("reset successful");
-        reset();
-        navigate("/");
+      toast.promise(changePassword(), {
+        loading: "Reseting...", // Loading state
+        success: "Password is changed!", // Success message
+        error: "Please try again later!", // Error message
       });
     }
   };
+
+  const changePassword = async () => {
+    try{
+      const response = await axios.put("http://localhost:8000/resetPassword",{
+        username: sessionStorage.getItem("username"),
+        type: sessionStorage.getItem("Type"),
+        newPassword: password,
+      })
+
+      if(response.status !== 200){
+        throw new Error("Please try again later!");
+      }
+      setTimeout(() => {
+        navigate("/loginPage");
+      }, 1000);
+    }catch{
+      setError("Please try again later!");
+    }
+  }
   return (
     <div className="w-full">
+      <Toaster/>
       <a href="/dashboard" className="inline-block">
         <SiteLogo className="h-10 w-10 2xl:w-14 2xl:h-14 text-primary" />
       </a>
@@ -97,27 +116,7 @@ const CreatePasswordForm = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5 xl:mt-7">
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="otp" className="mb-2 font-medium text-default-600">
-              OTP
-            </Label>
-            <div className="relative">
-              <Input
-                disabled={isPending}
-                {...register("otp")}
-                type="number"
-                id="otp"
-                className={cn("", {
-                  "border-destructive": errors.otp,
-                })}
-                size={!isDesktop2xl ? "xl" : "lg"}
-                placeHolder="6 digit OTP"
-              />
-            </div>
-            {errors.otp && (
-              <div className=" text-destructive mt-2">{errors.otp.message}</div>
-            )}
-          </div>
+          
           <div>
             <Label
               htmlFor="password"

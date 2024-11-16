@@ -10,6 +10,10 @@ const usersSchema = new Schema(
     userID: {
       type: mongoose.Schema.Types.ObjectId,
     },
+    Email: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true, strict: false }
 );

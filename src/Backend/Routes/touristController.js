@@ -109,7 +109,7 @@ const touristRegister = async (req, res) => {
       Badge: badge,
     });
     const userID = newUser._id;
-    await Usernames.create({ Username: Username, userID, Type: "Tourist" });
+    await Usernames.create({ Username: Username, userID, Type: "Tourist", Email });
 
     const token = createToken(Username);
 

@@ -17,7 +17,6 @@ import ViewItineraries from "./pages/viewItineraries";
 import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
-import BookFlight from "./pages/bookFlight";
 import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
@@ -29,6 +28,8 @@ import FlightOrHotelSearch from "./components/flightOrHotelSearch";
 import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
+import VerifyPage from "./pages/verifyOTP";
+
 function App() {
   return (
     <Router>
@@ -48,7 +49,6 @@ function App() {
         <Route path="/uploadDocs" element={<UploadDocs />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
-        <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
         <Route path="/updateTouristInfo" element={<UpdateTouristProfile />} />
         <Route path="/Cart" element={<Cart />} />
@@ -59,6 +59,7 @@ function App() {
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
+        <Route path="verifyOtp" element={<VerifyPage/>} />
       </Routes>
     </Router>
   );

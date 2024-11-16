@@ -49,7 +49,7 @@ const createTourGuide = async (req, res) => {
     });
 
     const userID = tourGuide._id;
-    await userModel.create({ Username: Username, userID, Type: "TourGuide" });
+    await userModel.create({ Username: Username, userID, Type: "TourGuide", Email });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });

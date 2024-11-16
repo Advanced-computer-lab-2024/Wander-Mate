@@ -73,7 +73,7 @@ const createSeller = async (req, res) => {
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    await userModel.create({ Username: Username, userID, Type: "Seller" });
+    await userModel.create({ Username: Username, userID, Type: "Seller", Email });
 
     res.status(200).json(seller);
   } catch (err) {

@@ -77,6 +77,7 @@ const LogInForm = () => {
         switch (response.data.Type) {
           case "Admin":
             reToast.success("Logged in successfully!", { id: toastId });
+            sessionStorage.setItem("Type", "Admin");
 
             setTimeout(() => {
               navigate("/admin");
@@ -86,6 +87,7 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
+            sessionStorage.setItem("Type", "Advertiser");
 
             setTimeout(() => {
               navigate("/tourist");
@@ -95,6 +97,7 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
+            sessionStorage.setItem("Type", "Seller");
 
             setTimeout(() => {
               if (response.data.Status === "accepted") {
@@ -112,6 +115,7 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
+            sessionStorage.setItem("Type", "TourGuide");
 
             setTimeout(() => {
               if (response.data.Status === "accepted") {
@@ -129,6 +133,7 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
+            sessionStorage.setItem("Type", "TourismGoverner");
 
             setTimeout(() => {
               navigate("/tourismGoverner");
@@ -138,6 +143,7 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
+            sessionStorage.setItem("Type", "Advertiser");
 
             setTimeout(() => {
               if (response.data.Status === "accepted") {

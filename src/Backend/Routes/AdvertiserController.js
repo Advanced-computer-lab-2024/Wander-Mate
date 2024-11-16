@@ -210,7 +210,7 @@ const createAdvertiser = async (req, res) => {
 
     const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username, userID, Type: "Advertiser" });
+    await userModel.create({ Username: Username, userID, Type: "Advertiser", Email });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });

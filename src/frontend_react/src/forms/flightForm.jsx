@@ -1,5 +1,5 @@
 import React from "react";
-import "../../node_modules/bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/css/bootstrap.css";
 const FlightForm = (props) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
