@@ -29,6 +29,7 @@ import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
+import BookFlight from "./pages/bookFlight";
 
 import CommentPage from "./pages/commentPage";
 function App() {
@@ -60,8 +61,9 @@ function App() {
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
-        <Route path="verifyOtp" element={<VerifyPage/>} />
+        <Route path="verifyOtp" element={<VerifyPage />} />
         <Route path="/comment" element={<CommentPage />} />
+        <Route path="/bookFlight" element={<BookFlight />} />
       </Routes>
     </Router>
   );
