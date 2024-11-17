@@ -3,14 +3,39 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent } from "./ui/card";
+import {
+  CustomPopover as Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./ui/popover";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import axios from "axios";
 
-const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
+export default function ProductModal({ product, isOpen, setIsOpen, children }) {
   const [reviews, setReviews] = useState([]);
   const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open);
+    if (!open) {
+      const url = new URL(window.location.href);
+      if (window.location.search.includes("open")) {
+        // Check if 'open' exists in the query parameters
+        const url = new URL(window.location.href);
+        url.searchParams.delete("open");
+        url.searchParams.delete("product");
+
+        // Update the URL without reloading
+        window.history.replaceState({}, "", url);
+
+        // Reload the page
+        window.location.reload();
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -32,6 +57,12 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
 
     if (isOpen) {
       fetchReviews();
+    }
+
+    // Check URL parameter to open dialog
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("open") === "true") {
+      setIsOpen(true);
     }
   }, [isOpen, product.reviews]);
 
@@ -85,8 +116,27 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
     }
   };
 
+  const handleShare = (method) => {
+    const currentUrl = window.location.href.split("?")[0]; // Get the base URL without parameters
+    const shareUrl = `${currentUrl}?open=true&product=${product.productId}`;
+    const shareText = `Check out this amazing product: ${product.name}`;
+
+    if (method === "link") {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert("Link copied to clipboard!");
+        setIsShareOpen(false);
+      });
+    } else if (method === "email") {
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(
+        shareText
+      )}&body=${encodeURIComponent(shareUrl)}`;
+      window.location.href = mailtoLink;
+      setIsShareOpen(false);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
@@ -96,7 +146,7 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
           <Button
             variant="ghost"
             className="absolute right-0 top-0"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleOpenChange(false)}
           >
             <Icon icon="ph:x" className="h-4 w-4" />
           </Button>
@@ -138,10 +188,7 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
 
                   {/* Price */}
                   <div className="mb-6">
-                    <span
-                      className="text-3xl font-bold "
-                      style={{ color: "#826AF9" }}
-                    >
+                    <span className="text-3xl font-bold text-primary">
                       ${product.price}
                     </span>
                     {product.discount && (
@@ -178,17 +225,17 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
 
                   <p className="text-gray-600 mb-6">{product.description}</p>
 
-                  {/* Add to Cart Button */}
-                  {!isAdded ? (
-                    <Button className="w-full" onClick={handleAddToCart}>
-                      <Icon
-                        icon="heroicons:shopping-bag"
-                        className="w-4 h-4 mr-2"
-                      />
-                      Add to Cart
-                    </Button>
-                  ) : (
-                    <div className="flex flex-wrap gap-4">
+                  {/* Add to Cart Button and Share Button */}
+                  <div className="flex space-x-4 mb-6">
+                    {!isAdded ? (
+                      <Button className="flex-1" onClick={handleAddToCart}>
+                        <Icon
+                          icon="heroicons:shopping-bag"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Add to Cart
+                      </Button>
+                    ) : (
                       <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
                         <button
                           type="button"
@@ -197,7 +244,6 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
                         >
                           <Icon icon="eva:minus-fill" />
                         </button>
-
                         <div className="flex-1 text-base py-2 flex items-center min-w-[45px] justify-center text-primary font-medium">
                           {count}
                         </div>
@@ -209,15 +255,52 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
                           <Icon icon="eva:plus-fill" />
                         </button>
                       </div>
-                      <Button variant="outline" className="py-2 px-5 flex-none">
-                        <Icon
-                          icon="heroicons:shopping-bag"
-                          className="w-4 h-4"
-                        />
-                        Added
-                      </Button>
-                    </div>
-                  )}
+                    )}
+                    <Popover
+                      open={isShareOpen}
+                      onOpenChange={setIsShareOpen}
+                      onClose={() => setIsShareOpen(false)}
+                      trigger={
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsShareOpen(true)}
+                        >
+                          <Icon
+                            icon="heroicons:share"
+                            className="w-4 h-4 mr-2"
+                          />
+                          Share
+                        </Button>
+                      }
+                    >
+                      <div className="w-48 p-2">
+                        <div className="flex flex-col space-y-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => handleShare("link")}
+                            className="w-full justify-start"
+                          >
+                            <Icon
+                              icon="heroicons:link"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Copy Link
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => handleShare("email")}
+                            className="w-full justify-start"
+                          >
+                            <Icon
+                              icon="heroicons:envelope"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Email
+                          </Button>
+                        </div>
+                      </div>
+                    </Popover>
+                  </div>
                 </div>
               </div>
             </div>
@@ -279,6 +362,4 @@ const ProductModal = ({ product, isOpen, setIsOpen, children }) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-export default ProductModal;
+}
