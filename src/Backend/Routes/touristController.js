@@ -2135,6 +2135,9 @@ const payWithWallet = async (req, res) => {
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
+
+
+
 const applyPromoCode = async (req, res) => {
   const { touristId } = req.params;
   const { promoCode, purchaseAmount } = req.body;
@@ -2170,6 +2173,34 @@ const applyPromoCode = async (req, res) => {
     });
   } catch (error) {
     console.error("Error applying promo code:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const viewPastActivitiesAndItineraries = async (req, res) => {
+  const touristId = req.params.touristId; // Get the touristId from params
+  const currentDate = new Date();
+
+  try {
+    // Fetch past activities
+    const pastActivities = await bookingSchema
+      .find({ userId: touristId, itemModel: "Attraction", bookedDate: { $lt: currentDate } })
+      .populate("itemId");
+
+    // Fetch past itineraries
+    const pastItineraries = await bookingSchema
+      .find({ userId: touristId, itemModel: "Itinerary", bookedDate: { $lt: currentDate } })
+      .populate("itemId");
+
+    // Combine results
+    const history = {
+      activities: pastActivities,
+      itineraries: pastItineraries,
+    };
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error("Error fetching past activities and itineraries:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -2235,4 +2266,5 @@ module.exports = {
   getReviews,
   payWithWallet,
   applyPromoCode,
+  viewPastActivitiesAndItineraries,
 };
