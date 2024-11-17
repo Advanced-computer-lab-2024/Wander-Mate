@@ -29,6 +29,7 @@ import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
+import BookFlight from "./pages/bookFlight";
 
 import CommentPage from "./pages/commentPage";
 function App() {
@@ -57,6 +58,7 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />

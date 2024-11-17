@@ -147,6 +147,7 @@ const {
   validateOtp,
   resetPassword,
   getAirports,
+  createPromoCode,
 } = require("./Routes/adminController.js");
 
 const {
@@ -326,6 +327,7 @@ app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getairports", getAirports);
+app.post("/createPromoCode", createPromoCode);
 app.get("/getCategories", getCategories);
 app.get("/getTags", getTags);
 app.get("/getID/:Username", getID);
