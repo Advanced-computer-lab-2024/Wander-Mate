@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const cron = require("node-cron");
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage }); // Initialize multer
 const uploadMult = multer({
@@ -76,6 +77,7 @@ const {
   showCart,
   getReviews,
   payWithWallet,
+  assignBirthdayPromo,
 } = require("./Routes/touristController");
 
 const {
@@ -147,6 +149,7 @@ const {
   validateOtp,
   resetPassword,
   getAirports,
+  createPromoCode,
 } = require("./Routes/adminController.js");
 
 const {
@@ -221,6 +224,13 @@ mongoose
     // Starting server
     app.listen(port, () => {
       console.log(`Listening to requests on http://localhost:${port}`);
+      //assignBirthdayPromo();
+
+      // Schedule the function to run every day at midnight
+      cron.schedule('0 0 * * *', () => {
+        console.log('Running birthday promo assignment...');
+        assignBirthdayPromo();
+      });
     });
   })
   .catch((err) => console.log(err));
@@ -326,6 +336,7 @@ app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
 app.post("/filterActivities", filterActivities);
 app.get("/getNations", getNations);
 app.get("/getairports", getAirports);
+app.post("/createPromoCode", createPromoCode);
 app.get("/getCategories", getCategories);
 app.get("/getTags", getTags);
 app.get("/getID/:Username", getID);

@@ -20,6 +20,7 @@ const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
 const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
+const PromoCode = require("../Models/promoCode.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1396,6 +1397,19 @@ const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+///////////////////////////Nadeem Sprint 3//////////////////////////
+const createPromoCode = async (req, res) => {
+  try {
+    const { code, expiryDate, assignedTo, isUsed } = req.body;
+    const promoCode = await PromoCode.create({ code, expiryDate, assignedTo, isUsed });
+    return res.status(201).json({ message: "Promo code created successfully", promoCode });
+  } catch (error) {
+    console.error("Error in createPromoCode:", error);
+    return res.status(500).json({ message: "Error creating promo code", error: error.message });
+  }
+};
+///////////////////////////Nadeem Sprint 3//////////////////////////
+
 
 module.exports = {
   createAdmin,
@@ -1445,4 +1459,5 @@ module.exports = {
   validateOtp,
   resetPassword,
   getAirports,
+  createPromoCode,
 };

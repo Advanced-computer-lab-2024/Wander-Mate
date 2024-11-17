@@ -17,6 +17,11 @@ const promoCodeSchema = new Schema({
         ref: "Tourist",
         default: null,
     },
+    Discount: {
+        type: Number,
+        required: true,
+        default: 10,
+    },
     isUsed: {
         type: Boolean,
         default: false,
