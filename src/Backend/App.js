@@ -224,7 +224,7 @@ mongoose
     // Starting server
     app.listen(port, () => {
       console.log(`Listening to requests on http://localhost:${port}`);
-      assignBirthdayPromo();
+      //assignBirthdayPromo();
 
       // Schedule the function to run every day at midnight
       cron.schedule('0 0 * * *', () => {
