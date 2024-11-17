@@ -6,9 +6,11 @@ import { Button } from "./ui/button";
 import { Upload } from "lucide-react";
 import { Toaster, toast as reToast } from "react-hot-toast";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const FileUploaderMultiple = ({ ownerId, httpRequest }) => {
+const FileUploaderMultiple = ({ ownerId, httpRequest, nextPage }) => {
   const [files, setFiles] = useState([]);
+  const navigate = useNavigate();
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -60,6 +62,9 @@ const FileUploaderMultiple = ({ ownerId, httpRequest }) => {
         },
       });
       reToast.success("Files uploaded successfully!", { id: toastId });
+      setTimeout(() => {
+        navigate(nextPage);
+      }, 1000);
     } catch (error) {
       console.error("Error uploading files:", error);
       reToast.error("Error uploading files.", { id: toastId });

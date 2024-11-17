@@ -23,7 +23,6 @@ const UploadDocs = () => {
             const { userID } = await response.json();
 
             setUserId(userID);
-            navigate("/");
           } else {
             navigate("*");
           }
@@ -69,7 +68,7 @@ const UploadDocs = () => {
         className="absolute top-0 left-0 w-full h-full dark:hidden"
       />
       <div className="w-full bg-background   py-5 max-w-xl  rounded-xl relative z-10 2xl:p-16 xl:p-12 p-10 m-4 ">
-        <FileUploaderMultiple ownerId={userId} httpRequest={httpRequest} />
+        <FileUploaderMultiple ownerId={userId} httpRequest={httpRequest} nextPage={"/"}/>
       </div>
     </div>
   );

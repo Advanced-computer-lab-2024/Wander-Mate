@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import PlaceCard from "../components/placeCard"; // Make sure this points to your card component
-import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";  // Ensure this points to your loading skeleton component
-
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton"; // Ensure this points to your loading skeleton component
+import ItineraryCard from "../components/itineraryCard";
 const ViewItineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [filteredItineraries, setFilteredItineraries] = useState(itineraries);
+  const [tags, setTags] = useState([]);
+  const [tagMap, setTagMap] = useState({});
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchItineraries = async () => {
@@ -22,14 +24,40 @@ const ViewItineraries = () => {
         setLoading(false);
       }
     };
+    const fetchTags = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8000/readHistoricalTags"
+        );
+        const reply = await fetch("http://localhost:8000/readPreferenceTags");
+        if (!response.ok || !reply.ok)
+          throw new Error("Network response was not ok");
+        const data = await response.json();
+        const data2 = await reply.json();
+        const tagMapping = {};
+        data.forEach((tag) => {
+          tagMapping[tag._id] = tag.Name; // Create a mapping of tag ID to tag name
+        });
+        data2.forEach((tag) => {
+          tagMapping[tag._id] = tag.Name;
+        });
+        setTags([...data, ...data2]);
+        setTagMap(tagMapping); // Set the mapping state
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+        alert("Could not load tags. Please try again later.");
+      }
+    };
+    
+    fetchTags();
     fetchItineraries();
   }, []);
 
   // Handle search
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    const filtered = itineraries.filter(itinerary =>
-      itinerary.Activities.some(activity =>
+    const filtered = itineraries.filter((itinerary) =>
+      itinerary.Activities.some((activity) =>
         activity.name.toLowerCase().includes(event.target.value.toLowerCase())
       )
     );
@@ -40,8 +68,8 @@ const ViewItineraries = () => {
   const handleCategoryChange = (event) => {
     const categoryId = event.target.value;
     setSelectedCategory(categoryId);
-    const filtered = itineraries.filter(itinerary =>
-      itinerary.Category === categoryId // Assuming you have a Category property
+    const filtered = itineraries.filter(
+      (itinerary) => itinerary.Category === categoryId // Assuming you have a Category property
     );
     setFilteredItineraries(filtered);
   };
@@ -69,28 +97,40 @@ const ViewItineraries = () => {
         className="border p-2 rounded w-full max-w-xs mb-4"
       />
 
-      {/* Category Filter - optional if you have categories */}
-      <select
-        value={selectedCategory}
-        onChange={handleCategoryChange}
-        className="border p-1 rounded w-48 mb-4"
-      >
-        <option value="">All Categories</option>
-        {/* Populate categories here if needed */}
-      </select>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredItineraries.length > 0 ? (
-          filteredItineraries.map((itinerary) => (
-            <PlaceCard
-              key={itinerary._id} // Unique ID for each itinerary
-              name={itinerary.Name} // Adjust based on your itinerary data
-              images={itinerary.Images} // Adjust based on your API response
-              description={itinerary.Description} // Adjust based on your API response
-              activities={itinerary.Activities.map(activity => activity.name)} // Extract activity names
-              locations={itinerary.LocationsToVisit.map(location => location.name)} // Extract location names
-            />
-          ))
+          filteredItineraries.map((itinerary) => {
+            const placeImages = itinerary.LocationsToVisit.flatMap(
+              (location) => location.Pictures || []
+            );
+            const placeTags = itinerary.LocationsToVisit.flatMap(
+              (location) => location.Tags || []
+            );
+            const activityTags = itinerary.Activities.flatMap(
+              (activity) => activity.Tags || []
+            );
+
+            const combinedTags = [...placeTags, ...activityTags];
+            console.log(itinerary);
+
+            return (
+              <ItineraryCard
+                key={itinerary._id} // Unique ID for each itinerary
+                name={itinerary.Name} // Adjust based on your itinerary data
+                images={placeImages} // Combine images from Places and Activities
+                description={itinerary.Description} // Adjust based on your API response
+                activities={itinerary.Activities.map(
+                  (activity) => activity.name
+                )}
+                locations={itinerary.LocationsToVisit.map(
+                  (location) => location.name
+                )}
+                tags={combinedTags.map((tagId) => tagMap[tagId])} // Combine tags from Places and Activities
+              />
+            );
+          })
         ) : (
           <p>No itineraries found</p>
         )}
