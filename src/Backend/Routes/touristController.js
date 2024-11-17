@@ -2135,6 +2135,45 @@ const payWithWallet = async (req, res) => {
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
+const applyPromoCode = async (req, res) => {
+  const { touristId } = req.params;
+  const { promoCode, purchaseAmount } = req.body;
+
+  try {
+    // Find the promo code
+    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
+
+    if (!code) {
+      return res.status(404).json({ message: "Promo code not found or already used." });
+    }
+
+    // Check if the promo code is expired
+    const currentDate = new Date();
+    if (code.expiryDate < currentDate) {
+      return res.status(400).json({ message: "Promo code has expired." });
+    }
+
+    // Apply the promo code (e.g., 10% discount)
+    const discount = 0.10; // Example discount rate
+    const discountAmount = purchaseAmount * discount;
+    const finalAmount = purchaseAmount - discountAmount;
+
+    // Mark the promo code as used
+    code.isUsed = true;
+    await code.save();
+
+    res.status(200).json({
+      message: "Promo code applied successfully",
+      originalAmount: purchaseAmount,
+      discountAmount,
+      finalAmount,
+    });
+  } catch (error) {
+    console.error("Error applying promo code:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2195,4 +2234,5 @@ module.exports = {
   showCart,
   getReviews,
   payWithWallet,
+  applyPromoCode,
 };
