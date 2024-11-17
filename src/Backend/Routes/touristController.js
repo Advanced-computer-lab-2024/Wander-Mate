@@ -609,9 +609,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1973,42 +1973,56 @@ const addDeliveryAddress = async (req, res) => {
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 const assignBirthdayPromo = async () => {
   const today = new Date();
-  const currentMonth = today.getMonth() + 1;
+  const currentMonth = today.getMonth() + 1; // Months are 0-based in JavaScript
   const currentDate = today.getDate();
 
+  // Find tourists whose birthday is today
   const touristsWithBirthdays = await userModel.find({
     $expr: {
       $and: [
-        { $eq: [{ $month: "$DOB" }, currentMonth] },
         { $eq: [{ $dayOfMonth: "$DOB" }, currentDate] },
-      ],
-    },
+        { $eq: [{ $month: "$DOB" }, currentMonth] }
+      ]
+    }
   });
 
+  console.log("Tourists with birthdays today:", touristsWithBirthdays);
+
   for (const tourist of touristsWithBirthdays) {
-    const promoCode = await PromoCode.findOne({ assignedTo: null });
-    if (!promoCode) {
-      console.log("No available promo codes to assign");
-      continue;
+    try {
+      // Check if a promo code already exists for this tourist
+      const existingPromoCode = await PromoCode.findOne({ assignedTo: tourist._id });
+      if (existingPromoCode) {
+        console.log(`Promo code already exists for ${tourist.Username}: ${existingPromoCode.code}`);
+        continue; // Skip to the next tourist
+      }
+
+      // Create a new promo code
+
+      // const updatedTourist = await userModel.findByIdAndUpdate(
+      //   touristId,
+      //   { PreferenceTags: preferences },
+      //   { new: true }
+      // );
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+
+      const promoCode = await PromoCode.create({
+        code: `Happy Birthday ${tourist.Username}`,
+        expiryDate,
+        assignedTo: tourist._id,
+        isUsed: false,
+      });
+
+      // Push the promo code ID to the tourist's PromoCodes array
+      console.log(promoCode._id);
+      tourist.PromoCode = promoCode._id; // Set the PromoCode field directly
+      await tourist.save();
+
+      console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Username}`);
+    } catch (error) {
+      console.error("Error assigning promo code:", error);
     }
-    promoCode.assignedTo = tourist._id;
-    await promoCode.save();
-
-    tourist.PromoCodes.push({
-      code: promoCode.code,
-      expiryDate: promoCode.expiryDate,
-      isUsed: false,
-    });
-    await tourist.save();
-
-    ///////////Need to make sure that this could work////////
-    await sendEmail(
-      tourist.Email,
-      "Happy Birthday",
-      `Your promo code is ${promoCode.code}. Use it before ${promoCode.expiryDate}`
-    );
-    console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Email}`);
-    ///////////Need to make sure that this could work////////
   }
 };
 

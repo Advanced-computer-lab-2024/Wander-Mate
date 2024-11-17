@@ -1403,14 +1403,11 @@ const createPromoCode = async (req, res) => {
     const { code, expiryDate, assignedTo, isUsed } = req.body;
     const promoCode = await PromoCode.create({ code, expiryDate, assignedTo, isUsed });
     return res.status(201).json({ message: "Promo code created successfully", promoCode });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error in createPromoCode:", error);
+    return res.status(500).json({ message: "Error creating promo code", error: error.message });
   }
 };
-
-
-
 ///////////////////////////Nadeem Sprint 3//////////////////////////
 
 

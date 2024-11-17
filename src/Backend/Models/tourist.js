@@ -52,9 +52,10 @@ const touristSchema = new Schema(
       type: [ObjectId],
       default: [],
     },
-    PromoCodes: {
-      type: ObjectId,
+    PromoCode: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: "PromoCode",
+      default: null,
     }
 
   },
