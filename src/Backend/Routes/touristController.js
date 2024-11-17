@@ -2071,7 +2071,7 @@ const showCart = async (req, res) => {
       // If no cart exists, return an empty cart
       return res.status(200).json({ items: [] });
     }
-    return res.status(200).json({ items: cart.items });
+    return res.status(200).json({ cart });
   } catch (error) {
     return res.status(400).json({ message: "Error fetching cart" });
   }
@@ -2094,6 +2094,28 @@ const getReviews = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Error fetching reviews", error: err.message });
+  }
+};
+
+const payWithWallet = async (req, res) => {
+  const { touristID, amount } = req.body;
+  try {
+    // Find the user's wallet
+    let tourist = await userModel.findById(touristID);
+    if (!tourist) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    // Check if the user has enough balance
+    if (tourist.Wallet < amount) {
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
+    // Deduct the amount from the user's wallet
+    tourist.Wallet -= amount;
+    await tourist.save();
+    return res.status(200).json({ message: "Payment successful" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error processing payment" });
   }
 };
 
@@ -2158,4 +2180,5 @@ module.exports = {
   addItemToCart,
   showCart,
   getReviews,
+  payWithWallet,
 };

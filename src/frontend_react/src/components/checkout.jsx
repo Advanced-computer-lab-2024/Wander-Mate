@@ -25,11 +25,13 @@ import NationalitySelect from "./nationsSelect";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { cn } from "../lib/utils";
 import CreditCard from "../public/images/CreditCard.png";
-const CheckOut = () => {
+import axios from "axios";
+import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+const CheckOut = ({ touristID, amount }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3); // Default step count
-
+  const [alertMessage, setAlertMessage] = useState(null); // State for alert message
   const [selected, setSelected] = useState("rwb_1");
 
   const handleValueChange = (value) => {
@@ -43,6 +45,24 @@ const CheckOut = () => {
 
   const handleNextSlide = () => {
     setActiveIndex(activeIndex + 1);
+    setAlertMessage(null);
+  };
+
+  const handleWallet = async () => {
+    try {
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID,
+        amount,
+      });
+      if (response.status !== 200) {
+        setAlertMessage(response.data || "Payment failed.");
+      } else {
+        setAlertMessage(null); 
+        handleNextSlide();
+      }
+    } catch (error) {
+      setAlertMessage("Insufficient balance");
+    }
   };
 
   const handlePrevSlide = () => {
@@ -61,6 +81,15 @@ const CheckOut = () => {
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
           <DialogHeader className="p-6 pb-2">
+            {alertMessage && ( // Conditionally render the alert
+              <Alert color="destructive" variant="soft" className="mb-4">
+                <Icon
+                  icon="heroicons:exclamation-triangle"
+                  className="h-4 w-4"
+                />
+                <AlertDescription>{alertMessage}</AlertDescription>
+              </Alert>
+            )}
             <DialogTitle className="text-base font-medium">
               Checkout
             </DialogTitle>
@@ -82,7 +111,7 @@ const CheckOut = () => {
                     <Textarea
                       type="text"
                       placeholder="Billing address"
-                      rows="3"
+                      rows="6.5"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
@@ -137,6 +166,29 @@ const CheckOut = () => {
                         <RadioGroupItem
                           value="rwb_2"
                           id="rwb_2"
+                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                        />
+                      </Label>
+                      <Label
+                        htmlFor="rwb_3"
+                        className={cn(
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          { "bg-primary": selected === "rwb_3" }
+                        )}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon icon="mdi:wallet" className="text-lg" />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_3",
+                            })}
+                          >
+                            Using Wallet
+                          </span>
+                        </span>
+                        <RadioGroupItem
+                          value="rwb_3"
+                          id="rwb_3"
                           className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                         />
                       </Label>
@@ -204,14 +256,20 @@ const CheckOut = () => {
             </ScrollArea>
           </div>
           <div className="p-6 pt-4 flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handlePrevSlide}
-              disabled={activeIndex === 1 || activeIndex === totalSlide}
-            >
-              Previous
-            </Button>
+            {activeIndex !== 1 ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePrevSlide}
+                disabled={activeIndex === 1 || activeIndex === totalSlide}
+              >
+                Previous
+              </Button>
+            ) : (
+              <DialogClose asChild variant="outline">
+                <Button type="button">Close</Button>
+              </DialogClose>
+            )}
             {activeIndex === totalSlide ? (
               <DialogClose asChild>
                 <Button type="button">Close</Button>
@@ -219,7 +277,7 @@ const CheckOut = () => {
             ) : (
               <Button
                 type="button"
-                onClick={handleNextSlide}
+                onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
                 disabled={activeIndex === 2 && selected !== "rwb_1"}
               >
                 Next

@@ -75,6 +75,7 @@ const {
   addItemToCart,
   showCart,
   getReviews,
+  payWithWallet,
 } = require("./Routes/touristController");
 
 const {
@@ -475,3 +476,4 @@ app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
 app.get("/showCart/:touristID", showCart);
 app.post("/getReviews", getReviews);
+app.put("/payWithWallet", payWithWallet);

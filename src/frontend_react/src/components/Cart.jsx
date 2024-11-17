@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
+  const [ID, setUserId] = useState(0);
 
   // Fetch cart data from backend
   useEffect(() => {
@@ -17,13 +18,14 @@ export default function ShoppingCart() {
         if (!reply.ok) throw new Error("Failed to get tourist ID");
 
         const { userID } = await reply.json();
+        setUserId(userID);
         const response = await axios.get(
           `http://localhost:8000/showCart/${userID}`
         ); // Adjust the URL as per your backend route
         const cart = response.data; // Assuming the response contains cart data
-        setCartItems(cart.items);
-        if (cart.subtotal) {
-          setSubtotal(cart.subtotal);
+        setCartItems(cart.cart.items);
+        if (cart.cart.subtotal) {
+          setSubtotal(cart.cart.subtotal);
         }
       } catch (error) {
         console.error("Error fetching cart data:", error);
@@ -135,7 +137,7 @@ export default function ShoppingCart() {
                   <span>${subtotal + 20}</span>
                 </div>
               </div>
-              <CheckOut />
+              <CheckOut touristID={ID} amount={subtotal} />
             </div>
           </div>
         </div>
