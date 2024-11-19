@@ -1939,7 +1939,7 @@ const selectPreferences = async (req, res) => {
 
 const addDeliveryAddress = async (req, res) => {
   const { touristId } = req.params;
-  const { street, city, state, zipCode, country } = req.body;
+  const { street, city, state, zipCode, country, location } = req.body;
 
   try {
     // Check if the tourist exists
@@ -1948,7 +1948,17 @@ const addDeliveryAddress = async (req, res) => {
       return res.status(404).json({ message: "Tourist not found" });
     }
 
-    // Create a new address
+    // Validate location
+    if (
+      !location ||
+      location.type !== "Point" ||
+      !Array.isArray(location.coordinates) ||
+      location.coordinates.length !== 2
+    ) {
+      return res.status(400).json({ message: "Invalid location format" });
+    }
+
+    // Create a new address with location
     const newAddress = new Address({
       street,
       city,
@@ -1956,6 +1966,7 @@ const addDeliveryAddress = async (req, res) => {
       zipCode,
       country,
       userId: touristId, // Associate the address with the tourist
+      location, // Use the validated location
     });
 
     // Save the address
