@@ -226,8 +226,8 @@ export default function Places() {
               key={place._id}
               name={place.Name}
               images={place.Pictures}
-              latitude={29.9753}
-              longitude={31.1342}
+              latitude={place.Location.coordinates[1] }
+              longitude={place.Location.coordinates[0]}
               description={place.Description}
               tags={place.Tags.map((tagId) => tagMap[tagId])}
               category={
