@@ -2215,6 +2215,29 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const getDeliveryAddresses = async (req, res) => {
+  const { touristId } = req.params;
+
+  try {
+    // Check if the tourist exists
+    const tourist = await userModel.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Fetch all addresses associated with the tourist
+    const addresses = await Address.find({ userId: touristId });
+
+    // Return the addresses
+    res.status(200).json({
+      message: "Addresses retrieved successfully",
+      addresses,
+    });
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -2278,4 +2301,5 @@ module.exports = {
   payWithWallet,
   applyPromoCode,
   viewPastActivitiesAndItineraries,
+  getDeliveryAddresses
 };
