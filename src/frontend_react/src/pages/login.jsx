@@ -100,10 +100,10 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "Seller");
 
             setTimeout(() => {
-              if (response.data.Status === "accepted") {
+              if (response.data.status === "accepted") {
                 navigate("/seller");
               } else {
-                if (response.data.Status === "rejected") {
+                if (response.data.status === "rejected") {
                   navigate("/rejected");
                 } else {
                   navigate("/pending");
@@ -118,10 +118,10 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "TourGuide");
 
             setTimeout(() => {
-              if (response.data.Status === "accepted") {
+              if (response.data.status === "accepted") {
                 navigate("/tourGuide");
               } else {
-                if (response.data.Status === "rejected") {
+                if (response.data.status === "rejected") {
                   navigate("/rejected");
                 } else {
                   navigate("/pending");
@@ -146,10 +146,10 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "Advertiser");
 
             setTimeout(() => {
-              if (response.data.Status === "accepted") {
+              if (response.data.status === "accepted") {
                 navigate("/advertiser");
               } else {
-                if (response.data.Status === "rejected") {
+                if (response.data.status === "rejected") {
                   navigate("/rejected");
                 } else {
                   navigate("/pending");
