@@ -23,6 +23,7 @@ const jwt = require("jsonwebtoken");
 const Address = require("../Models/address.js");
 const PromoCode = require("../Models/promoCode.js");
 const Cart = require("../Models/cart.js");
+const Wishlist = require("../Models/whishlist.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -2036,6 +2037,44 @@ const assignBirthdayPromo = async () => {
     }
   }
 };
+const removeFromCart = async (req, res) => {
+  const { touristID, productId, attributes } = req.body;
+
+  if (!touristID || !productId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Find the user's cart
+    const cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Find the item in the cart
+    const itemIndex = cart.items.findIndex((item) => {
+      return (
+        item.productId.toString() === productId &&
+        (!attributes || JSON.stringify(item.attributes) === JSON.stringify(attributes))
+      );
+    });
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Save the updated cart
+    await cart.save();
+
+    return res.status(200).json({ message: "Item removed from cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error removing item from cart" });
+  }
+};
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2215,6 +2254,105 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const getDeliveryAddresses = async (req, res) => {
+  const { touristId } = req.params;
+
+  try {
+    // Check if the tourist exists
+    const tourist = await userModel.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Fetch all addresses associated with the tourist
+    const addresses = await Address.find({ userId: touristId });
+
+    // Return the addresses
+    res.status(200).json({
+      message: "Addresses retrieved successfully",
+      addresses,
+    });
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const cancelOrder = async (req, res) => {
+  const { touristId } = req.params; // Get touristId from the route parameter
+
+  if (!touristId) {
+    return res.status(400).json({ message: "Missing required parameter: touristId" });
+  }
+
+  try {
+    // Find the cart by touristID
+    const cart = await Cart.findOne({ touristID: touristId });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Clear all items and reset subtotal
+    cart.items = [];
+    cart.subtotal = 0;
+
+    // Save the updated cart
+    await cart.save();
+
+    return res.status(200).json({ message: "Cart emptied successfully", cart });
+  } catch (error) {
+    return res.status(500).json({ message: "Error emptying the cart", error: error.message });
+  }
+};
+
+
+
+
+
+const addToWishlist = async (req, res) => {
+  const { touristId, productId } = req.body;
+
+  try {
+    // Validate input
+    if (!touristId || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Product ID are required." });
+    }
+
+    // Check if the wishlist for the tourist exists
+    let wishlist = await Wishlist.findOne({ userId: touristId });
+
+    if (!wishlist) {
+      // If the wishlist doesn't exist, create a new one
+      wishlist = new Wishlist({ userId: touristId, products: [] });
+    }
+
+    // Check if the product already exists in the wishlist
+    if (wishlist.products.includes(productId)) {
+      return res
+        .status(200)
+        .json({ message: "Product is already in the wishlist." });
+    }
+
+    // Add the product ID to the wishlist
+    wishlist.products.push(productId);
+
+    // Save the updated wishlist
+    await wishlist.save();
+
+    res.status(200).json({
+      message: "Product added to wishlist successfully.",
+      wishlist: wishlist.products, // Optionally return the updated wishlist
+    });
+  } catch (error) {
+    console.error("Error adding product to wishlist:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -2278,4 +2416,8 @@ module.exports = {
   payWithWallet,
   applyPromoCode,
   viewPastActivitiesAndItineraries,
+  getDeliveryAddresses,
+  addToWishlist,
+  removeFromCart,
+  cancelOrder,
 };
