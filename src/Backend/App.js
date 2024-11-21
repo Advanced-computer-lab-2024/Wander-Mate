@@ -80,7 +80,8 @@ const {
   assignBirthdayPromo,
   applyPromoCode,
   viewPastActivitiesAndItineraries,
-  getDeliveryAddresses
+  getDeliveryAddresses,
+  removeFromCart
 } = require("./Routes/touristController");
 
 const {
@@ -494,3 +495,4 @@ app.put("/payWithWallet", payWithWallet);
 app.post("/applyPromoCode/:touristId", applyPromoCode);
 app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
+app.post("/removeFromCart",removeFromCart);

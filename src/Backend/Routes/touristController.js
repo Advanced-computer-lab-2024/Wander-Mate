@@ -2036,6 +2036,44 @@ const assignBirthdayPromo = async () => {
     }
   }
 };
+const removeFromCart = async (req, res) => {
+  const { touristID, productId, attributes } = req.body;
+
+  if (!touristID || !productId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Find the user's cart
+    const cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Find the item in the cart
+    const itemIndex = cart.items.findIndex((item) => {
+      return (
+        item.productId.toString() === productId &&
+        (!attributes || JSON.stringify(item.attributes) === JSON.stringify(attributes))
+      );
+    });
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Save the updated cart
+    await cart.save();
+
+    return res.status(200).json({ message: "Item removed from cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error removing item from cart" });
+  }
+};
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2301,5 +2339,6 @@ module.exports = {
   payWithWallet,
   applyPromoCode,
   viewPastActivitiesAndItineraries,
-  getDeliveryAddresses
+  getDeliveryAddresses,
+  removeFromCart
 };
