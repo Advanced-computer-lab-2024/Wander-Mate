@@ -23,6 +23,7 @@ const jwt = require("jsonwebtoken");
 const Address = require("../Models/address.js");
 const PromoCode = require("../Models/promoCode.js");
 const Cart = require("../Models/cart.js");
+const Wishlist = require("../Models/whishlist.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -2239,6 +2240,50 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
+const addToWishlist = async (req, res) => {
+  const { touristId, productId } = req.body;
+
+  try {
+    // Validate input
+    if (!touristId || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Product ID are required." });
+    }
+
+    // Check if the wishlist for the tourist exists
+    let wishlist = await Wishlist.findOne({ userId: touristId });
+
+    if (!wishlist) {
+      // If the wishlist doesn't exist, create a new one
+      wishlist = new Wishlist({ userId: touristId, products: [] });
+    }
+
+    // Check if the product already exists in the wishlist
+    if (wishlist.products.includes(productId)) {
+      return res
+        .status(200)
+        .json({ message: "Product is already in the wishlist." });
+    }
+
+    // Add the product ID to the wishlist
+    wishlist.products.push(productId);
+
+    // Save the updated wishlist
+    await wishlist.save();
+
+    res.status(200).json({
+      message: "Product added to wishlist successfully.",
+      wishlist: wishlist.products, // Optionally return the updated wishlist
+    });
+  } catch (error) {
+    console.error("Error adding product to wishlist:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2301,5 +2346,6 @@ module.exports = {
   payWithWallet,
   applyPromoCode,
   viewPastActivitiesAndItineraries,
-  getDeliveryAddresses
+  getDeliveryAddresses,
+  addToWishlist
 };
