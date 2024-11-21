@@ -105,6 +105,7 @@ const {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
+  getSellerById
 } = require("./Routes/sellerController.js");
 
 const {
@@ -499,4 +500,4 @@ app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndIti
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
 app.post("/addToWishlist",addToWishlist);app.post("/removeFromCart",removeFromCart);
 app.delete('/cancel-order/:touristId', cancelOrder);
-
+app.get("/getSellerById/:sellerId",getSellerById);

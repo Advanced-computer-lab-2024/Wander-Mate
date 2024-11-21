@@ -260,6 +260,18 @@ const getSellers = async (req, res) => {
     res.status(400).json({ message: "Error to get sellers" });
   }
 };
+const getSellerById = async (req, res) => {
+  const { sellerId } = req.params; // Extract sellerId from request parameters
+  try {
+    const seller = await sellerModel.findById(sellerId).select("-Password"); // Fetch seller info excluding Password
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+    res.status(200).json({ seller });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching seller information", error: error.message });
+  }
+};
 
 const uploadSellerDocuments = async (req, res) => {
   if (!req.files) {
@@ -541,4 +553,5 @@ module.exports = {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
+  getSellerById
 };
