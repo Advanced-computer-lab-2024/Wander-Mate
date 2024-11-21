@@ -81,7 +81,8 @@ const {
   applyPromoCode,
   viewPastActivitiesAndItineraries,
   getDeliveryAddresses,
-  removeFromCart
+  removeFromCart,
+  cancelOrder,
 } = require("./Routes/touristController");
 
 const {
@@ -496,3 +497,5 @@ app.post("/applyPromoCode/:touristId", applyPromoCode);
 app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
 app.post("/removeFromCart",removeFromCart);
+app.delete('/cancel-order/:touristId', cancelOrder);
+
