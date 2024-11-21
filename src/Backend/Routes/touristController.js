@@ -2321,6 +2321,30 @@ const addToWishlist = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+const viewMyWishlist = async (req, res) => {
+  const { touristId } = req.params; // Assuming the tourist ID is passed as a URL parameter
+
+  try {
+    // Find the wishlist for the given tourist ID and populate product details for all items in the array
+    const wishlist = await Wishlist.findOne({ userId: touristId }).populate({
+      path: "products", // Path to the products field in the Wishlist model
+      model: "Product", // Explicitly specify the model name
+    });
+
+    if (!wishlist || wishlist.products.length === 0) {
+      return res.status(404).json({ message: "No products found in the wishlist for this tourist." });
+    }
+
+    res.status(200).json({
+      message: "Wishlist retrieved successfully.",
+      wishlist: wishlist.products, // Return all the populated product details
+    });
+  } catch (error) {
+    console.error("Error fetching wishlist:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 module.exports = {
   touristRegister,
@@ -2386,5 +2410,6 @@ module.exports = {
   viewPastActivitiesAndItineraries,
   getDeliveryAddresses,
   addToWishlist,
-  removeFromCart
+  removeFromCart,
+  viewMyWishlist
 };
