@@ -31,6 +31,7 @@ import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
 import AddressCard from "./components/ui/addressCard";
 import CommentPage from "./pages/commentPage";
+import BookFlight from "./pages/bookFlight";
 function App() {
   return (
     <Router>
@@ -57,6 +58,7 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path='/bookFlight' element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
