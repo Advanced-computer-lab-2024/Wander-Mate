@@ -41,7 +41,7 @@ const createToken = (name) => {
 
 const createSeller = async (req, res) => {
   try {
-    const { Username, Password, Email, Description } = req.body;
+    const { Username, Password, Email, Description, FullName } = req.body;
 
     // Check if Username, Password, and Email are provided
     if (!Username || !Password || !Email) {
@@ -67,6 +67,7 @@ const createSeller = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
       Description: Description,
+      FullName,
     });
 
     const userID = seller._id;

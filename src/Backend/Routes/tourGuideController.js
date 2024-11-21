@@ -20,7 +20,7 @@ const createToken = (name) => {
 };
 const createTourGuide = async (req, res) => {
   try {
-    const { Username, Password, Email } = req.body;
+    const { Username, Password, Email, FullName } = req.body;
 
     // Check if Username, Password, and Email are provided
     if (!Username || !Password || !Email) {
@@ -46,6 +46,7 @@ const createTourGuide = async (req, res) => {
       Username: Username,
       Password: hashedPassword,
       Email: Email,
+      FullName,
     });
 
     const userID = tourGuide._id;
