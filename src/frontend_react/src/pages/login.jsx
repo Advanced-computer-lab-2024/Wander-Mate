@@ -98,7 +98,6 @@ const LogInForm = () => {
               id: toastId,
             });
             sessionStorage.setItem("Type", "Seller");
-
             setTimeout(() => {
               if (response.data.status === "accepted") {
                 navigate("/seller");

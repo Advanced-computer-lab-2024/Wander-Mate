@@ -696,7 +696,6 @@ const getAirports = async (req, res) => {
   }
 };
 
-
 const getID = async (req, res) => {
   try {
     const db = mongoose.connection;
@@ -1221,6 +1220,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid username or password" });
     }
     let userLogged;
+    let status = "";
     switch (user.Type) {
       case "Admin":
         userLogged = await adminModel.findOne({ Username: Username });
@@ -1230,15 +1230,18 @@ const login = async (req, res) => {
         break;
       case "Seller":
         userLogged = await sellerModel.findOne({ Username: Username });
+        status = userLogged.status;
         break;
       case "TourGuide":
         userLogged = await tourGuideModel.findOne({ Username: Username });
+        status = userLogged.status;
         break;
       case "TourismGoverner":
         userLogged = await TourismGoverner.findOne({ Username: Username });
         break;
       case "Advertiser":
         userLogged = await advertiserModel.findOne({ Username: Username });
+        status = userLogged.status;
         break;
     }
 
@@ -1262,9 +1265,7 @@ const login = async (req, res) => {
     };
 
     res.cookie("jwt", token, cookieOptions);
-    res
-      .status(200)
-      .json({ Username: Username, Type: user.Type, Status: user.status });
+    res.status(200).json({ Username: Username, Type: user.Type, status });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An error occurred during login" });
@@ -1363,12 +1364,24 @@ const resetPassword = async (req, res) => {
     let user;
 
     switch (type) {
-      case "Admin": user = await adminModel.findOne({ Username: username }); break;
-      case "Tourist": user = await touristModel.findOne({ Username: username }); break;
-      case "TourGuide": user = await tourGuideModel.findOne({ Username: username }); break;
-      case "Seller": user = await sellerModel.findOne({ Username: username }); break;
-      case "Advertiser": user = await advertiserModel.findOne({ Username: username }); break;
-      case "TourismGoverner": user = await TourismGoverner.findOne(TourismGoverner); break;
+      case "Admin":
+        user = await adminModel.findOne({ Username: username });
+        break;
+      case "Tourist":
+        user = await touristModel.findOne({ Username: username });
+        break;
+      case "TourGuide":
+        user = await tourGuideModel.findOne({ Username: username });
+        break;
+      case "Seller":
+        user = await sellerModel.findOne({ Username: username });
+        break;
+      case "Advertiser":
+        user = await advertiserModel.findOne({ Username: username });
+        break;
+      case "TourismGoverner":
+        user = await TourismGoverner.findOne(TourismGoverner);
+        break;
     }
 
     // Find the admin by id
@@ -1401,15 +1414,23 @@ const resetPassword = async (req, res) => {
 const createPromoCode = async (req, res) => {
   try {
     const { code, expiryDate, assignedTo, isUsed } = req.body;
-    const promoCode = await PromoCode.create({ code, expiryDate, assignedTo, isUsed });
-    return res.status(201).json({ message: "Promo code created successfully", promoCode });
+    const promoCode = await PromoCode.create({
+      code,
+      expiryDate,
+      assignedTo,
+      isUsed,
+    });
+    return res
+      .status(201)
+      .json({ message: "Promo code created successfully", promoCode });
   } catch (error) {
     console.error("Error in createPromoCode:", error);
-    return res.status(500).json({ message: "Error creating promo code", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error creating promo code", error: error.message });
   }
 };
 ///////////////////////////Nadeem Sprint 3//////////////////////////
-
 
 module.exports = {
   createAdmin,
