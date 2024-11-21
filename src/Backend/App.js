@@ -81,7 +81,9 @@ const {
   applyPromoCode,
   viewPastActivitiesAndItineraries,
   getDeliveryAddresses,
-  removeFromCart
+  addToWishlist,
+  removeFromCart,
+  cancelOrder,
 } = require("./Routes/touristController");
 
 const {
@@ -496,5 +498,8 @@ app.put("/payWithWallet", payWithWallet);
 app.post("/applyPromoCode/:touristId", applyPromoCode);
 app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
-app.post("/removeFromCart",removeFromCart);
+app.post("/addToWishlist",addToWishlist);app.post("/removeFromCart",removeFromCart);
+app.delete('/cancel-order/:touristId', cancelOrder);
+
+
 app.get("/getSellerById/:sellerId",getSellerById);

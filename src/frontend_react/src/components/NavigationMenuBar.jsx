@@ -1,34 +1,41 @@
-import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
-import { Link } from 'react-router-dom';
-
-// Importing custom Navigation Menu components
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu'; // Adjust path as needed
-import { Button } from './ui/button';
-import { Icon } from '@iconify/react'; // Assuming you're using iconify for icons
-// import { faker } from "@faker-js/faker";
-// SiteLogo Component
+} from "./ui/dropdown-menu";
+import {
+  Heart,
+  History,
+  LogOut,
+  Settings,
+  ShoppingCart,
+  User,
+  Plane,
+  Hotel,
+  Ticket,
+  MapPin,
+  Info,
+  Users,
+  Briefcase,
+} from "lucide-react";
+
 const SiteLogo = () => (
   <svg
     id="Layer_1"
     data-name="Layer 1"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 97.11 72.85"
-    className="h-20 w-20 2xl:w-28 2xl:h-28"
-    preserveAspectRatio="xMidYMid meet"
+    className="h-12 w-12 2xl:w-16 2xl:h-16"
+    aria-label="Site Logo"
   >
     <defs>
       <style>{".cls-1{fill:#826af9;}"}</style>
@@ -45,127 +52,231 @@ const SiteLogo = () => (
   </svg>
 );
 
-
-
-
-
-// Simplified Navigation Menu Component
-// Simplified Navigation Menu Component
 const NavigationMenuBar = () => {
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const handleMouseEnter = (dropdown) => {
+    setOpenDropdown(dropdown);
+  };
+
+  const handleMouseLeave = () => {
+    setOpenDropdown(null);
+  };
+
   return (
-    <header className="w-full bg-white shadow-lg sticky top-0 z-50 flex justify-between items-center px-6 py-4 mx-auto">
-      {/* Navigation Menu */}
-        <SiteLogo />
-      <div className="flex items-center w-full justify-center">
-        {/* Site Logo in Top left */}
+    <header className="w-full bg-white shadow-md sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-2">
+        <nav className="flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2">
+            <SiteLogo />
+            <span className="text-xl font-bold">Wandermate</span>
+          </Link>
 
-        {/* Centered Dropdowns */}
-        <div className="ml-6 flex justify-center items-center space-x-6 h-full">
-          {/* First Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="soft" color="secondary">
-                Destinations
-                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px]" align="start">
-              <DropdownMenuLabel>Explore Destinations</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Beach Destinations</DropdownMenuItem>
-              <DropdownMenuItem>Mountain Retreats</DropdownMenuItem>
-              <DropdownMenuItem>City Tours</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="hidden md:flex space-x-6">
+            <DropdownMenu open={openDropdown === "about"}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  onMouseEnter={() => handleMouseEnter("about")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  About Us
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56"
+                onMouseEnter={() => handleMouseEnter("about")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownMenuItem>
+                  <Link to="/about/story" className="flex items-center">
+                    <Info className="mr-2 h-4 w-4" />
+                    <span>Our Story</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/about/team" className="flex items-center">
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Meet the Team</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/about/careers" className="flex items-center">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Careers</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Second Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="soft" color="secondary">
-                Packages
-                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px]" align="start">
-              <DropdownMenuLabel>Available Packages</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Family Packages</DropdownMenuItem>
-              <DropdownMenuItem>Honeymoon Specials</DropdownMenuItem>
-              <DropdownMenuItem>Adventure Tours</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu open={openDropdown === "shop"}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  onMouseEnter={() => handleMouseEnter("shop")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  Shop
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56"
+                onMouseEnter={() => handleMouseEnter("shop")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownMenuItem>
+                  <Link to="/shop/travel-gear" className="flex items-center">
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    <span>Travel Gear</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/shop/accessories" className="flex items-center">
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    <span>Accessories</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/shop/souvenirs" className="flex items-center">
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    <span>Souvenirs</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Third Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="soft" color="secondary">
-                About Us
-                <Icon icon="heroicons:chevron-down" className="h-5 w-5 ml-2" />
+            <DropdownMenu open={openDropdown === "bookings"}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  onMouseEnter={() => handleMouseEnter("bookings")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  Travel Bookings
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56"
+                onMouseEnter={() => handleMouseEnter("bookings")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownMenuItem>
+                  <Link to="/bookings/flights" className="flex items-center">
+                    <Plane className="mr-2 h-4 w-4" />
+                    <span>Flights</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/bookings/hotels" className="flex items-center">
+                    <Hotel className="mr-2 h-4 w-4" />
+                    <span>Hotels</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/bookings/packages" className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    <span>Vacation Packages</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu open={openDropdown === "activities"}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  onMouseEnter={() => handleMouseEnter("activities")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  Activities & Tickets
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56"
+                onMouseEnter={() => handleMouseEnter("activities")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownMenuItem>
+                  <Link to="/activities/tours" className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    <span>Tours</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link
+                    to="/activities/attractions"
+                    className="flex items-center"
+                  >
+                    <Ticket className="mr-2 h-4 w-4" />
+                    <span>Attractions</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/activities/events" className="flex items-center">
+                    <Ticket className="mr-2 h-4 w-4" />
+                    <span>Events</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="icon" aria-label="Wishlist">
+              <Heart className="h-5 w-5" />
+            </Button>
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" aria-label="Shopping Cart">
+                <ShoppingCart className="h-5 w-5" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[196px]" align="start">
-              <DropdownMenuLabel>About Us</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Our Story</DropdownMenuItem>
-              <DropdownMenuItem>Meet the Team</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar>
+                    <AvatarFallback>MA</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Wishlist</span>
+                    <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <History className="mr-2 h-4 w-4" />
+                    <span>History</span>
+                    <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </nav>
       </div>
-
-     {/* Flex container for button and profile dropdown */}
-<div className="flex items-center space-x-2">
-  {/* Cart Icon as Button */}
-  <Link to="/cart">
-    <button className="text-gray-600 hover:text-gray-800 focus:outline-none p-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="2em"
-        height="2em"
-        viewBox="0 0 24 24"
-      >
-        <path
-          fill="currentColor"
-          d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1m-9-1a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1M18 6H4.27l2.55 6H15c.33 0 .62-.16.8-.4l3-4c.13-.17.2-.38.2-.6a1 1 0 0 0-1-1m-3 7H6.87l-.77 1.56L6 15a1 1 0 0 0 1 1h11v1H7a2 2 0 0 1-2-2a2 2 0 0 1 .25-.97l.72-1.47L2.34 4H1V3h2l.85 2H18a2 2 0 0 1 2 2c0 .5-.17.92-.45 1.26l-2.91 3.89c-.36.51-.96.85-1.64.85"
-        />
-      </svg>
-    </button>
-  </Link>
-
-  {/* Profile Dropdown Menu */}
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild className="cursor-pointer">
-      <div className="flex items-center space-x-3 mr-4">
-        <Avatar>
-          <AvatarFallback>MA</AvatarFallback>
-        </Avatar>
-      </div>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent className="w-56" align="start">
-      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuGroup>
-        <DropdownMenuItem>
-          Profile
-          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          Settings
-          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        Log out
-        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</div>
-
     </header>
   );
 };
-
 
 export default NavigationMenuBar;
