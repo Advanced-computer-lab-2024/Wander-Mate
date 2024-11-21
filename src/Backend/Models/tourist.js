@@ -56,6 +56,10 @@ const touristSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "PromoCode",
       default: null,
+    },
+    Bookmarks: {
+      type: [ObjectId],
+      default: [],
     }
 
   },

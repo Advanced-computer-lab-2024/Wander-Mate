@@ -86,6 +86,7 @@ const {
   viewMyWishlist,
   cancelOrder,
   removeFromWishlist,
+  BookmarkAttraction,
 } = require("./Routes/touristController");
 
 const {
@@ -506,3 +507,4 @@ app.get("/viewMyWishlist/:touristId",viewMyWishlist);
 app.delete('/cancel-order/:touristId', cancelOrder);
 app.get("/getSellerById/:sellerId",getSellerById);
 app.delete("/removeFromWishlist",removeFromWishlist);
+app.post("/BookmarkAttraction",BookmarkAttraction);
