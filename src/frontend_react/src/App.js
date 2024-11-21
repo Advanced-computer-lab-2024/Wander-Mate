@@ -29,7 +29,7 @@ import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
-
+import AddressCard from "./components/ui/addressCard";
 import CommentPage from "./pages/commentPage";
 function App() {
   return (
@@ -62,6 +62,7 @@ function App() {
         <Route path="pending" element={<Pending />} />
         <Route path="verifyOtp" element={<VerifyPage />} />
         <Route path="/comment" element={<CommentPage />} />
+        <Route path="/addressCard" element={<AddressCard />} />
       </Routes>
     </Router>
   );
