@@ -181,6 +181,7 @@ const {
   uploadPicturetourguide,
   gettourGuideImage,
   viewItineraryReport,
+  notifyTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -202,6 +203,7 @@ const {
   uploadPictureadvertiser,
   getadvertiserImage,
   viewActivityReport,
+  notifyAdvertiser,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -508,3 +510,5 @@ app.delete('/cancel-order/:touristId', cancelOrder);
 app.get("/getSellerById/:sellerId",getSellerById);
 app.delete("/removeFromWishlist",removeFromWishlist);
 app.post("/BookmarkAttraction",BookmarkAttraction);
+app.put("/notifyAdvertiser", notifyAdvertiser);
+app.put("/notifyTourGuide", notifyTourGuide);

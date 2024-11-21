@@ -21,6 +21,9 @@ const tourGuideModel = require("../Models/tourGuide.js");
 const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
 const PromoCode = require("../Models/promoCode.js");
+const attractions= require("../Models/attractions.js");
+const { notifyAdvertiser } = require("./AdvertiserController.js");
+const { notifyTourGuide } = require("./tourGuideController.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1105,7 +1108,7 @@ const flagEventOrItinerary = async (req, res) => {
       if (!updatedItem) {
         return res.status(404).json({ message: "Event not found." });
       }
-
+      await notifyAdvertiser(updatedItem.Creator, id);
       res.status(200).json({
         message: "Event flagged successfully.",
         updatedItem, // Return the updated item with the `isFlagged` field
@@ -1123,7 +1126,7 @@ const flagEventOrItinerary = async (req, res) => {
       if (!updatedItem) {
         return res.status(404).json({ message: "Itinerary not found." });
       }
-
+      await notifyTourGuide(updatedItem.Creator, id);
       res.status(200).json({
         message: "Itinerary flagged successfully.",
         updatedItem, // Return the updated item with the `isFlagged` field

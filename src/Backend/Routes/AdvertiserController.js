@@ -10,6 +10,7 @@ const TransportationModel = require("../Models/transportation.js");
 const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const jwt = require("jsonwebtoken");
+const Notification = require("../Models/notifications.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -561,6 +562,32 @@ const viewActivityReport = async (req, res) => {
   }
 };
 
+/////////////////////////////////////MARIO S3///////////////////////
+const notifyAdvertiser = async (advertiserId, eventId) => {
+  try {
+    const notificationMessage = "Your event has been flagged as inappropriate by the admin.";
+    
+    // Add the notification
+    const notification = await Notification.findOneAndUpdate(
+      { userID: advertiserId, userModel: "Advertiser" },
+      {
+        $push: {
+          notifications: {
+            aboutID: eventId,
+            aboutModel: "Attraction",
+            message: notificationMessage,
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log("Notification added for advertiser:", notification);
+  } catch (error) {
+    console.error("Error adding notification for advertiser:", error);
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -581,4 +608,5 @@ module.exports = {
   uploadPictureadvertiser,
   getadvertiserImage,
   viewActivityReport,
+  notifyAdvertiser,
 };
