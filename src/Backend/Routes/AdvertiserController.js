@@ -182,7 +182,7 @@ const createToken = (name) => {
 
 const createAdvertiser = async (req, res) => {
   try {
-    const { Username, Password, Email } = req.body;
+    const { Username, Password, Email, FullName } = req.body;
 
     // Check if Username, Password, and Email are provided
     if (!Username || !Password || !Email) {
@@ -206,6 +206,7 @@ const createAdvertiser = async (req, res) => {
       Username: Username,
       Password: hashedPassword,
       Email: Email,
+      FullName,
     });
 
     const userID = advertiser._id;

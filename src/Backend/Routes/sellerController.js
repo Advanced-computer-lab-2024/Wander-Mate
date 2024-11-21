@@ -41,7 +41,7 @@ const createToken = (name) => {
 
 const createSeller = async (req, res) => {
   try {
-    const { Username, Password, Email, Description } = req.body;
+    const { Username, Password, Email, Description, FullName } = req.body;
 
     // Check if Username, Password, and Email are provided
     if (!Username || !Password || !Email) {
@@ -67,6 +67,7 @@ const createSeller = async (req, res) => {
       Password: hashedPassword,
       Email: Email,
       Description: Description,
+      FullName,
     });
 
     const userID = seller._id;
@@ -258,6 +259,18 @@ const getSellers = async (req, res) => {
     res.status(200).json({ sellers });
   } catch {
     res.status(400).json({ message: "Error to get sellers" });
+  }
+};
+const getSellerById = async (req, res) => {
+  const { sellerId } = req.params; // Extract sellerId from request parameters
+  try {
+    const seller = await sellerModel.findById(sellerId).select("-Password"); // Fetch seller info excluding Password
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+    res.status(200).json({ seller });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching seller information", error: error.message });
   }
 };
 
@@ -541,4 +554,5 @@ module.exports = {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
+  getSellerById
 };

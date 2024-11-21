@@ -83,7 +83,8 @@ const {
   getDeliveryAddresses,
   addToWishlist,
   removeFromCart,
-  viewMyWishlist
+  viewMyWishlist,
+  cancelOrder,
 } = require("./Routes/touristController");
 
 const {
@@ -105,6 +106,7 @@ const {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
+  getSellerById
 } = require("./Routes/sellerController.js");
 
 const {
@@ -500,3 +502,5 @@ app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
 app.post("/addToWishlist",addToWishlist);
 app.post("/removeFromCart",removeFromCart);
 app.get("/viewMyWishlist/:touristId",viewMyWishlist);
+app.delete('/cancel-order/:touristId', cancelOrder);
+app.get("/getSellerById/:sellerId",getSellerById);

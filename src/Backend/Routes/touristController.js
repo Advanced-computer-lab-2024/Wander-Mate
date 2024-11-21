@@ -2278,6 +2278,38 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
+const cancelOrder = async (req, res) => {
+  const { touristId } = req.params; // Get touristId from the route parameter
+
+  if (!touristId) {
+    return res.status(400).json({ message: "Missing required parameter: touristId" });
+  }
+
+  try {
+    // Find the cart by touristID
+    const cart = await Cart.findOne({ touristID: touristId });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Clear all items and reset subtotal
+    cart.items = [];
+    cart.subtotal = 0;
+
+    // Save the updated cart
+    await cart.save();
+
+    return res.status(200).json({ message: "Cart emptied successfully", cart });
+  } catch (error) {
+    return res.status(500).json({ message: "Error emptying the cart", error: error.message });
+  }
+};
+
+
+
+
+
 const addToWishlist = async (req, res) => {
   const { touristId, productId } = req.body;
 
@@ -2411,5 +2443,6 @@ module.exports = {
   getDeliveryAddresses,
   addToWishlist,
   removeFromCart,
-  viewMyWishlist
+  viewMyWishlist,
+  cancelOrder,
 };
