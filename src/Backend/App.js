@@ -103,6 +103,7 @@ const {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
+  getSellerById
 } = require("./Routes/sellerController.js");
 
 const {
@@ -496,3 +497,4 @@ app.post("/applyPromoCode/:touristId", applyPromoCode);
 app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
 app.post("/removeFromCart",removeFromCart);
+app.get("/getSellerById/:sellerId",getSellerById);
