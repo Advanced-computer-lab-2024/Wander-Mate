@@ -85,6 +85,7 @@ const {
   removeFromCart,
   viewMyWishlist,
   cancelOrder,
+  removeFromWishlist,
 } = require("./Routes/touristController");
 
 const {
@@ -504,3 +505,4 @@ app.post("/removeFromCart",removeFromCart);
 app.get("/viewMyWishlist/:touristId",viewMyWishlist);
 app.delete('/cancel-order/:touristId', cancelOrder);
 app.get("/getSellerById/:sellerId",getSellerById);
+app.delete("/removeFromWishlist",removeFromWishlist);
