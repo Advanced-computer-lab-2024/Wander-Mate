@@ -2376,7 +2376,50 @@ const viewMyWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const removeFromWishlist = async (req, res) => {
+  const { touristId, productId } = req.body; // Get touristId and productId from the request body
 
+  try {
+    // Validate input
+    if (!touristId || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Product ID are required." });
+    }
+
+    // Find the wishlist for the given tourist ID
+    const wishlist = await Wishlist.findOne({ userId: touristId });
+
+    if (!wishlist) {
+      return res
+        .status(404)
+        .json({ message: "Wishlist not found for this tourist." });
+    }
+
+    // Check if the product exists in the wishlist
+    const productIndex = wishlist.products.indexOf(productId);
+
+    if (productIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Product not found in the wishlist." });
+    }
+
+    // Remove the product from the wishlist
+    wishlist.products.splice(productIndex, 1);
+
+    // Save the updated wishlist
+    await wishlist.save();
+
+    res.status(200).json({
+      message: "Product removed from wishlist successfully.",
+      wishlist: wishlist.products, // Return the updated wishlist
+    });
+  } catch (error) {
+    console.error("Error removing product from wishlist:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = {
   touristRegister,
@@ -2445,4 +2488,5 @@ module.exports = {
   removeFromCart,
   viewMyWishlist,
   cancelOrder,
+  removeFromWishlist,
 };
