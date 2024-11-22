@@ -2,6 +2,8 @@ const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
@@ -2039,6 +2041,33 @@ const assignBirthdayPromo = async () => {
     }
   }
 };
+
+const PayByCard = async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+      throw new Error('Amount and currency are required');
+    }
+
+    // Create a PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount, // Ensure amount is in the smallest unit (e.g., cents)
+      currency,
+      payment_method_types: ['card'], // Specify card as the payment method
+    });
+
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    console.error('Stripe Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+////////////////////////////Nadeem Sprint 3///////////////////////////
+
+
 const removeFromCart = async (req, res) => {
   const { touristID, productId, attributes } = req.body;
 
@@ -2189,8 +2218,8 @@ const addItemToCart = async (req, res) => {
 
 const addWishlistItemToCart = async (req, res) => {
   const { touristID, productId, quantity } = req.body;
-  try{
-     // Validate input
+  try {
+    // Validate input
     if (!touristID || !productId) {
       return res
         .status(400)
@@ -2238,7 +2267,7 @@ const addWishlistItemToCart = async (req, res) => {
     if (existingItem) {
       // Increment the quantity if the same product with the same attributes exists
       existingItem.quantity += productQuantity;
-    }else{
+    } else {
       cart.items.push({
         productId: product._id,
         name: product.name,
@@ -2255,7 +2284,7 @@ const addWishlistItemToCart = async (req, res) => {
       cart: cart.items, // Optionally return the updated cart
     });
 
-  }catch(error){
+  } catch (error) {
     console.error("Error adding wishlist item to cart:", error);
     res
       .status(500)
@@ -2572,10 +2601,10 @@ const viewOrderDetails = async (req, res) => {
       return res.status(400).json({ error: "Order number is required." });
     }
 
-    
+
 
     // Fetch the specific order by orderNumber and username
-    const order = await ordermodel.findById({ OrderId});
+    const order = await ordermodel.findById({ OrderId });
     if (!order) {
       return res.status(404).json({ error: "Order with number ${OrderId} not found." });
     }
@@ -2587,8 +2616,8 @@ const viewOrderDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving order details:", error);
-    res.status(500).json({ error: "Failed to retrieve order details." });
-  }
+    res.status(500).json({ error: "Failed to retrieve order details." });
+  }
 };
 
 const requestToBeNotified = async (req, res) => {
@@ -2692,5 +2721,6 @@ module.exports = {
   addWishlistItemToCart,
   viewOrderDetails,
   requestToBeNotified,
+  PayByCard,
   ViewBookmarkedAttractions,
 };
