@@ -1168,7 +1168,7 @@ const viewAllTransportations = async (req, res) => {
 
 const bookTransportation = async (req, res) => {
   try {
-    const { itemId, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
+    const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
     // Check if the transportation option exists and is available
     const transportation = await TransportationModel.findById(itemId);
     if (!transportation || !transportation.availability) {
