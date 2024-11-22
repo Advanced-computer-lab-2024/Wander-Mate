@@ -32,8 +32,15 @@ export default function PlaceCard({
   const place = {
     placeId,
     name,
-    image: images.length > 0 ? (images[0].data ? `data:${images[0].contentType};base64,${images[0].data}` : images[0]) : '/placeholder.svg?height=300&width=300',
-    images: images.map(img => img.data ? `data:${img.contentType};base64,${img.data}` : img),
+    image:
+      images.length > 0
+        ? images[0].data
+          ? `data:${images[0].contentType};base64,${images[0].data}`
+          : images[0]
+        : "/placeholder.svg?height=300&width=300",
+    images: images.map((img) =>
+      img.data ? `data:${img.contentType};base64,${img.data}` : img
+    ),
     description,
     category,
     ratings,
@@ -47,7 +54,10 @@ export default function PlaceCard({
 
   return (
     <PlaceModal place={place} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
-      <Card className="p-4 rounded-md cursor-pointer" onClick={() => setIsModalOpen(true)}>
+      <Card
+        className="p-4 rounded-md cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+      >
         <div className="relative h-[191px] mb-3 rounded-md overflow-hidden">
           <Carousel>
             <CarouselContent>
@@ -57,7 +67,11 @@ export default function PlaceCard({
                     <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
                       <img
                         className="max-h-[191px] w-auto object-cover transition-all duration-300"
-                        src={image.data ? `data:${image.contentType};base64,${image.data}` : image}
+                        src={
+                          image.data
+                            ? `data:${image.contentType};base64,${image.data}`
+                            : image
+                        }
                         alt={`${name} image ${index + 1}`}
                       />
                     </div>
@@ -66,7 +80,11 @@ export default function PlaceCard({
               ) : (
                 <CarouselItem>
                   <div className="flex items-center justify-center h-full">
-                    <img src="/placeholder.svg?height=191&width=191" alt="Placeholder" className="max-h-[191px] w-auto" />
+                    <img
+                      src="/placeholder.svg?height=191&width=191"
+                      alt="Placeholder"
+                      className="max-h-[191px] w-auto"
+                    />
                   </div>
                 </CarouselItem>
               )}
@@ -106,9 +124,7 @@ export default function PlaceCard({
                 }`}
               />
             ))}
-            <span className="ml-2 text-sm text-gray-600">
-              {ratings}
-            </span>
+            <span className="ml-2 text-sm text-gray-600">{ratings}</span>
           </div>
           <Button
             className="w-full"

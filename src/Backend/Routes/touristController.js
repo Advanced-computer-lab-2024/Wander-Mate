@@ -2143,6 +2143,27 @@ const BookmarkAttraction = async (req, res) => {
     return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
+const ViewBookmarkedAttractions = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing userId" });
+  }
+
+  try {
+    const user = await userModel.findById(userId).populate("bookmarkedAttractions");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ bookmarkedAttractions: user.bookmarkedAttractions });
+  } catch (error) {
+    console.error("Error retrieving bookmarked attractions:", error);
+    return res.status(500).json({ message: "Error retrieving bookmarked attractions", error: error.message });
+  }
+};
+
 
 
 const addItemToCart = async (req, res) => {
@@ -2701,4 +2722,5 @@ module.exports = {
   viewOrderDetails,
   requestToBeNotified,
   PayByCard,
+  ViewBookmarkedAttractions,
 };
