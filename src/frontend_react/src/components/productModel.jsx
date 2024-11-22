@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent } from "./ui/card";
+import { Toaster, toast } from "react-hot-toast";
 import {
   CustomPopover as Popover,
   PopoverTrigger,
@@ -11,12 +12,29 @@ import {
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function ProductModal({ product, isOpen, setIsOpen, children }) {
+export default function ProductModal({
+  product,
+  isOpen,
+  setIsOpen,
+  children,
+  quantity,
+  isAdded: initialIsAdded,
+  count: initialCount,
+}) {
   const [reviews, setReviews] = useState([]);
-  const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isAdded, setIsAdded] = useState(initialIsAdded);
+  const navigate = useNavigate();
+  const goToCart = () => {
+    navigate("/cart");
+  };
+  useEffect(() => {
+    setCount(initialCount);
+    setIsAdded(initialIsAdded);
+  }, [initialCount, initialIsAdded]);
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
@@ -36,6 +54,7 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
       }
     }
   };
+  const isInStock = () => quantity > 0;
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -68,6 +87,7 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
 
   const handleAddToCart = async () => {
     setIsAdded(true);
+    if (!isInStock()) return;
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
@@ -86,7 +106,29 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
     }
   };
 
+  const handleNotifyMe = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const response = await axios.post(`http://localhost:8000/notifyMe`, {
+        //still to be made in the backend
+        username,
+        productId: product.productId,
+      });
+      toast("You will be notified when product is back in stock!", {
+        icon: "👏",
+        style: {
+          borderRadius: "10px",
+          background: "#826AF9",
+          color: "#fff",
+        },
+      });
+    } catch (error) {
+      console.error("Error signing up for notifications:", error);
+    }
+  };
+
   const incrementCount = async () => {
+    if (count >= quantity) return;
     setCount((prevCount) => prevCount + 1);
     try {
       const username = sessionStorage.getItem("username");
@@ -123,7 +165,14 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
 
     if (method === "link") {
       navigator.clipboard.writeText(shareUrl).then(() => {
-        alert("Link copied to clipboard!");
+        toast("Link copied to Clipboard!", {
+          icon: "👏",
+          style: {
+            borderRadius: "10px",
+            background: "#826AF9",
+            color: "#fff",
+          },
+        });
         setIsShareOpen(false);
       });
     } else if (method === "email") {
@@ -142,6 +191,7 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
       >
+        <Toaster />
         <div className="relative">
           <Button
             variant="ghost"
@@ -210,8 +260,18 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
                   {/* Product Details */}
                   <div className="space-y-2 mb-6">
                     <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Availability:</span> In
-                      Stock
+                      <span className="font-semibold">Availability:</span>{" "}
+                      <span
+                        className={`text-sm ${
+                          isInStock()
+                            ? "text-gray-500"
+                            : "text-red-500 font-semibold"
+                        }`}
+                      >
+                        {quantity !== 0
+                          ? `${quantity} in stock`
+                          : "Out of stock"}
+                      </span>
                     </p>
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Category:</span>{" "}
@@ -228,32 +288,56 @@ export default function ProductModal({ product, isOpen, setIsOpen, children }) {
                   {/* Add to Cart Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
                     {!isAdded ? (
-                      <Button className="flex-1" onClick={handleAddToCart}>
+                      <Button
+                        className="flex-1"
+                        onClick={isInStock() ? handleAddToCart : handleNotifyMe}
+                      >
                         <Icon
-                          icon="heroicons:shopping-bag"
+                          icon={
+                            isInStock()
+                              ? "heroicons:shopping-bag"
+                              : "heroicons:bell"
+                          }
                           className="w-4 h-4 mr-2"
                         />
-                        Add to Cart
+                        {isInStock()
+                          ? "Add to Cart"
+                          : "Notify Me When Available"}
                       </Button>
                     ) : (
-                      <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
-                        <button
-                          type="button"
-                          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-                          onClick={decrementCount}
-                        >
-                          <Icon icon="eva:minus-fill" />
-                        </button>
-                        <div className="flex-1 text-base py-2 flex items-center min-w-[45px] justify-center text-primary font-medium">
-                          {count}
+                      <div className="flex flex-wrap gap-4 mb-4">
+                        <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={decrementCount}
+                          >
+                            <Icon icon="eva:minus-fill" />
+                          </button>
+
+                          <div className="flex-1 text-base py-2 flex items-center min-w-[90px] justify-center text-primary font-medium">
+                            {count}
+                          </div>
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={incrementCount}
+                            disabled={count >= quantity}
+                          >
+                            <Icon icon="eva:plus-fill" />
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-                          onClick={incrementCount}
+                        <Button
+                          variant="outline"
+                          className="py-2 px-5 flex-none"
+                          onClick={goToCart}
                         >
-                          <Icon icon="eva:plus-fill" />
-                        </button>
+                          <Icon
+                            icon="heroicons:shopping-bag"
+                            className="w-4 h-4"
+                          />
+                          Added
+                        </Button>
                       </div>
                     )}
                     <Popover

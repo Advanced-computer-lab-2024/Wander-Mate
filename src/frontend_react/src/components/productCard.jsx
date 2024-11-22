@@ -5,6 +5,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import axios from "axios";
 import ProductModal from "./productModel";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({
   productId,
@@ -14,14 +15,23 @@ const ProductCard = ({
   price,
   discount,
   ratings,
-  reviews, 
+  reviews,
+  quantity,
 }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const goToCart = () => {
+    navigate("/cart");
+  };
+
+  const isInStock = () => quantity > 0;
 
   const handleAddToCart = async () => {
+    if (!isInStock()) return;
     console.log(reviews);
     setIsAdded(true);
     try {
@@ -36,6 +46,7 @@ const ProductCard = ({
         name,
         price,
         picture: image,
+        quantity: 1,
       });
     } catch (error) {
       console.error("Error adding to cart data:", error);
@@ -43,6 +54,7 @@ const ProductCard = ({
   };
 
   const incrementCount = async () => {
+    if (count >= quantity) return;
     setCount((prevCount) => prevCount + 1);
     try {
       const username = sessionStorage.getItem("username");
@@ -56,6 +68,7 @@ const ProductCard = ({
         name,
         price,
         picture: image,
+        quantity: 1,
       });
     } catch (error) {
       console.error("Error adding to cart data:", error);
@@ -90,6 +103,9 @@ const ProductCard = ({
       }}
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}
+      quantity={quantity}
+      isAdded={isAdded}
+      count={count}
     >
       <Card
         className="p-4 rounded-md cursor-pointer"
@@ -134,32 +150,36 @@ const ProductCard = ({
 
         <div>
           <div className="flex justify-between items-center mb-2">
-            <p className="text-xs text-secondary-foreground uppercase font-normal">
-              {ratings}
-            </p>
+            <p className="font-bold text-base mb-2">{name}</p>
             <span className="flex items-center text-secondary-foreground font-normal text-xs gap-x-1">
               <Icon icon="ph:star-fill" className="text-yellow-400" />
               <span>{ratings}</span>
             </span>
           </div>
-          <h6 className="text-secondary-foreground text-base font-medium mb-[6px] truncate"></h6>
-
-          <p className="font-bold text-base mb-2">{name}</p>
 
           <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
             {description}
           </p>
 
-          <p className="mb-4 space-x-4">
-            <span className="text-secondary-foreground text-base font-medium mt-2">
-              ${price}
-            </span>
-            {discount && (
-              <del className="text-default-500 dark:text-default-500 font-normal text-base">
-                ${price + (price * discount) / 100}
-              </del>
-            )}
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="space-x-4">
+              <span className="text-secondary-foreground text-base font-medium">
+                ${price}
+              </span>
+              {discount && (
+                <del className="text-default-500 dark:text-default-500 font-normal text-base">
+                  ${price + (price * discount) / 100}
+                </del>
+              )}
+            </p>
+            <p
+              className={`text-sm ${
+                isInStock() ? "text-gray-500" : "text-red-500 font-semibold"
+              }`}
+            >
+              {isInStock() ? `${quantity} in stock` : "Out of stock"}
+            </p>
+          </div>
 
           {!isAdded ? (
             <Button
@@ -167,14 +187,20 @@ const ProductCard = ({
               variant="outline"
               onClick={(e) => {
                 e.stopPropagation();
-                handleAddToCart();
+                if (isInStock()) {
+                  handleAddToCart();
+                } else {
+                  // Implement notify me functionality here
+                  console.log("Notify me when available");
+                  // You can add a function to handle the notification sign-up
+                }
               }}
             >
               <Icon
-                icon="heroicons:shopping-bag"
+                icon={isInStock() ? "heroicons:shopping-bag" : "heroicons:bell"}
                 className="w-4 h-4 ltr:mr-2 rtl:ml-2"
               />
-              Add to Cart
+              {isInStock() ? "Add to Cart" : "Notify Me When Available"}
             </Button>
           ) : (
             <div className="flex flex-wrap gap-4">
@@ -200,6 +226,7 @@ const ProductCard = ({
                     e.stopPropagation();
                     incrementCount();
                   }}
+                  disabled={count >= quantity}
                 >
                   <Icon icon="eva:plus-fill" />
                 </button>
@@ -207,7 +234,7 @@ const ProductCard = ({
               <Button
                 variant="outline"
                 className="py-2 px-5 flex-none"
-                onClick={(e) => e.stopPropagation()}
+                onClick={goToCart}
               >
                 <Icon icon="heroicons:shopping-bag" className="w-4 h-4" />
                 Added

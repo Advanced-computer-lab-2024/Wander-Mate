@@ -216,6 +216,7 @@ const Products = () => {
               ratings={product.ratings}
               reviews={product.reviews}
               image={`http://localhost:8000/products/${product._id}/image`}
+              quantity={product.quantity}
             />
           ))
         ) : (
