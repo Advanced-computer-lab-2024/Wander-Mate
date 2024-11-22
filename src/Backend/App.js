@@ -89,6 +89,7 @@ const {
   addWishlistItemToCart,
   viewOrderDetails,
   requestToBeNotified,
+  ViewBookmarkedAttractions,
 } = require("./Routes/touristController");
 
 const {
@@ -517,3 +518,4 @@ app.post("/BookmarkAttraction",BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
 app.post('/requestToBeNotified', requestToBeNotified);
+app.get("/ViewBookmarkedAttractions",ViewBookmarkedAttractions);
