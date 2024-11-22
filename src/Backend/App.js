@@ -109,7 +109,7 @@ const {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
-  getSellerById
+  getSellerById,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -205,6 +205,7 @@ const {
   getadvertiserImage,
   viewActivityReport,
   notifyAdvertiser,
+  getAdvertiserById,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -240,8 +241,8 @@ mongoose
       //assignBirthdayPromo();
 
       // Schedule the function to run every day at midnight
-      cron.schedule('0 0 * * *', () => {
-        console.log('Running birthday promo assignment...');
+      cron.schedule("0 0 * * *", () => {
+        console.log("Running birthday promo assignment...");
         assignBirthdayPromo();
       });
     });
@@ -495,7 +496,11 @@ app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", upload.single("picture"), addItemToCart);
-app.post("/addWishlistItemToCart",upload.single("picture"),addWishlistItemToCart);
+app.post(
+  "/addWishlistItemToCart",
+  upload.single("picture"),
+  addWishlistItemToCart
+);
 app.post("/forgetPassword", forgetPassword);
 app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
@@ -503,15 +508,19 @@ app.get("/showCart/:touristID", showCart);
 app.post("/getReviews", getReviews);
 app.put("/payWithWallet", payWithWallet);
 app.post("/applyPromoCode/:touristId", applyPromoCode);
-app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
-app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
-app.post("/addToWishlist",addToWishlist);
-app.post("/removeFromCart",removeFromCart);
-app.get("/viewOrderDetails/:OrderId",viewOrderDetails);
-app.get("/viewMyWishlist/:touristId",viewMyWishlist);
-app.delete('/cancel-order/:orderId', cancelOrder);
-app.get("/getSellerById/:sellerId",getSellerById);
-app.delete("/removeFromWishlist",removeFromWishlist);
-app.post("/BookmarkAttraction",BookmarkAttraction);
+app.get(
+  "/viewPastActivitiesAndItineraries/:touristId",
+  viewPastActivitiesAndItineraries
+);
+app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
+app.post("/addToWishlist", addToWishlist);
+app.post("/removeFromCart", removeFromCart);
+app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
+app.get("/viewMyWishlist/:touristId", viewMyWishlist);
+app.delete("/cancel-order/:orderId", cancelOrder);
+app.get("/getSellerById/:sellerId", getSellerById);
+app.delete("/removeFromWishlist", removeFromWishlist);
+app.post("/BookmarkAttraction", BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
+app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);

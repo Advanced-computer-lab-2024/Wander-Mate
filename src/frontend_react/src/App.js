@@ -34,6 +34,7 @@ import CommentPage from "./pages/commentPage";
 import ProductSeller from "./pages/productSeller";
 import SellerProducts from "./pages/SellerProducts";
 import BasicMap from "./components/ui/basic-map";
+import Transportations from "./pages/transportations";
 function App() {
   return (
     <Router>
@@ -69,6 +70,7 @@ function App() {
         <Route path="/productSeller" element={<ProductSeller />} />
         <Route path="/sellerProducts" element={<SellerProducts />} />
         <Route path="/map" element={<BasicMap />} />
+        <Route path="/transportations" element={<Transportations />} />
       </Routes>
     </Router>
   );
