@@ -24,6 +24,7 @@ const Address = require("../Models/address.js");
 const PromoCode = require("../Models/promoCode.js");
 const Cart = require("../Models/cart.js");
 const Wishlist = require("../Models/whishlist.js");
+const ordermodel = require("../Models/order.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -1619,6 +1620,7 @@ const shareActivity = async (req, res) => {
   }
 };
 const nodemailer = require("nodemailer");
+const order = require("../Models/order.js");
 
 const shareItenerary = async (req, res) => {
   const { activityId, shareMethod, email } = req.body;
@@ -2537,6 +2539,33 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
+const viewOrderDetails = async (req, res) => {
+  const { OrderId } = req.params;
+
+  try {
+    if (!OrderId) {
+      return res.status(400).json({ error: "Order number is required." });
+    }
+
+    
+
+    // Fetch the specific order by orderNumber and username
+    const order = await ordermodel.findById({ OrderId});
+    if (!order) {
+      return res.status(404).json({ error: "Order with number ${OrderId} not found." });
+    }
+
+    // Respond with the specific order details
+    res.status(200).json({
+      msg: "Order details retrieved successfully.",
+      orderDetails: order,
+    });
+  } catch (error) {
+    console.error("Error retrieving order details:", error);
+    res.status(500).json({ error: "Failed to retrieve order details." });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2607,4 +2636,5 @@ module.exports = {
   removeFromWishlist,
   BookmarkAttraction,
   addWishlistItemToCart,
+  viewOrderDetails,
 };
