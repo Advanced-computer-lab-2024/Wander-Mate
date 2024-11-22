@@ -140,47 +140,54 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                       />
                     ))}
                     <span className="ml-2 text-sm text-gray-600">
-                      ({place.ratings})
+                      {place.ratings}
                     </span>
                   </div>
-                {/* Place Details */}
-                <div className="space-y-2 mb-6">
-                <p className="text-sm text-gray-600">
-                    <span className="font-semibold">Location:</span> {place.location}
-                    {/* New Button to Open Google Maps */}
-                    <Button
-                    variant="outline"
-                    className="ml-4"
-                    onClick={() => {
-                        const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
-                        window.open(mapUrl, "_blank");
-                    }}
-                    >
-                    <Icon icon="heroicons:location-marker" className="w-4 h-4 mr-2" />
-                    Open in Google Maps
-                    </Button>
-                </p>
-                <p className="text-sm text-gray-600">
-                    <span className="font-semibold">Category:</span> {place.category}
-                </p>
-                <p className="text-sm text-gray-600">
-                    <span className="font-semibold">Best Time to Visit:</span> {place.bestTimeToVisit}
-                </p>
-                </div>
-
-                  <p className="text-gray-600 mb-6">{place.description}</p>
-
+                  {/* Place Details */}
+                  <div className="space-y-2 mb-6">
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Location:</span>{" "}
+                      {place.location}
+                      {/* New Button to Open Google Maps */}
+                      <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => {
+                          const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
+                          window.open(mapUrl, "_blank");
+                        }}
+                      >
+                        <Icon
+                          icon="heroicons:location-marker"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Open in Google Maps
+                      </Button>
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Category:</span>{" "}
+                      {place.category}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Ticket Prices:</span>{" "}
+                      {place.TicketPrices}
+                    </p>
+                  </div>
                   {/* Favorite Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
                     <Button
-                      className={`flex-1 ${isFavorite ? 'bg-red-500 hover:bg-red-600' : ''}`}
+                      className={`flex-1 ${
+                        isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                      }`}
                       onClick={handleToggleFavorite}
                     >
                       <Icon
                         icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
                         className="w-4 h-4 mr-2"
                       />
-                      {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                      {isFavorite
+                        ? "Remove from Favorites"
+                        : "Add to Favorites"}
                     </Button>
                     <Popover
                       open={isShareOpen}
@@ -238,7 +245,9 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
-                <TabsTrigger value="attractions">Nearby Attractions</TabsTrigger>
+                <TabsTrigger value="attractions">
+                  Nearby Attractions
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="info" className="mt-4">
                 <Card>
@@ -276,7 +285,9 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                 <Card>
                   <CardContent className="p-6">
                     <p className="text-gray-600">
-                      {place.nearbyAttractions ? place.nearbyAttractions : "No nearby attractions information available."}
+                      {place.nearbyAttractions
+                        ? place.nearbyAttractions
+                        : "No nearby attractions information available."}
                     </p>
                   </CardContent>
                 </Card>

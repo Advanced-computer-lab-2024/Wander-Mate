@@ -10,6 +10,7 @@ const TransportationModel = require("../Models/transportation.js");
 const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const jwt = require("jsonwebtoken");
+const Notification = require("../Models/notifications.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -211,7 +212,12 @@ const createAdvertiser = async (req, res) => {
 
     const userID = advertiser._id;
     //add to usermodel
-    await userModel.create({ Username: Username, userID, Type: "Advertiser", Email });
+    await userModel.create({
+      Username: Username,
+      userID,
+      Type: "Advertiser",
+      Email,
+    });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -389,7 +395,14 @@ const changePasswordAdvertiser = async (req, res) => {
 const addTransportation = async (req, res) => {
   try {
     // Destructure transportation fields from the request body
-    const { advertiserID, availability } = req.body;
+    const {
+      advertiserID,
+      availability,
+      destination,
+      startPlace,
+      price,
+      vehicleType,
+    } = req.body;
 
     // Basic validation
     if (!advertiserID) {
@@ -410,6 +423,10 @@ const addTransportation = async (req, res) => {
     const transportation = await TransportationModel.create({
       advertiserId: advertiserID, // Link transportation to the advertiser
       availability: isAvailable, // Set availability as boolean
+      destination,
+      startPlace,
+      price,
+      vehicleType,
     });
 
     // Respond with success and the transportation data
@@ -546,18 +563,50 @@ const viewActivityReport = async (req, res) => {
     const activities = await attractionModel.find({ Creator: advertiserID });
 
     // Map through activities to calculate the number of tourists for each
-    const report = await Promise.all(activities.map(async (activity) => {
-      const bookings = await bookingSchema.find({ itemId: activity._id, itemModel: "Attraction" });
-      return {
-        activityName: activity.Name,
-        totalTourists: bookings.length,
-      };
-    }));
+    const report = await Promise.all(
+      activities.map(async (activity) => {
+        const bookings = await bookingSchema.find({
+          itemId: activity._id,
+          itemModel: "Attraction",
+        });
+        return {
+          activityName: activity.Name,
+          totalTourists: bookings.length,
+        };
+      })
+    );
 
     res.status(200).json({ report });
   } catch (error) {
     console.error("Error generating activity usage report:", error);
     res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+/////////////////////////////////////MARIO S3///////////////////////
+const notifyAdvertiser = async (advertiserId, eventId) => {
+  try {
+    const notificationMessage =
+      "Your event has been flagged as inappropriate by the admin.";
+
+    // Add the notification
+    const notification = await Notification.findOneAndUpdate(
+      { userID: advertiserId, userModel: "Advertiser" },
+      {
+        $push: {
+          notifications: {
+            aboutID: eventId,
+            aboutModel: "Attraction",
+            message: notificationMessage,
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log("Notification added for advertiser:", notification);
+  } catch (error) {
+    console.error("Error adding notification for advertiser:", error);
   }
 };
 
@@ -581,4 +630,5 @@ module.exports = {
   uploadPictureadvertiser,
   getadvertiserImage,
   viewActivityReport,
+  notifyAdvertiser,
 };

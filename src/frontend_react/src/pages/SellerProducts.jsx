@@ -1,48 +1,63 @@
-import { useState, useEffect } from "react";
-import ProductCard from "../components/productCard";
-import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
-import { Slider } from "../components/ui/slider";
-import { Input } from "../components/ui/input";
+'use client'
+
+import { useState, useEffect } from "react"
+import ProductCard from "../components/productCard"
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton"
+import { Slider } from "../components/ui/slider"
+import { Input } from "../components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Label } from "../components/ui/label";
-import { Card, CardContent } from "../components/ui/card";
-import { Search, ArrowUpDown } from "lucide-react";
-import { Button } from "../components/ui/button";
+} from "../components/ui/select"
+import { Label } from "../components/ui/label"
+import { Card, CardContent } from "../components/ui/card"
+import { Search, ArrowUpDown } from 'lucide-react'
+import { Button } from "../components/ui/button"
 
-const Products = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [sortCriteria, setSortCriteria] = useState("rating");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [allProducts, setAllProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function SellerProducts() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [minPrice, setMinPrice] = useState(0)
+  const [maxPrice, setMaxPrice] = useState(1000)
+  const [sortCriteria, setSortCriteria] = useState("rating")
+  const [sortOrder, setSortOrder] = useState("desc")
+  const [allProducts, setAllProducts] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8000/viewSellerProducts");
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const sellerId = userID
+      if (!sellerId) {
+        console.error("Seller ID not found in session storage")
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch("http://localhost:8000/viewSellerProducts")
       if (response.ok) {
-        const products = await response.json();
-        setAllProducts(products);
-        setFilteredProducts(products);
+        const products = await response.json()
+        console.log(products)
+        const sellerProducts = products.filter(product => product.seller === sellerId)
+        setAllProducts(sellerProducts)
+        setFilteredProducts(sellerProducts)
       } else {
-        console.error("Failed to fetch products:", response.statusText);
+        console.error("Failed to fetch products:", response.statusText)
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching products:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleFilterAndSort = () => {
     let updatedProducts = allProducts
@@ -56,47 +71,53 @@ const Products = () => {
         if (sortCriteria === "rating") {
           return sortOrder === "asc"
             ? a.ratings - b.ratings
-            : b.ratings - a.ratings;
+            : b.ratings - a.ratings
         }
         if (sortCriteria === "price") {
-          return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+          return sortOrder === "asc" ? a.price - b.price : b.price - a.price
         }
-        return 0;
-      });
-    setFilteredProducts(updatedProducts);
-  };
+        return 0
+      })
+    setFilteredProducts(updatedProducts)
+  }
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
   useEffect(() => {
-    handleFilterAndSort();
-  }, [searchTerm, minPrice, maxPrice, sortCriteria, sortOrder, allProducts]);
+    handleFilterAndSort()
+  }, [searchTerm, minPrice, maxPrice, sortCriteria, sortOrder, allProducts])
 
-  const handleSearch = (e) => setSearchTerm(e.target.value);
-  const handleSortChange = (value) => setSortCriteria(value);
+  const handleSearch = (e) => setSearchTerm(e.target.value)
+  const handleSortChange = (value) => setSortCriteria(value)
   const handleSortOrderToggle = () =>
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
   const handlePriceRangeChange = (value) => {
-    setPriceRange(value);
-    setMinPrice(value[0]);
-    setMaxPrice(value[1]);
-  };
+    setPriceRange(value)
+    setMinPrice(value[0])
+    setMaxPrice(value[1])
+  }
   const handleMinPriceChange = (e) => {
-    const value = Number(e.target.value);
-    setMinPrice(value);
-    setPriceRange([value, maxPrice]);
-  };
+    const value = Number(e.target.value)
+    setMinPrice(value)
+    setPriceRange([value, maxPrice])
+  }
   const handleMaxPriceChange = (e) => {
-    const value = Number(e.target.value);
-    setMaxPrice(value);
-    setPriceRange([minPrice, value]);
-  };
+    const value = Number(e.target.value)
+    setMaxPrice(value)
+    setPriceRange([minPrice, value])
+  }
+  const handleNewProduct = () => {
+    // Add your logic here to handle creating a new product
+    console.log("New Product button clicked")
+    // For example, you could navigate to a new product page:
+    // router.push('/new-product')
+  }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
+      <h1 className="text-3xl font-bold mb-6">Your Products</h1>
       <Card className="mb-8">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -111,6 +132,7 @@ const Products = () => {
               />
             </div>
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <Button onClick={handleNewProduct} className="mt-6">New Product</Button>
               <div className="w-full md:w-64">
                 <Label
                   htmlFor="price-range"
@@ -207,7 +229,6 @@ const Products = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Products;

@@ -9,6 +9,7 @@ const TourGuide = require("../Models/tourGuide.js");
 const RatingsModel = require("../Models/rating.js");
 const bookingSchema = require("../Models/bookings.js");
 const jwt = require("jsonwebtoken");
+const Notification = require("../Models/notifications.js");
 
 // Creating a tourGuide
 
@@ -589,6 +590,30 @@ const viewItineraryReport = async (req, res) => {
   }
 };
 
+const notifyTourGuide = async (tourGuideId, itineraryId) => {
+  try {
+    const notificationMessage = "Your itinerary has been flagged as inappropriate by the admin.";
+
+    // Add the notification
+    const notification = await Notification.findOneAndUpdate(
+      { userID: tourGuideId, userModel: "TourGuide" },
+      {
+        $push: {
+          notifications: {
+            aboutID: itineraryId,
+            aboutModel: "Itinerary",
+            message: notificationMessage,
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log("Notification added for tour guide:", notification);
+  } catch (error) {
+    console.error("Error adding notification for tour guide:", error);
+  }
+};
 
 module.exports = {
   createTourGuide,
@@ -609,4 +634,5 @@ module.exports = {
   uploadPicturetourguide,
   gettourGuideImage,
   viewItineraryReport,
+  notifyTourGuide,
 };

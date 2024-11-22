@@ -55,7 +55,6 @@ const {
   calculateLoyaltyPoints,
   viewMyComplaints,
   // updateProductReviews,
-  // // BookHotel,
   redeemPoints,
   searchHotel,
   searchHotellocation,
@@ -87,6 +86,9 @@ const {
   cancelOrder,
   removeFromWishlist,
   BookmarkAttraction,
+  addWishlistItemToCart,
+  viewOrderDetails,
+  requestToBeNotified,
 } = require("./Routes/touristController");
 
 const {
@@ -181,6 +183,7 @@ const {
   uploadPicturetourguide,
   gettourGuideImage,
   viewItineraryReport,
+  notifyTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -202,6 +205,7 @@ const {
   uploadPictureadvertiser,
   getadvertiserImage,
   viewActivityReport,
+  notifyAdvertiser,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -492,6 +496,7 @@ app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", upload.single("picture"), addItemToCart);
+app.post("/addWishlistItemToCart",upload.single("picture"),addWishlistItemToCart);
 app.post("/forgetPassword", forgetPassword);
 app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
@@ -503,8 +508,12 @@ app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndIti
 app.get("/getDeliveryAddresses/:touristId",getDeliveryAddresses);
 app.post("/addToWishlist",addToWishlist);
 app.post("/removeFromCart",removeFromCart);
+app.get("/viewOrderDetails/:OrderId",viewOrderDetails);
 app.get("/viewMyWishlist/:touristId",viewMyWishlist);
-app.delete('/cancel-order/:touristId', cancelOrder);
+app.delete('/cancel-order/:orderId', cancelOrder);
 app.get("/getSellerById/:sellerId",getSellerById);
 app.delete("/removeFromWishlist",removeFromWishlist);
 app.post("/BookmarkAttraction",BookmarkAttraction);
+app.put("/notifyAdvertiser", notifyAdvertiser);
+app.put("/notifyTourGuide", notifyTourGuide);
+app.post('/requestToBeNotified', requestToBeNotified);

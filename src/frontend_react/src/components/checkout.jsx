@@ -27,7 +27,7 @@ import { cn } from "../lib/utils";
 import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
-const CheckOut = ({ touristID, amount }) => {
+const CheckOut = ({ touristID, amount, disabled }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3); // Default step count
@@ -75,7 +75,7 @@ const CheckOut = ({ touristID, amount }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="w-full text-white py-2 rounded mt-4">
+          <Button className="w-full text-white py-2 rounded mt-4" disabled={disabled}>
             Checkout
           </Button>
         </DialogTrigger>

@@ -1,8 +1,19 @@
-import { useState, useEffect } from "react";
-import ProductCard from "../components/productCard";
-import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
-import { Slider } from "../components/ui/slider";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Button } from "../components/ui/button";
+import { Icon } from "@iconify/react";
 import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Slider } from "../components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -10,39 +21,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Label } from "../components/ui/label";
-import { Card, CardContent } from "../components/ui/card";
 import { Search, ArrowUpDown } from "lucide-react";
-import { Button } from "../components/ui/button";
+import ProductCard from "../components/productCard";
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
+import { Skeleton } from "../components/ui/skeleton";
 
-const Products = () => {
+export default function SellerPage() {
+  const [sellerInfo, setSellerInfo] = useState(null);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const location = useLocation();
+  const sellerId = location.state?.sellerId;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
   const [sortCriteria, setSortCriteria] = useState("rating");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [allProducts, setAllProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (sellerId) {
+        try {
+          setIsLoading(true);
+          const [sellerResponse, productsResponse] = await Promise.all([
+            axios.get(`http://localhost:8000/getSellerById/${sellerId}`),
+            axios.get("http://localhost:8000/viewSellerProducts"),
+          ]);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/viewSellerProducts");
-      if (response.ok) {
-        const products = await response.json();
-        setAllProducts(products);
-        setFilteredProducts(products);
+          setSellerInfo(sellerResponse.data.seller);
+          const sellerProducts = productsResponse.data.filter(
+            (product) => product.seller === sellerId
+          );
+          setAllProducts(sellerProducts);
+          setFilteredProducts(sellerProducts);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setError(
+            "Failed to load seller information and products. Please try again later."
+          );
+        } finally {
+          setIsLoading(false);
+        }
       } else {
-        console.error("Failed to fetch products:", response.statusText);
+        setError("No seller ID provided. Please go back and try again.");
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchData();
+  }, [sellerId]);
+
+  useEffect(() => {
+    handleFilterAndSort();
+  }, [searchTerm, minPrice, maxPrice, sortCriteria, sortOrder, allProducts]);
 
   const handleFilterAndSort = () => {
     let updatedProducts = allProducts
@@ -66,14 +101,6 @@ const Products = () => {
     setFilteredProducts(updatedProducts);
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    handleFilterAndSort();
-  }, [searchTerm, minPrice, maxPrice, sortCriteria, sortOrder, allProducts]);
-
   const handleSearch = (e) => setSearchTerm(e.target.value);
   const handleSortChange = (value) => setSortCriteria(value);
   const handleSortOrderToggle = () =>
@@ -94,9 +121,72 @@ const Products = () => {
     setPriceRange([minPrice, value]);
   };
 
+  const getImageSrc = (picture) => {
+    if (picture && picture.data && picture.contentType) {
+      const base64String =
+        typeof picture.data === "string"
+          ? picture.data
+          : btoa(String.fromCharCode.apply(null, new Uint8Array(picture.data)));
+      return `data:${picture.contentType};base64,${base64String}`;
+    }
+    return null;
+  };
+
+  const getInitials = (name) => {
+    return name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : "";
+  };
+
+  const SellerInfoSkeleton = () => (
+    <Card className="mb-8">
+      <CardContent className="flex items-center space-x-4 pt-6">
+        <Skeleton className="h-24 w-24 rounded-full" />
+        <div>
+          <Skeleton className="h-8 w-48 mb-2" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
+      {isLoading ? (
+        <SellerInfoSkeleton />
+      ) : (
+        <Card className="mb-8">
+          <CardContent className="flex items-center space-x-4 pt-6">
+            <Avatar className="h-24 w-24">
+              <AvatarImage
+                src={getImageSrc(sellerInfo.picture)}
+                alt={sellerInfo.FullName}
+              />
+              <AvatarFallback>
+                {getInitials(sellerInfo.FullName)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-bold">{sellerInfo.FullName}</h1>
+              <p className="text-gray-500">{sellerInfo.email}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <h2 className="text-xl font-bold mb-6">Seller's Products</h2>
       <Card className="mb-8">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -181,7 +271,7 @@ const Products = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: 6 }).map((_, index) => (
             <ECommerceDefaultSkeleton key={index} />
           ))
@@ -208,6 +298,4 @@ const Products = () => {
       </div>
     </div>
   );
-};
-
-export default Products;
+}

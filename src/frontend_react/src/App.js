@@ -31,6 +31,10 @@ import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
 import AddressCard from "./components/ui/addressCard";
 import CommentPage from "./pages/commentPage";
+import ProductSeller from "./pages/productSeller";
+import SellerProducts from "./pages/SellerProducts";
+import BasicMap from "./components/ui/basic-map";
+import CreatePlace from "./components/createPlace";
 function App() {
   return (
     <Router>
@@ -63,6 +67,10 @@ function App() {
         <Route path="verifyOtp" element={<VerifyPage />} />
         <Route path="/comment" element={<CommentPage />} />
         <Route path="/addressCard" element={<AddressCard />} />
+        <Route path="/productSeller" element={<ProductSeller />} />
+        <Route path="/sellerProducts" element={<SellerProducts />} />
+        <Route path="/map" element={<BasicMap />} />
+        <Route path="/createPlace" element={<CreatePlace />} />
       </Routes>
     </Router>
   );

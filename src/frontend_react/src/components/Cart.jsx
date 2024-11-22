@@ -137,7 +137,11 @@ export default function ShoppingCart() {
                   <span>${subtotal + 20}</span>
                 </div>
               </div>
-              <CheckOut touristID={ID} amount={subtotal} />
+              <CheckOut
+                touristID={ID}
+                amount={subtotal}
+                disabled={cartItems.length === 0}
+              />
             </div>
           </div>
         </div>

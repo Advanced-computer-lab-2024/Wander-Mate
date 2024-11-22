@@ -24,6 +24,7 @@ const Address = require("../Models/address.js");
 const PromoCode = require("../Models/promoCode.js");
 const Cart = require("../Models/cart.js");
 const Wishlist = require("../Models/whishlist.js");
+const ordermodel = require("../Models/order.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -1619,6 +1620,7 @@ const shareActivity = async (req, res) => {
   }
 };
 const nodemailer = require("nodemailer");
+const order = require("../Models/order.js");
 
 const shareItenerary = async (req, res) => {
   const { activityId, shareMethod, email } = req.body;
@@ -2164,6 +2166,84 @@ const addItemToCart = async (req, res) => {
   }
 };
 
+const addWishlistItemToCart = async (req, res) => {
+  const { touristID, productId, quantity } = req.body;
+  try{
+     // Validate input
+    if (!touristID || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Product ID are required." });
+    }
+    if (!quantity) {
+      quantity = 1;
+    }
+    let cart = await Cart.findOne({ touristID });
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
+
+    // Find the user's wishlist
+    let wishlist = await Wishlist.findOne({ userId: touristID });
+    if (!wishlist) {
+      return res
+        .status(404)
+        .json({ message: "Wishlist not found for the user." });
+    }
+
+    // Check if the product exists in the wishlist
+    if (!wishlist.products.includes(productId)) {
+      return res
+        .status(404)
+        .json({ message: "Product not found in wishlist." });
+    }
+    // Fetch product details (Assume `Product` is your product model)
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "Product details not found." });
+    }
+
+    // Default quantity to 1 if not provided
+    const productQuantity = quantity || 1;
+
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
+
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += productQuantity;
+    }else{
+      cart.items.push({
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        picture: product.picture,
+        quantity: productQuantity,
+        attributes: {}, // Add attributes if applicable
+
+      });
+    }
+    await cart.save();
+    res.status(200).json({
+      message: "Product added to cart from wishlist successfully.",
+      cart: cart.items, // Optionally return the updated cart
+    });
+
+  }catch(error){
+    console.error("Error adding wishlist item to cart:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+
+};
+
+
 const showCart = async (req, res) => {
   const { touristID } = req.params;
   try {
@@ -2316,33 +2396,37 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
-const cancelOrder = async (req, res) => {
-  const { touristId } = req.params; // Get touristId from the route parameter
 
-  if (!touristId) {
-    return res.status(400).json({ message: "Missing required parameter: touristId" });
+
+const cancelOrder = async (req, res) => {
+  const { orderId } = req.params; // Get orderId from the route parameter
+
+  if (!orderId) {
+    return res.status(400).json({ message: "Missing required parameter: orderId" });
   }
 
   try {
-    // Find the cart by touristID
-    const cart = await Cart.findOne({ touristID: touristId });
+    // Find the order by orderId
+    const order = await Order.findById(orderId);
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    // Clear all items and reset subtotal
-    cart.items = [];
-    cart.subtotal = 0;
+    // Check if the order status is not already cancelled (if needed)
+    if (order.status === 'cancelled') {
+      return res.status(400).json({ message: "Order is already cancelled" });
+    }
 
-    // Save the updated cart
-    await cart.save();
+    // Delete the order
+    await order.remove();
 
-    return res.status(200).json({ message: "Cart emptied successfully", cart });
+    return res.status(200).json({ message: "Order cancelled successfully", order });
   } catch (error) {
-    return res.status(500).json({ message: "Error emptying the cart", error: error.message });
+    return res.status(500).json({ message: "Error cancelling the order", error: error.message });
   }
 };
+
 
 
 
@@ -2459,6 +2543,62 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
+const viewOrderDetails = async (req, res) => {
+  const { OrderId } = req.params;
+
+  try {
+    if (!OrderId) {
+      return res.status(400).json({ error: "Order number is required." });
+    }
+
+    
+
+    // Fetch the specific order by orderNumber and username
+    const order = await ordermodel.findById({ OrderId});
+    if (!order) {
+      return res.status(404).json({ error: "Order with number ${OrderId} not found." });
+    }
+
+    // Respond with the specific order details
+    res.status(200).json({
+      msg: "Order details retrieved successfully.",
+      orderDetails: order,
+    });
+  } catch (error) {
+    console.error("Error retrieving order details:", error);
+    res.status(500).json({ error: "Failed to retrieve order details." });
+  }
+};
+
+const requestToBeNotified = async (req, res) => {
+  const { itineraryId, touristId } = req.body;
+
+  if (!itineraryId || !touristId) {
+    return res.status(400).json({ message: "Missing required fields: itineraryId or touristId" });
+  }
+
+  try {
+    // Find the itinerary by its ID and use the $addToSet operator to add touristId to the 'notifyMe' array
+    const updatedItinerary = await itineraryModel.findByIdAndUpdate(
+      itineraryId,
+      { $addToSet: { notifyMe: touristId } }, // Add touristId to 'notifyMe' array only if it's not already present
+      { new: true, upsert: true } // upsert: true ensures the array is created if it doesn't exist
+    );
+
+    if (!updatedItinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    return res.status(200).json({
+      message: "Tourist added to 'notifyMe' list successfully",
+      itinerary: updatedItinerary,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for better debugging
+    return res.status(500).json({ message: "Error adding tourist to 'notifyMe' list", error: error.message });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2528,4 +2668,7 @@ module.exports = {
   cancelOrder,
   removeFromWishlist,
   BookmarkAttraction,
+  addWishlistItemToCart,
+  viewOrderDetails,
+  requestToBeNotified,
 };
