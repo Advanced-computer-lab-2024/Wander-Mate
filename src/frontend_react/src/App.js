@@ -35,6 +35,7 @@ import ProductSeller from "./pages/productSeller";
 import SellerProducts from "./pages/SellerProducts";
 import BasicMap from "./components/ui/basic-map";
 import CreatePlace from "./components/createPlace";
+import PaymentPage from "./pages/Payment";
 function App() {
   return (
     <Router>
@@ -71,6 +72,7 @@ function App() {
         <Route path="/sellerProducts" element={<SellerProducts />} />
         <Route path="/map" element={<BasicMap />} />
         <Route path="/createPlace" element={<CreatePlace />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </Router>
   );
