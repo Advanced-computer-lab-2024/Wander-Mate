@@ -88,6 +88,7 @@ const {
   BookmarkAttraction,
   addWishlistItemToCart,
   viewOrderDetails,
+  requestToBeNotified,
 } = require("./Routes/touristController");
 
 const {
@@ -515,3 +516,4 @@ app.delete("/removeFromWishlist",removeFromWishlist);
 app.post("/BookmarkAttraction",BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
+app.post('/requestToBeNotified', requestToBeNotified);

@@ -2396,6 +2396,8 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
+
+
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
 
@@ -2568,6 +2570,35 @@ const viewOrderDetails = async (req, res) => {
   }
 };
 
+const requestToBeNotified = async (req, res) => {
+  const { itineraryId, touristId } = req.body;
+
+  if (!itineraryId || !touristId) {
+    return res.status(400).json({ message: "Missing required fields: itineraryId or touristId" });
+  }
+
+  try {
+    // Find the itinerary by its ID and use the $addToSet operator to add touristId to the 'notifyMe' array
+    const updatedItinerary = await itineraryModel.findByIdAndUpdate(
+      itineraryId,
+      { $addToSet: { notifyMe: touristId } }, // Add touristId to 'notifyMe' array only if it's not already present
+      { new: true, upsert: true } // upsert: true ensures the array is created if it doesn't exist
+    );
+
+    if (!updatedItinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    return res.status(200).json({
+      message: "Tourist added to 'notifyMe' list successfully",
+      itinerary: updatedItinerary,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for better debugging
+    return res.status(500).json({ message: "Error adding tourist to 'notifyMe' list", error: error.message });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2639,4 +2670,5 @@ module.exports = {
   BookmarkAttraction,
   addWishlistItemToCart,
   viewOrderDetails,
+  requestToBeNotified,
 };
