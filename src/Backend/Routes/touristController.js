@@ -2,6 +2,8 @@ const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
@@ -1168,7 +1170,7 @@ const viewAllTransportations = async (req, res) => {
 
 const bookTransportation = async (req, res) => {
   try {
-    const { itemId, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
+    const { itemId, itemModel, userId, bookedDate } = req.body; // Get the transportation ID and tourist ID from the request body
     // Check if the transportation option exists and is available
     const transportation = await TransportationModel.findById(itemId);
     if (!transportation || !transportation.availability) {
@@ -2039,6 +2041,33 @@ const assignBirthdayPromo = async () => {
     }
   }
 };
+
+const PayByCard = async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+      throw new Error('Amount and currency are required');
+    }
+
+    // Create a PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount, // Ensure amount is in the smallest unit (e.g., cents)
+      currency,
+      payment_method_types: ['card'], // Specify card as the payment method
+    });
+
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    console.error('Stripe Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+////////////////////////////Nadeem Sprint 3///////////////////////////
+
+
 const removeFromCart = async (req, res) => {
   const { touristID, productId, attributes } = req.body;
 
@@ -2085,36 +2114,36 @@ const BookmarkAttraction = async (req, res) => {
   }
 
   try {
-    // Find the user
-    const user = await User.findById(userId);
+    const { ObjectId } = require("mongodb");
+    if (!ObjectId.isValid(userId) || !ObjectId.isValid(attractionId)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
 
+    const user = await userModel.findById(userId);
     if (!user) {
+      console.error("User not found:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the attraction exists
-    const attraction = await Attraction.findById(attractionId);
-
+    const attraction = await attractionModel.findById(attractionId);
     if (!attraction) {
+      console.error("Attraction not found:", attractionId);
       return res.status(404).json({ message: "Attraction not found" });
     }
 
-    // Check if the attraction is already bookmarked
     if (user.bookmarkedAttractions.includes(attractionId)) {
       return res.status(400).json({ message: "Attraction already bookmarked" });
     }
 
-    // Add the attraction to the user's bookmarks
     user.bookmarkedAttractions.push(attractionId);
-
-    // Save the user
     await user.save();
-
     return res.status(200).json({ message: "Attraction bookmarked successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error bookmarking attraction" });
+    console.error("Error bookmarking attraction:", error);
+    return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
+
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2168,8 +2197,8 @@ const addItemToCart = async (req, res) => {
 
 const addWishlistItemToCart = async (req, res) => {
   const { touristID, productId, quantity } = req.body;
-  try{
-     // Validate input
+  try {
+    // Validate input
     if (!touristID || !productId) {
       return res
         .status(400)
@@ -2217,7 +2246,7 @@ const addWishlistItemToCart = async (req, res) => {
     if (existingItem) {
       // Increment the quantity if the same product with the same attributes exists
       existingItem.quantity += productQuantity;
-    }else{
+    } else {
       cart.items.push({
         productId: product._id,
         name: product.name,
@@ -2234,7 +2263,7 @@ const addWishlistItemToCart = async (req, res) => {
       cart: cart.items, // Optionally return the updated cart
     });
 
-  }catch(error){
+  } catch (error) {
     console.error("Error adding wishlist item to cart:", error);
     res
       .status(500)
@@ -2396,6 +2425,8 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
+
+
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
 
@@ -2549,10 +2580,10 @@ const viewOrderDetails = async (req, res) => {
       return res.status(400).json({ error: "Order number is required." });
     }
 
-    
+
 
     // Fetch the specific order by orderNumber and username
-    const order = await ordermodel.findById({ OrderId});
+    const order = await ordermodel.findById({ OrderId });
     if (!order) {
       return res.status(404).json({ error: "Order with number ${OrderId} not found." });
     }
@@ -2564,8 +2595,37 @@ const viewOrderDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving order details:", error);
-    res.status(500).json({ error: "Failed to retrieve order details." });
-  }
+    res.status(500).json({ error: "Failed to retrieve order details." });
+  }
+};
+
+const requestToBeNotified = async (req, res) => {
+  const { itineraryId, touristId } = req.body;
+
+  if (!itineraryId || !touristId) {
+    return res.status(400).json({ message: "Missing required fields: itineraryId or touristId" });
+  }
+
+  try {
+    // Find the itinerary by its ID and use the $addToSet operator to add touristId to the 'notifyMe' array
+    const updatedItinerary = await itineraryModel.findByIdAndUpdate(
+      itineraryId,
+      { $addToSet: { notifyMe: touristId } }, // Add touristId to 'notifyMe' array only if it's not already present
+      { new: true, upsert: true } // upsert: true ensures the array is created if it doesn't exist
+    );
+
+    if (!updatedItinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    return res.status(200).json({
+      message: "Tourist added to 'notifyMe' list successfully",
+      itinerary: updatedItinerary,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for better debugging
+    return res.status(500).json({ message: "Error adding tourist to 'notifyMe' list", error: error.message });
+  }
 };
 
 module.exports = {
@@ -2639,4 +2699,6 @@ module.exports = {
   BookmarkAttraction,
   addWishlistItemToCart,
   viewOrderDetails,
+  requestToBeNotified,
+  PayByCard,
 };
