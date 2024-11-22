@@ -535,3 +535,4 @@ app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
+app.get("/ViewBookmarkedAttractions",ViewBookmarkedAttractions)
