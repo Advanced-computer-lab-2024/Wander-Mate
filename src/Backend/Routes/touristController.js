@@ -2,8 +2,8 @@ const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
-require("dotenv").config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
@@ -613,9 +613,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1997,9 +1997,9 @@ const assignBirthdayPromo = async () => {
     $expr: {
       $and: [
         { $eq: [{ $dayOfMonth: "$DOB" }, currentDate] },
-        { $eq: [{ $month: "$DOB" }, currentMonth] },
-      ],
-    },
+        { $eq: [{ $month: "$DOB" }, currentMonth] }
+      ]
+    }
   });
 
   console.log("Tourists with birthdays today:", touristsWithBirthdays);
@@ -2007,13 +2007,9 @@ const assignBirthdayPromo = async () => {
   for (const tourist of touristsWithBirthdays) {
     try {
       // Check if a promo code already exists for this tourist
-      const existingPromoCode = await PromoCode.findOne({
-        assignedTo: tourist._id,
-      });
+      const existingPromoCode = await PromoCode.findOne({ assignedTo: tourist._id });
       if (existingPromoCode) {
-        console.log(
-          `Promo code already exists for ${tourist.Username}: ${existingPromoCode.code}`
-        );
+        console.log(`Promo code already exists for ${tourist.Username}: ${existingPromoCode.code}`);
         continue; // Skip to the next tourist
       }
 
@@ -2039,9 +2035,7 @@ const assignBirthdayPromo = async () => {
       tourist.PromoCode = promoCode._id; // Set the PromoCode field directly
       await tourist.save();
 
-      console.log(
-        `Promo code ${promoCode.code} is assigned to ${tourist.Username}`
-      );
+      console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Username}`);
     } catch (error) {
       console.error("Error assigning promo code:", error);
     }
@@ -2053,25 +2047,26 @@ const PayByCard = async (req, res) => {
     const { amount, currency } = req.body;
 
     if (!amount || !currency) {
-      throw new Error("Amount and currency are required");
+      throw new Error('Amount and currency are required');
     }
 
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount, // Ensure amount is in the smallest unit (e.g., cents)
       currency,
-      payment_method_types: ["card"], // Specify card as the payment method
+      payment_method_types: ['card'], // Specify card as the payment method
     });
 
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
-    console.error("Stripe Error:", error.message);
+    console.error('Stripe Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
 ////////////////////////////Nadeem Sprint 3///////////////////////////
+
 
 const removeFromCart = async (req, res) => {
   const { touristID, productId, attributes } = req.body;
@@ -2092,8 +2087,7 @@ const removeFromCart = async (req, res) => {
     const itemIndex = cart.items.findIndex((item) => {
       return (
         item.productId.toString() === productId &&
-        (!attributes ||
-          JSON.stringify(item.attributes) === JSON.stringify(attributes))
+        (!attributes || JSON.stringify(item.attributes) === JSON.stringify(attributes))
       );
     });
 
@@ -2107,9 +2101,7 @@ const removeFromCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
-    return res
-      .status(200)
-      .json({ message: "Item removed from cart successfully" });
+    return res.status(200).json({ message: "Item removed from cart successfully" });
   } catch (error) {
     return res.status(400).json({ message: "Error removing item from cart" });
   }
@@ -2145,14 +2137,10 @@ const BookmarkAttraction = async (req, res) => {
 
     user.bookmarkedAttractions.push(attractionId);
     await user.save();
-    return res
-      .status(200)
-      .json({ message: "Attraction bookmarked successfully" });
+    return res.status(200).json({ message: "Attraction bookmarked successfully" });
   } catch (error) {
     console.error("Error bookmarking attraction:", error);
-    return res
-      .status(500)
-      .json({ message: "Error bookmarking attraction", error: error.message });
+    return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
 const ViewBookmarkedAttractions = async (req, res) => {
@@ -2163,27 +2151,20 @@ const ViewBookmarkedAttractions = async (req, res) => {
   }
 
   try {
-    const user = await userModel
-      .findById(userId)
-      .populate("bookmarkedAttractions");
+    const user = await userModel.findById(userId).populate("bookmarkedAttractions");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res
-      .status(200)
-      .json({ bookmarkedAttractions: user.bookmarkedAttractions });
+    return res.status(200).json({ bookmarkedAttractions: user.bookmarkedAttractions });
   } catch (error) {
     console.error("Error retrieving bookmarked attractions:", error);
-    return res
-      .status(500)
-      .json({
-        message: "Error retrieving bookmarked attractions",
-        error: error.message,
-      });
+    return res.status(500).json({ message: "Error retrieving bookmarked attractions", error: error.message });
   }
 };
+
+
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2270,7 +2251,9 @@ const addWishlistItemToCart = async (req, res) => {
     // Fetch product details (Assume `Product` is your product model)
     const product = await ProductModel.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product details not found." });
+      return res
+        .status(404)
+        .json({ message: "Product details not found." });
     }
 
     // Default quantity to 1 if not provided
@@ -2292,6 +2275,7 @@ const addWishlistItemToCart = async (req, res) => {
         picture: product.picture,
         quantity: productQuantity,
         attributes: {}, // Add attributes if applicable
+
       });
     }
     await cart.save();
@@ -2299,13 +2283,16 @@ const addWishlistItemToCart = async (req, res) => {
       message: "Product added to cart from wishlist successfully.",
       cart: cart.items, // Optionally return the updated cart
     });
+
   } catch (error) {
     console.error("Error adding wishlist item to cart:", error);
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
+
 };
+
 
 const showCart = async (req, res) => {
   const { touristID } = req.params;
@@ -2366,22 +2353,19 @@ const payWithWallet = async (req, res) => {
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
+
+
+
 const applyPromoCode = async (req, res) => {
   const { touristId } = req.params;
   const { promoCode, purchaseAmount } = req.body;
 
   try {
     // Find the promo code
-    const code = await PromoCode.findOne({
-      code: promoCode,
-      assignedTo: touristId,
-      isUsed: false,
-    });
+    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
 
     if (!code) {
-      return res
-        .status(404)
-        .json({ message: "Promo code not found or already used." });
+      return res.status(404).json({ message: "Promo code not found or already used." });
     }
 
     // Check if the promo code is expired
@@ -2391,7 +2375,7 @@ const applyPromoCode = async (req, res) => {
     }
 
     // Apply the promo code (e.g., 10% discount)
-    const discount = 0.1; // Example discount rate
+    const discount = 0.10; // Example discount rate
     const discountAmount = purchaseAmount * discount;
     const finalAmount = purchaseAmount - discountAmount;
 
@@ -2418,20 +2402,12 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
   try {
     // Fetch past activities
     const pastActivities = await bookingSchema
-      .find({
-        userId: touristId,
-        itemModel: "Attraction",
-        bookedDate: { $lt: currentDate },
-      })
+      .find({ userId: touristId, itemModel: "Attraction", bookedDate: { $lt: currentDate } })
       .populate("itemId");
 
     // Fetch past itineraries
     const pastItineraries = await bookingSchema
-      .find({
-        userId: touristId,
-        itemModel: "Itinerary",
-        bookedDate: { $lt: currentDate },
-      })
+      .find({ userId: touristId, itemModel: "Itinerary", bookedDate: { $lt: currentDate } })
       .populate("itemId");
 
     // Combine results
@@ -2470,13 +2446,13 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
+
+
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
 
   if (!orderId) {
-    return res
-      .status(400)
-      .json({ message: "Missing required parameter: orderId" });
+    return res.status(400).json({ message: "Missing required parameter: orderId" });
   }
 
   try {
@@ -2488,22 +2464,23 @@ const cancelOrder = async (req, res) => {
     }
 
     // Check if the order status is not already cancelled (if needed)
-    if (order.status === "cancelled") {
+    if (order.status === 'cancelled') {
       return res.status(400).json({ message: "Order is already cancelled" });
     }
 
     // Delete the order
     await order.remove();
 
-    return res
-      .status(200)
-      .json({ message: "Order cancelled successfully", order });
+    return res.status(200).json({ message: "Order cancelled successfully", order });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error cancelling the order", error: error.message });
+    return res.status(500).json({ message: "Error cancelling the order", error: error.message });
   }
 };
+
+
+
+
+
 
 const addToWishlist = async (req, res) => {
   const { touristId, productId } = req.body;
@@ -2559,11 +2536,7 @@ const viewMyWishlist = async (req, res) => {
     });
 
     if (!wishlist || wishlist.products.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "No products found in the wishlist for this tourist.",
-        });
+      return res.status(404).json({ message: "No products found in the wishlist for this tourist." });
     }
 
     res.status(200).json({
@@ -2572,9 +2545,7 @@ const viewMyWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching wishlist:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 const removeFromWishlist = async (req, res) => {
@@ -2618,9 +2589,7 @@ const removeFromWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error removing product from wishlist:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -2632,12 +2601,12 @@ const viewOrderDetails = async (req, res) => {
       return res.status(400).json({ error: "Order number is required." });
     }
 
+
+
     // Fetch the specific order by orderNumber and username
     const order = await ordermodel.findById({ OrderId });
     if (!order) {
-      return res
-        .status(404)
-        .json({ error: "Order with number ${OrderId} not found." });
+      return res.status(404).json({ error: "Order with number ${OrderId} not found." });
     }
 
     // Respond with the specific order details
@@ -2655,9 +2624,7 @@ const requestToBeNotified = async (req, res) => {
   const { itineraryId, touristId } = req.body;
 
   if (!itineraryId || !touristId) {
-    return res
-      .status(400)
-      .json({ message: "Missing required fields: itineraryId or touristId" });
+    return res.status(400).json({ message: "Missing required fields: itineraryId or touristId" });
   }
 
   try {
@@ -2678,12 +2645,7 @@ const requestToBeNotified = async (req, res) => {
     });
   } catch (error) {
     console.error(error); // Log the error for better debugging
-    return res
-      .status(500)
-      .json({
-        message: "Error adding tourist to 'notifyMe' list",
-        error: error.message,
-      });
+    return res.status(500).json({ message: "Error adding tourist to 'notifyMe' list", error: error.message });
   }
 };
 
