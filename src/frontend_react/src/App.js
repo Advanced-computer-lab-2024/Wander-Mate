@@ -69,7 +69,6 @@ function App() {
         <Route path="/productSeller" element={<ProductSeller />} />
         <Route path="/sellerProducts" element={<SellerProducts />} />
         <Route path="/map" element={<BasicMap />} />
-
       </Routes>
     </Router>
   );
