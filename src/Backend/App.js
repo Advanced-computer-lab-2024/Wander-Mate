@@ -90,6 +90,7 @@ const {
   viewOrderDetails,
   requestToBeNotified,
   PayByCard,
+  ViewBookmarkedAttractions,
 } = require("./Routes/touristController");
 
 const {
@@ -534,4 +535,3 @@ app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
-app.post('/create-payment-intent', PayByCard);
