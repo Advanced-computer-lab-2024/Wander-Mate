@@ -2397,32 +2397,34 @@ const getDeliveryAddresses = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
-  const { touristId } = req.params; // Get touristId from the route parameter
+  const { orderId } = req.params; // Get orderId from the route parameter
 
-  if (!touristId) {
-    return res.status(400).json({ message: "Missing required parameter: touristId" });
+  if (!orderId) {
+    return res.status(400).json({ message: "Missing required parameter: orderId" });
   }
 
   try {
-    // Find the cart by touristID
-    const cart = await Cart.findOne({ touristID: touristId });
+    // Find the order by orderId
+    const order = await Order.findById(orderId);
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    // Clear all items and reset subtotal
-    cart.items = [];
-    cart.subtotal = 0;
+    // Check if the order status is not already cancelled (if needed)
+    if (order.status === 'cancelled') {
+      return res.status(400).json({ message: "Order is already cancelled" });
+    }
 
-    // Save the updated cart
-    await cart.save();
+    // Delete the order
+    await order.remove();
 
-    return res.status(200).json({ message: "Cart emptied successfully", cart });
+    return res.status(200).json({ message: "Order cancelled successfully", order });
   } catch (error) {
-    return res.status(500).json({ message: "Error emptying the cart", error: error.message });
+    return res.status(500).json({ message: "Error cancelling the order", error: error.message });
   }
 };
+
 
 
 

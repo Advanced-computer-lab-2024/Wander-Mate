@@ -509,7 +509,7 @@ app.post("/addToWishlist",addToWishlist);
 app.post("/removeFromCart",removeFromCart);
 app.get("/viewOrderDetails/:OrderId",viewOrderDetails);
 app.get("/viewMyWishlist/:touristId",viewMyWishlist);
-app.delete('/cancel-order/:touristId', cancelOrder);
+app.delete('/cancel-order/:orderId', cancelOrder);
 app.get("/getSellerById/:sellerId",getSellerById);
 app.delete("/removeFromWishlist",removeFromWishlist);
 app.post("/BookmarkAttraction",BookmarkAttraction);
