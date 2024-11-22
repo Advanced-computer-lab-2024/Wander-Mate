@@ -2164,6 +2164,84 @@ const addItemToCart = async (req, res) => {
   }
 };
 
+const addWishlistItemToCart = async (req, res) => {
+  const { touristID, productId, quantity } = req.body;
+  try{
+     // Validate input
+    if (!touristID || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Product ID are required." });
+    }
+    if (!quantity) {
+      quantity = 1;
+    }
+    let cart = await Cart.findOne({ touristID });
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
+
+    // Find the user's wishlist
+    let wishlist = await Wishlist.findOne({ userId: touristID });
+    if (!wishlist) {
+      return res
+        .status(404)
+        .json({ message: "Wishlist not found for the user." });
+    }
+
+    // Check if the product exists in the wishlist
+    if (!wishlist.products.includes(productId)) {
+      return res
+        .status(404)
+        .json({ message: "Product not found in wishlist." });
+    }
+    // Fetch product details (Assume `Product` is your product model)
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "Product details not found." });
+    }
+
+    // Default quantity to 1 if not provided
+    const productQuantity = quantity || 1;
+
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
+
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += productQuantity;
+    }else{
+      cart.items.push({
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        picture: product.picture,
+        quantity: productQuantity,
+        attributes: {}, // Add attributes if applicable
+
+      });
+    }
+    await cart.save();
+    res.status(200).json({
+      message: "Product added to cart from wishlist successfully.",
+      cart: cart.items, // Optionally return the updated cart
+    });
+
+  }catch(error){
+    console.error("Error adding wishlist item to cart:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+
+};
+
+
 const showCart = async (req, res) => {
   const { touristID } = req.params;
   try {
@@ -2528,4 +2606,5 @@ module.exports = {
   cancelOrder,
   removeFromWishlist,
   BookmarkAttraction,
+  addWishlistItemToCart,
 };
