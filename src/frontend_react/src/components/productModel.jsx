@@ -38,7 +38,7 @@ export default function ProductModal({
   const handleSellerClick = (e) => {
     e.preventDefault();
     if (seller && seller.seller) {
-      navigate("/seller", { state: { sellerId: seller.seller._id } });
+      navigate("/productSeller", { state: { sellerId: seller.seller._id } });
     }
   };
 
