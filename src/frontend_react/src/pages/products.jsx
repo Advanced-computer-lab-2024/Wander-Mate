@@ -24,26 +24,8 @@ const Products = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [sellerMap, setSellerMap] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const fetchSellers = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/getSellers");
-      if (response.ok) {
-        const data = await response.json();
-        const map = data.sellers.reduce((acc, seller) => {
-          acc[seller._id] = seller.Username;
-          return acc;
-        }, {});
-        setSellerMap(map);
-      } else {
-        console.error("Failed to fetch sellers:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching sellers:", error);
-    }
-  };
 
   const fetchProducts = async () => {
     try {
@@ -85,7 +67,6 @@ const Products = () => {
   };
 
   useEffect(() => {
-    fetchSellers();
     fetchProducts();
   }, []);
 
@@ -212,7 +193,7 @@ const Products = () => {
               name={product.name}
               description={product.description}
               price={product.price}
-              seller={sellerMap[product.seller] || "Unknown"}
+              seller={product.seller || "Unknown"}
               ratings={product.ratings}
               reviews={product.reviews}
               image={`http://localhost:8000/products/${product._id}/image`}

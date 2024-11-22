@@ -107,7 +107,7 @@ export default function PlaceCard({
               />
             ))}
             <span className="ml-2 text-sm text-gray-600">
-              ({ratings})
+              {ratings}
             </span>
           </div>
           <Button

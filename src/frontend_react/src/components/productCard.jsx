@@ -17,6 +17,7 @@ const ProductCard = ({
   ratings,
   reviews,
   quantity,
+  seller,
 }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
@@ -100,6 +101,7 @@ const ProductCard = ({
         discount,
         ratings,
         reviews,
+        seller,
       }}
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}

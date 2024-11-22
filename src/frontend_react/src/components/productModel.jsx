@@ -11,8 +11,9 @@ import {
 } from "./ui/popover";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function ProductModal({
   product,
@@ -27,33 +28,75 @@ export default function ProductModal({
   const [count, setCount] = useState(1);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isAdded, setIsAdded] = useState(initialIsAdded);
+  const [seller, setSeller] = useState(null);
   const navigate = useNavigate();
+
   const goToCart = () => {
     navigate("/cart");
   };
+
+  const handleSellerClick = (e) => {
+    e.preventDefault();
+    if (seller && seller.seller) {
+      navigate("/seller", { state: { sellerId: seller.seller._id } });
+    }
+  };
+
   useEffect(() => {
     setCount(initialCount);
     setIsAdded(initialIsAdded);
   }, [initialCount, initialIsAdded]);
+
+  useEffect(() => {
+    const fetchSellerInfo = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/getSellerById/${product.seller}`
+        );
+        setSeller(response.data);
+      } catch (error) {
+        console.error("Error fetching seller information:", error);
+      }
+    };
+
+    if (product.seller) {
+      fetchSellerInfo();
+    }
+  }, [product.seller]);
+
+  const getInitials = (name) => {
+    if (!name) return "SS";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  const getImageSrc = (picture) => {
+    if (picture && picture.data && picture.contentType) {
+      const base64String =
+        typeof picture.data === "string"
+          ? picture.data
+          : btoa(String.fromCharCode.apply(null, new Uint8Array(picture.data)));
+      return `data:${picture.contentType};base64,${base64String}`;
+    }
+    return null;
+  };
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
       if (window.location.search.includes("open")) {
-        // Check if 'open' exists in the query parameters
-        const url = new URL(window.location.href);
         url.searchParams.delete("open");
         url.searchParams.delete("product");
-
-        // Update the URL without reloading
         window.history.replaceState({}, "", url);
-
-        // Reload the page
         window.location.reload();
       }
     }
   };
+
   const isInStock = () => quantity > 0;
 
   useEffect(() => {
@@ -78,7 +121,6 @@ export default function ProductModal({
       fetchReviews();
     }
 
-    // Check URL parameter to open dialog
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("open") === "true") {
       setIsOpen(true);
@@ -110,7 +152,6 @@ export default function ProductModal({
     try {
       const username = sessionStorage.getItem("username");
       const response = await axios.post(`http://localhost:8000/notifyMe`, {
-        //still to be made in the backend
         username,
         productId: product.productId,
       });
@@ -159,7 +200,7 @@ export default function ProductModal({
   };
 
   const handleShare = (method) => {
-    const currentUrl = window.location.href.split("?")[0]; // Get the base URL without parameters
+    const currentUrl = window.location.href.split("?")[0];
     const shareUrl = `${currentUrl}?open=true&product=${product.productId}`;
     const shareText = `Check out this amazing product: ${product.name}`;
 
@@ -401,7 +442,32 @@ export default function ProductModal({
               <TabsContent value="info" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    <p className="text-gray-600">{product.description}</p>
+                    <p className="text-gray-600 mb-4">{product.description}</p>
+                    {seller && seller.seller && (
+                      <div className="flex items-center space-x-2 mt-4">
+                        <span className="font-semibold text-sm text-gray-600">
+                          Seller:
+                        </span>
+                        <a
+                          href="#"
+                          onClick={handleSellerClick}
+                          className="flex items-center space-x-2 hover:text-primary transition-colors"
+                        >
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage
+                              src={getImageSrc(seller.seller.picture)}
+                              alt={seller.seller.FullName}
+                            />
+                            <AvatarFallback>
+                              {getInitials(seller.seller.FullName)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm">
+                            {seller.seller.FullName}
+                          </span>
+                        </a>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
