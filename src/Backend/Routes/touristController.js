@@ -2083,36 +2083,36 @@ const BookmarkAttraction = async (req, res) => {
   }
 
   try {
-    // Find the user
-    const user = await User.findById(userId);
+    const { ObjectId } = require("mongodb");
+    if (!ObjectId.isValid(userId) || !ObjectId.isValid(attractionId)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
 
+    const user = await userModel.findById(userId);
     if (!user) {
+      console.error("User not found:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the attraction exists
-    const attraction = await Attraction.findById(attractionId);
-
+    const attraction = await attractionModel.findById(attractionId);
     if (!attraction) {
+      console.error("Attraction not found:", attractionId);
       return res.status(404).json({ message: "Attraction not found" });
     }
 
-    // Check if the attraction is already bookmarked
     if (user.bookmarkedAttractions.includes(attractionId)) {
       return res.status(400).json({ message: "Attraction already bookmarked" });
     }
 
-    // Add the attraction to the user's bookmarks
     user.bookmarkedAttractions.push(attractionId);
-
-    // Save the user
     await user.save();
-
     return res.status(200).json({ message: "Attraction bookmarked successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error bookmarking attraction" });
+    console.error("Error bookmarking attraction:", error);
+    return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
+
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;

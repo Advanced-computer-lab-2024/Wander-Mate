@@ -57,7 +57,7 @@ const touristSchema = new Schema(
       ref: "PromoCode",
       default: null,
     },
-    Bookmarks: {
+    bookmarkedAttractions: {
       type: [ObjectId],
       default: [],
     }
