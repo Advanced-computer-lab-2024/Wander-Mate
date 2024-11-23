@@ -1,34 +1,49 @@
-import React, { useEffect } from "react";
-import GoogleMapReact from "google-map-react";
+import React, { useRef, useEffect, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import '../../assets/css/Map.css';
 
-const BasicMap = ({ latitude, longitude, height = 500 }) => {
-  const defaultProps = {
-    center: {
-      lat: latitude || 10.99835602,
-      lng: longitude || 77.01502627,
-    },
-    zoom: 11,
-  };
+mapboxgl.accessToken = 'pk.eyJ1IjoieW91c3NlZm1lZGhhdGFzbHkiLCJhIjoiY2x3MmpyZzYzMHAxbDJxbXF0dDN1MGY2NSJ9.vrWqL8FrrRzm0yAfUNpu6g';
+
+const BasicMap = ({ onLocationSelect, initialLocation }) => {
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const [lng, setLng] = useState(initialLocation ? initialLocation[0] : -122.420679);
+  const [lat, setLat] = useState(initialLocation ? initialLocation[1] : 37.774929);
+  const [zoom, setZoom] = useState(12);
+  const marker = useRef(null);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCEJgmpAlPbyvW8m5d_EYUXBR5YTxzV4TQ&libraries=places&v=weekly&loading=async`;
-    script.async = true;
-    document.head.appendChild(script);
+    if (map.current) return; // initialize map only once
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [lng, lat],
+      zoom: zoom
+    });
 
-    // Clean up the script when the component unmounts
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []); // Empty dependency array ensures this effect runs once on mount
+    map.current.on('load', () => {
+      marker.current = new mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .addTo(map.current);
+    });
+
+    map.current.on('click', (e) => {
+      const { lng, lat } = e.lngLat;
+      marker.current.setLngLat([lng, lat]);
+      onLocationSelect(lng, lat);
+    });
+
+    map.current.on('move', () => {
+      setLng(map.current.getCenter().lng.toFixed(4));
+      setLat(map.current.getCenter().lat.toFixed(4));
+      setZoom(map.current.getZoom().toFixed(2));
+    });
+  }, [onLocationSelect]);
 
   return (
-    <div style={{ height: height, width: "100%" }}>
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: "YOUR_API_KEY" }}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-      />
+    <div className="map-wrapper">
+      <div ref={mapContainer} className="map-container" />
     </div>
   );
 };
