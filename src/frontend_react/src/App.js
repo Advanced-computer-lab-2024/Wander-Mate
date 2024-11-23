@@ -29,7 +29,6 @@ import NewPasswordPage from "./pages/newPasswordPage";
 import Rejected from "./pages/rejected";
 import Pending from "./pages/pending";
 import VerifyPage from "./pages/verifyOTP";
-import AddressCard from "./components/ui/addressCard";
 import CommentPage from "./pages/commentPage";
 import ProductSeller from "./pages/productSeller";
 import SellerProducts from "./pages/SellerProducts";
@@ -37,6 +36,7 @@ import BasicMap from "./components/ui/basic-map";
 import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
 import PaymentPage from "./pages/Payment";
+import ShowWithDocs from "./components/showRegisteredWithDocs";
 import TourGuideProfileManager from "./components/TourGuideProfileManager";
 function App() {
   return (
@@ -69,13 +69,13 @@ function App() {
         <Route path="pending" element={<Pending />} />
         <Route path="verifyOtp" element={<VerifyPage />} />
         <Route path="/comment" element={<CommentPage />} />
-        <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/productSeller" element={<ProductSeller />} />
         <Route path="/sellerProducts" element={<SellerProducts />} />
         <Route path="/map" element={<BasicMap />} />
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/tourGuideProfileManager" element={<TourGuideProfileManager />} />
       </Routes>
     </Router>

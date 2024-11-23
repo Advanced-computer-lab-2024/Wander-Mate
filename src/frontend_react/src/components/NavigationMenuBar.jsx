@@ -386,6 +386,7 @@ const NavigationMenuBar = () => {
                           className="flex items-center justify-between space-x-4 border-b pb-4"
                         >
                          <div className="flex flex-col items-center space-y-2">
+  <span className="text-center text-sm font-medium">{item.name}</span>
   {getImageSrc(item.picture) ? (
     <img
       src={getImageSrc(item.picture)}
@@ -397,8 +398,8 @@ const NavigationMenuBar = () => {
       <span>No Image</span>
     </div>
   )}
-  <span className="text-center text-sm font-medium">{item.name}</span>
 </div>
+
 
 
 
