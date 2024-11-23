@@ -61,7 +61,6 @@ const {
   bookHotel,
   reviewProduct,
   cancelBooking,
-  shareActivity,
   rateEvent,
   bookItinerary,
   updateEventRatings,
@@ -70,7 +69,6 @@ const {
   getMyBookings,
   getProductReviews,
   bookActivity,
-  shareItenerary,
   addDeliveryAddress,
   addItemToCart,
   showCart,
@@ -490,8 +488,6 @@ app.get(
 );
 app.get("/getMyBookings/:touristID", getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
-app.post("/shareActivity", shareActivity);
-app.post("/shareItinerary", shareItenerary);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
 app.post("/bookActivity", bookActivity);

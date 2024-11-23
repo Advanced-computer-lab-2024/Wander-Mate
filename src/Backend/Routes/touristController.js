@@ -1558,143 +1558,8 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-const shareActivity = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
 
-  try {
-    // Validate input
-    if (!activityId) {
-      return res.status(400).json({ message: "Activity ID is required." });
-    }
-
-    // Find the activity by ID
-    const activity = await attractionModel.findById(activityId);
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
-
-    // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
-
-    if (shareMethod === "link") {
-      // If sharing via link, return the link
-      return res.status(200).json({
-        message: "Shareable link generated successfully.",
-        link: shareableLink,
-      });
-    } else if (shareMethod === "email") {
-      if (!email) {
-        return res.status(400).json({
-          message: "Email address is required for sharing via email.",
-        });
-      }
-
-      // Configure nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
-          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
-        },
-      });
-
-      // Set email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Check out this activity!",
-        text: `I thought you might be interested in this activity: ${shareableLink}`,
-      };
-
-      // Send email
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({
-        message: "Email sent successfully.",
-        link: shareableLink,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Invalid share method. Use 'link' or 'email'." });
-    }
-  } catch (error) {
-    console.error("Error sharing activity:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
-const nodemailer = require("nodemailer");
 const order = require("../Models/order.js");
-
-const shareItenerary = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body;
-
-  try {
-    // Validate input
-    if (!activityId) {
-      return res.status(400).json({ message: "Activity ID is required." });
-    }
-
-    // Find the activity by ID
-    const activity = await itineraryModel.findById(activityId);
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
-
-    // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
-
-    if (shareMethod === "link") {
-      // If sharing via link, return the link
-      return res.status(200).json({
-        message: "Shareable link generated successfully.",
-        link: shareableLink,
-      });
-    } else if (shareMethod === "email") {
-      if (!email) {
-        return res.status(400).json({
-          message: "Email address is required for sharing via email.",
-        });
-      }
-
-      // Configure nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
-          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
-        },
-      });
-
-      // Set email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Check out this activity!",
-        text: `I thought you might be interested in this activity: ${shareableLink}`,
-      };
-
-      // Send email
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({
-        message: "Email sent successfully.",
-        link: shareableLink,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Invalid share method. Use 'link' or 'email'." });
-    }
-  } catch (error) {
-    console.error("Error sharing activity:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -2458,7 +2323,7 @@ const cancelOrder = async (req, res) => {
 
   try {
     // Find the order by orderId
-    const order = await Order.findById(orderId);
+    const order = await ordermodel.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -2664,7 +2529,7 @@ const checkOut = async (req, res) => {
 
   try {
     // Create a new order
-    const newOrder = new Order({
+    const newOrder = new ordermodel({
       userId,
       products,
       total,
@@ -2765,7 +2630,6 @@ module.exports = {
   redeemPoints,
   reviewProduct,
   cancelBooking,
-  shareActivity,
   bookItinerary,
   rateEvent,
   updateEventRatings,
@@ -2774,7 +2638,6 @@ module.exports = {
   getMyBookings,
   getProductReviews,
   bookActivity,
-  shareItenerary,
   BookFlight,
   addDeliveryAddress,
   assignBirthdayPromo,
