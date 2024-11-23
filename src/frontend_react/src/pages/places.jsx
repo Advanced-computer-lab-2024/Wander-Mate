@@ -239,6 +239,7 @@ export default function Places() {
                 categories.find((cat) => cat._id === place.Category)?.Name ||
                 "No Category"
               }
+              TicketPrices={place.TicketPrices}
             />
           ))
         ) : (

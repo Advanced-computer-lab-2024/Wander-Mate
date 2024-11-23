@@ -11,6 +11,7 @@ import {
   CarouselNext,
 } from "./ui/carousel";
 import PlaceModal from "./placeModel";
+import { Ticket } from "lucide-react";
 
 export default function PlaceCard({
   placeId,
@@ -26,6 +27,7 @@ export default function PlaceCard({
   location,
   bestTimeToVisit,
   nearbyAttractions,
+  TicketPrices
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -41,6 +43,7 @@ export default function PlaceCard({
     images: images.map((img) =>
       img.data ? `data:${img.contentType};base64,${img.data}` : img
     ),
+    TicketPrices,
     description,
     category,
     ratings,
