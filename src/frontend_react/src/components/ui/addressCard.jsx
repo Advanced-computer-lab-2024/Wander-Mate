@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { MapPin, AlertCircle } from 'lucide-react';
-
+import NonMovableMap from './nonMovableMap'; // Import the NonMovableMap component
 const AddressCard = () => {
   const [addresses, setAddresses] = useState([]);
   const [error, setError] = useState(null);
@@ -75,6 +75,10 @@ const AddressCard = () => {
                     </Badge>
                   </div>
                 </div>
+                <NonMovableMap
+                  initialLocation={address.location.coordinates} // Use the coordinates from the location object
+                  onLocationSelect={() => {}}
+                />
               </li>
             ))}
           </ul>
