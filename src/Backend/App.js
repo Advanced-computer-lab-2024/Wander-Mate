@@ -114,6 +114,7 @@ const {
   viewSellerProductSalesAndQuantity,
   getSellerImage,
   getSellerById,
+  sendOutOfStockNotificationSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -165,6 +166,7 @@ const {
   resetPassword,
   getAirports,
   createPromoCode,
+  sendOutOfStockNotificationAdmin,
 } = require("./Routes/adminController.js");
 
 const {
@@ -534,6 +536,8 @@ app.delete("/removeFromWishlist", removeFromWishlist);
 app.post("/BookmarkAttraction", BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
+app.put("/sendOutOfStockNotificationSeller",sendOutOfStockNotificationSeller);
+app.put("/sendOutOfStockNotificationAdmin",sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
 app.get("/ViewBookmarkedAttractions",ViewBookmarkedAttractions);

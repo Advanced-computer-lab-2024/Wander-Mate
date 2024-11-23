@@ -22,6 +22,7 @@ const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
 const PromoCode = require("../Models/promoCode.js");
 const attractions= require("../Models/attractions.js");
+const Notification = require("../Models/notifications.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
 
@@ -1435,6 +1436,42 @@ const createPromoCode = async (req, res) => {
 };
 ///////////////////////////Nadeem Sprint 3//////////////////////////
 
+const sendOutOfStockNotificationAdmin = async (req, res) => {
+  try {
+    // Destructure data from the request body
+    const { message, adminId, productId } = req.body;
+
+    if (!message || !adminId ) {
+      return res.status(400).json({ error: "Message, adminId, and productId are required." });
+    }
+
+    // Find or update the notification for the specified admin
+    const notification = await Notification.findOneAndUpdate(
+      { userID: adminId, userModel: "Admin" },
+      {
+        $push: {
+          notifications: {
+            aboutID: productId,
+            aboutModel: "Product",
+            message,
+          },
+        },
+      },
+      { upsert: true, new: true } // Create a new document if it doesn't exist
+    );
+
+    res.status(200).json({
+      message: "Notification added successfully for admin.",
+      notification,
+    });
+
+    console.log("Notification added for admin:", notification);
+  } catch (error) {
+    console.error("Error adding notification for admin:", error);
+    res.status(500).json({ error: "Failed to add notification for admin." });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1484,4 +1521,5 @@ module.exports = {
   resetPassword,
   getAirports,
   createPromoCode,
+  sendOutOfStockNotificationAdmin,
 };
