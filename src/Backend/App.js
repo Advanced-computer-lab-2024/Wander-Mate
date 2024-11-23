@@ -92,6 +92,7 @@ const {
   PayByCard,
   ViewBookmarkedAttractions,
   checkOut,
+  ViewOrders,
 } = require("./Routes/touristController");
 
 const {
@@ -541,5 +542,6 @@ app.put("/sendOutOfStockNotificationSeller",sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin",sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
-app.get("/ViewBookmarkedAttractions", ViewBookmarkedAttractions)
+app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions)
 app.get("/viewAllUsers",viewAllUsers);
+app.get("/ViewOrders/:userId",ViewOrders)

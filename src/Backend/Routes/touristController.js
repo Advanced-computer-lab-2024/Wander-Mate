@@ -2152,7 +2152,7 @@ const BookmarkAttraction = async (req, res) => {
 };
 
 const ViewBookmarkedAttractions = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.params;
 
   if (!userId) {
     return res.status(400).json({ message: "Missing userId" });
@@ -2690,7 +2690,39 @@ const checkOut = async (req, res) => {
   }
 };
 
+
+const ViewOrders = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing userId" });
+  }
+
+  try {
+    // Fetch all orders for the user
+    const orders = await order.find({ userId }).populate("products").populate("address");
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    // Categorize orders into current and past
+    const currentOrders = orders.filter(order => ["pending", "shipped"].includes(order.status));
+    const pastOrders = orders.filter(order => ["delivered", "cancelled"].includes(order.status));
+
+    return res.status(200).json({
+      currentOrders,
+      pastOrders,
+    });
+  } catch (error) {
+    console.error("Error retrieving orders:", error);
+    return res.status(500).json({ message: "Error retrieving orders", error: error.message });
+  }
+};
+
+
 module.exports = {
+  ViewOrders,
   touristRegister,
   searchAttractions,
   handleTourist,
