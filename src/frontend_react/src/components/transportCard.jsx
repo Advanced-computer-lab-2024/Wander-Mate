@@ -14,6 +14,7 @@ import Car from "../public/images/car.png";
 import Bus from "../public/images/bus.png";
 import Boat from "../public/images/boat.png";
 import Helicopter from "../public/images/helicopter.png";
+import Transportation from "../pages/transportations";
 
 const TransportationCard = ({
   transportationId,
@@ -26,8 +27,10 @@ const TransportationCard = ({
   ratings = 0,
   date,
   advertiserId,
+  quantity
 }) => {
   const [isBooked, setIsBooked] = useState(false);
+  const [count, setCount] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [advertiser, setAdvertiser] = useState(null);
@@ -35,6 +38,14 @@ const TransportationCard = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isAvailable = () => {
+    if (availability) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+ 
   const goToBookings = () => {
     navigate("/bookings");
   };
@@ -50,9 +61,13 @@ const TransportationCard = ({
     }
   }, [location, transportationId]);
 
-  const handleBook = async () => {
+  const handleBook = () => {
     if (!availability) return;
     setIsBooked(true);
+  };
+
+
+  const finishBooking = async() => {
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
@@ -65,10 +80,26 @@ const TransportationCard = ({
           userId: userID,
           itemId: transportationId,
           bookedDate: date,
+          
         }
       );
+      toast.success("Booking successful!");
     } catch (error) {
       console.error("Error booking transportation:", error);
+      toast.error("Failed to book transportation");
+      setIsBooked(false);
+    }
+  }
+  const incrementCount = () => {
+    setCount((prevCount) => prevCount + 1);
+  };
+
+  const decrementCount = () => {
+    if (count > 1) {
+      setCount((prevCount) => prevCount - 1);
+    }else{
+      setCount(1);
+      setIsBooked(false);
     }
   };
 
@@ -277,7 +308,6 @@ const TransportationCard = ({
             </Button>
             <div className="space-y-8 p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Transportation Image */}
                 <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                   <img
                     src={
@@ -294,14 +324,12 @@ const TransportationCard = ({
                   />
                 </div>
 
-                {/* Transportation Info */}
                 <div className="flex flex-col justify-between">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
                       {vehicleType} to {destination}
                     </h1>
 
-                    {/* Rating */}
                     <div className="flex items-center mb-4">
                       {[...Array(5)].map((_, i) => (
                         <Icon
@@ -319,7 +347,6 @@ const TransportationCard = ({
                       </span>
                     </div>
 
-                    {/* Price */}
                     <div className="mb-6">
                       <span className="text-3xl font-bold text-primary">
                         ${price}
@@ -336,7 +363,6 @@ const TransportationCard = ({
                       )}
                     </div>
 
-                    {/* Transportation Details */}
                     <div className="space-y-2 mb-6">
                       <p className="text-sm text-gray-600">
                         <span className="font-semibold">Availability:</span>{" "}
@@ -360,36 +386,65 @@ const TransportationCard = ({
                       </p>
                     </div>
 
-                    {/* Book Now Button */}
                     <div className="flex space-x-4 mb-6">
                       {!isBooked ? (
                         <Button
-                          className="flex-1"
-                          onClick={availability ? handleBook : null}
-                          disabled={!availability}
-                        >
-                          <Icon
-                            icon={
-                              availability
-                                ? "heroicons:ticket"
-                                : "heroicons:x-circle"
-                            }
-                            className="w-4 h-4 mr-2"
-                          />
-                          {availability ? "Book Now" : "Not Available"}
-                        </Button>
+                        className="w-full"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isAvailable()) {
+                            handleBook();
+                          } else {
+                            // Implement notify me functionality here
+                            console.log("Notify me when available");
+                            // You can add a function to handle the notification sign-up
+                          }
+                        }}
+                      >
+                        <Icon
+                          icon={isAvailable() ? "heroicons:shopping-bag" : "heroicons:bell"}
+                          className="w-4 h-4 ltr:mr-2 rtl:ml-2"
+                        />
+                        {isAvailable() ? "Add to Cart" : "Notify Me When Available"}
+                      </Button>
                       ) : (
-                        <Button
-                          variant="outline"
-                          className="flex-1"
-                          onClick={goToBookings}
-                        >
-                          <Icon
-                            icon="heroicons:ticket"
-                            className="w-4 h-4 mr-2"
-                          />
-                          Booked - View Bookings
-                        </Button>
+                        <div className="flex flex-wrap gap-4">
+              <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
+                <button
+                  type="button"
+                  className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    decrementCount();
+                  }}
+                >
+                  <Icon icon="eva:minus-fill" />
+                </button>
+
+                <div className="flex-1 text-base py-2 flex items-center min-w-[45px] justify-center text-primary font-medium">
+                  {count}
+                </div>
+                <button
+                  type="button"
+                  className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    incrementCount();
+                  }}
+                  disabled={count >= quantity}
+                >
+                  <Icon icon="eva:plus-fill" />
+                </button>
+              </div>
+              <Button
+                variant="outline"
+                className="py-2 px-5 flex-none"
+              >
+                <Icon icon="heroicons:shopping-bag" className="w-4 h-4" />
+                Pay now
+              </Button>
+            </div>
                       )}
                       <Popover
                         open={isShareOpen}
@@ -440,7 +495,6 @@ const TransportationCard = ({
                 </div>
               </div>
 
-              {/* Transportation Description Tabs */}
               <Tabs defaultValue="info" className="w-full">
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="info">
@@ -512,3 +566,4 @@ const TransportationCard = ({
 };
 
 export default TransportationCard;
+
