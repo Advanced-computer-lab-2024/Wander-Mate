@@ -39,6 +39,7 @@ import PaymentPage from "./pages/Payment";
 import ShowWithDocs from "./components/showRegisteredWithDocs";
 import TourGuideProfileManager from "./components/TourGuideProfileManager";
 import TransportationCheckout from "./components/transportationCheckout";
+import AddressCard from "./components/ui/addressCard";
 function App() {
   return (
     <Router>
@@ -79,6 +80,8 @@ function App() {
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/tourGuideProfileManager" element={<TourGuideProfileManager />} />
         <Route path="/transportationCheckout" element={<TransportationCheckout />} />
+        <Route path="/addressCard" element={<AddressCard />} />
+        
       </Routes>
     </Router>
   );
