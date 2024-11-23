@@ -105,15 +105,18 @@ export default function PlaceCard({
           <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
             Category: {category}
           </p>
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-2">
-              {tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-1 mb-2">
+          {tags && tags.length > 0 ? (
+            tags.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))
+          ) : (
+            <div className="w-full h-4" /> // Add a space equivalent to the height of a badge
           )}
+        </div>
+
           <div className="flex items-center mb-2">
             {[...Array(5)].map((_, i) => (
               <Icon
