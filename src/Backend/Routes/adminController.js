@@ -15,6 +15,7 @@ const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const Itinerary = require("../Models/itinerary.js");
 const touristModel = require("../Models/tourist.js");
+const Users = require("../Models/users.js");
 const advertiserModel = require("../Models/advertiser.js");
 const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
@@ -1433,6 +1434,50 @@ const createPromoCode = async (req, res) => {
       .json({ message: "Error creating promo code", error: error.message });
   }
 };
+
+
+const viewAllUsers = async (req, res) => {
+  try {
+    // Get the total number of users
+    const totalUsers = await Users.countDocuments();
+    // Aggregate to find new users per month
+    const newUsersPerMonth = await Users.aggregate([
+      {
+        $group: {
+          _id: { 
+            year: { $year: "$createdAt" }, 
+            month: { $month: "$createdAt" } 
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          count: 1,
+        },
+      },
+    ]);
+
+    // Respond with the results
+    res.status(200).json({
+      totalUsers,
+      newUsersPerMonth,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 ///////////////////////////Nadeem Sprint 3//////////////////////////
 
 module.exports = {
@@ -1484,4 +1529,5 @@ module.exports = {
   resetPassword,
   getAirports,
   createPromoCode,
+  viewAllUsers
 };
