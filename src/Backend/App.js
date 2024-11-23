@@ -167,6 +167,7 @@ const {
   getAirports,
   createPromoCode,
   sendOutOfStockNotificationAdmin,
+  viewAllUsers
 } = require("./Routes/adminController.js");
 
 const {
@@ -540,5 +541,5 @@ app.put("/sendOutOfStockNotificationSeller",sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin",sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
-app.get("/ViewBookmarkedAttractions",ViewBookmarkedAttractions);
-app.post("/checkOut",checkOut);
+app.get("/ViewBookmarkedAttractions", ViewBookmarkedAttractions)
+app.get("/viewAllUsers",viewAllUsers);
