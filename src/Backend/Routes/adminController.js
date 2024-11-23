@@ -1566,6 +1566,6 @@ module.exports = {
   resetPassword,
   getAirports,
   createPromoCode,
-  viewAllUsers
+  viewAllUsers,
   sendOutOfStockNotificationAdmin,
 };
