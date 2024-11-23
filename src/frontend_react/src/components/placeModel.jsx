@@ -11,6 +11,8 @@ import {
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import axios from "axios";
+// import BasicMap from "./ui/basic-map";
+import NonMovableMap from "./ui/nonMovableMap";
 
 export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
   const [reviews, setReviews] = useState([]);
@@ -29,6 +31,10 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
       }
     }
   };
+
+  const doNothing = () => {
+
+  }
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -145,25 +151,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                   </div>
                   {/* Place Details */}
                   <div className="space-y-2 mb-6">
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Location:</span>{" "}
-                      {place.location}
-                      {/* New Button to Open Google Maps */}
-                      <Button
-                        variant="outline"
-                        className="ml-4"
-                        onClick={() => {
-                          const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
-                          window.open(mapUrl, "_blank");
-                        }}
-                      >
-                        <Icon
-                          icon="heroicons:location-marker"
-                          className="w-4 h-4 mr-2"
-                        />
-                        Open in Google Maps
-                      </Button>
-                    </p>
+                    
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Category:</span>{" "}
                       {place.category}
@@ -245,8 +233,11 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
-                <TabsTrigger value="attractions">
+                {/* <TabsTrigger value="attractions">
                   Nearby Attractions
+                </TabsTrigger> */}
+                <TabsTrigger value="Location">
+                  Location
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="info" className="mt-4">
@@ -281,7 +272,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="attractions" className="mt-4">
+              {/* <TabsContent value="attractions" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     <p className="text-gray-600">
@@ -291,7 +282,40 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                     </p>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
+              <TabsContent value="Location" className="mt-4">
+  <Card>
+    <CardContent className="p-6">
+      <p className="text-sm text-gray-600 mb-4">
+        <span className="font-semibold">Location:</span> {place.location}
+        {/* New Button to Open Google Maps */}
+        <Button
+          variant="outline"
+          className="ml-4"
+          onClick={() => {
+            const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
+            window.open(mapUrl, "_blank");
+          }}
+        >
+          <Icon
+            icon="heroicons:location-marker"
+            className="w-4 h-4 mr-2"
+          />
+          Open in Maps
+        </Button>
+      </p>
+      {/* Displaying the Map directly */}
+      <div className="w-full h-64 rounded-lg overflow-hidden">
+        <NonMovableMap
+          initialLocation={[place.longitude, place.latitude]}
+          onLocationSelect={doNothing}
+        />
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
             </Tabs>
           </div>
         </div>
