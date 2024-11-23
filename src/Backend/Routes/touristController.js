@@ -470,6 +470,7 @@ const sortProductsByRatingstourist = async (req, res) => {
     res.status(500).json({ message: "Failed to sort products by ratings" });
   }
 };
+
 const filterItineraries = async (req, res) => {
   const { minPrice, maxPrice, AvailableDates, Tags, Language } = req.body;
 
@@ -1418,6 +1419,7 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
 const redeemPoints = async (req, res) => {
   const { touristID, pointsToRedeem } = req.body;
 
@@ -1467,6 +1469,7 @@ const redeemPoints = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const reviewProduct = async (req, res) => {
   const { productId, userId, review, username } = req.body; // Only productId and review as a string
   try {
@@ -1496,6 +1499,7 @@ const reviewProduct = async (req, res) => {
     });
   }
 };
+
 const getMyBookings = async (req, res) => {
   const { touristID } = req.params; // Assuming the tourist ID is passed in the URL
 
@@ -1788,6 +1792,7 @@ const bookActivity = async (req, res) => {
       .json({ message: "Error booking itinerary", error: error.message });
   }
 };
+
 const updateEventRatings = async (req, res) => {
   const { eventId } = req.params;
   try {
@@ -1882,6 +1887,7 @@ const currencyConverter = async (req, res) => {
     });
   }
 };
+
 const getProductReviews = async (req, res) => {
   const { productId } = req.params; // Get productId from the request parameters
   try {
@@ -1910,6 +1916,7 @@ const getProductReviews = async (req, res) => {
     });
   }
 };
+
 // Method to select preferences
 const selectPreferences = async (req, res) => {
   try {
@@ -2067,7 +2074,6 @@ const PayByCard = async (req, res) => {
 };
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
-
 const removeFromCart = async (req, res) => {
   const { touristID, productId, attributes } = req.body;
 
@@ -2106,6 +2112,7 @@ const removeFromCart = async (req, res) => {
     return res.status(400).json({ message: "Error removing item from cart" });
   }
 };
+
 const BookmarkAttraction = async (req, res) => {
   const { userId, attractionId } = req.body;
 
@@ -2143,6 +2150,7 @@ const BookmarkAttraction = async (req, res) => {
     return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
+
 const ViewBookmarkedAttractions = async (req, res) => {
   const { userId } = req.body;
 
@@ -2163,8 +2171,6 @@ const ViewBookmarkedAttractions = async (req, res) => {
     return res.status(500).json({ message: "Error retrieving bookmarked attractions", error: error.message });
   }
 };
-
-
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2293,7 +2299,6 @@ const addWishlistItemToCart = async (req, res) => {
 
 };
 
-
 const showCart = async (req, res) => {
   const { touristID } = req.params;
   try {
@@ -2352,9 +2357,6 @@ const payWithWallet = async (req, res) => {
 };
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
-
-
-
 
 const applyPromoCode = async (req, res) => {
   const { touristId } = req.params;
@@ -2422,6 +2424,7 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const getDeliveryAddresses = async (req, res) => {
   const { touristId } = req.params;
 
@@ -2445,8 +2448,6 @@ const getDeliveryAddresses = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
@@ -2476,11 +2477,6 @@ const cancelOrder = async (req, res) => {
     return res.status(500).json({ message: "Error cancelling the order", error: error.message });
   }
 };
-
-
-
-
-
 
 const addToWishlist = async (req, res) => {
   const { touristId, productId } = req.body;
@@ -2525,6 +2521,7 @@ const addToWishlist = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const viewMyWishlist = async (req, res) => {
   const { touristId } = req.params; // Assuming the tourist ID is passed as a URL parameter
 
@@ -2548,6 +2545,7 @@ const viewMyWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 const removeFromWishlist = async (req, res) => {
   const { touristId, productId } = req.body; // Get touristId and productId from the request body
 
@@ -2649,6 +2647,49 @@ const requestToBeNotified = async (req, res) => {
   }
 };
 
+const checkOut = async (req, res) => {
+  const { userId, products, total, address, isPaid } = req.body;
+  if (!userId || !products || !total || !address) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required parameters: userId, products, total, or address",
+    });
+  }
+  if (!Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Products must be a non-empty array",
+    });
+  }
+
+  try {
+    // Create a new order
+    const newOrder = new Order({
+      userId,
+      products,
+      total,
+      address,
+      isPaid: isPaid || false, // Default to false if not provided
+    });
+
+    // Save the order to the database
+    const savedOrder = await newOrder.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      order: savedOrder,
+    });
+  } catch (error) {
+    // Handle errors
+    return res.status(500).json({
+      success: false,
+      message: "Error creating the order",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   touristRegister,
   searchAttractions,
@@ -2723,4 +2764,5 @@ module.exports = {
   requestToBeNotified,
   PayByCard,
   ViewBookmarkedAttractions,
+  checkOut,
 };
