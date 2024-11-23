@@ -15,6 +15,7 @@ const Reply = require("../Models/reply.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const Itinerary = require("../Models/itinerary.js");
 const touristModel = require("../Models/tourist.js");
+const Users = require("../Models/users.js");
 const advertiserModel = require("../Models/advertiser.js");
 const sellerModel = require("../Models/seller.js");
 const tourGuideModel = require("../Models/tourGuide.js");
@@ -22,8 +23,11 @@ const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
 const PromoCode = require("../Models/promoCode.js");
 const attractions= require("../Models/attractions.js");
+const Notification = require("../Models/notifications.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
+const Sales = require("../Models/sales.js"); 
+
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1058,6 +1062,7 @@ const viewComplaintDetails = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
+
 const viewProductSalesAndQuantity = async (req, res) => {
   try {
     // Fetch all products with their available quantity and sales information
@@ -1084,6 +1089,7 @@ const viewProductSalesAndQuantity = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const flagEventOrItinerary = async (req, res) => {
   const { id, type } = req.body; // Expecting the ID and type of the item (event or itinerary)
 
@@ -1433,7 +1439,138 @@ const createPromoCode = async (req, res) => {
       .json({ message: "Error creating promo code", error: error.message });
   }
 };
+
+
+const viewAllUsers = async (req, res) => {
+  try {
+    // Get the total number of users
+    const totalUsers = await Users.countDocuments();
+    // Aggregate to find new users per month
+    const newUsersPerMonth = await Users.aggregate([
+      {
+        $group: {
+          _id: { 
+            year: { $year: "$createdAt" }, 
+            month: { $month: "$createdAt" } 
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          count: 1,
+        },
+      },
+    ]);
+
+    // Respond with the results
+    res.status(200).json({
+      totalUsers,
+      newUsersPerMonth,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 ///////////////////////////Nadeem Sprint 3//////////////////////////
+
+const sendOutOfStockNotificationAdmin = async (req, res) => {
+  try {
+    // Destructure data from the request body
+    const { message, adminId, productId } = req.body;
+
+    if (!message || !adminId ) {
+      return res.status(400).json({ error: "Message, adminId, and productId are required." });
+    }
+
+    // Find or update the notification for the specified admin
+    const notification = await Notification.findOneAndUpdate(
+      { userID: adminId, userModel: "Admin" },
+      {
+        $push: {
+          notifications: {
+            aboutID: productId,
+            aboutModel: "Product",
+            message,
+          },
+        },
+      },
+      { upsert: true, new: true } // Create a new document if it doesn't exist
+    );
+
+    res.status(200).json({
+      message: "Notification added successfully for admin.",
+      notification,
+    });
+
+    console.log("Notification added for admin:", notification);
+  } catch (error) {
+    console.error("Error adding notification for admin:", error);
+    res.status(500).json({ error: "Failed to add notification for admin." });
+  }
+};
+
+const updateRevenueSales = async (req, res) => {
+  const { userID, userModel, amount } = req.body;
+
+  // Validate input
+  if (!userID || !userModel || !amount === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields: userID, userModel, or amount",
+    });
+  }
+
+
+  try {
+    // Check if the user already exists in the Sales table
+    let salesRecord = await Sales.findOne({ user: userID, userModel });
+
+    if (salesRecord) {
+      // If the user exists, update the revenue
+      salesRecord.revenue += amount;
+      await salesRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Revenue updated successfully",
+        sales: salesRecord,
+      });
+    } else {
+      // If the user doesn't exist, create a new record
+      salesRecord = new Sales({
+        user: userID,
+        userModel,
+        revenue: amount,
+      });
+
+      await salesRecord.save();
+
+      return res.status(201).json({
+        success: true,
+        message: "Sales record created successfully",
+        sales: salesRecord,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error updating sales record",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -1484,4 +1621,7 @@ module.exports = {
   resetPassword,
   getAirports,
   createPromoCode,
+  viewAllUsers,
+  sendOutOfStockNotificationAdmin,
+  updateRevenueSales,
 };
