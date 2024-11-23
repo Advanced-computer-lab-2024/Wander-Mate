@@ -36,6 +36,7 @@ import BasicMap from "./components/ui/basic-map";
 import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
 import PaymentPage from "./pages/Payment";
+import ShowWithDocs from "./components/showRegisteredWithDocs";
 function App() {
   return (
     <Router>
@@ -73,6 +74,7 @@ function App() {
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
       </Routes>
     </Router>
   );
