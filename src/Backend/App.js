@@ -506,7 +506,6 @@ app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", upload.single("picture"), addItemToCart);
 app.post(
   "/addWishlistItemToCart",
-  upload.single("picture"),
   addWishlistItemToCart
 );
 app.post("/addWishlistItemToCart", upload.single("picture"), addWishlistItemToCart);
