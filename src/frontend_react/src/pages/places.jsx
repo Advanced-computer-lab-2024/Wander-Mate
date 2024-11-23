@@ -115,6 +115,11 @@ export default function Places() {
   }, []);
 
   const filteredPlaces = places.filter((place) => {
+
+    if (selectedCategory === " "){
+      setSelectedCategory ("");
+    }
+
     const matchesName = place.Name.toLowerCase().includes(
       searchTerm.toLowerCase()
     );
@@ -234,6 +239,7 @@ export default function Places() {
                 categories.find((cat) => cat._id === place.Category)?.Name ||
                 "No Category"
               }
+              TicketPrices={place.TicketPrices}
             />
           ))
         ) : (
