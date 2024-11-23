@@ -194,7 +194,7 @@ const addProductseller = async (req, res) => {
     }
 
     // Create a new product instance
-    const product = await productModel.create({
+    const product = await ProductModel.create({
       picture: {
         data: req.file.buffer, // Get image data (Buffer)
         contentType: req.file.mimetype, // Get content type of the image
