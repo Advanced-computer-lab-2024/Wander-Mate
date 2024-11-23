@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { Card, CardHeader, CardContent, CardTitle } from "../components/ui/card";
+import { Card, CardContent, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { cn } from "../lib/utils";
@@ -15,14 +15,41 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [requirementsMet, setRequirementsMet] = useState({
+    length: false,
+    lowercase: false,
+    numberOrSymbol: false,
+  });
+
+  // Validate password requirements
+  const validatePassword = (password) => {
+    const lengthRequirement = password.length >= 8;
+    const lowercaseRequirement = /[a-z]/.test(password);
+    const numberOrSymbolRequirement = /[0-9!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    setRequirementsMet({
+      length: lengthRequirement,
+      lowercase: lowercaseRequirement,
+      numberOrSymbol: numberOrSymbolRequirement,
+    });
+
+    return lengthRequirement && lowercaseRequirement && numberOrSymbolRequirement;
+  };
 
   const handleChangePassword = () => {
+    // Validate new password against requirements
+    if (!validatePassword(newPassword)) {
+      setError("New password does not meet the requirements");
+      return;
+    }
+
+    // Check if passwords match
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
     } else {
       setError("");
-      // Proceed with password change logic
       alert("Password changed successfully!");
+      // Proceed with password change logic
     }
   };
 
@@ -52,7 +79,10 @@ const ChangePassword = () => {
                   id="newPassword"
                   type={newPasswordType}
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    validatePassword(e.target.value);
+                  }}
                 />
                 <Eye
                   className={cn("absolute right-3 top-1/2 -translate-y-1/2 text-default-500 w-4 h-4 cursor-pointer", newPasswordType === "text" && "hidden")}
@@ -89,21 +119,23 @@ const ChangePassword = () => {
           </div>
           <div className="mt-5 text-sm font-medium text-default-800">Password Requirements:</div>
           <div className="mt-3 space-y-1.5">
-            {
-              [
-                "Minimum 8 characters long - the more, the better.",
-                "At least one lowercase character.",
-                "At least one number, symbol, or whitespace character."
-              ].map((item, index) => (
+            {[
+              { text: "Minimum 8 characters long", met: requirementsMet.length },
+              { text: "At least one lowercase character", met: requirementsMet.lowercase },
+              { text: "At least one number, symbol, or whitespace character", met: requirementsMet.numberOrSymbol },
+            ].map((item, index) => (
+              <div
+                className="flex items-center gap-1.5"
+                key={`requirement-${index}`}
+              >
                 <div
-                  className="flex items-center gap-1.5"
-                  key={`requirement-${index}`}
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-default-400"></div>
-                  <div className="text-xs text-default-600">{item}</div>
-                </div>
-              ))
-            }
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    item.met ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
+                <div className="text-xs text-default-600">{item.text}</div>
+              </div>
+            ))}
           </div>
           <div className="mt-6 flex gap-5 justify-end">
             <Button color="secondary">Cancel</Button>
