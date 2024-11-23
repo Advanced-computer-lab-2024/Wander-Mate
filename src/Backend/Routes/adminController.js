@@ -26,6 +26,8 @@ const attractions= require("../Models/attractions.js");
 const Notification = require("../Models/notifications.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
+const Sales = require("../Models/sales.js"); 
+
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1060,6 +1062,7 @@ const viewComplaintDetails = async (req, res) => {
     return res.status(400).json({ message: "Internal server error" });
   }
 };
+
 const viewProductSalesAndQuantity = async (req, res) => {
   try {
     // Fetch all products with their available quantity and sales information
@@ -1086,6 +1089,7 @@ const viewProductSalesAndQuantity = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const flagEventOrItinerary = async (req, res) => {
   const { id, type } = req.body; // Expecting the ID and type of the item (event or itinerary)
 
@@ -1517,6 +1521,57 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
   }
 };
 
+const updateRevenueSales = async (req, res) => {
+  const { userID, userModel, amount } = req.body;
+
+  // Validate input
+  if (!userID || !userModel || !amount === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields: userID, userModel, or amount",
+    });
+  }
+
+
+  try {
+    // Check if the user already exists in the Sales table
+    let salesRecord = await Sales.findOne({ user: userID, userModel });
+
+    if (salesRecord) {
+      // If the user exists, update the revenue
+      salesRecord.revenue += amount;
+      await salesRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Revenue updated successfully",
+        sales: salesRecord,
+      });
+    } else {
+      // If the user doesn't exist, create a new record
+      salesRecord = new Sales({
+        user: userID,
+        userModel,
+        revenue: amount,
+      });
+
+      await salesRecord.save();
+
+      return res.status(201).json({
+        success: true,
+        message: "Sales record created successfully",
+        sales: salesRecord,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error updating sales record",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1568,4 +1623,5 @@ module.exports = {
   createPromoCode,
   viewAllUsers,
   sendOutOfStockNotificationAdmin,
+  updateRevenueSales,
 };
