@@ -35,7 +35,7 @@ const BasicMap = ({ onLocationSelect, initialLocation }) => {
 
     geocoder.on('result', (e) => {
       const { lng, lat } = e.result.geometry.coordinates;
-      if (!isNaN(lng) && !isNaN(lat)) { // Check if coordinates are valid numbers
+      if (!isNaN(lng) && !isNaN(lat)) {
         marker.current.setLngLat([lng, lat]);
         onLocationSelect(lng, lat);
         map.current.flyTo({ center: [lng, lat], zoom: 14 });
@@ -48,6 +48,22 @@ const BasicMap = ({ onLocationSelect, initialLocation }) => {
       marker.current = new mapboxgl.Marker()
         .setLngLat([lng, lat])
         .addTo(map.current);
+
+      // Detect user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userLng = position.coords.longitude;
+            const userLat = position.coords.latitude;
+            map.current.flyTo({ center: [userLng, userLat], zoom: 14 });
+            marker.current.setLngLat([userLng, userLat]);
+            onLocationSelect(userLng, userLat);
+          },
+          (error) => {
+            console.error("Error getting user's location:", error);
+          }
+        );
+      }
     });
 
     map.current.on('click', (e) => {
