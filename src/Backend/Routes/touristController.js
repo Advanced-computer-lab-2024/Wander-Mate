@@ -28,6 +28,7 @@ const PromoCode = require("../Models/promoCode.js");
 const Cart = require("../Models/cart.js");
 const Wishlist = require("../Models/whishlist.js");
 const ordermodel = require("../Models/order.js");
+const bookmarked = require("../Models/bookMark.js");
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -2007,47 +2008,60 @@ const removeFromCart = async (req, res) => {
   }
 };
 
-const BookmarkAttraction = async (req, res) => {
-  const { userId, attractionId } = req.body;
+const Bookmarkevent = async (req, res) => {
+  const { userId, eventId, type } = req.body;
 
-  if (!userId || !attractionId) {
+  if (!userId || !eventId || !type) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
-    const { ObjectId } = require("mongodb");
-    if (!ObjectId.isValid(userId) || !ObjectId.isValid(attractionId)) {
-      return res.status(400).json({ message: "Invalid ID format" });
-    }
-
+    // Validate user
     const user = await userModel.findById(userId);
     if (!user) {
       console.error("User not found:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
-    const attraction = await attractionModel.findById(attractionId);
-    if (!attraction) {
-      console.error("Attraction not found:", attractionId);
-      return res.status(404).json({ message: "Attraction not found" });
+    // Check if event is already bookmarked
+    if (user.bookmarkedAttractions.includes(eventId)) {
+      return res.status(400).json({ message: "Event already bookmarked" });
     }
 
-    if (user.bookmarkedAttractions.includes(attractionId)) {
-      return res.status(400).json({ message: "Attraction already bookmarked" });
+    // Add or update bookmark in BookMark collection
+    let bookmark = await bookmarked.findOne({ userId, eventModel: type });
+
+    if (!bookmark) {
+      // If no existing bookmark document, create a new one
+      bookmark = new bookmarked({
+        userId,
+        event: [eventId],
+        eventModel: type,
+      });
+    } else {
+      // If the document exists, add the event to the `event` array
+      if (!bookmark.event.includes(eventId)) {
+        bookmark.event.push(eventId);
+      }
     }
 
-    user.bookmarkedAttractions.push(attractionId);
+    // Save bookmark
+    await bookmark.save();
+
+    // Update user's `bookmarkedAttractions`
+    user.bookmarkedAttractions.push(eventId);
     await user.save();
-    return res
-      .status(200)
-      .json({ message: "Attraction bookmarked successfully" });
+
+    return res.status(200).json({ message: "Event bookmarked successfully" });
   } catch (error) {
-    console.error("Error bookmarking attraction:", error);
-    return res
-      .status(500)
-      .json({ message: "Error bookmarking attraction", error: error.message });
+    console.error("Error bookmarking event:", error);
+    return res.status(500).json({
+      message: "Error bookmarking event",
+      error: error.message,
+    });
   }
 };
+
 
 const ViewBookmarkedAttractions = async (req, res) => {
   const { userId } = req.params;
@@ -2820,7 +2834,7 @@ module.exports = {
   viewMyWishlist,
   cancelOrder,
   removeFromWishlist,
-  BookmarkAttraction,
+  Bookmarkevent,
   addWishlistItemToCart,
   viewOrderDetails,
   requestToBeNotified,
