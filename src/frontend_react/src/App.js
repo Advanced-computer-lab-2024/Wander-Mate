@@ -43,6 +43,7 @@ import AddressCard from "./components/ui/addressCard";
 import BookFlight from "./pages/bookFlight";
 import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
+import AddNewAddressCard from "./components/addNewDeliveryAddress";
 import WhatPeopleSay from "./components/whatpeoplesay";
 function App() {
   return (
@@ -94,6 +95,8 @@ function App() {
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
+        <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
+        
         <Route path="/WhatPeopleSay" element={<WhatPeopleSay />} />
 
       </Routes>
