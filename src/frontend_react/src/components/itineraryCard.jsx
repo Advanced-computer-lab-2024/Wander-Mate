@@ -39,6 +39,7 @@ const ItineraryCard = ({
   PickUpLocation,
   DropOffLocation,
   Language,
+  currrn,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,12 +67,14 @@ const ItineraryCard = ({
     PickUpLocation,
     DropOffLocation,
     Language,
+    currrn,
   };
 
   return (
     <>
       {/* Modal for Itinerary Details */}
       <ItineraryModel
+        cur={currrn}
         itinerary={itinerary}
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}

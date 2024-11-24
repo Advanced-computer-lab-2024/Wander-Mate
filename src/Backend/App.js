@@ -83,7 +83,6 @@ const {
   viewMyWishlist,
   cancelOrder,
   removeFromWishlist,
-  BookmarkAttraction,
   addWishlistItemToCart,
   viewOrderDetails,
   requestToBeNotified,
@@ -93,6 +92,7 @@ const {
   ViewOrders,
   sendUpcomingEventNotifications,
   previewPromoCode,
+  Bookmarkevent,
 } = require("./Routes/touristController");
 
 const {
@@ -546,7 +546,7 @@ app.delete("/cancel-order/:orderId", cancelOrder);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
-app.post("/BookmarkAttraction", BookmarkAttraction);
+app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
 app.put("/sendOutOfStockNotificationSeller",  sendOutOfStockNotificationSeller);

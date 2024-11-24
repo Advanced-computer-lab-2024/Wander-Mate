@@ -22,7 +22,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 
-const CheckOut = ({ touristID, amount, disabled }) => {
+const TransportCheckOut = ({ touristID, amount, disabled }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
@@ -311,4 +311,4 @@ const CheckOut = ({ touristID, amount, disabled }) => {
 
 };
 
-export default CheckOut;
+export default TransportCheckOut;
