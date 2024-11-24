@@ -10,17 +10,16 @@ import {
 } from "./ui/popover";
 import { Icon } from "@iconify/react";
 import axios from "axios";
-import BasicMap from "./ui/basic-map";
+import NonMovableMap from "./ui/nonMovableMap";
 
 export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children }) {
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isShareOpen, setIsShareOpen] = useState(false);
-
-    console.log(itinerary);
   
     const handleOpenChange = (open) => {
       setIsOpen(open);
+      console.log(itinerary.PickUpLocation)
       if (!open) {
         const url = new URL(window.location.href);
         if (window.location.search.includes("open")) {
@@ -52,6 +51,8 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
         fetchReviews();
       }
     }, [isOpen, itinerary.Ratings]);
+
+    const doNothing = () => {}
   
     const handleToggleFavorite = async () => {
       setIsFavorite(!isFavorite);
@@ -119,16 +120,13 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                       {itinerary.name}
                     </h1>
                     <div className="space-y-2 mb-6">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Category:</span>{" "}
-                        {itinerary.language || "N/A"}
-                      </p>
+                      
                       <p className="text-sm text-gray-600">
                         <span className="font-semibold">Timeline:</span>{" "}
-                        {itinerary.timeLine || "N/A"}
+                        {itinerary.TimeLine }
                       </p>
                       <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Price:</span> ${itinerary.Price || "N/A"}
+                        <span className="font-semibold">Price:</span> ${itinerary.price || "N/A"}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-semibold">Available Dates:</span>{" "}
@@ -210,14 +208,13 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                 <TabsList>
                   <TabsTrigger value="info">Itinerary Information</TabsTrigger>
                   <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
-                  <TabsTrigger value="map">Location</TabsTrigger>
+                  <TabsTrigger value="map">Pickup Location</TabsTrigger>
+                  <TabsTrigger value="map1">Dropoff Location</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info" className="mt-4">
                   <Card>
                     <CardContent className="p-6">
-                      <p className="text-gray-600">
-                        Creator ID: {itinerary.Creator?.$oid || "N/A"}
-                      </p>
+                      
                       <p className="text-gray-600">
                         Activities:{" "}
                         {itinerary.Activities
@@ -263,17 +260,34 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                 <TabsContent value="map" className="mt-4">
                   <Card>
                     <CardContent className="p-6">
-                      <p className="text-gray-600 mb-4">
+                      {/* <p className="text-gray-600 mb-4">
                         <span className="font-semibold">Pick-Up Location:</span>{" "}
                         {itinerary.PickUpLocation?.coordinates?.join(", ") || "N/A"}
-                      </p>
-                      <p className="text-gray-600 mb-4">
+                      </p> */}
+                      {/* <p className="text-gray-600 mb-4">
                         <span className="font-semibold">Drop-Off Location:</span>{" "}
                         {itinerary.DropOffLocation?.coordinates?.join(", ") || "N/A"}
-                      </p>
+                      </p> */}
                       <div className="w-full h-64 rounded-lg overflow-hidden">
-                        <BasicMap
-                          initialLocation={itinerary.PickUpLocation?.coordinates || [0, 0]}
+                        <NonMovableMap
+                          initialLocation={itinerary.PickUpLocation?.coordinates}
+                          onLocationSelect={doNothing}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="map1" className="mt-4">
+                  <Card>
+                    <CardContent className="p-6">
+                      {/* <p className="text-gray-600 mb-4">
+                        <span className="font-semibold">Drop-Off Location:</span>{" "}
+                        {itinerary.DropOffLocation?.coordinates?.join(", ") || "N/A"}
+                      </p> */}
+                      <div className="w-full h-64 rounded-lg overflow-hidden">
+                        <NonMovableMap
+                          initialLocation={itinerary.DropOffLocation?.coordinates}
+                          onLocationSelect={doNothing}
                         />
                       </div>
                     </CardContent>
