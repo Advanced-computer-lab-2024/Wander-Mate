@@ -7,9 +7,15 @@ import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import NonMovableMap from "./ui/nonMovableMap";
 import { StarIcon } from 'lucide-react';
+import {
+  CustomPopover as Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./ui/popover";
 
 export default function ActivityModal({ activity, isOpen, setIsOpen, children }) {
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
@@ -22,6 +28,25 @@ export default function ActivityModal({ activity, isOpen, setIsOpen, children })
     // Here you would typically make an API call to book the activity
     // For now, we'll just simulate a successful booking
     setIsBookingConfirmed(true);
+  };
+
+  const handleShare = (method) => {
+    const currentUrl = window.location.href.split("?")[0];
+    const shareUrl = `${currentUrl}?open=true&activity=${activity.activityId}`;
+    const shareText = `Check out this amazing activity: ${activity.name}`;
+
+    if (method === "link") {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert("Link copied to clipboard!");
+        setIsShareOpen(false);
+      });
+    } else if (method === "email") {
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(
+        shareText
+      )}&body=${encodeURIComponent(shareUrl)}`;
+      window.location.href = mailtoLink;
+      setIsShareOpen(false);
+    }
   };
 
 
@@ -119,16 +144,57 @@ export default function ActivityModal({ activity, isOpen, setIsOpen, children })
                     {activity.isAvailable ? "Available" : "Not Available"}
                   </span>
                 </div>
+                <div className="flex space-x-4 mb-6">
                 {activity.isAvailable && !isBookingConfirmed && (
                   <Button onClick={handleBooking} className="w-full mb-4">
                     Book Now
                   </Button>
                 )}
-                {isBookingConfirmed && (
-                  <div className="text-green-500 font-semibold mt-4 mb-4">
-                    Booking confirmed! Thank you for your reservation.
+                    <Popover
+                      open={isShareOpen}
+                      onOpenChange={setIsShareOpen}
+                      onClose={() => setIsShareOpen(false)}
+                      trigger={
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsShareOpen(true)}
+                        >
+                          <Icon
+                            icon="heroicons:share"
+                            className="w-4 h-4 mr-2"
+                          />
+                          Share
+                        </Button>
+                      }
+                    >
+                      <div className="w-48 p-2">
+                        <div className="flex flex-col space-y-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => handleShare("link")}
+                            className="w-full justify-start"
+                          >
+                            <Icon
+                              icon="heroicons:link"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Copy Link
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => handleShare("email")}
+                            className="w-full justify-start"
+                          >
+                            <Icon
+                              icon="heroicons:envelope"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Email
+                          </Button>
+                        </div>
+                      </div>
+                    </Popover>
                   </div>
-                )}
               </div>
             </div>
           </div>
