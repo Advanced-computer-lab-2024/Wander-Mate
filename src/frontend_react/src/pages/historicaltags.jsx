@@ -8,13 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select"
-import { Plus, Church, Castle, Building, Landmark, LandmarkIcon as Monument } from 'lucide-react';
+import { Plus, Church, Castle, University, Landmark, Mountain,Snowflake,Trees,LandPlot } from 'lucide-react';
 
 const iconOptions = [
   { value: 'church', label: 'Church', icon: <Church className="h-5 w-5" /> },
   { value: 'castle', label: 'Castle', icon: <Castle className="h-5 w-5" /> },
-  { value: 'building', label: 'Building', icon: <Building className="h-5 w-5" /> },
+  { value: 'university', label: 'University', icon: <University className="h-5 w-5" /> },
   { value: 'landmark', label: 'Landmark', icon: <Landmark className="h-5 w-5" /> },
+  { value: 'mountain', label: 'Mountain', icon: <Mountain className="h-5 w-5" />},
+  { value: 'snowflake', label: 'Snowflake', icon: <Snowflake className="h-5 w-5"/>},
+  { value: 'trees', label: 'Trees', icon: <Trees className="h-5 w-5"/>},
+  { value: 'landplot', label: 'Landplot', icon: <LandPlot className="h-5 w-5"/>},
 ];
 
 const HistoricalTagsPage = () => {
@@ -63,12 +67,17 @@ const HistoricalTagsPage = () => {
           </SelectTrigger>
           <SelectContent>
             {iconOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                <div className="flex items-center">
-                  {option.icon}
-                  
-                </div>
-              </SelectItem>
+             <SelectItem key={option.value} value={option.value} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+             <div className="flex items-center">
+               {option.icon && (
+                 <span style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                   {option.icon}
+                 </span>
+               )}
+             </div>
+           </SelectItem>
+           
+            
             ))}
           </SelectContent>
         </Select>
