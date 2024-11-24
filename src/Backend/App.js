@@ -255,7 +255,6 @@ mongoose
 
       // Schedule the function to run every day at midnight
       cron.schedule("0 0 * * *", () => {
-        console.log("Running birthday promo assignment...");
         assignBirthdayPromo();
       });
       // cron.schedule('0 0 * * *', () => {

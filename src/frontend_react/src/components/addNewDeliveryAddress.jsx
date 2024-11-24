@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-// import NonMovableMap from './nonmovableMapAddress';
+import BasicMap from './ui/basic-map';
 
 const AddNewAddressCard = () => {
   const [username, setUsername] = useState('');
@@ -25,7 +25,10 @@ const AddNewAddressCard = () => {
     state: '',
     zipCode: '',
     country: '',
-    location: { coordinates: [0, 0] }
+    location: {
+      type: "Point",
+      coordinates: [-122.420679, 37.774929]
+    }
   });
 
   useEffect(() => {
@@ -74,7 +77,16 @@ const AddNewAddressCard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const touristId = localStorage.getItem("touristId");
+      const usernameFromSession = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${usernameFromSession}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      const { userID } = await reply.json();
+
+      let touristId = userID;
+      if (!touristId) {
+        touristId = localStorage.getItem("touristId");
+      }
+
       if (!touristId) {
         setError("Tourist ID not found in storage.");
         return;
@@ -88,7 +100,10 @@ const AddNewAddressCard = () => {
         state: '',
         zipCode: '',
         country: '',
-        location: { coordinates: [0, 0] }
+        location: {
+          type: "Point",
+          coordinates: [-122.420679, 37.774929]
+        }
       });
       alert('Address added successfully!');
     } catch (error) {
@@ -97,10 +112,13 @@ const AddNewAddressCard = () => {
     }
   };
 
-  const handleLocationSelect = (coordinates) => {
+  const handleLocationSelect = (lng, lat) => {
     setNewAddress(prev => ({
       ...prev,
-      location: { coordinates }
+      location: {
+        type: "Point",
+        coordinates: [lng, lat]
+      }
     }));
   };
 
@@ -184,10 +202,10 @@ const AddNewAddressCard = () => {
               </SelectContent>
             </Select>
           </div>
-          {/* <NonMovableMap
+          <BasicMap
             initialLocation={newAddress.location.coordinates}
             onLocationSelect={handleLocationSelect}
-          /> */}
+          />
           <Button type="submit" className="w-full">
             Add Address
           </Button>

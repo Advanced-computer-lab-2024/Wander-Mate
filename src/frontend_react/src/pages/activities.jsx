@@ -26,28 +26,33 @@ export default function Activities() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [activities, setActivities] = useState([]);
   const [types, setTypes] = useState([]);
   const [tags, setTags] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [tagMap, setTagMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-//   const fetchTypes = async () => {
-//     try {
-//       const response = await fetch("http://localhost:8000/getActivityTypes");
-//       if (!response.ok) throw new Error("Network response was not ok");
-//       const data = await response.json();
-//       setTypes(data);
-//     } catch (error) {
-//       console.error("Error fetching activity types:", error);
-//       alert("Could not load activity types. Please try again later.");
-//     }
-//   };
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/getCategories");
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      alert("Could not load categories. Please try again later.");
+    }
+  };
+
+  const handleCategoryChange = (value) => setSelectedCategory(value);
 
   const fetchTags = async () => {
     try {
-      const response = await fetch("http://localhost:8000/readHistoricalTags");
+      const response = await fetch("http://localhost:8000/readPreferenceTags");
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
       const tagMapping = {};
@@ -67,7 +72,7 @@ export default function Activities() {
       const response = await fetch("http://localhost:8000/viewActivities");
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
-      setActivities(data);
+      setActivities(data.map(activity => ({ ...activity, rating: activity.rating || 0 })));
     } catch (error) {
       console.error("Error fetching activities:", error);
       alert("Could not load activities. Please try again later.");
@@ -79,25 +84,29 @@ export default function Activities() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([ fetchTags(), fetchActivities()]);
+      await Promise.all([fetchCategories(), fetchTags(), fetchActivities()]);
     };
 
     fetchData();
   }, []);
 
   const filteredActivities = activities.filter((activity) => {
+    if (selectedCategory === " "){
+      setSelectedCategory("");
+    }
+
     const matchesName = activity.Name.toLowerCase().includes(
       searchTerm.toLowerCase()
     );
-    const matchesType = selectedType
-      ? activity.Type === selectedType
+    const matchesCategory = selectedCategory
+      ? activity.Category === selectedCategory
       : true;
     const matchesTags =
       selectedTags.length > 0
         ? selectedTags.some((tag) => activity.Tags.includes(tag))
         : true;
 
-    return matchesName && matchesType && matchesTags;
+    return matchesName && matchesCategory && matchesTags;
   });
 
   const handleSearch = (e) => setSearchTerm(e.target.value);
@@ -114,6 +123,7 @@ export default function Activities() {
     setSelectedType("");
     setSelectedTags([]);
   };
+
 
   return (
     <div className="container mx-auto p-4">
@@ -143,19 +153,19 @@ export default function Activities() {
             </SheetHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="type">Activity Type</Label>
+                <Label htmlFor="category">Category</Label>
                 <Select
-                  value={selectedType}
-                  onValueChange={handleTypeChange}
+                  value={selectedCategory}
+                  onValueChange={handleCategoryChange}
                 >
-                  <SelectTrigger id="type">
-                    <SelectValue placeholder="Select an activity type" />
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
-                    {types.map((type) => (
-                      <SelectItem key={type._id} value={type._id}>
-                        {type.Name}
+                  <SelectContent portal={false}>
+                    <SelectItem value=" ">All Categories</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>
+                        {category.Name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -189,8 +199,7 @@ export default function Activities() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {loading ? (
           <div className="col-span-full flex justify-center items-center">
-            <Loader className="h-8 w-
-8 animate-spin" />
+            <Loader className="h-8 w-8 animate-spin" />
           </div>
         ) : filteredActivities.length > 0 ? (
           filteredActivities.map((activity) => (
@@ -199,13 +208,14 @@ export default function Activities() {
               activityId={activity._id}
               name={activity.Name}
               location={activity.Location}
-              type={types.find((t) => t._id === activity.Type)?.Name || "Unknown Type"}
+              type={types.find((t) => t._id === activity.Category)?.Name || "Unknown Category"}
               tags={activity.Tags.map((tagId) => tagMap[tagId])}
               price={activity.Price}
               date={activity.Date}
               time={activity.Time}
               category={activity.Category}
               isAvailable={activity.IsAvailable}
+              rating={activity.rating}
             />
           ))
         ) : (
