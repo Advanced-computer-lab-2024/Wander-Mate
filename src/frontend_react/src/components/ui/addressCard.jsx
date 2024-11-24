@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Badge } from "../../components/ui/badge";
 import { MapPin, AlertCircle } from 'lucide-react';
 import NonMovableMap from './nonmovableMapAddress'; // Import the NonMovableMap component
+import { Button } from "../../components/ui/button"; // Import the Button component
+import { Icon } from '@iconify/react'; // Import the Icon component
 
 const AddressCard = () => {
   const [addresses, setAddresses] = useState([]);
@@ -103,6 +105,22 @@ const AddressCard = () => {
                     </p>
                     <p className="text-md text-gray-700">
                       <span className="font-bold text-blue-500">Country:</span> <span className="font-bold">{countryMapping[address.country] || address.country}</span>
+                    </p>
+                    <p className="text-sm text-gray-600 mb-4">
+                      <Button
+                        variant="outline"
+                        className="mt-2 ml-0"
+                        onClick={() => {
+                          const mapUrl = `https://www.google.com/maps?q=${address.location.coordinates[1]},${address.location.coordinates[0]}`;
+                          window.open(mapUrl, "_blank");
+                        }}
+                      >
+                        <Icon
+                          icon="heroicons:location-marker"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Open in Maps
+                      </Button>
                     </p>
                   </div>
                 </div>
