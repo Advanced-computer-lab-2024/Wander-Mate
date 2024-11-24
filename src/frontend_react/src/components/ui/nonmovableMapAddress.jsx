@@ -42,8 +42,8 @@ const NonMovableMap = ({ onLocationSelect, initialLocation }) => {
   }, [onLocationSelect]);
 
   return (
-    <div className="map-wrapper1">
-      <div ref={mapContainer} className="map-container1" />
+    <div className="map-wrapper2">
+      <div ref={mapContainer} className="map-container2" />
     </div>
   );
 };

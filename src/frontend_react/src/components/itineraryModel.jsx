@@ -18,10 +18,12 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isShareOpen, setIsShareOpen] = useState(false);
+    const [isBooked, setIsBooked] = useState(false);
+    const [count, setCount] = useState(1);
+    const maxQuantity = itinerary.maxQuantity || 10; // Assuming a max quantity limit
   
     const handleOpenChange = (open) => {
       setIsOpen(open);
-      console.log(itinerary.PickUpLocation)
       if (!open) {
         const url = new URL(window.location.href);
         if (window.location.search.includes("open")) {
@@ -30,6 +32,47 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
           window.history.replaceState({}, "", url);
           window.location.reload();
         }
+      }
+    };
+  
+    const handleBook = () => {
+      if (!isBooked) {
+        setIsBooked(true);
+      }
+    };
+  
+    const incrementCount = () => {
+      if (count < maxQuantity) {
+        setCount((prevCount) => prevCount + 1);
+      }
+    };
+  
+    const decrementCount = () => {
+      if (count > 1) {
+        setCount((prevCount) => prevCount - 1);
+      } else {
+        setIsBooked(false);
+      }
+    };
+  
+    const finishBooking = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get user ID");
+  
+        const { userID } = await reply.json();
+        await axios.post(`http://localhost:8000/bookItinerary`, {
+          userId: userID,
+          itineraryId: itinerary._id,
+          bookedCount: count,
+        });
+  
+        toast.success("Booking successful!");
+      } catch (error) {
+        console.error("Error booking itinerary:", error);
+        toast.error("Failed to book itinerary");
+        setIsBooked(false);
       }
     };
   
@@ -55,7 +98,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true"  && urlParams.get("itinerary") === itinerary.itineraryId) {
       setIsOpen(true);
     }
     }, [isOpen, itinerary.Ratings]);
@@ -163,80 +206,108 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                     </div>
   
                    {/* Favorite and Share Buttons */}
-<div className="space-y-4">
-  <div className="flex space-x-4">
-    <Button
-      className={`flex-1 ${
-        isFavorite ? "bg-red-500 hover:bg-red-600" : ""
-      }`}
-      onClick={handleToggleFavorite}
-    >
-      <Icon
-        icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-        className="w-4 h-4 mr-2"
-      />
-      {isFavorite
-        ? "Remove from Favorites"
-        : "Add to Favorites"}
-    </Button>
-    <Popover
-      open={isShareOpen}
-      onOpenChange={setIsShareOpen}
-      onClose={() => setIsShareOpen(false)}
-      trigger={
-        <Button
-          variant="outline"
-          onClick={() => setIsShareOpen(true)}
-        >
-          <Icon
-            icon="heroicons:share"
-            className="w-4 h-4 mr-2"
-          />
-          Share
-        </Button>
-      }
-    >
-      <div className="w-48 p-2">
-        <div className="flex flex-col space-y-2">
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("link")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:link"
-              className="w-4 h-4 mr-2"
-            />
-            Copy Link
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("email")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:envelope"
-              className="w-4 h-4 mr-2"
-            />
-            Email
-          </Button>
-        </div>
-      </div>
-    </Popover>
-  </div>
-  {/* Add spacing below the buttons */}
-  <div className="mt-6">
-    <Button
-      className="bg-blue-500 hover:bg-blue-600 text-white w-full"
-      onClick={() => alert("Booking feature is under development!")}
-    >
-      <Icon icon="heroicons:check-circle" className="w-4 h-4 mr-2" />
-      Book
-    </Button>
-  </div>
-</div>
-</div>
-</div>
+                  <div className="space-y-4">
+                    <div className="flex space-x-4">
+                      <Button
+                        className={`flex-1 ${
+                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                        }`}
+                        onClick={handleToggleFavorite}
+                      >
+                        <Icon
+                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                          className="w-4 h-4 mr-2"
+                        />
+                        {isFavorite
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </Button>
+                      <Popover
+                        open={isShareOpen}
+                        onOpenChange={setIsShareOpen}
+                        onClose={() => setIsShareOpen(false)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsShareOpen(true)}
+                          >
+                            <Icon
+                              icon="heroicons:share"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Share
+                          </Button>
+                        }
+                      >
+                        <div className="w-48 p-2">
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("link")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:link"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Copy Link
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("email")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:envelope"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Email
+                            </Button>
+                          </div>
+                        </div>
+                      </Popover>
+                    </div>
+                    {/* Add spacing below the buttons */}
+                    {!isBooked ? (
+                    <Button
+                      className="bg-blue-500 hover:bg-blue-600 text-white w-full"
+                      onClick={handleBook}
+                    >
+                      <Icon icon="heroicons:shopping-bag" className="w-4 h-4 mr-2" />
+                      Book
+                    </Button>
+                  ) : (
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center border border-gray-300 rounded">
+                        <button
+                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
+                          onClick={decrementCount}
+                        >
+                          <Icon icon="eva:minus-fill" />
+                        </button>
+                        <span className="px-4 py-2 text-gray-600">{count}</span>
+                        <button
+                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
+                          onClick={incrementCount}
+                          disabled={count >= maxQuantity}
+                        >
+                          <Icon icon="eva:plus-fill" />
+                        </button>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        onClick={finishBooking}
+                        className="py-2 px-5"
+                      >
+                        <Icon icon="heroicons:check-circle" className="w-4 h-4" />
+                        Confirm Booking
+                      </Button>
+                    </div>
+                  )}
+                  </div>
+                  </div>
+                  </div>
               </div>
   
               {/* Itinerary Description Tabs */}
