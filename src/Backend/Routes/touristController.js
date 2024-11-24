@@ -161,6 +161,7 @@ const handleTourist = async (req, res) => {
       };
       const badge = assignBadge(Points);
       tourist.Badge = badge;
+      await tourist.save();
 
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
