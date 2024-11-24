@@ -2705,6 +2705,42 @@ async function sendUpcomingEventNotifications() {
     console.error("Error sending notifications:", error);
   }
 }
+const previewPromoCode = async (req, res) => {
+  const { touristId } = req.params;
+  const { promoCode, purchaseAmount } = req.body;
+
+  try {
+    // Find the promo code
+    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
+
+    if (!code) {
+      return res.status(404).json({ message: "Promo code not found or already used." });
+    }
+
+    // Check if the promo code is expired
+    const currentDate = new Date();
+    if (code.expiryDate < currentDate) {
+      return res.status(400).json({ message: "Promo code has expired." });
+    }
+
+    // Calculate the discount (e.g., 10% discount)
+    const discount = 0.10; // Example discount rate
+    const discountAmount = purchaseAmount * discount;
+    const finalAmount = purchaseAmount - discountAmount;
+
+    // Return the preview information without marking the code as used
+    res.status(200).json({
+      message: "Promo code preview successful",
+      originalAmount: purchaseAmount,
+      discountAmount,
+      finalAmount,
+    });
+  } catch (error) {
+    console.error("Error previewing promo code:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 module.exports = {
   ViewOrders,
@@ -2781,4 +2817,5 @@ module.exports = {
   ViewBookmarkedAttractions,
   checkOut,
   sendUpcomingEventNotifications,
+  previewPromoCode,
 };

@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus } from 'lucide-react';
 import axios from "axios";
 import CheckOut from "./checkout";
 import { Button } from "./ui/button";
+import { toast } from "./ui/use-toast";
 
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -11,9 +12,9 @@ export default function ShoppingCart() {
   const [voucherCode, setVoucherCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [voucherError, setVoucherError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState(null);
 
-  // Fetch cart data from backend
   useEffect(() => {
     const fetchCartData = async () => {
       try {
@@ -23,11 +24,8 @@ export default function ShoppingCart() {
 
         const { userID } = await reply.json();
         setUserId(userID);
-        const response = await axios.get(
-          `http://localhost:8000/showCart/${userID}`
-        );
+        const response = await axios.get(`http://localhost:8000/showCart/${userID}`);
         
-        // Deduplicate items by combining quantities for same productId
         const cart = response.data;
         const uniqueItems = [];
         const seenProducts = new Map();
@@ -46,6 +44,11 @@ export default function ShoppingCart() {
         calculateSubtotal(uniqueItems);
       } catch (error) {
         console.error("Error fetching cart data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch cart data. Please try again.",
+          variant: "destructive",
+        });
       }
     };
 
@@ -83,7 +86,6 @@ export default function ShoppingCart() {
         });
       }
 
-      // Update the cart items locally
       const updatedItems = cartItems.map(cartItem =>
         cartItem.productId === item.productId
           ? { ...cartItem, quantity: newQuantity }
@@ -93,6 +95,11 @@ export default function ShoppingCart() {
       calculateSubtotal(updatedItems);
     } catch (error) {
       console.error("Error updating cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update cart. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -109,6 +116,11 @@ export default function ShoppingCart() {
       calculateSubtotal(updatedItems);
     } catch (error) {
       console.error("Error removing item from cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove item from cart. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -116,32 +128,56 @@ export default function ShoppingCart() {
     setVoucherError('');
     setIsLoading(true);
     try {
-      console.log(`Attempting to redeem voucher: ${voucherCode} for tourist ID: ${ID}`);
-      const response = await axios.post(`http://localhost:8000/applyPromoCode/${ID}`, {
+      const response = await axios.post(`http://localhost:8000/previewPromoCode/${ID}`, {
         promoCode: voucherCode,
         purchaseAmount: subtotal
       });
 
-      console.log('Promo code response:', response.data);
       const { discountAmount, finalAmount } = response.data;
       setDiscount(discountAmount);
-      setSubtotal(finalAmount);
-      setVoucherError('');
-      setVoucherCode(''); // Clear the voucher code input after successful application
+      setAppliedPromo({
+        code: voucherCode,
+        discountAmount,
+        finalAmount
+      });
+      setVoucherCode('');
+      toast({
+        title: "Promo Code Applied",
+        description: `Discount of $${discountAmount.toFixed(2)} will be applied at checkout.`,
+      });
     } catch (error) {
-      console.error('Error applying voucher:', error);
-      if (error.response) {
-        console.error('Error response:', error.response.data);
-        setVoucherError(error.response.data.message || 'Failed to apply voucher');
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-        setVoucherError('No response from server. Please try again.');
-      } else {
-        console.error('Error setting up request:', error.message);
-        setVoucherError('An unexpected error occurred. Please try again.');
-      }
+      console.error('Error previewing voucher:', error);
+      setVoucherError(error.response?.data?.message || 'Failed to preview voucher');
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || 'Failed to preview voucher',
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      if (appliedPromo) {
+        await axios.post(`http://localhost:8000/applyPromoCode/${ID}`, {
+          promoCode: appliedPromo.code,
+          purchaseAmount: subtotal
+        });
+      }
+      // Proceed with payment logic here
+      toast({
+        title: "Payment Successful",
+        description: "Your order has been placed successfully.",
+      });
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "Payment Failed",
+        description: "There was an error processing your payment. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -216,17 +252,22 @@ export default function ShoppingCart() {
                 className="w-full p-2 border rounded"
                 value={voucherCode}
                 onChange={(e) => setVoucherCode(e.target.value)}
-                disabled={isLoading} // Added disabled prop
+                disabled={isLoading || appliedPromo}
               />
               <Button 
                 className="mt-2 text-white px-4 py-2 rounded" 
                 onClick={handleRedeemVoucher}
-                disabled={!voucherCode || isLoading} // Added isLoading to disabled condition
+                disabled={!voucherCode || isLoading || appliedPromo}
               >
-                {isLoading ? 'Redeeming...' : 'Redeem'}
+                {isLoading ? 'Applying...' : 'Apply'}
               </Button>
             </div>
             {voucherError && <p className="text-red-500 text-sm">{voucherError}</p>}
+            {appliedPromo && (
+              <p className="text-green-600 text-sm">
+                Promo code applied: ${appliedPromo.discountAmount.toFixed(2)} discount
+              </p>
+            )}
           </div>
           <div className="md:w-1/3">
             <div className="bg-gray-100 p-4 rounded">
@@ -234,10 +275,10 @@ export default function ShoppingCart() {
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              {discount > 0 && (
+              {appliedPromo && (
                 <div className="flex justify-between mb-2 text-green-600">
                   <span>Discount</span>
-                  <span>-${discount.toFixed(2)}</span>
+                  <span>-${appliedPromo.discountAmount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between mb-2">
@@ -247,7 +288,7 @@ export default function ShoppingCart() {
               <div className="border-t pt-2 mt-2">
                 <div className="flex justify-between font-bold text-xl">
                   <span>TOTAL</span>
-                  <span>${(subtotal + 20 - discount).toFixed(2)}</span>
+                  <span>${((appliedPromo ? appliedPromo.finalAmount : subtotal) + 20).toFixed(2)}</span>
                 </div>
               </div>
               <CheckOut
