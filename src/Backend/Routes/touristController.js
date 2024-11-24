@@ -740,7 +740,7 @@ const BookFlight = async (req, res) => {
 
 const searchHotellocation = async (place) => {
   const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}`;
-
+  console.log("by");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -750,7 +750,9 @@ const searchHotellocation = async (place) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    if (!response.ok){ 
+      console.log(response);
+      throw new Error(`Error: ${response.status}`);}
 
     const data = await response.json();
     return data;
@@ -762,17 +764,17 @@ const searchHotellocation = async (place) => {
 
 const searchHotel = async (req, res) => {
   const { place, checkInDate, checkOutdate } = req.body;
-
   try {
     const locationData = await searchHotellocation(place);
-
+    console.log(locationData);
     if (!locationData || !locationData.data || locationData.data.length === 0) {
       return res.status(400).json({ message: "No location data found" });
     }
+    console.log("to");
 
     const geoId = locationData.data[0].geoId;
     const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
-
+    console.log("0");
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -781,12 +783,18 @@ const searchHotel = async (req, res) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    console.log("3");
 
+    if (!response.ok){
+      console.log(response);
+      throw new Error(`Error: ${response.status}`);
+  }
+    console.log("1");
     const hotelData = await response.json();
-
+    console.log("2");
     // Check if the response data has hotels
     if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      console.log("hiii");
       return res.status(400).json({ message: "No hotels found" });
     }
 
@@ -1873,8 +1881,6 @@ const assignBirthdayPromo = async () => {
     },
   });
 
-  console.log("Tourists with birthdays today:", touristsWithBirthdays);
-
   for (const tourist of touristsWithBirthdays) {
     try {
       // Check if a promo code already exists for this tourist
@@ -2253,14 +2259,14 @@ const payWithWallet = async (req, res) => {
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
 const applyPromoCode = async (req, res) => {
-  const { touristId } = req.params;
+  const { touristID } = req.params;
   const { promoCode, purchaseAmount } = req.body;
 
   try {
     // Find the promo code
     const code = await PromoCode.findOne({
       code: promoCode,
-      assignedTo: touristId,
+      assignedTo: touristID,
       isUsed: false,
     });
 
@@ -2711,10 +2717,16 @@ const previewPromoCode = async (req, res) => {
 
   try {
     // Find the promo code
-    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
+    const code = await PromoCode.findOne({
+      code: promoCode,
+      assignedTo: touristId,
+      isUsed: false,
+    });
 
     if (!code) {
-      return res.status(404).json({ message: "Promo code not found or already used." });
+      return res
+        .status(404)
+        .json({ message: "Promo code not found or already used." });
     }
 
     // Check if the promo code is expired
@@ -2724,7 +2736,7 @@ const previewPromoCode = async (req, res) => {
     }
 
     // Calculate the discount (e.g., 10% discount)
-    const discount = 0.10; // Example discount rate
+    const discount = 0.1; // Example discount rate
     const discountAmount = purchaseAmount * discount;
     const finalAmount = purchaseAmount - discountAmount;
 
@@ -2740,7 +2752,6 @@ const previewPromoCode = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 module.exports = {
   ViewOrders,

@@ -22,6 +22,9 @@ const FlightOrHotelSearch = () => {
   const [states, setStates] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState("");
+  const [checkInDate, setCheckInDate] = useState("");
+  const [checkOutdate, setCheckOutDate] = useState("");
 
   // Fetch countries on component mount
   useEffect(() => {
@@ -51,8 +54,8 @@ const FlightOrHotelSearch = () => {
       );
       console.log(response);
       const stateOptions = response.data.data.states.map((state) => ({
-        value: state.name || state.state ,
-        label: state.name || state.state,
+        value: state.name ,
+        label: state.name,
       }));
       setStates(stateOptions);
     } catch (error) {
@@ -73,8 +76,29 @@ const FlightOrHotelSearch = () => {
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
+    setSelectedPlace(`${selectedCountry.value},${selectedState.value}`);
+    console.log(checkInDate)
+    console.log(checkOutdate)
+    if(buttonText === "Search Hotels"){
+    try {
+      const response = await axios.put("http://localhost:8000/searchHotel",{
+        
+          place : selectedPlace,
+          checkInDate : checkInDate,
+          checkOutdate : checkOutdate,
+        
+       
+      }); 
+      console.log(response);
+    }catch (error) {
+      console.error("Error fetching data:", error);
+      setError("Failed to fetch results. Please try again.");
+    };
+  }else{
     try {
       const res = await axios.get("http://localhost:8000/search-flights", {
+
+
         params: {
           origin: flightData.origin,
           destination: flightData.destination,
@@ -90,6 +114,7 @@ const FlightOrHotelSearch = () => {
     } finally {
       setLoading(false);
     }
+  }
   };
 
   return (
@@ -155,17 +180,23 @@ const FlightOrHotelSearch = () => {
                   </span>
                 </div>
                 <Select
-                  options={states}
-                  value={selectedState}
-                  onChange={setSelectedState}
-                  placeholder="Select State"
-                  className="text-base text-[#283841]"
-                />
+  options={states}
+  value={selectedState}
+  onChange={(selectedOption) => {
+    // Remove "Governorate" and trim spaces
+    const cleanedLabel = selectedOption.label.replace(/Governorate/gi, "").trim();
+    setSelectedState({ ...selectedOption, label: cleanedLabel, value: cleanedLabel });
+  }}
+  placeholder="Select State"
+  className="text-base text-[#283841]"
+/>
+
+
               </div>
             )}
 
-            {/* Check-In Field */}
-            <div className="flex-1 min-w-[280px]">
+             {/* Check-In Field */}
+             <div className="flex-1 min-w-[280px]">
               <div className="mb-2">
                 <span className="font-bold text-base tracking-wider text-[#283841]">
                   Check-In
@@ -173,8 +204,9 @@ const FlightOrHotelSearch = () => {
               </div>
               <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
                 <input
-                  type="text"
-                  placeholder="Choose Dates"
+                  type="date"
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
                   className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
                 />
                 <Calendar className="w-6 h-6 text-[#826AF9]" />
@@ -190,15 +222,19 @@ const FlightOrHotelSearch = () => {
               </div>
               <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
                 <input
-                  type="text"
-                  placeholder="Choose Dates"
+                  type="date"
+                  value={checkOutdate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
                   className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
                 />
                 <Calendar className="w-6 h-6 text-[#826AF9]" />
               </div>
             </div>
 
-            <button className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px]">
+            <button
+              onClick={handleSubmit}
+              className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px]"
+            >
               <span className="font-semibold text-base tracking-wider">
                 {buttonText}
               </span>
