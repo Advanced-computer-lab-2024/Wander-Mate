@@ -1,52 +1,77 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Badge } from "./ui/badge";
-import { Plus, X, Upload } from 'lucide-react';
 
 const API_URL = "http://localhost:8000";
 
 const TourGuideProfileManager = () => {
   const [profile, setProfile] = useState(null);
-  const [skills, setSkills] = useState([]);
+  const [previousWork, setPreviousWork] = useState('');
+  const [yearsOfExperience, setYearsOfExperience] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const username = sessionStorage.getItem("username");
 
   useEffect(() => {
+    if (!username) {
+      setErrorMessage("Username not found. Please log in or register.");
+      return;
+    }
+
     const fetchProfile = async () => {
-      try {
-        const { data } = await axios.get(`${API_URL}/readProfileInformation/${username}`);
-        setProfile(data);
-        setSkills(data.Skills || []);
-        setProfilePicture(data.ProfilePicture || null); // Fetch profile picture
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      }
-    };
+        try {
+          const { data } = await axios.get(`${API_URL}/readProfileInformation/${encodeURIComponent(username)}`);
+      
+          let pictureUrl = null;
+          if (data.picture && data.picture.data) {
+            const base64String = btoa(
+              new Uint8Array(data.picture.data).reduce(
+                (acc, byte) => acc + String.fromCharCode(byte),
+                ''
+              )
+            );
+            pictureUrl = `data:image/jpeg;base64,${base64String}`;
+          }
+      
+          setProfile(data);
+          setPreviousWork(data.PreviousWork || '');
+          setYearsOfExperience(data.YearsOfExperience || '');
+          setProfilePicture(pictureUrl);
+          setErrorMessage('');
+        } catch (error) {
+          console.error('Failed to fetch profile:', error);
+          setErrorMessage(error.response?.data?.message || 'An error occurred while fetching the profile.');
+        }
+      };
+      
     fetchProfile();
   }, [username]);
 
   const handleProfileSubmit = async (event) => {
     event.preventDefault();
+
     const formData = new FormData(event.target);
     formData.append("Username", username);
-    formData.append("Skills", JSON.stringify(skills));
+    formData.append("PreviousWork", previousWork);
+    formData.append("YearsOfExperience", yearsOfExperience);
+
     try {
       const { data } = await axios.put(`${API_URL}/updateProfileInformation`, Object.fromEntries(formData));
       setProfile(data.tourGuide);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
+
   const handlePasswordChange = async (event) => {
     event.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -68,25 +93,25 @@ const TourGuideProfileManager = () => {
     }
   };
 
-
-
   const handlePictureUpload = async (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      setProfilePicture(URL.createObjectURL(file)); // Preview the image
+      setProfilePicture(URL.createObjectURL(file)); // Show preview of selected image
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append('image', file);
+  
       try {
         await axios.put(`${API_URL}/uploadPicturetourguide/${profile._id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
-        alert("Profile picture uploaded successfully");
+        alert('Profile picture uploaded successfully');
       } catch (error) {
-        console.error("Failed to upload profile picture:", error);
-        alert("Failed to upload profile picture. Please try again.");
+        console.error('Failed to upload profile picture:', error);
+        alert('Failed to upload profile picture. Please try again.');
       }
     }
   };
+  
 
   const handleAccountDeletion = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
@@ -99,6 +124,10 @@ const TourGuideProfileManager = () => {
       }
     }
   };
+
+  if (errorMessage) {
+    return <div style={{ color: 'red' }}>{errorMessage}</div>;
+  }
 
   if (!profile) return <div>Loading...</div>;
 
@@ -117,25 +146,26 @@ const TourGuideProfileManager = () => {
             <div className="space-y-4">
               <Label>Profile Picture</Label>
               <div className="flex items-center gap-4">
-                {profilePicture && (
-                  <img
-                    src={profilePicture}
-                    alt="Profile"
-                    className="w-20 h-20 rounded-full object-cover"
-                  />
-                )}
-                {isEditing && (
-                  <Button as="label" variant="outline" className="flex items-center gap-2">
-                    <Upload size={16} /> Upload
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePictureUpload}
-                      hidden
-                    />
-                  </Button>
-                )}
-              </div>
+  {profilePicture && (
+    <img
+      src={profilePicture || "default-profile.png"}
+      alt="Profile"
+      className="w-20 h-20 rounded-full object-cover"
+    />
+  )}
+  {isEditing && (
+    <label className="flex items-center gap-2 cursor-pointer">
+      <Button variant="outline">Upload</Button>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handlePictureUpload}
+        hidden
+      />
+    </label>
+  )}
+</div>
+
             </div>
 
             {/* Name */}
@@ -186,33 +216,31 @@ const TourGuideProfileManager = () => {
               />
             </div>
 
-            {/* Skills */}
+            {/* Previous Work */}
             <div>
-              <Label>Skills</Label>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill, index) => (
-                  <Badge key={index} className="flex items-center gap-2">
-                    {skill}
-                    {isEditing && (
-                      <X
-                        className="cursor-pointer"
-                        onClick={() => setSkills(skills.filter((s) => s !== skill))}
-                      />
-                    )}
-                  </Badge>
-                ))}
-                {isEditing && (
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      const skill = prompt("Add a skill");
-                      if (skill) setSkills([...skills, skill]);
-                    }}
-                  >
-                    <Plus /> Add Skill
-                  </Button>
-                )}
-              </div>
+              <Label htmlFor="PreviousWork">Previous Work</Label>
+              <Input
+                id="PreviousWork"
+                name="PreviousWork"
+                value={previousWork}
+                onChange={(e) => setPreviousWork(e.target.value)}
+                disabled={!isEditing}
+                required
+              />
+            </div>
+
+            {/* Years of Experience */}
+            <div>
+              <Label htmlFor="YearsOfExperience">Years of Experience</Label>
+              <Input
+                id="YearsOfExperience"
+                name="YearsOfExperience"
+                type="number"
+                value={yearsOfExperience}
+                onChange={(e) => setYearsOfExperience(e.target.value)}
+                disabled={!isEditing}
+                required
+              />
             </div>
 
             {/* Toggle Edit Mode */}
@@ -242,6 +270,15 @@ const TourGuideProfileManager = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
             <Button type="submit">Change Password</Button>
