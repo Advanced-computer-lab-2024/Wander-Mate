@@ -37,9 +37,11 @@ import BasicMap from "./components/ui/basic-map";
 import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
 import ShowWithDocs from "./components/showRegisteredWithDocs";
-import TourGuideProfileManager from "./components/TourGuideProfileManager";
+import TourGuideProfileManager from "./pages/TourGuideProfileManager";
 import TransportationCheckout from "./components/transportationCheckout";
 import AddressCard from "./components/ui/addressCard";
+import BookFlight from "./pages/bookFlight";
+import HistoricalTagsPage from "./pages/historicaltags";
 function App() {
   return (
     <Router>
@@ -66,6 +68,7 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
@@ -87,6 +90,8 @@ function App() {
         />
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
+        <Route path="/historicaltags" element={<HistoricalTagsPage />} />
+
       </Routes>
     </Router>
   );

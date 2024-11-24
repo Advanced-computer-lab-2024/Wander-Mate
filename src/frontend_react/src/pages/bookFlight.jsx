@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import NavigationMenuBar from "../components/NavigationMenuBar";
 import FlightForm from "../forms/flightForm";
 import Flight from "../components/flight";
 import axios from "axios";
@@ -43,7 +42,6 @@ const BookFlight = (props) => {
 
   return (
     <React.Fragment>
-      <NavigationMenuBar />
       <div className="container mt-4">
         <FlightForm
           flightData={flightData}
