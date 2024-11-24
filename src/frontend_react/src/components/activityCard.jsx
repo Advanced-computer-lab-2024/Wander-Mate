@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import ActivityModal from "../components/activityModel";
+import { StarIcon } from 'lucide-react';
 
 export default function ActivityCard({
   activityId,
@@ -16,6 +17,7 @@ export default function ActivityCard({
   time,
   category,
   isAvailable,
+  rating,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,6 +32,7 @@ export default function ActivityCard({
     time,
     category,
     isAvailable,
+    rating,
   };
 
   return (
@@ -49,6 +52,17 @@ export default function ActivityCard({
           <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
             Price: ${price}
           </p>
+        </div>
+        <div className="flex items-center mb-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <StarIcon
+              key={star}
+              className={`w-4 h-4 ${
+                star <= Math.round(rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+              }`}
+            />
+          ))}
+          <span className="ml-2 text-sm text-gray-600">({rating.toFixed(1)})</span>
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
           {tags && tags.length > 0 ? (
