@@ -1914,21 +1914,36 @@ const assignBirthdayPromo = async () => {
   }
 };
 
+
+
 const PayByCard = async (req, res) => {
   try {
-    const { amount, currency } = req.body;
+    const { touristID } = req.params;
+    const { amount, currency, eventId } = req.body;
 
-    if (!amount || !currency) {
-      throw new Error('Amount and currency are required');
+    // Validate inputs
+    if (!amount || amount <= 0 || !currency || !eventId) {
+      throw new Error('Invalid input: amount, currency, and eventId are required');
     }
+
+    // Check user affordability (pseudo-code; replace with your logic)
+    // const userBalance = await getUserBalance(req.user.id);
+    // if (userBalance < amount) {
+    //   throw new Error('Insufficient balance to complete the payment');
+    // }
 
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount, // Ensure amount is in the smallest unit (e.g., cents)
+      amount,
       currency,
-      payment_method_types: ['card'], // Specify card as the payment method
+      payment_method_types: ['card'],
+      metadata: {
+        userId: touristID,
+        eventId,
+      },
     });
 
+    // Respond with client secret
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
     });

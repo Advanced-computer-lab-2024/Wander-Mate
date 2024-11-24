@@ -41,6 +41,7 @@ import ShowWithDocs from "./components/showRegisteredWithDocs";
 import TourGuideProfileManager from "./pages/TourGuideProfileManager";
 import TransportationCheckout from "./components/transportationCheckout";
 import AddressCard from "./components/ui/addressCard";
+import BookFlight from "./pages/bookFlight";
 function App() {
   return (
     <Router>
@@ -67,6 +68,7 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
@@ -83,7 +85,7 @@ function App() {
         <Route path="/transportationCheckout" element={<TransportationCheckout />} />
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
-        
+
       </Routes>
     </Router>
   );
