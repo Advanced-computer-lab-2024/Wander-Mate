@@ -20,7 +20,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     const [isShareOpen, setIsShareOpen] = useState(false);
     const [isBooked, setIsBooked] = useState(false);
     const [count, setCount] = useState(1);
-    const maxQuantity = itinerary.maxQuantity || 10; // Assuming a max quantity limit
+    const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
   
     const handleOpenChange = (open) => {
       setIsOpen(open);
@@ -193,7 +193,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                         {itinerary.TimeLine }
                       </p>
                       <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Price:</span> ${itinerary.price || "N/A"}
+                        <span className="font-semibold">Price:</span> {itinerary.currrn} {itinerary.price || "N/A"}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-semibold">Available Dates:</span>{" "}

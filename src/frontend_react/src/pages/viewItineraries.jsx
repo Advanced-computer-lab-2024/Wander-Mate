@@ -31,6 +31,8 @@ export default function ViewItineraries() {
   const [tags, setTags] = useState([]);
   const [tagMap, setTagMap] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
 
   // Filter states
   const [budget, setBudget] = useState([0, 100000]);
@@ -43,6 +45,19 @@ export default function ViewItineraries() {
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
+
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+  
+    fetchExchangeRates();
+
     const fetchItineraries = async () => {
       try {
         const response = await fetch("http://localhost:8000/viewItineraries");
@@ -125,8 +140,9 @@ export default function ViewItineraries() {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
+      const convertedPrice = itinerary.Price * (exchangeRates[currency] || 1);
       const matchesBudget =
-        itinerary.Price >= budget[0] && itinerary.Price <= budget[1];
+        convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
       const filterEndDate = endDate ? new Date(endDate) : null;
       const matchesDate = itinerary.AvailableDates.some((date) => {
@@ -272,9 +288,7 @@ export default function ViewItineraries() {
                     type="number"
                     id="budgetMin"
                     value={budget[0]}
-                    onChange={(e) =>
-                      setBudget([Number(e.target.value), budget[1]])
-                    }
+                    onChange={(e) => setBudget([Number(e.target.value), budget[1]])}
                     className="w-24"
                   />
                   <span>-</span>
@@ -282,13 +296,30 @@ export default function ViewItineraries() {
                     type="number"
                     id="budgetMax"
                     value={budget[1]}
-                    onChange={(e) =>
-                      setBudget([budget[0], Number(e.target.value)])
-                    }
+                    onChange={(e) => setBudget([budget[0], Number(e.target.value)])}
                     className="w-24"
                   />
                 </div>
               </div>
+              
+              {/* Currency Dropdown */}
+              <div>
+                <Label htmlFor="currency">Currency</Label>
+                <select
+                  id="currency"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="border border-gray-300 rounded p-2"
+                >
+                  {exchangeRates &&
+                    Object.keys(exchangeRates).map((cur) => (
+                      <option key={cur} value={cur}>
+                        {cur}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="startDate">Start Date</Label>
@@ -309,6 +340,7 @@ export default function ViewItineraries() {
                   />
                 </div>
               </div>
+
               <div>
                 <Label>Preferences</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
@@ -328,25 +360,13 @@ export default function ViewItineraries() {
                   ))}
                 </div>
               </div>
-              <div>
-                <Label htmlFor="language">Language</Label>
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent portal={false}>
-                    <SelectItem value=" ">Any</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <Button onClick={clearFilters} variant="outline">
                 Clear Filters
               </Button>
             </div>
           </SheetContent>
+
         </Sheet>
       </div>
 
@@ -362,7 +382,8 @@ export default function ViewItineraries() {
                 ...itinerary.LocationsToVisit.flatMap((location) => location.Tags || []),
                 ...itinerary.Activities.flatMap((activity) => activity.Tags || [])
               ].map((tagId) => tagMap[tagId])}
-              price={itinerary.Price}
+              price={(itinerary.Price * (exchangeRates[currency] || 1)).toFixed(2)}
+              currrn={currency}
               rating={itinerary.Ratings}
               Activities={itinerary.Activities.map((activity) => activity.Name)}
               LocationsToVisit={itinerary.LocationsToVisit.map((location) => location.Name)}
