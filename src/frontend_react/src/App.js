@@ -101,7 +101,6 @@ function App() {
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
         
         <Route path="/WhatPeopleSay" element={<WhatPeopleSay />} />
-        <Route path="/Explorer" element={<Explorer />} />
       
 
       </Routes>
