@@ -27,12 +27,22 @@ import { cn } from "../lib/utils";
 import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
-const CheckOut = ({ touristID, amount, disabled }) => {
+import { toast } from "./ui/use-toast";
+
+const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [totalSlide, setTotalSlide] = useState(3); // Default step count
-  const [alertMessage, setAlertMessage] = useState(null); // State for alert message
+  const [totalSlide, setTotalSlide] = useState(3);
+  const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
+  const [cardDetails, setCardDetails] = useState({
+    cardHolderName: "",
+    cardNumber: "",
+    expirationDate: "",
+    cvv: "",
+  });
+
+  
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -43,9 +53,66 @@ const CheckOut = ({ touristID, amount, disabled }) => {
     setTotalSlide(paymentMethod === "cash" ? 2 : 3);
   }, [paymentMethod]);
 
+  
+  const applyPromoCode = async () => {
+    if (voucherCode) {
+      try {
+        await axios.post(`http://localhost:8000/applyPromoCode/${touristID}`, {
+          promoCode: voucherCode.code,
+          purchaseAmount: amount
+        });
+        toast({
+          title: "Promo Code Applied",
+          description: "Your promo code has been successfully applied.",
+        });
+      } catch (error) {
+        console.error('Error applying promo code:', error);
+        toast({
+          title: "Error",
+          description: "Failed to apply promo code. Please try again.",
+          variant: "destructive",
+        });
+        throw error; // Rethrow the error to be caught in handlePayment
+      }
+    }
+  };
+
+  
+  const handlePayment = async () => {
+    try {
+
+      console.log("jiji");
+      await applyPromoCode();
+      // Proceed with payment logic here
+      // For now, we'll just show a success message
+      toast({
+        title: "Payment Successful",
+        description: "Your order has been placed successfully.",
+      });
+      setActiveIndex(totalSlide);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "Payment Failed",
+        description: "There was an error processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleNextSlide = () => {
-    setActiveIndex(activeIndex + 1);
-    setAlertMessage(null);
+    if (activeIndex === 2 && selected === "rwb_1") {
+      if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
+        handlePayment();
+      } else {
+        setAlertMessage("Please fill in all credit card details.");
+      }
+    } else if (activeIndex === totalSlide - 1) {
+      handlePayment();
+    } else {
+      setActiveIndex(activeIndex + 1);
+      setAlertMessage(null);
+    }
   };
 
   const handleWallet = async () => {
@@ -57,8 +124,7 @@ const CheckOut = ({ touristID, amount, disabled }) => {
       if (response.status !== 200) {
         setAlertMessage(response.data || "Payment failed.");
       } else {
-        setAlertMessage(null); 
-        handleNextSlide();
+        await handlePayment();
       }
     } catch (error) {
       setAlertMessage("Insufficient balance");
@@ -71,17 +137,25 @@ const CheckOut = ({ touristID, amount, disabled }) => {
     }
   };
 
+  const handleCardInputChange = (e) => {
+    const { name, value } = e.target;
+    setCardDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="w-full text-white py-2 rounded mt-4" disabled={disabled}>
+          <Button
+            className="w-full text-white py-2 rounded mt-4"
+            disabled={disabled}
+          >
             Checkout
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
           <DialogHeader className="p-6 pb-2">
-            {alertMessage && ( // Conditionally render the alert
+            {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">
                 <Icon
                   icon="heroicons:exclamation-triangle"
@@ -201,9 +275,7 @@ const CheckOut = ({ touristID, amount, disabled }) => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Credit Card Details</h3>
 
-                  {/* Credit Card Section */}
                   <div className="flex items-center gap-4">
-                    {/* Credit Card Image */}
                     <div className="w-1/2">
                       <img
                         src={CreditCard}
@@ -212,27 +284,57 @@ const CheckOut = ({ touristID, amount, disabled }) => {
                       />
                     </div>
 
-                    {/* Credit Card Information */}
                     <div className="flex flex-col gap-2 w-3/4">
                       <div className="flex flex-col gap-2">
-                        <Label>Card Holder Name</Label>
-                        <Input type="text" placeholder="Card Holder Name" />
+                        <Label htmlFor="cardHolderName">Card Holder Name</Label>
+                        <Input
+                          type="text"
+                          id="cardHolderName"
+                          name="cardHolderName"
+                          placeholder="Card Holder Name"
+                          value={cardDetails.cardHolderName}
+                          onChange={handleCardInputChange}
+                          required
+                        />
                       </div>
 
                       <div className="flex flex-col gap-2">
-                        <Label>Card Number</Label>
-                        <Input type="text" placeholder="Card Number" />
+                        <Label htmlFor="cardNumber">Card Number</Label>
+                        <Input
+                          type="text"
+                          id="cardNumber"
+                          name="cardNumber"
+                          placeholder="Card Number"
+                          value={cardDetails.cardNumber}
+                          onChange={handleCardInputChange}
+                          required
+                        />
                       </div>
 
-                      {/* Expiration Date and CVV side by side */}
                       <div className="flex gap-4">
                         <div className="flex flex-col gap-2 w-1/2">
-                          <Label>Expiration Date</Label>
-                          <Input type="text" placeholder="MM/YY" />
+                          <Label htmlFor="expirationDate">Expiration Date</Label>
+                          <Input
+                            type="text"
+                            id="expirationDate"
+                            name="expirationDate"
+                            placeholder="MM/YY"
+                            value={cardDetails.expirationDate}
+                            onChange={handleCardInputChange}
+                            required
+                          />
                         </div>
                         <div className="flex flex-col gap-2 w-1/2">
-                          <Label>CVV</Label>
-                          <Input type="text" placeholder="CVV" />
+                          <Label htmlFor="cvv">CVV</Label>
+                          <Input
+                            type="text"
+                            id="cvv"
+                            name="cvv"
+                            placeholder="CVV"
+                            value={cardDetails.cvv}
+                            onChange={handleCardInputChange}
+                            required
+                          />
                         </div>
                       </div>
                     </div>
@@ -278,7 +380,6 @@ const CheckOut = ({ touristID, amount, disabled }) => {
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
-                disabled={activeIndex === 2 && selected !== "rwb_1"}
               >
                 Next
               </Button>
@@ -291,3 +392,4 @@ const CheckOut = ({ touristID, amount, disabled }) => {
 };
 
 export default CheckOut;
+

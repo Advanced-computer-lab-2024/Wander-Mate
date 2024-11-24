@@ -2261,14 +2261,14 @@ const payWithWallet = async (req, res) => {
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
 const applyPromoCode = async (req, res) => {
-  const { touristId } = req.params;
+  const { touristID } = req.params;
   const { promoCode, purchaseAmount } = req.body;
 
   try {
     // Find the promo code
     const code = await PromoCode.findOne({
       code: promoCode,
-      assignedTo: touristId,
+      assignedTo: touristID,
       isUsed: false,
     });
 

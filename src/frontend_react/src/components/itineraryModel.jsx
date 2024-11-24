@@ -98,7 +98,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true"  && urlParams.get("itinerary") === itinerary.itineraryId) {
       setIsOpen(true);
     }
     }, [isOpen, itinerary.Ratings]);
@@ -280,20 +280,21 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center border border-gray-300 rounded">
                         <button
-                          className="px-4 py-2 text-gray-600"
+                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
                           onClick={decrementCount}
                         >
                           <Icon icon="eva:minus-fill" />
                         </button>
                         <span className="px-4 py-2 text-gray-600">{count}</span>
                         <button
-                          className="px-4 py-2 text-gray-600"
+                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
                           onClick={incrementCount}
                           disabled={count >= maxQuantity}
                         >
                           <Icon icon="eva:plus-fill" />
                         </button>
                       </div>
+
                       <Button
                         variant="outline"
                         onClick={finishBooking}
