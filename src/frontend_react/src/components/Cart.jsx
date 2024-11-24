@@ -295,6 +295,7 @@ export default function ShoppingCart() {
                 touristID={ID}
                 amount={subtotal + 20 - discount}
                 disabled={cartItems.length === 0}
+                voucherCode={appliedPromo}
               />
             </div>
           </div>
