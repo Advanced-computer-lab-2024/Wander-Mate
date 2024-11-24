@@ -3,21 +3,23 @@ import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { MapPin, AlertCircle } from 'lucide-react';
-import NonMovableMap from './nonMovableMap'; // Import the NonMovableMap component
+import NonMovableMap from './nonmovableMapAddress'; // Import the NonMovableMap component
+
 const AddressCard = () => {
   const [addresses, setAddresses] = useState([]);
+  const [username, setUsername] = useState('');
+  const [countryMapping, setCountryMapping] = useState({});
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchAddresses = async () => {
+    const fetchUserData = async () => {
       try {
-        const username = sessionStorage.getItem("username");
-        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        const usernameFromSession = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${usernameFromSession}`);
         if (!reply.ok) throw new Error("Failed to get tourist ID");
-        const { userID } = await reply.json();
+        const { userID } = await reply.json();
 
-        const touristId = userID;
-        // If touristId is not in sessionStorage, check localStorage as a fallback
+        let touristId = userID;
         if (!touristId) {
           touristId = localStorage.getItem("touristId");
         }
@@ -27,15 +29,29 @@ const AddressCard = () => {
           return;
         }
 
-        const response = await axios.get(`http://localhost:8000/getDeliveryAddresses/${touristId}`);
-        setAddresses(response.data.addresses);
+        // Fetch the username using the touristId
+        const userResponse = await axios.get(`http://localhost:8000/getUsername/${touristId}`);
+        setUsername(userResponse.data);
+
+        // Fetch the addresses
+        const addressResponse = await axios.get(`http://localhost:8000/getDeliveryAddresses/${touristId}`);
+        setAddresses(addressResponse.data.addresses);
+
+        // Fetch the country mapping
+        const nationsResponse = await axios.get(`http://localhost:8000/getNations`);
+        const nations = nationsResponse.data;
+        const mapping = nations.reduce((acc, nation) => {
+          acc[nation._id] = nation.country_name;
+          return acc;
+        }, {});
+        setCountryMapping(mapping);
       } catch (error) {
-        console.error("Error fetching addresses:", error);
-        setError("Failed to fetch addresses.");
+        console.error("Error fetching data:", error);
+        setError("Failed to fetch data.");
       }
     };
 
-    fetchAddresses();
+    fetchUserData();
   }, []);
 
   if (error) {
@@ -55,24 +71,39 @@ const AddressCard = () => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Delivery Addresses</CardTitle>
+        <div className="mt-2">
+          <Badge variant="secondary" className="inline-block px-3 py-1 rounded-full text-sm">
+            {username}
+          </Badge>
+        </div>
       </CardHeader>
       <CardContent>
         {addresses.length === 0 ? (
           <p className="text-gray-500 italic">No addresses found.</p>
         ) : (
           <ul className="space-y-4">
-            {addresses.map((address) => (
-              <li key={address._id} className="bg-gray-50 rounded-lg p-4 shadow-sm">
-                <div className="flex items-start space-x-3">
-                  <MapPin className="text-blue-500 mt-1 flex-shrink-0" />
+            {addresses.map((address, index) => (
+              <li key={index} className="bg-gray-50 rounded-lg p-4 shadow-sm">
+                <div className="flex items-start p-4 bg-white rounded-lg shadow-md border border-gray-200 space-x-4">
+                  <div className="flex-shrink-0">
+                    <MapPin className="text-blue-500 mt-1 w-6 h-6" />
+                  </div>
                   <div>
-                    <p className="font-medium">{address.street}</p>
-                    <p className="text-sm text-gray-600">
-                      {address.city}, {address.state} {address.zipCode}
+                    <p className="text-md text-gray-700">
+                      <span className="font-bold text-blue-500">Street:</span> <span className="font-bold">{address.street}</span>
                     </p>
-                    <Badge variant="secondary" className="mt-2">
-                      {address.country}
-                    </Badge>
+                    <p className="text-md text-gray-700">
+                      <span className="font-bold text-blue-500">City:</span> <span className="font-bold">{address.city}</span>
+                    </p>
+                    <p className="text-md text-gray-700">
+                      <span className="font-bold text-blue-500">State:</span> <span className="font-bold">{address.state}</span>
+                    </p>
+                    <p className="text-md text-gray-700">
+                      <span className="font-bold text-blue-500">Zip Code:</span> <span className="font-bold">{address.zipCode}</span>
+                    </p>
+                    <p className="text-md text-gray-700">
+                      <span className="font-bold text-blue-500">Country:</span> <span className="font-bold">{countryMapping[address.country] || address.country}</span>
+                    </p>
                   </div>
                 </div>
                 <NonMovableMap
@@ -89,4 +120,3 @@ const AddressCard = () => {
 };
 
 export default AddressCard;
-
