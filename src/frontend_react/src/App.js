@@ -38,7 +38,7 @@ import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
 import PaymentPage from "./pages/Payment";
 import ShowWithDocs from "./components/showRegisteredWithDocs";
-import TourGuideProfileManager from "./components/TourGuideProfileManager";
+import TourGuideProfileManager from "./pages/TourGuideProfileManager";
 import TransportationCheckout from "./components/transportationCheckout";
 import AddressCard from "./components/ui/addressCard";
 function App() {
