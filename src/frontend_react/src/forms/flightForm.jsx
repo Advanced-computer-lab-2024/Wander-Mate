@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.css";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -69,7 +68,7 @@ const FlightForm = (props) => {
               getOptionValue={(option) => option.value} // Define the unique value for each option
             />
           </div>
-          <div className="col">
+          <div className="col mt-3">
             <Select
               placeholder="Select Destination"
               value={
@@ -85,7 +84,7 @@ const FlightForm = (props) => {
               getOptionValue={(option) => option.value} // Define the unique value for each option
             />
           </div>
-          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
             <input
               onChange={(e) => handleChange("departureDate", e.target.value)}
               type="date"
@@ -98,7 +97,7 @@ const FlightForm = (props) => {
             {/* <Calendar className="w-6 h-6 text-[#826AF9]" /> */}
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
             <input
               onChange={(e) => handleChange("arrivalDate", e.target.value)}
               type="date"
