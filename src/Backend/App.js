@@ -92,6 +92,7 @@ const {
   checkOut,
   ViewOrders,
   sendUpcomingEventNotifications,
+  previewPromoCode,
 } = require("./Routes/touristController");
 
 const {
@@ -254,7 +255,6 @@ mongoose
 
       // Schedule the function to run every day at midnight
       cron.schedule("0 0 * * *", () => {
-        console.log("Running birthday promo assignment...");
         assignBirthdayPromo();
       });
       // cron.schedule('0 0 * * *', () => {
@@ -525,7 +525,10 @@ app.put("/resetPassword", resetPassword);
 app.get("/showCart/:touristID", showCart);
 app.post("/getReviews", getReviews);
 app.put("/payWithWallet", payWithWallet);
-app.post("/applyPromoCode/:touristId", applyPromoCode);
+app.post("/applyPromoCode/:touristID", applyPromoCode);
+
+app.post("/previewPromoCode/:touristId", previewPromoCode);
+
 app.get(
   "/viewPastActivitiesAndItineraries/:touristId",
   viewPastActivitiesAndItineraries

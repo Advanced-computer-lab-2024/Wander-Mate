@@ -1,4 +1,4 @@
-.map-wrapper1 {
+.map-wrapper2 {
     position: relative;
     height: 250px;  
     width: 250px; /* Added max-width */
@@ -6,7 +6,7 @@
     border: 1px solid #ccc;
   }
   
-  .map-container1 {
+  .map-container2 {
     position: absolute;
     top: 0;
     bottom: 0;

@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import '../../assets/css/Map.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieW91c3NlZm1lZGhhdGFzbHkiLCJhIjoiY2x3MmpyZzYzMHAxbDJxbXF0dDN1MGY2NSJ9.vrWqL8FrrRzm0yAfUNpu6g';
@@ -22,10 +24,46 @@ const BasicMap = ({ onLocationSelect, initialLocation }) => {
       zoom: zoom
     });
 
+    // Add geocoder to the map
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: false // Disable default marker
+    });
+
+    map.current.addControl(geocoder);
+
+    geocoder.on('result', (e) => {
+      const { lng, lat } = e.result.geometry.coordinates;
+      if (!isNaN(lng) && !isNaN(lat)) {
+        marker.current.setLngLat([lng, lat]);
+        onLocationSelect(lng, lat);
+        map.current.flyTo({ center: [lng, lat], zoom: 14 });
+      } else {
+        console.error("Invalid coordinates from geocoder result:", e.result.geometry.coordinates);
+      }
+    });
+
     map.current.on('load', () => {
       marker.current = new mapboxgl.Marker()
         .setLngLat([lng, lat])
         .addTo(map.current);
+
+      // Detect user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userLng = position.coords.longitude;
+            const userLat = position.coords.latitude;
+            map.current.flyTo({ center: [userLng, userLat], zoom: 14 });
+            marker.current.setLngLat([userLng, userLat]);
+            onLocationSelect(userLng, userLat);
+          },
+          (error) => {
+            console.error("Error getting user's location:", error);
+          }
+        );
+      }
     });
 
     map.current.on('click', (e) => {
