@@ -68,7 +68,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true"  && urlParams.get("place") === place.placeId) {
       setIsOpen(true);
     }
   }, [isOpen, place.reviews]);
