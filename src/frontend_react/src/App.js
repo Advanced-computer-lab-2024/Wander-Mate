@@ -42,6 +42,7 @@ import TransportationCheckout from "./components/transportationCheckout";
 import AddressCard from "./components/ui/addressCard";
 import BookFlight from "./pages/bookFlight";
 import HistoricalTagsPage from "./pages/historicaltags";
+import PaymentPage from "./pages/Payment";
 function App() {
   return (
     <Router>
@@ -80,6 +81,7 @@ function App() {
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
+        <Route path="/paymentByCard" element={<PaymentPage />} />
         <Route
           path="/tourGuideProfileManager"
           element={<TourGuideProfileManager />}
