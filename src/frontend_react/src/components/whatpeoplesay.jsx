@@ -18,14 +18,15 @@ const WhatPeopleSay = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 800, // Increase duration to reduce the animation load
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 5000, // Set autoplay to 5 seconds to reduce frequent updates
     pauseOnHover: true,
     adaptiveHeight: true,
   };
+  
 
   return (
     <div className="relative w-full h-[835px] overflow-hidden bg-[#ECF1F0]">
