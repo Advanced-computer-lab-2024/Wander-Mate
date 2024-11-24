@@ -740,7 +740,7 @@ const BookFlight = async (req, res) => {
 
 const searchHotellocation = async (place) => {
   const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}`;
-
+  console.log("by");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -750,7 +750,9 @@ const searchHotellocation = async (place) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    if (!response.ok){ 
+      console.log(response);
+      throw new Error(`Error: ${response.status}`);}
 
     const data = await response.json();
     return data;
@@ -762,17 +764,17 @@ const searchHotellocation = async (place) => {
 
 const searchHotel = async (req, res) => {
   const { place, checkInDate, checkOutdate } = req.body;
-
   try {
     const locationData = await searchHotellocation(place);
-
+    console.log(locationData);
     if (!locationData || !locationData.data || locationData.data.length === 0) {
       return res.status(400).json({ message: "No location data found" });
     }
+    console.log("to");
 
     const geoId = locationData.data[0].geoId;
     const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
-
+    console.log("0");
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -781,12 +783,18 @@ const searchHotel = async (req, res) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    console.log("3");
 
+    if (!response.ok){
+      console.log(response);
+      throw new Error(`Error: ${response.status}`);
+  }
+    console.log("1");
     const hotelData = await response.json();
-
+    console.log("2");
     // Check if the response data has hotels
     if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      console.log("hiii");
       return res.status(400).json({ message: "No hotels found" });
     }
 
