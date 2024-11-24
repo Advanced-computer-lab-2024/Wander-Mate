@@ -85,6 +85,9 @@ const FlightForm = (props) => {
             />
           </div>
           <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
+            <span className="font-bold text-base tracking-wider text-[#283841]">
+              Departure:
+            </span>
             <input
               onChange={(e) => handleChange("departureDate", e.target.value)}
               type="date"
@@ -98,6 +101,9 @@ const FlightForm = (props) => {
           </div>
 
           <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
+            <span className="font-bold text-base tracking-wider text-[#283841]">
+              Arrival:
+            </span>
             <input
               onChange={(e) => handleChange("arrivalDate", e.target.value)}
               type="date"
