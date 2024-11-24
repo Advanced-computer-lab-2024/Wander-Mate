@@ -1,5 +1,6 @@
 const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
+const Notification = require("../Models/notifications.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
 require('dotenv').config();
@@ -161,6 +162,7 @@ const handleTourist = async (req, res) => {
       };
       const badge = assignBadge(Points);
       tourist.Badge = badge;
+      await tourist.save();
 
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
@@ -2599,6 +2601,65 @@ const ViewOrders = async (req, res) => {
     return res.status(500).json({ message: "Error retrieving orders", error: error.message });
   }
 };
+async function sendUpcomingEventNotifications() {
+  const today = new Date();
+  const nextWeek = new Date();
+  nextWeek.setDate(today.getDate() + 100); // Define "upcoming" as within the next 7 days
+
+  try {
+    // Find bookings with upcoming booked dates
+    const upcomingBookings = await Booking.find({
+      bookedDate: {
+        $gte: today, // On or after today
+        $lte: nextWeek, // On or before 7 days from today
+      },
+    }).populate("userId"); // Populate user details for notification
+
+    for (const booking of upcomingBookings) {
+      const { userId, bookedDate, itemId, itemModel } = booking;
+      const notificationMessage = `Reminder: You have an upcoming booking for ${itemModel} on ${bookedDate.toLocaleDateString()}.`;
+
+      // Check if the notification for this aboutID already exists
+      const existingNotification = await Notification.findOne({
+        userID: userId._id,
+        userModel: "Tourist",
+        "notifications.aboutID": itemId,
+      });
+
+      if (existingNotification) {
+        console.log(
+          `Notification for aboutID ${itemId} already exists for user ${userId._id}. Skipping...`
+        );
+        continue; // Skip this booking
+      }
+
+      // Add the notification to the Notification model
+      const newNotification = {
+        aboutID: itemId,
+        aboutModel: itemModel,
+        message: notificationMessage,
+      };
+
+      await Notification.findOneAndUpdate(
+        { userID: userId._id, userModel: "Tourist" }, // Match the user
+        {
+          $push: { notifications: newNotification }, // Add to notifications array
+        },
+        { upsert: true, new: true } // Create a new document if none exists
+      );
+
+      // Simulate sending the notification
+      console.log(
+        `Sending notification to user: ${userId.Username || userId.Email}`
+      );
+      console.log(notificationMessage);
+
+      // Replace with actual notification logic (email, push notification, etc.)
+    }
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+  }
+}
 
 
 module.exports = {
@@ -2675,4 +2736,5 @@ module.exports = {
   PayByCard,
   ViewBookmarkedAttractions,
   checkOut,
+  sendUpcomingEventNotifications,
 };

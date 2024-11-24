@@ -111,12 +111,16 @@ const NavigationMenuBarTGov = () => {
 
 
                 <Button
-                  variant="ghost"
-                  onMouseEnter={() => handleMouseEnter("tags")}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <Tag className="mr-2 h-4 w-4" />Tags
-                </Button>
+  asChild
+  variant="ghost"
+  onMouseEnter={() => handleMouseEnter("tags")}
+  onMouseLeave={handleMouseLeave}
+>
+  <Link to="/historicaltags">
+    <Tag className="mr-2 h-4 w-4" />
+    Tags
+  </Link>
+</Button>
               
           </div>
 

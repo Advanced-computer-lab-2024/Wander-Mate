@@ -913,17 +913,34 @@ const viewDocuments = async (req, res) => {
     const distinctOwners = await PdfDetails.distinct("Owner");
 
     // Step 2: Prepare a response object to hold all documents grouped by ownerId
-    const allDocuments = {};
+    const allDocuments = [];
 
     // Step 3: Fetch documents for each distinct ownerId
     for (const ownerId of distinctOwners) {
-      const documents = await PdfDetails.find({ Owner: ownerId });
+      // Fetch all documents associated with the owner, filtered by status
+      const documents = await PdfDetails.find({ Owner: ownerId }).populate({
+        path: "Owner",
+        match: { status: "pending" }, // Filter owners with "pending" status
+      });
 
-      // Map through each document to extract necessary fields
-      allDocuments[ownerId] = documents.map((doc) => ({
-        Title: doc.Title,
-        pdf: doc.pdf, // Base64 string of the PDF
-      }));
+      // Filter out documents where Owner is null (because the status did not match)
+      const filteredDocuments = documents.filter((doc) => doc.Owner !== null);
+
+      // If there are filtered documents, group them by ownerId
+      if (filteredDocuments.length > 0) {
+        const ownerDocuments = {
+          ownerId: ownerId, // Include the ownerId
+          role: filteredDocuments[0].ownerModel, // Assuming the role is the same for all docs from the same owner
+          Owner: filteredDocuments[0].Owner, // The owner info is the same for all docs
+          documents: filteredDocuments.map((doc) => ({
+            Title: doc.Title,
+            pdf: doc.pdf, // Base64 string of the PDF
+          })),
+        };
+
+        // Add this owner with their documents to the response array
+        allDocuments.push(ownerDocuments);
+      }
     }
 
     // Step 4: Send back all documents grouped by ownerId
@@ -1002,7 +1019,9 @@ const viewAllComplaints = async (req, res) => {
 
     // Step 2: Check if there are no complaints
     if (!complaints || complaints.length === 0) {
-      return res.status(200).json({ message: "No complaints found.", complaints: [] });
+      return res
+        .status(200)
+        .json({ message: "No complaints found.", complaints: [] });
     }
 
     // Step 3: Map through the complaints to prepare the response
