@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import CommentForm from "../forms/commentForm";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CommentPage = () => {
   const [commentFormData, setCommentFormData] = useState({
     guideID: "",
     comment: "",
   });
+  const navigate = useNavigate();
   const handleFormDataChange = (newFormData) => {
     console.log("Form data changed:", newFormData);
     setCommentFormData(newFormData);
@@ -29,6 +31,7 @@ const CommentPage = () => {
       );
       //   displayResults(response.data);
       alert("Comment Registered Succesfully ");
+      navigate("/touristHomepage");
     } catch (error) {
       console.error("Error registering comment", error);
       alert(
@@ -40,7 +43,7 @@ const CommentPage = () => {
   return (
     <React.Fragment>
       <NavigationMenuBar />
-      <h1>Comment Page</h1>
+      <h1 className="m-5">Comment Page</h1>
       <CommentForm
         formData={commentFormData}
         onFormDataChange={handleFormDataChange}
