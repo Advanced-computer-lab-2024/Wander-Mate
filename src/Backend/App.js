@@ -91,6 +91,7 @@ const {
   ViewBookmarkedAttractions,
   checkOut,
   ViewOrders,
+  sendUpcomingEventNotifications,
 } = require("./Routes/touristController");
 
 const {
@@ -248,6 +249,7 @@ mongoose
     app.listen(port, () => {
       console.log(`Listening to requests on http://localhost:${port}`);
       assignBirthdayPromo();
+      sendUpcomingEventNotifications();
 
       // Schedule the function to run every day at midnight
       cron.schedule("0 0 * * *", () => {
@@ -550,5 +552,5 @@ app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
 app.get("/viewAllUsers",  viewAllUsers);
 app.get("/ViewOrders/:userId",  ViewOrders);
 app.post("/updateRevenueSales",  updateRevenueSales);
-
+app.post("/sendUpcomingEventNotifications",sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);
