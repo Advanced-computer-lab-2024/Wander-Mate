@@ -1873,8 +1873,6 @@ const assignBirthdayPromo = async () => {
     },
   });
 
-  console.log("Tourists with birthdays today:", touristsWithBirthdays);
-
   for (const tourist of touristsWithBirthdays) {
     try {
       // Check if a promo code already exists for this tourist
@@ -2711,10 +2709,16 @@ const previewPromoCode = async (req, res) => {
 
   try {
     // Find the promo code
-    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
+    const code = await PromoCode.findOne({
+      code: promoCode,
+      assignedTo: touristId,
+      isUsed: false,
+    });
 
     if (!code) {
-      return res.status(404).json({ message: "Promo code not found or already used." });
+      return res
+        .status(404)
+        .json({ message: "Promo code not found or already used." });
     }
 
     // Check if the promo code is expired
@@ -2724,7 +2728,7 @@ const previewPromoCode = async (req, res) => {
     }
 
     // Calculate the discount (e.g., 10% discount)
-    const discount = 0.10; // Example discount rate
+    const discount = 0.1; // Example discount rate
     const discountAmount = purchaseAmount * discount;
     const finalAmount = purchaseAmount - discountAmount;
 
@@ -2740,7 +2744,6 @@ const previewPromoCode = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 module.exports = {
   ViewOrders,
