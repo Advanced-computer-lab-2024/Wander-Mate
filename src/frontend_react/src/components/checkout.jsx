@@ -35,12 +35,26 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
+  const [formFields, setFormFields] = useState({
+    country: "",
+    city: "",
+    billingAddress: "",
+  });
+  
   const [cardDetails, setCardDetails] = useState({
     cardHolderName: "",
     cardNumber: "",
     expirationDate: "",
     cvv: "",
   });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormFields((prevFields) => ({
+      ...prevFields,
+      [name]: value,
+    }));
+  };
 
   
 
@@ -101,6 +115,14 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
   };
 
   const handleNextSlide = () => {
+    if (activeIndex === 1) {
+      const { country, city, billingAddress } = formFields;
+      if (!country || !city || !billingAddress) {
+        setAlertMessage("Please fill in all required fields: Country, City, and Billing Address.");
+        return;
+      }
+    }
+  
     if (activeIndex === 2 && selected === "rwb_1") {
       if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
         handlePayment();
@@ -114,6 +136,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
       setAlertMessage(null);
     }
   };
+  
 
   const handleWallet = async () => {
     try {
@@ -172,103 +195,134 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
             <ScrollArea className="h-full px-6">
               {activeIndex === 1 && (
                 <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
-                  <div className="flex flex-col gap-2">
-                    <Label>Country</Label>
-                    <NationalitySelect />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>City</Label>
-                    <Input type="text" placeholder="City" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>Billing Address</Label>
-                    <Textarea
-                      type="text"
-                      placeholder="Billing address"
-                      rows="6.5"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>Payment Method</Label>
-                    <RadioGroup
-                      defaultValue="rwb_1"
-                      onValueChange={handleValueChange}
-                    >
-                      <Label
-                        htmlFor="rwb_1"
-                        className={cn(
-                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                          { "bg-primary": selected === "rwb_1" }
-                        )}
-                      >
-                        <span className="flex items-center gap-2">
-                          <Icon
-                            icon="mdi:credit-card-outline"
-                            className="text-lg"
-                          />
-                          <span
-                            className={cn("font-base text-default-800", {
-                              "text-primary-foreground": selected === "rwb_1",
-                            })}
-                          >
-                            Credit/Debit Card
-                          </span>
-                        </span>
-                        <RadioGroupItem
-                          value="rwb_1"
-                          id="rwb_1"
-                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                        />
-                      </Label>
-                      <Label
-                        htmlFor="rwb_2"
-                        className={cn(
-                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                          { "bg-primary": selected === "rwb_2" }
-                        )}
-                      >
-                        <span className="flex items-center gap-2">
-                          <Icon icon="mdi:cash-multiple" className="text-lg" />
-                          <span
-                            className={cn("font-base text-default-800", {
-                              "text-primary-foreground": selected === "rwb_2",
-                            })}
-                          >
-                            Cash on Delivery
-                          </span>
-                        </span>
-                        <RadioGroupItem
-                          value="rwb_2"
-                          id="rwb_2"
-                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                        />
-                      </Label>
-                      <Label
-                        htmlFor="rwb_3"
-                        className={cn(
-                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                          { "bg-primary": selected === "rwb_3" }
-                        )}
-                      >
-                        <span className="flex items-center gap-2">
-                          <Icon icon="mdi:wallet" className="text-lg" />
-                          <span
-                            className={cn("font-base text-default-800", {
-                              "text-primary-foreground": selected === "rwb_3",
-                            })}
-                          >
-                            Using Wallet
-                          </span>
-                        </span>
-                        <RadioGroupItem
-                          value="rwb_3"
-                          id="rwb_3"
-                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                        />
-                      </Label>
-                    </RadioGroup>
-                  </div>
+                {/* Country Field */}
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="country">Country</Label>
+                  <NationalitySelect
+                    id="country"
+                    value={formFields.country}
+                    onChange={(e) => handleInputChange({ target: { name: "country", value: e } })}
+                  />
+                  {!formFields.country && alertMessage && (
+                    <p className="text-sm text-red-500">Country is required.</p>
+                  )}
                 </div>
+              
+                {/* City Field */}
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    value={formFields.city}
+                    onChange={handleInputChange}
+                  />
+                  {!formFields.city && alertMessage && (
+                    <p className="text-sm text-red-500">City is required.</p>
+                  )}
+                </div>
+              
+                {/* Billing Address Field */}
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="billingAddress">Billing Address</Label>
+                  <Textarea
+                    id="billingAddress"
+                    name="billingAddress"
+                    type="text"
+                    placeholder="Billing address"
+                    rows="6.5"
+                    value={formFields.billingAddress}
+                    onChange={handleInputChange}
+                  />
+                  {!formFields.billingAddress && alertMessage && (
+                    <p className="text-sm text-red-500">Billing address is required.</p>
+                  )}
+                </div>
+              
+                {/* Payment Method */}
+                <div className="flex flex-col gap-2">
+                  <Label>Payment Method</Label>
+                  <RadioGroup defaultValue="rwb_1" onValueChange={handleValueChange}>
+                    {/* Credit/Debit Card Option */}
+                    <Label
+                      htmlFor="rwb_1"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_1" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon icon="mdi:credit-card-outline" className="text-lg" />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_1",
+                          })}
+                        >
+                          Credit/Debit Card
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_1"
+                        id="rwb_1"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                      />
+                    </Label>
+              
+                    {/* Cash on Delivery Option */}
+                    <Label
+                      htmlFor="rwb_2"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_2" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon icon="mdi:cash-multiple" className="text-lg" />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_2",
+                          })}
+                        >
+                          Cash on Delivery
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_2"
+                        id="rwb_2"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                      />
+                    </Label>
+              
+                    {/* Using Wallet Option */}
+                    <Label
+                      htmlFor="rwb_3"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_3" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon icon="mdi:wallet" className="text-lg" />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_3",
+                          })}
+                        >
+                          Using Wallet
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_3"
+                        id="rwb_3"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                      />
+                    </Label>
+                  </RadioGroup>
+                </div>
+              </div>
+              
               )}
 
               {activeIndex === 2 && selected === "rwb_1" && (
