@@ -14,12 +14,23 @@ const FileUploaderMultiple = ({ ownerId, httpRequest, nextPage }) => {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length + files.length > 2) {
+      const filteredFiles = acceptedFiles.filter((file) => {
+        if (file.type === "application/pdf") {
+          return true;
+        } else {
+          reToast.error(`${file.name} is not a valid PDF file.`);
+          return false;
+        }
+      });
+
+      if (filteredFiles.length + files.length > 2) {
         reToast.error("You can only upload two files: ID and docs.");
         return;
       }
-      setFiles((prevFiles) => [...prevFiles, ...acceptedFiles].slice(0, 2));
+
+      setFiles((prevFiles) => [...prevFiles, ...filteredFiles].slice(0, 2));
     },
+    accept: "application/pdf", // Restrict file picker to PDFs only
   });
 
   const renderFilePreview = (file) => {
