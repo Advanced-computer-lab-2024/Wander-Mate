@@ -26,7 +26,6 @@ const ItineraryCard = ({
   itineraryId,
   name,
   images = [],
-  description,
   tags,
   
   duration,
@@ -47,9 +46,7 @@ const ItineraryCard = ({
         : "/placeholder.svg?height=300&width=300",
     images: images.map((img) =>
       img.data ? `data:${img.contentType};base64,${img.data}` : img
-    ),
-    description,
-    
+    ),    
     duration,
     latitude,
     longitude,
@@ -103,9 +100,6 @@ const ItineraryCard = ({
           </div>
           <div>
             <p className="font-bold text-base mb-1">{name}</p>
-            <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
-              {description}
-            </p>
 
             {tags && tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
