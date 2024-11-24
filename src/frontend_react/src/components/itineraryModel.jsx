@@ -16,8 +16,6 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
     const [isShareOpen, setIsShareOpen] = useState(false);
-
-    console.log(itinerary);
   
     const handleOpenChange = (open) => {
       setIsOpen(open);

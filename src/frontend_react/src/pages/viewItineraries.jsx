@@ -352,6 +352,7 @@ export default function ViewItineraries() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredItineraries.length > 0 ? (
           filteredItineraries.map((itinerary) => {
+            console.log(itinerary);
             const placeImages = itinerary.LocationsToVisit.flatMap(
               (location) => location.Pictures || []
             );
@@ -369,7 +370,6 @@ export default function ViewItineraries() {
                 key={itinerary._id}
                 name={itinerary.Name}
                 images={placeImages}
-                description={itinerary.Description}
                 activities={itinerary.Activities.map(
                   (activity) => activity.name
                 )}
