@@ -1,0 +1,73 @@
+.what-people-say {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  background-color: #ecf1f0;
+  padding: 2rem 0;
+}
+
+.what-people-say__title {
+  position: relative;
+  margin: 0 auto 2rem;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 54px;
+  text-align: center;
+  color: #000;
+}
+
+.what-people-say__slide {
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+.what-people-say__background {
+  width: 100%;
+  max-height: 536px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.what-people-say__content {
+  position: absolute;
+  bottom: -60px;
+  width: 738px;
+  background: #fff;
+  box-shadow: 0px 4px 59px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.what-people-say__profile {
+  position: absolute;
+  left: 50%;
+  top: -75px;
+  transform: translateX(-50%);
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  object-fit: cover;
+}
+
+.what-people-say__text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #000;
+  margin: 3rem 0 1rem;
+}
+
+.what-people-say__author {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: #000;
+}
