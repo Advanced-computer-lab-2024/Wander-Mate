@@ -91,6 +91,7 @@ const {
   ViewBookmarkedAttractions,
   checkOut,
   ViewOrders,
+  sendUpcomingEventNotifications,
 } = require("./Routes/touristController");
 
 const {
@@ -229,6 +230,7 @@ const {
   readHistoricalTags,
   updateHistoricalTags,
   changePasswordTourismGoverner,
+  deleteHistoricalTags,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -248,10 +250,10 @@ mongoose
     app.listen(port, () => {
       console.log(`Listening to requests on http://localhost:${port}`);
       assignBirthdayPromo();
+      sendUpcomingEventNotifications();
 
       // Schedule the function to run every day at midnight
       cron.schedule("0 0 * * *", () => {
-        console.log("Running birthday promo assignment...");
         assignBirthdayPromo();
       });
       // cron.schedule('0 0 * * *', () => {
@@ -350,7 +352,8 @@ app.post("/redeempoints", redeemPoints);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
 app.get("/readHistoricalTags", readHistoricalTags);
-app.patch("/updateHistoricalTags/:id", updateHistoricalTags);
+app.patch("/updateHistoricalTags/:Id", updateHistoricalTags);
+app.delete("/deleteHistoricalTags/:Id",deleteHistoricalTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);
@@ -550,5 +553,5 @@ app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
 app.get("/viewAllUsers",  viewAllUsers);
 app.get("/ViewOrders/:userId",  ViewOrders);
 app.post("/updateRevenueSales",  updateRevenueSales);
-
+app.post("/sendUpcomingEventNotifications",sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);

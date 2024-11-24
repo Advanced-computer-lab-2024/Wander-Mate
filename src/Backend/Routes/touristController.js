@@ -1,9 +1,10 @@
 const userModel = require("../Models/tourist.js");
 const attractionModel = require("../Models/attractions.js");
+const Notification = require("../Models/notifications.js");
 const itineraryModel = require("../Models/itinerary.js");
 const mongoose = require("mongoose");
-require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const ProductModel = require("../Models/products.js");
 const bcrypt = require("bcrypt");
 const Usernames = require("../Models/users.js");
@@ -161,6 +162,7 @@ const handleTourist = async (req, res) => {
       };
       const badge = assignBadge(Points);
       tourist.Badge = badge;
+      await tourist.save();
 
       return res.status(200).json(tourist);
     } else if (req.method === "PUT") {
@@ -614,9 +616,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-      apiKey +
-      "&client_secret=" +
-      apiSecret,
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1521,7 +1523,6 @@ const getMyBookings = async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve bookings." });
   }
 };
-
 const cancelBooking = async (req, res) => {
   const { bookingID } = req.params; // Assuming the booking ID is passed in the URL
 
@@ -1547,7 +1548,6 @@ const cancelBooking = async (req, res) => {
           "The Booking already passed or there is less than 48 hours remaining until the booking",
       });
     }
-
     // If eligible, proceed to cancel the booking
     await Booking.findByIdAndDelete(bookingID);
 
@@ -1557,7 +1557,6 @@ const cancelBooking = async (req, res) => {
     res.status(500).json({ error: "Failed to cancel booking." });
   }
 };
-
 
 const order = require("../Models/order.js");
 
@@ -1869,9 +1868,9 @@ const assignBirthdayPromo = async () => {
     $expr: {
       $and: [
         { $eq: [{ $dayOfMonth: "$DOB" }, currentDate] },
-        { $eq: [{ $month: "$DOB" }, currentMonth] }
-      ]
-    }
+        { $eq: [{ $month: "$DOB" }, currentMonth] },
+      ],
+    },
   });
 
   console.log("Tourists with birthdays today:", touristsWithBirthdays);
@@ -1879,9 +1878,13 @@ const assignBirthdayPromo = async () => {
   for (const tourist of touristsWithBirthdays) {
     try {
       // Check if a promo code already exists for this tourist
-      const existingPromoCode = await PromoCode.findOne({ assignedTo: tourist._id });
+      const existingPromoCode = await PromoCode.findOne({
+        assignedTo: tourist._id,
+      });
       if (existingPromoCode) {
-        console.log(`Promo code already exists for ${tourist.Username}: ${existingPromoCode.code}`);
+        console.log(
+          `Promo code already exists for ${tourist.Username}: ${existingPromoCode.code}`
+        );
         continue; // Skip to the next tourist
       }
 
@@ -1907,14 +1910,14 @@ const assignBirthdayPromo = async () => {
       tourist.PromoCode = promoCode._id; // Set the PromoCode field directly
       await tourist.save();
 
-      console.log(`Promo code ${promoCode.code} is assigned to ${tourist.Username}`);
+      console.log(
+        `Promo code ${promoCode.code} is assigned to ${tourist.Username}`
+      );
     } catch (error) {
       console.error("Error assigning promo code:", error);
     }
   }
 };
-
-
 
 const PayByCard = async (req, res) => {
   try {
@@ -1923,7 +1926,9 @@ const PayByCard = async (req, res) => {
 
     // Validate inputs
     if (!amount || amount <= 0 || !currency || !eventId) {
-      throw new Error('Invalid input: amount, currency, and eventId are required');
+      throw new Error(
+        "Invalid input: amount, currency, and eventId are required"
+      );
     }
 
     // Check user affordability (pseudo-code; replace with your logic)
@@ -1936,7 +1941,7 @@ const PayByCard = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       metadata: {
         userId: touristID,
         eventId,
@@ -1948,7 +1953,7 @@ const PayByCard = async (req, res) => {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
-    console.error('Stripe Error:', error.message);
+    console.error("Stripe Error:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
@@ -1973,7 +1978,8 @@ const removeFromCart = async (req, res) => {
     const itemIndex = cart.items.findIndex((item) => {
       return (
         item.productId.toString() === productId &&
-        (!attributes || JSON.stringify(item.attributes) === JSON.stringify(attributes))
+        (!attributes ||
+          JSON.stringify(item.attributes) === JSON.stringify(attributes))
       );
     });
 
@@ -1987,7 +1993,9 @@ const removeFromCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
-    return res.status(200).json({ message: "Item removed from cart successfully" });
+    return res
+      .status(200)
+      .json({ message: "Item removed from cart successfully" });
   } catch (error) {
     return res.status(400).json({ message: "Error removing item from cart" });
   }
@@ -2024,10 +2032,14 @@ const BookmarkAttraction = async (req, res) => {
 
     user.bookmarkedAttractions.push(attractionId);
     await user.save();
-    return res.status(200).json({ message: "Attraction bookmarked successfully" });
+    return res
+      .status(200)
+      .json({ message: "Attraction bookmarked successfully" });
   } catch (error) {
     console.error("Error bookmarking attraction:", error);
-    return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
 
@@ -2039,16 +2051,23 @@ const ViewBookmarkedAttractions = async (req, res) => {
   }
 
   try {
-    const user = await userModel.findById(userId).populate("bookmarkedAttractions");
+    const user = await userModel
+      .findById(userId)
+      .populate("bookmarkedAttractions");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ bookmarkedAttractions: user.bookmarkedAttractions });
+    return res
+      .status(200)
+      .json({ bookmarkedAttractions: user.bookmarkedAttractions });
   } catch (error) {
     console.error("Error retrieving bookmarked attractions:", error);
-    return res.status(500).json({ message: "Error retrieving bookmarked attractions", error: error.message });
+    return res.status(500).json({
+      message: "Error retrieving bookmarked attractions",
+      error: error.message,
+    });
   }
 };
 
@@ -2137,9 +2156,7 @@ const addWishlistItemToCart = async (req, res) => {
     // Fetch product details (Assume `Product` is your product model)
     const product = await ProductModel.findById(productId);
     if (!product) {
-      return res
-        .status(404)
-        .json({ message: "Product details not found." });
+      return res.status(404).json({ message: "Product details not found." });
     }
 
     // Default quantity to 1 if not provided
@@ -2161,7 +2178,6 @@ const addWishlistItemToCart = async (req, res) => {
         picture: product.picture,
         quantity: productQuantity,
         attributes: {}, // Add attributes if applicable
-
       });
     }
     await cart.save();
@@ -2169,14 +2185,12 @@ const addWishlistItemToCart = async (req, res) => {
       message: "Product added to cart from wishlist successfully.",
       cart: cart.items, // Optionally return the updated cart
     });
-
   } catch (error) {
     console.error("Error adding wishlist item to cart:", error);
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-
 };
 
 const showCart = async (req, res) => {
@@ -2244,10 +2258,16 @@ const applyPromoCode = async (req, res) => {
 
   try {
     // Find the promo code
-    const code = await PromoCode.findOne({ code: promoCode, assignedTo: touristId, isUsed: false });
+    const code = await PromoCode.findOne({
+      code: promoCode,
+      assignedTo: touristId,
+      isUsed: false,
+    });
 
     if (!code) {
-      return res.status(404).json({ message: "Promo code not found or already used." });
+      return res
+        .status(404)
+        .json({ message: "Promo code not found or already used." });
     }
 
     // Check if the promo code is expired
@@ -2257,7 +2277,7 @@ const applyPromoCode = async (req, res) => {
     }
 
     // Apply the promo code (e.g., 10% discount)
-    const discount = 0.10; // Example discount rate
+    const discount = 0.1; // Example discount rate
     const discountAmount = purchaseAmount * discount;
     const finalAmount = purchaseAmount - discountAmount;
 
@@ -2284,12 +2304,20 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
   try {
     // Fetch past activities
     const pastActivities = await bookingSchema
-      .find({ userId: touristId, itemModel: "Attraction", bookedDate: { $lt: currentDate } })
+      .find({
+        userId: touristId,
+        itemModel: "Attraction",
+        bookedDate: { $lt: currentDate },
+      })
       .populate("itemId");
 
     // Fetch past itineraries
     const pastItineraries = await bookingSchema
-      .find({ userId: touristId, itemModel: "Itinerary", bookedDate: { $lt: currentDate } })
+      .find({
+        userId: touristId,
+        itemModel: "Itinerary",
+        bookedDate: { $lt: currentDate },
+      })
       .populate("itemId");
 
     // Combine results
@@ -2333,7 +2361,9 @@ const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
 
   if (!orderId) {
-    return res.status(400).json({ message: "Missing required parameter: orderId" });
+    return res
+      .status(400)
+      .json({ message: "Missing required parameter: orderId" });
   }
 
   try {
@@ -2345,16 +2375,20 @@ const cancelOrder = async (req, res) => {
     }
 
     // Check if the order status is not already cancelled (if needed)
-    if (order.status === 'cancelled') {
+    if (order.status === "cancelled") {
       return res.status(400).json({ message: "Order is already cancelled" });
     }
 
     // Delete the order
     await order.remove();
 
-    return res.status(200).json({ message: "Order cancelled successfully", order });
+    return res
+      .status(200)
+      .json({ message: "Order cancelled successfully", order });
   } catch (error) {
-    return res.status(500).json({ message: "Error cancelling the order", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error cancelling the order", error: error.message });
   }
 };
 
@@ -2413,7 +2447,9 @@ const viewMyWishlist = async (req, res) => {
     });
 
     if (!wishlist || wishlist.products.length === 0) {
-      return res.status(404).json({ message: "No products found in the wishlist for this tourist." });
+      return res.status(404).json({
+        message: "No products found in the wishlist for this tourist.",
+      });
     }
 
     res.status(200).json({
@@ -2422,7 +2458,9 @@ const viewMyWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching wishlist:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -2467,7 +2505,9 @@ const removeFromWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error removing product from wishlist:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -2479,12 +2519,12 @@ const viewOrderDetails = async (req, res) => {
       return res.status(400).json({ error: "Order number is required." });
     }
 
-
-
     // Fetch the specific order by orderNumber and username
     const order = await ordermodel.findById({ OrderId });
     if (!order) {
-      return res.status(404).json({ error: "Order with number ${OrderId} not found." });
+      return res
+        .status(404)
+        .json({ error: "Order with number ${OrderId} not found." });
     }
 
     // Respond with the specific order details
@@ -2502,7 +2542,9 @@ const requestToBeNotified = async (req, res) => {
   const { itineraryId, touristId } = req.body;
 
   if (!itineraryId || !touristId) {
-    return res.status(400).json({ message: "Missing required fields: itineraryId or touristId" });
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: itineraryId or touristId" });
   }
 
   try {
@@ -2523,7 +2565,10 @@ const requestToBeNotified = async (req, res) => {
     });
   } catch (error) {
     console.error(error); // Log the error for better debugging
-    return res.status(500).json({ message: "Error adding tourist to 'notifyMe' list", error: error.message });
+    return res.status(500).json({
+      message: "Error adding tourist to 'notifyMe' list",
+      error: error.message,
+    });
   }
 };
 
@@ -2532,7 +2577,8 @@ const checkOut = async (req, res) => {
   if (!userId || !products || !total || !address) {
     return res.status(400).json({
       success: false,
-      message: "Missing required parameters: userId, products, total, or address",
+      message:
+        "Missing required parameters: userId, products, total, or address",
     });
   }
   if (!Array.isArray(products) || products.length === 0) {
@@ -2570,7 +2616,6 @@ const checkOut = async (req, res) => {
   }
 };
 
-
 const ViewOrders = async (req, res) => {
   const { userId } = req.params;
 
@@ -2580,15 +2625,22 @@ const ViewOrders = async (req, res) => {
 
   try {
     // Fetch all orders for the user
-    const orders = await order.find({ userId }).populate("products").populate("address");
+    const orders = await order
+      .find({ userId })
+      .populate("products")
+      .populate("address");
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });
     }
 
     // Categorize orders into current and past
-    const currentOrders = orders.filter(order => ["pending", "shipped"].includes(order.status));
-    const pastOrders = orders.filter(order => ["delivered", "cancelled"].includes(order.status));
+    const currentOrders = orders.filter((order) =>
+      ["pending", "shipped"].includes(order.status)
+    );
+    const pastOrders = orders.filter((order) =>
+      ["delivered", "cancelled"].includes(order.status)
+    );
 
     return res.status(200).json({
       currentOrders,
@@ -2596,10 +2648,63 @@ const ViewOrders = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving orders:", error);
-    return res.status(500).json({ message: "Error retrieving orders", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error retrieving orders", error: error.message });
   }
 };
+async function sendUpcomingEventNotifications() {
+  const today = new Date();
+  const nextWeek = new Date();
+  nextWeek.setDate(today.getDate() + 100); // Define "upcoming" as within the next 7 days
 
+  try {
+    // Find bookings with upcoming booked dates
+    const upcomingBookings = await Booking.find({
+      bookedDate: {
+        $gte: today, // On or after today
+        $lte: nextWeek, // On or before 7 days from today
+      },
+    }).populate("userId"); // Populate user details for notification
+
+    for (const booking of upcomingBookings) {
+      const { userId, bookedDate, itemId, itemModel } = booking;
+      const notificationMessage = `Reminder: You have an upcoming booking for ${itemModel} on ${bookedDate.toLocaleDateString()}.`;
+
+      // Check if the notification for this aboutID already exists
+      const existingNotification = await Notification.findOne({
+        userID: userId._id,
+        userModel: "Tourist",
+        "notifications.aboutID": itemId,
+      });
+
+      if (existingNotification) {
+        continue; // Skip this booking
+      }
+
+      // Add the notification to the Notification model
+      const newNotification = {
+        aboutID: itemId,
+        aboutModel: itemModel,
+        message: notificationMessage,
+      };
+
+      await Notification.findOneAndUpdate(
+        { userID: userId._id, userModel: "Tourist" }, // Match the user
+        {
+          $push: { notifications: newNotification }, // Add to notifications array
+        },
+        { upsert: true, new: true } // Create a new document if none exists
+      );
+
+      // Simulate sending the notification
+
+      // Replace with actual notification logic (email, push notification, etc.)
+    }
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+  }
+}
 
 module.exports = {
   ViewOrders,
@@ -2675,4 +2780,5 @@ module.exports = {
   PayByCard,
   ViewBookmarkedAttractions,
   checkOut,
+  sendUpcomingEventNotifications,
 };
