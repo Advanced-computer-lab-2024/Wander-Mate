@@ -36,7 +36,6 @@ import SellerProducts from "./pages/SellerProducts";
 import BasicMap from "./components/ui/basic-map";
 import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
-import PaymentPage from "./pages/Payment";
 import ShowWithDocs from "./components/showRegisteredWithDocs";
 import TourGuideProfileManager from "./components/TourGuideProfileManager";
 import TransportationCheckout from "./components/transportationCheckout";
@@ -77,13 +76,17 @@ function App() {
         <Route path="/map" element={<BasicMap />} />
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
-        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
-        <Route path="/tourGuideProfileManager" element={<TourGuideProfileManager />} />
-        <Route path="/transportationCheckout" element={<TransportationCheckout />} />
+        <Route
+          path="/tourGuideProfileManager"
+          element={<TourGuideProfileManager />}
+        />
+        <Route
+          path="/transportationCheckout"
+          element={<TransportationCheckout />}
+        />
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
-        
       </Routes>
     </Router>
   );
