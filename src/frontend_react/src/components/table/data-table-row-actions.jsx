@@ -2,7 +2,7 @@
 
 import { MoreHorizontal } from "lucide-react";
 import { z } from "zod";
-
+import axios from "axios";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -21,16 +21,48 @@ import {
 // import { labels } from "./data";
 import { statuses } from "./data";
 
+import { ComplaintDialog } from "../replyToComplain";
+
 export function DataTableRowActions({ row }) {
   const taskSchema = z.object({
-    id: z.string(),
+    userName: z.string(),
     Title: z.string(),
     Status: z.string(),
     Date: z.string(),
+    id: z.string(),
+    Body: z.string(),
     // label: z.string(),
     // priority: z.string(),
   });
   const task = taskSchema.parse(row.original);
+
+  const deleteComplaint = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/deleteComplaint/${task.id}`
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      if (newStatus === "Resolved") {
+        await axios.put(
+          `http://localhost:8000/markComplaintAsResolved/${task.id}`
+        );
+      } else if (newStatus === "Pending") {
+        await axios.put(
+          `http://localhost:8000/markComplaintAsPending/${task.id}`
+        );
+      }
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -44,13 +76,15 @@ export function DataTableRowActions({ row }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>View user</DropdownMenuItem>
-        <DropdownMenuItem>Show details</DropdownMenuItem>
+        <ComplaintDialog complaint={task} onStatusChange={handleStatusChange} />
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Mark as</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.Status}>
+            <DropdownMenuRadioGroup
+              value={task.Status}
+              onValueChange={(newStatus) => handleStatusChange(newStatus)}
+            >
               {statuses.map((Status) => (
                 <DropdownMenuRadioItem key={Status.value} value={Status.value}>
                   {Status.label}
@@ -60,7 +94,11 @@ export function DataTableRowActions({ row }) {
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => {
+            deleteComplaint();
+          }}
+        >
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

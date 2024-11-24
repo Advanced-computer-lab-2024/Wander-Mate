@@ -22,12 +22,11 @@ const tourGuideModel = require("../Models/tourGuide.js");
 const otpModel = require("../Models/otp.js");
 const jwt = require("jsonwebtoken");
 const PromoCode = require("../Models/promoCode.js");
-const attractions= require("../Models/attractions.js");
+const attractions = require("../Models/attractions.js");
 const Notification = require("../Models/notifications.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
-const Sales = require("../Models/sales.js"); 
-
+const Sales = require("../Models/sales.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -786,6 +785,22 @@ const replytoComplaints = async (req, res) => {
   }
 };
 
+const deleteComplaint = async (req, res) => {
+  const { complaintId } = req.params;
+  try {
+    // Find the complaint by its ID
+    const complaint = await Complaints.findByIdAndDelete(complaintId);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+    // Delete the complaint
+
+    return res.status(200).json({ message: "Complaint deleted successfully" });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////
 
 //////////////////Sprint 2 Donny
@@ -951,6 +966,35 @@ const markComplaintAsResolved = async (req, res) => {
   }
 };
 
+const markComplaintAsPending = async (req, res) => {
+  const { complaintId } = req.params; // Extract complaint ID from the request parameters
+
+  try {
+    // Find the complaint by its ID
+    const complaint = await Complaints.findById(complaintId);
+
+    // Check if the complaint was found
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    // Update the status to "Resolved"
+    complaint.Status = "Pending";
+
+    // Save the updated complaint
+    const updatedComplaint = await complaint.save();
+
+    // Send a response with the updated complaint
+    return res.status(200).json({
+      message: "Complaint status updated to pending",
+      complaint: updatedComplaint,
+    });
+  } catch (error) {
+    console.error("Error updating complaint status:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const viewAllComplaints = async (req, res) => {
   try {
     // Step 1: Fetch all complaints from the database
@@ -958,7 +1002,7 @@ const viewAllComplaints = async (req, res) => {
 
     // Step 2: Check if there are no complaints
     if (!complaints || complaints.length === 0) {
-      return res.status(404).json({ message: "No complaints found." });
+      return res.status(200).json({ message: "No complaints found.", complaints: [] });
     }
 
     // Step 3: Map through the complaints to prepare the response
@@ -968,6 +1012,7 @@ const viewAllComplaints = async (req, res) => {
       Body: complaint.Body, // Complaint body text
       Date: complaint.Date, // Date when the complaint was made
       Status: complaint.Status, // Status (pending/resolved)
+      Maker: complaint.Maker,
     }));
 
     // Step 4: Return the list of complaints with their statuses
@@ -1440,7 +1485,6 @@ const createPromoCode = async (req, res) => {
   }
 };
 
-
 const viewAllUsers = async (req, res) => {
   try {
     // Get the total number of users
@@ -1449,9 +1493,9 @@ const viewAllUsers = async (req, res) => {
     const newUsersPerMonth = await Users.aggregate([
       {
         $group: {
-          _id: { 
-            year: { $year: "$createdAt" }, 
-            month: { $month: "$createdAt" } 
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
           },
           count: { $sum: 1 },
         },
@@ -1490,8 +1534,10 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
     // Destructure data from the request body
     const { message, adminId, productId } = req.body;
 
-    if (!message || !adminId ) {
-      return res.status(400).json({ error: "Message, adminId, and productId are required." });
+    if (!message || !adminId) {
+      return res
+        .status(400)
+        .json({ error: "Message, adminId, and productId are required." });
     }
 
     // Find or update the notification for the specified admin
@@ -1531,7 +1577,6 @@ const updateRevenueSales = async (req, res) => {
       message: "Missing required fields: userID, userModel, or amount",
     });
   }
-
 
   try {
     // Check if the user already exists in the Sales table
@@ -1624,4 +1669,6 @@ module.exports = {
   viewAllUsers,
   sendOutOfStockNotificationAdmin,
   updateRevenueSales,
+  markComplaintAsPending,
+  deleteComplaint,
 };

@@ -7,14 +7,18 @@ import { labels, priorities, statuses } from "./data";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 
+
 export const columns = [
-  
   {
-    accessorKey: "id",
+    accessorKey: "userName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Username" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => (
+      <div className="w-[80px]" style={{ paddingLeft: "5.8vw" }}>
+        {row.getValue("userName")}
+      </div>
+    ),
     enableSorting: false,
     enableHiding: false,
   },
