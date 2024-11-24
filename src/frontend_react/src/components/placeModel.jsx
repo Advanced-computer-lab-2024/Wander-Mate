@@ -68,7 +68,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true"  && urlParams.get("place") === place.placeId) {
       setIsOpen(true);
     }
   }, [isOpen, place.reviews]);
@@ -359,7 +359,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
         </Button>
       </p>
       {/* Displaying the Map directly */}
-      <div className="w-full h-64 rounded-lg overflow-hidden">
+      <div className="w-full h-64 rounded-lg">
         <NonMovableMap
           initialLocation={[place.longitude, place.latitude]}
           onLocationSelect={doNothing}
