@@ -167,7 +167,9 @@ const {
   createPromoCode,
   sendOutOfStockNotificationAdmin,
   viewAllUsers,
-  updateRevenueSales
+  updateRevenueSales,
+  markComplaintAsPending,
+  deleteComplaint,
 } = require("./Routes/adminController.js");
 
 const {
@@ -310,6 +312,7 @@ app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
+app.delete("/deleteComplaint/:complaintId", deleteComplaint);
 app.get(
   "/sellers/:sellerID/products/sales-and-quantity",
   viewSellerProductSalesAndQuantity
@@ -482,6 +485,7 @@ app.get("/viewComplaintDetails/:complaintId", viewComplaintDetails);
 app.post("/calculateLoyaltyPoints", calculateLoyaltyPoints);
 app.get("/viewMyComplaints/:touristID", viewMyComplaints);
 app.put("/markComplaintAsResolved/:complaintId", markComplaintAsResolved);
+app.put("/markComplaintAsPending/:complaintId", markComplaintAsPending);
 app.get("/viewProductSalesAndQuantity", viewProductSalesAndQuantity);
 app.get(
   "/viewSellerProductSalesAndQuantity/:sellerId",
@@ -505,11 +509,12 @@ app.get("/viewItineraryReport/:guideID", viewItineraryReport);
 app.get("/viewActivityReport/:advertiserID", viewActivityReport);
 app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", upload.single("picture"), addItemToCart);
+app.post("/addWishlistItemToCart", addWishlistItemToCart);
 app.post(
   "/addWishlistItemToCart",
+  upload.single("picture"),
   addWishlistItemToCart
 );
-app.post("/addWishlistItemToCart", upload.single("picture"), addWishlistItemToCart);
 app.post("/forgetPassword", forgetPassword);
 app.put("/validateOtp", validateOtp);
 app.put("/resetPassword", resetPassword);
@@ -521,25 +526,29 @@ app.get(
   "/viewPastActivitiesAndItineraries/:touristId",
   viewPastActivitiesAndItineraries
 );
-app.get("/viewPastActivitiesAndItineraries/:touristId", viewPastActivitiesAndItineraries);
+app.get(
+  "/viewPastActivitiesAndItineraries/:touristId",
+  viewPastActivitiesAndItineraries
+);
 app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
 app.post("/addToWishlist", addToWishlist);
 app.post("/removeFromCart", removeFromCart);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.delete("/cancel-order/:orderId", cancelOrder);
-app.delete('/cancel-order/:orderId', cancelOrder);
+app.delete("/cancel-order/:orderId", cancelOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
 app.post("/BookmarkAttraction", BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
-app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
-app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
+app.put("/sendOutOfStockNotificationSeller",  sendOutOfStockNotificationSeller);
+app.put("/sendOutOfStockNotificationAdmin",  sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
-app.post('/requestToBeNotified', requestToBeNotified);
-app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions)
-app.get("/viewAllUsers", viewAllUsers);
-app.get("/ViewOrders/:userId", ViewOrders);
-app.post("/updateRevenueSales", updateRevenueSales);
+app.post("/requestToBeNotified", requestToBeNotified);
+app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
+app.get("/viewAllUsers",  viewAllUsers);
+app.get("/ViewOrders/:userId",  ViewOrders);
+app.post("/updateRevenueSales",  updateRevenueSales);
+
 app.post("/PayByCard/:id", PayByCard);

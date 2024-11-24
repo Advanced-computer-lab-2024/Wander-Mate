@@ -1,9 +1,4 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  XCircle,
-  Eye,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, XCircle, Eye } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
@@ -17,7 +12,15 @@ import {
 
 export function DataTableColumnHeader({ column, title, className }) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return (
+      <div
+        className={cn(className)}
+        align="start"
+        style={{ paddingLeft: "5.8vw" }}
+      >
+        {title}
+      </div>
+    );
   }
 
   return (
