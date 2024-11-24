@@ -191,13 +191,17 @@ const deletePlace = async (req, res) => {
 
 const createHistoricalTags = async (req, res) => {
   try {
-    const { Name } = req.body;
+    const { Name, icon } = req.body;
 
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
     }
 
-    const newTag = new Tag({ Name });
+    if (!icon) {
+      return res.status(400).json({ message: "Icon is required" });
+    }
+
+    const newTag = new Tag({ Name, icon });
 
     // Save the new tag to the database
     await newTag.save();
@@ -207,6 +211,7 @@ const createHistoricalTags = async (req, res) => {
     return res.status(400).json({ message: "Error creating tag" });
   }
 };
+
 
 const readHistoricalTags = async (req, res) => {
   try {
@@ -226,7 +231,22 @@ const updateHistoricalTags = async (req, res) => {
       return res.status(400).json({ message: "Tag not found" });
     }
     return res.status(200).json(tag);
-  } catch {
+  } catch(error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error updating tag" });
+  }
+};
+
+const deleteHistoricalTags = async (req, res) => {
+  try {
+    const { Id } = req.params;
+    const tag = await Tag.findByIdAndDelete(Id);
+    if (!tag) {
+      return res.status(400).json({ message: "Tag not found" });
+    }
+    return res.status(200).json(tag);
+  } catch(error) {
+    console.log(error);
     return res.status(400).json({ message: "Error updating tag" });
   }
 };
@@ -295,4 +315,5 @@ module.exports = {
   viewAll0,
   getPlaceImage,
   changePasswordTourismGoverner,
+  deleteHistoricalTags
 };

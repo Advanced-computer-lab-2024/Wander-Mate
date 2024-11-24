@@ -230,6 +230,7 @@ const {
   readHistoricalTags,
   updateHistoricalTags,
   changePasswordTourismGoverner,
+  deleteHistoricalTags,
 } = require("./Routes/tourismGovernerController.js");
 const MongoURI = process.env.MONGO_URI;
 console.log(MongoURI);
@@ -352,7 +353,8 @@ app.post("/redeempoints", redeemPoints);
 //////////////////////////////////////////
 app.post("/createHistoricalTags", createHistoricalTags);
 app.get("/readHistoricalTags", readHistoricalTags);
-app.patch("/updateHistoricalTags/:id", updateHistoricalTags);
+app.patch("/updateHistoricalTags/:Id", updateHistoricalTags);
+app.delete("/deleteHistoricalTags/:Id",deleteHistoricalTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);
