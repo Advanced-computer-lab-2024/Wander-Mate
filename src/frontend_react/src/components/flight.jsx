@@ -55,7 +55,7 @@ const Flight = (props) => {
   };
 
   return (
-    <div className="bg-light p-4 rounded shadow mb-3">
+    <div className="bg-[#EAF0F0] rounded-b-3xl rounded-tr-3xl p-7">
       <h3 className="mb-3">Flight Details</h3>
       <p>
         Flight: {departureSegment?.carrierCode ?? "N/A"}
@@ -73,7 +73,7 @@ const Flight = (props) => {
         {props.flight.price?.currency ?? ""}
       </p>
       <Button
-        className="btn btn-primary"
+        className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px] mt-3"
         onClick={handleBooking}
         disabled={isBooking}
       >
