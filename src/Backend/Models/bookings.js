@@ -10,7 +10,13 @@ const bookingSchmea = new Schema({
   itemModel: {
     type: String,
     required: true, // This will contain the model name
-    enum: ["Attraction", "Itinerary", "Transportation", "HotelBooked", "BookedFlights"], // Limit to valid model names
+    enum: [
+      "Attraction",
+      "Itinerary",
+      "Transportation",
+      "HotelBooked",
+      "BookedFlights",
+    ], // Limit to valid model names
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +28,10 @@ const bookingSchmea = new Schema({
     required: true,
   },
   createdAt: { type: Date, default: Date.now }, // Timestamp for when the rating was created
+  price: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Booking = mongoose.model("Booking", bookingSchmea);
