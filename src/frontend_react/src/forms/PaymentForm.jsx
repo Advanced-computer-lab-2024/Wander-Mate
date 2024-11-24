@@ -50,13 +50,13 @@ const PaymentFormInner = () => {
       const cardElement = elements.getElement(CardElement);
 
       // Step 2: Call backend to create PaymentIntent
-      const response = await fetch("/create-payment-intent", {
+      const response = await fetch("/PayByCard/67325d260b78167e4249db6c", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 5000, // $50.00 in cents
+          amount: 120, // $50.00 in cents
           currency: "usd",
-          eventId: "12345", // Example: replace with actual event ID
+          eventId: "672fcc3576d2804bd9ab0bc8", // Example: replace with actual event ID
         }),
       });
 
@@ -101,7 +101,7 @@ const PaymentFormInner = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handlePayment}>
+          <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="card-element">Card Information</Label>{" "}
@@ -116,7 +116,12 @@ const PaymentFormInner = () => {
                 <Input placeholder="123" />
               </div>
             </div>
-            <Button type="submit" className="mt-4 w-full" disabled={loading}>
+            <Button
+              onClick={handlePayment}
+              type="submit"
+              className="mt-4 w-full"
+              disabled={loading}
+            >
               {loading ? "Processing..." : "Pay"}
             </Button>
           </form>

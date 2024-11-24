@@ -534,11 +534,12 @@ app.delete("/removeFromWishlist", removeFromWishlist);
 app.post("/BookmarkAttraction", BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
-app.put("/sendOutOfStockNotificationSeller",sendOutOfStockNotificationSeller);
-app.put("/sendOutOfStockNotificationAdmin",sendOutOfStockNotificationAdmin);
+app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
+app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
 app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions)
-app.get("/viewAllUsers",viewAllUsers);
-app.get("/ViewOrders/:userId",ViewOrders);
-app.post("/updateRevenueSales",updateRevenueSales);
+app.get("/viewAllUsers", viewAllUsers);
+app.get("/ViewOrders/:userId", ViewOrders);
+app.post("/updateRevenueSales", updateRevenueSales);
+app.post("/PayByCard/:id", PayByCard);
