@@ -21,6 +21,7 @@ import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
 import UpdateTouristProfile from "./components/updateTouristInfo";
 import TourismGovHomePage from "./pages/TourismGovHomePage";
+import TouristHomePage from "./pages/TouristHomepage";
 import Cart from "./components/Cart";
 import ProductDetails from "./components/productsDetails";
 import ForgotPage from "./pages/forgetPassword";
@@ -81,6 +82,7 @@ function App() {
         <Route path="/tourGuideProfileManager" element={<TourGuideProfileManager />} />
         <Route path="/transportationCheckout" element={<TransportationCheckout />} />
         <Route path="/addressCard" element={<AddressCard />} />
+        <Route path="/TouristHomePage" element={<TouristHomePage />} />
         
       </Routes>
     </Router>
