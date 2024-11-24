@@ -11,6 +11,15 @@ import {
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import axios from "axios";
+// import BasicMap from "./ui/basic-map";
+import NonMovableMap from "./ui/nonMovableMap";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "./ui/carousel";
 
 export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
   const [reviews, setReviews] = useState([]);
@@ -18,6 +27,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
   const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleOpenChange = (open) => {
+    console.log(place);
     setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
@@ -29,6 +39,12 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
       }
     }
   };
+
+  const doNothing = () => {
+
+  }
+
+  const images = place.images;
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -108,15 +124,47 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
           >
             <Icon icon="ph:x" className="h-4 w-4" />
           </Button>
-          <div className="space-y-8 p-6">
+          <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Place Image */}
-              <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={place.image}
-                  alt={place.name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-square overflow-hidden rounded-lg ">
+              <Carousel >
+            <CarouselContent>
+              {images.length > 0 ? (
+                images.map((image, index) => (
+                  <CarouselItem key={index}>
+                    <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
+                      <img
+                        className="w-full h-full "
+                        src={
+                          image.data
+                            ? `data:${image.contentType};base64,${image.data}`
+                            : image
+                        }
+                        alt={`${place.name} image ${index + 1}`}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))
+              ) : (
+                <CarouselItem>
+                  <div className="flex items-center justify-center h-full">
+                    <img
+                      src="/placeholder.svg?height=191&width=191"
+                      alt="Placeholder"
+                      className="max-h-[191px] w-auto"
+                    />
+                  </div>
+                </CarouselItem>
+              )}
+            </CarouselContent>
+            {images.length > 1 && (
+              <>
+                <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+              </>
+            )}
+          </Carousel>
               </div>
 
               {/* Place Info */}
@@ -145,33 +193,27 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                   </div>
                   {/* Place Details */}
                   <div className="space-y-2 mb-6">
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Location:</span>{" "}
-                      {place.location}
-                      {/* New Button to Open Google Maps */}
-                      <Button
-                        variant="outline"
-                        className="ml-4"
-                        onClick={() => {
-                          const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
-                          window.open(mapUrl, "_blank");
-                        }}
-                      >
-                        <Icon
-                          icon="heroicons:location-marker"
-                          className="w-4 h-4 mr-2"
-                        />
-                        Open in Google Maps
-                      </Button>
-                    </p>
+                    
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Category:</span>{" "}
                       {place.category}
                     </p>
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Ticket Prices:</span>{" "}
-                      {place.TicketPrices}
-                    </p>
+                    {Array.isArray(place.TicketPrices) && place.TicketPrices.length > 0 ? (
+    <div>
+      <span className="font-semibold">Ticket Prices:</span>
+      <ul className="text-sm text-gray-600">
+        {place.TicketPrices.map((price, index) => (
+          <li key={index}>
+            {price}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <p className="text-sm text-gray-600">
+      No ticket prices available.
+    </p>
+  )}
                   </div>
                   {/* Favorite Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
@@ -245,8 +287,11 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
-                <TabsTrigger value="attractions">
+                {/* <TabsTrigger value="attractions">
                   Nearby Attractions
+                </TabsTrigger> */}
+                <TabsTrigger value="Location">
+                  Location
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="info" className="mt-4">
@@ -281,7 +326,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="attractions" className="mt-4">
+              {/* <TabsContent value="attractions" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     <p className="text-gray-600">
@@ -291,7 +336,40 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                     </p>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
+              <TabsContent value="Location" className="mt-4">
+  <Card>
+    <CardContent className="p-6">
+      <p className="text-sm text-gray-600 mb-4">
+        <span className="font-semibold">Location:</span> {place.location}
+        {/* New Button to Open Google Maps */}
+        <Button
+          variant="outline"
+          className="ml-4"
+          onClick={() => {
+            const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
+            window.open(mapUrl, "_blank");
+          }}
+        >
+          <Icon
+            icon="heroicons:location-marker"
+            className="w-4 h-4 mr-2"
+          />
+          Open in Maps
+        </Button>
+      </p>
+      {/* Displaying the Map directly */}
+      <div className="w-full h-64 rounded-lg overflow-hidden">
+        <NonMovableMap
+          initialLocation={[place.longitude, place.latitude]}
+          onLocationSelect={doNothing}
+        />
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
             </Tabs>
           </div>
         </div>

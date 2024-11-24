@@ -90,7 +90,7 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "Advertiser");
 
             setTimeout(() => {
-              navigate("/tourist");
+              navigate("/touristHomepage");
             }, 1000);
             break;
           case "Seller":

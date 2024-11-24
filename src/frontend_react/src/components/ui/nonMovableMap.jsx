@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import '../../assets/css/Map.css';
+import '../../assets/css/Map2.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoieW91c3NlZm1lZGhhdGFzbHkiLCJhIjoiY2x3MmpyZzYzMHAxbDJxbXF0dDN1MGY2NSJ9.vrWqL8FrrRzm0yAfUNpu6g';
 
-const BasicMap = ({ onLocationSelect, initialLocation }) => {
+const NonMovableMap = ({ onLocationSelect, initialLocation }) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(initialLocation ? initialLocation[0] : -122.420679);
@@ -23,14 +23,14 @@ const BasicMap = ({ onLocationSelect, initialLocation }) => {
     });
 
     map.current.on('load', () => {
-      marker.current = new mapboxgl.Marker()
+      marker.current = new mapboxgl.Marker({ draggable: false }) // Ensure the marker is non-draggable
         .setLngLat([lng, lat])
         .addTo(map.current);
     });
 
     map.current.on('click', (e) => {
+      // The marker's position is not updated on click
       const { lng, lat } = e.lngLat;
-      marker.current.setLngLat([lng, lat]);
       onLocationSelect(lng, lat);
     });
 
@@ -42,10 +42,10 @@ const BasicMap = ({ onLocationSelect, initialLocation }) => {
   }, [onLocationSelect]);
 
   return (
-    <div className="map-wrapper">
-      <div ref={mapContainer} className="map-container" />
+    <div className="map-wrapper1">
+      <div ref={mapContainer} className="map-container1" />
     </div>
   );
 };
 
-export default BasicMap;
+export default NonMovableMap;

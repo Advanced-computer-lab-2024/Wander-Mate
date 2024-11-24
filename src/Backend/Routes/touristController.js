@@ -470,6 +470,7 @@ const sortProductsByRatingstourist = async (req, res) => {
     res.status(500).json({ message: "Failed to sort products by ratings" });
   }
 };
+
 const filterItineraries = async (req, res) => {
   const { minPrice, maxPrice, AvailableDates, Tags, Language } = req.body;
 
@@ -1418,6 +1419,7 @@ const viewMyComplaints = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
 const redeemPoints = async (req, res) => {
   const { touristID, pointsToRedeem } = req.body;
 
@@ -1467,6 +1469,7 @@ const redeemPoints = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const reviewProduct = async (req, res) => {
   const { productId, userId, review, username } = req.body; // Only productId and review as a string
   try {
@@ -1496,6 +1499,7 @@ const reviewProduct = async (req, res) => {
     });
   }
 };
+
 const getMyBookings = async (req, res) => {
   const { touristID } = req.params; // Assuming the tourist ID is passed in the URL
 
@@ -1554,143 +1558,8 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-const shareActivity = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body; // Expecting activity ID, share method (link or email), and email address if sharing via email
 
-  try {
-    // Validate input
-    if (!activityId) {
-      return res.status(400).json({ message: "Activity ID is required." });
-    }
-
-    // Find the activity by ID
-    const activity = await attractionModel.findById(activityId);
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
-
-    // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
-
-    if (shareMethod === "link") {
-      // If sharing via link, return the link
-      return res.status(200).json({
-        message: "Shareable link generated successfully.",
-        link: shareableLink,
-      });
-    } else if (shareMethod === "email") {
-      if (!email) {
-        return res.status(400).json({
-          message: "Email address is required for sharing via email.",
-        });
-      }
-
-      // Configure nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
-          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
-        },
-      });
-
-      // Set email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Check out this activity!",
-        text: `I thought you might be interested in this activity: ${shareableLink}`,
-      };
-
-      // Send email
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({
-        message: "Email sent successfully.",
-        link: shareableLink,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Invalid share method. Use 'link' or 'email'." });
-    }
-  } catch (error) {
-    console.error("Error sharing activity:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
-const nodemailer = require("nodemailer");
 const order = require("../Models/order.js");
-
-const shareItenerary = async (req, res) => {
-  const { activityId, shareMethod, email } = req.body;
-
-  try {
-    // Validate input
-    if (!activityId) {
-      return res.status(400).json({ message: "Activity ID is required." });
-    }
-
-    // Find the activity by ID
-    const activity = await itineraryModel.findById(activityId);
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
-
-    // Generate a shareable link
-    const shareableLink = `${req.protocol}://${req.get(
-      "host"
-    )}/activities/${activityId}`;
-
-    if (shareMethod === "link") {
-      // If sharing via link, return the link
-      return res.status(200).json({
-        message: "Shareable link generated successfully.",
-        link: shareableLink,
-      });
-    } else if (shareMethod === "email") {
-      if (!email) {
-        return res.status(400).json({
-          message: "Email address is required for sharing via email.",
-        });
-      }
-
-      // Configure nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, // Your email address (configured as environment variable)
-          pass: process.env.EMAIL_PASS, // Your email password or app password (configured as environment variable)
-        },
-      });
-
-      // Set email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Check out this activity!",
-        text: `I thought you might be interested in this activity: ${shareableLink}`,
-      };
-
-      // Send email
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({
-        message: "Email sent successfully.",
-        link: shareableLink,
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Invalid share method. Use 'link' or 'email'." });
-    }
-  } catch (error) {
-    console.error("Error sharing activity:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
 
 const rateEvent = async (req, res) => {
   const { userId, eventId, rating } = req.body;
@@ -1788,6 +1657,7 @@ const bookActivity = async (req, res) => {
       .json({ message: "Error booking itinerary", error: error.message });
   }
 };
+
 const updateEventRatings = async (req, res) => {
   const { eventId } = req.params;
   try {
@@ -1882,6 +1752,7 @@ const currencyConverter = async (req, res) => {
     });
   }
 };
+
 const getProductReviews = async (req, res) => {
   const { productId } = req.params; // Get productId from the request parameters
   try {
@@ -1910,6 +1781,7 @@ const getProductReviews = async (req, res) => {
     });
   }
 };
+
 // Method to select preferences
 const selectPreferences = async (req, res) => {
   try {
@@ -2067,7 +1939,6 @@ const PayByCard = async (req, res) => {
 };
 ////////////////////////////Nadeem Sprint 3///////////////////////////
 
-
 const removeFromCart = async (req, res) => {
   const { touristID, productId, attributes } = req.body;
 
@@ -2106,6 +1977,7 @@ const removeFromCart = async (req, res) => {
     return res.status(400).json({ message: "Error removing item from cart" });
   }
 };
+
 const BookmarkAttraction = async (req, res) => {
   const { userId, attractionId } = req.body;
 
@@ -2143,8 +2015,9 @@ const BookmarkAttraction = async (req, res) => {
     return res.status(500).json({ message: "Error bookmarking attraction", error: error.message });
   }
 };
+
 const ViewBookmarkedAttractions = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.params;
 
   if (!userId) {
     return res.status(400).json({ message: "Missing userId" });
@@ -2163,8 +2036,6 @@ const ViewBookmarkedAttractions = async (req, res) => {
     return res.status(500).json({ message: "Error retrieving bookmarked attractions", error: error.message });
   }
 };
-
-
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2293,7 +2164,6 @@ const addWishlistItemToCart = async (req, res) => {
 
 };
 
-
 const showCart = async (req, res) => {
   const { touristID } = req.params;
   try {
@@ -2352,9 +2222,6 @@ const payWithWallet = async (req, res) => {
 };
 
 ////////////////////////////Nadeem Sprint 3///////////////////////////
-
-
-
 
 const applyPromoCode = async (req, res) => {
   const { touristId } = req.params;
@@ -2422,6 +2289,7 @@ const viewPastActivitiesAndItineraries = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const getDeliveryAddresses = async (req, res) => {
   const { touristId } = req.params;
 
@@ -2446,8 +2314,6 @@ const getDeliveryAddresses = async (req, res) => {
   }
 };
 
-
-
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params; // Get orderId from the route parameter
 
@@ -2457,7 +2323,7 @@ const cancelOrder = async (req, res) => {
 
   try {
     // Find the order by orderId
-    const order = await Order.findById(orderId);
+    const order = await ordermodel.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -2476,11 +2342,6 @@ const cancelOrder = async (req, res) => {
     return res.status(500).json({ message: "Error cancelling the order", error: error.message });
   }
 };
-
-
-
-
-
 
 const addToWishlist = async (req, res) => {
   const { touristId, productId } = req.body;
@@ -2525,6 +2386,7 @@ const addToWishlist = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const viewMyWishlist = async (req, res) => {
   const { touristId } = req.params; // Assuming the tourist ID is passed as a URL parameter
 
@@ -2548,6 +2410,7 @@ const viewMyWishlist = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 const removeFromWishlist = async (req, res) => {
   const { touristId, productId } = req.body; // Get touristId and productId from the request body
 
@@ -2649,7 +2512,82 @@ const requestToBeNotified = async (req, res) => {
   }
 };
 
+const checkOut = async (req, res) => {
+  const { userId, products, total, address, isPaid } = req.body;
+  if (!userId || !products || !total || !address) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required parameters: userId, products, total, or address",
+    });
+  }
+  if (!Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Products must be a non-empty array",
+    });
+  }
+
+  try {
+    // Create a new order
+    const newOrder = new ordermodel({
+      userId,
+      products,
+      total,
+      address,
+      isPaid: isPaid || false, // Default to false if not provided
+    });
+
+    // Save the order to the database
+    const savedOrder = await newOrder.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      order: savedOrder,
+    });
+  } catch (error) {
+    // Handle errors
+    return res.status(500).json({
+      success: false,
+      message: "Error creating the order",
+      error: error.message,
+    });
+  }
+};
+
+
+const ViewOrders = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing userId" });
+  }
+
+  try {
+    // Fetch all orders for the user
+    const orders = await order.find({ userId }).populate("products").populate("address");
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    // Categorize orders into current and past
+    const currentOrders = orders.filter(order => ["pending", "shipped"].includes(order.status));
+    const pastOrders = orders.filter(order => ["delivered", "cancelled"].includes(order.status));
+
+    return res.status(200).json({
+      currentOrders,
+      pastOrders,
+    });
+  } catch (error) {
+    console.error("Error retrieving orders:", error);
+    return res.status(500).json({ message: "Error retrieving orders", error: error.message });
+  }
+};
+
+
 module.exports = {
+  ViewOrders,
   touristRegister,
   searchAttractions,
   handleTourist,
@@ -2692,7 +2630,6 @@ module.exports = {
   redeemPoints,
   reviewProduct,
   cancelBooking,
-  shareActivity,
   bookItinerary,
   rateEvent,
   updateEventRatings,
@@ -2701,7 +2638,6 @@ module.exports = {
   getMyBookings,
   getProductReviews,
   bookActivity,
-  shareItenerary,
   BookFlight,
   addDeliveryAddress,
   assignBirthdayPromo,
@@ -2723,4 +2659,5 @@ module.exports = {
   requestToBeNotified,
   PayByCard,
   ViewBookmarkedAttractions,
+  checkOut,
 };

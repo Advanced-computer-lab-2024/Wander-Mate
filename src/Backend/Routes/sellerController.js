@@ -9,6 +9,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
+const Notification = require("../Models/notifications.js");
 const jwt = require("jsonwebtoken");
 
 // Creating a seller
@@ -193,7 +194,7 @@ const addProductseller = async (req, res) => {
     }
 
     // Create a new product instance
-    const product = await productModel.create({
+    const product = await ProductModel.create({
       picture: {
         data: req.file.buffer, // Get image data (Buffer)
         contentType: req.file.mimetype, // Get content type of the image
@@ -535,6 +536,42 @@ const getSellerImage = async (req, res) => {
   }
 };
 
+const sendOutOfStockNotificationSeller = async (req, res) => {
+  try {
+    // Destructure data from the request body
+    const { message, sellerId, productId } = req.body;
+
+    if (!message || !sellerId ) {
+      return res.status(400).json({ error: "Message, sellerId, and productId are required." });
+    }
+
+    // Find or update the notification for the specified admin
+    const notification = await Notification.findOneAndUpdate(
+      { userID: sellerId, userModel: "Seller" },
+      {
+        $push: {
+          notifications: {
+            aboutID: productId,
+            aboutModel: "Product",
+            message,
+          },
+        },
+      },
+      { upsert: true, new: true } // Create a new document if it doesn't exist
+    );
+
+    res.status(200).json({
+      message: "Notification added successfully for seller.",
+      notification,
+    });
+
+    console.log("Notification added for seller:", notification);
+  } catch (error) {
+    console.error("Error adding notification for seller:", error);
+    res.status(500).json({ error: "Failed to add notification for seller." });
+  }
+};
+
 module.exports = {
   createSeller,
   updateSeller,
@@ -554,5 +591,6 @@ module.exports = {
   uploadPictureseller,
   viewSellerProductSalesAndQuantity,
   getSellerImage,
-  getSellerById
+  getSellerById,
+  sendOutOfStockNotificationSeller,
 };

@@ -61,7 +61,6 @@ const {
   bookHotel,
   reviewProduct,
   cancelBooking,
-  shareActivity,
   rateEvent,
   bookItinerary,
   updateEventRatings,
@@ -70,7 +69,6 @@ const {
   getMyBookings,
   getProductReviews,
   bookActivity,
-  shareItenerary,
   addDeliveryAddress,
   addItemToCart,
   showCart,
@@ -91,6 +89,8 @@ const {
   requestToBeNotified,
   PayByCard,
   ViewBookmarkedAttractions,
+  checkOut,
+  ViewOrders,
 } = require("./Routes/touristController");
 
 const {
@@ -113,6 +113,7 @@ const {
   viewSellerProductSalesAndQuantity,
   getSellerImage,
   getSellerById,
+  sendOutOfStockNotificationSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -164,6 +165,9 @@ const {
   resetPassword,
   getAirports,
   createPromoCode,
+  sendOutOfStockNotificationAdmin,
+  viewAllUsers,
+  updateRevenueSales
 } = require("./Routes/adminController.js");
 
 const {
@@ -485,8 +489,6 @@ app.get(
 );
 app.get("/getMyBookings/:touristID", getMyBookings);
 app.delete("/cancelBooking/:bookingID", cancelBooking);
-app.post("/shareActivity", shareActivity);
-app.post("/shareItinerary", shareItenerary);
 app.post("/flag-event-or-itinerary", flagEventOrItinerary);
 app.post("/bookItinerary", bookItinerary);
 app.post("/bookActivity", bookActivity);
@@ -505,7 +507,6 @@ app.post("/addDeliveryAddress/:touristId", addDeliveryAddress);
 app.post("/addItemToCart", upload.single("picture"), addItemToCart);
 app.post(
   "/addWishlistItemToCart",
-  upload.single("picture"),
   addWishlistItemToCart
 );
 app.post("/addWishlistItemToCart", upload.single("picture"), addWishlistItemToCart);
@@ -533,6 +534,11 @@ app.delete("/removeFromWishlist", removeFromWishlist);
 app.post("/BookmarkAttraction", BookmarkAttraction);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
+app.put("/sendOutOfStockNotificationSeller",sendOutOfStockNotificationSeller);
+app.put("/sendOutOfStockNotificationAdmin",sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post('/requestToBeNotified', requestToBeNotified);
-app.get("/ViewBookmarkedAttractions",ViewBookmarkedAttractions)
+app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions)
+app.get("/viewAllUsers",viewAllUsers);
+app.get("/ViewOrders/:userId",ViewOrders);
+app.post("/updateRevenueSales",updateRevenueSales);
