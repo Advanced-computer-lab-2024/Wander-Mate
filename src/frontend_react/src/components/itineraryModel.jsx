@@ -11,6 +11,8 @@ import {
 import { Icon } from "@iconify/react";
 import axios from "axios";
 import NonMovableMap from "./ui/nonMovableMap";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children }) {
     const [reviews, setReviews] = useState([]);
@@ -24,8 +26,9 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
         const url = new URL(window.location.href);
         if (window.location.search.includes("open")) {
           url.searchParams.delete("open");
-          url.searchParams.delete("itinerary");
+          url.searchParams.delete("place");
           window.history.replaceState({}, "", url);
+          window.location.reload();
         }
       }
     };
@@ -50,6 +53,11 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
       if (isOpen) {
         fetchReviews();
       }
+
+      const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("open") === "true") {
+      setIsOpen(true);
+    }
     }, [isOpen, itinerary.Ratings]);
 
     const doNothing = () => {}
@@ -72,13 +80,26 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     };
   
     const handleShare = (method) => {
+      // Get the current URL without query parameters
       const currentUrl = window.location.href.split("?")[0];
-      const shareUrl = `${currentUrl}?open=true&itinerary=${itinerary._id}`;
-      const shareText = `Check out this amazing itinerary: ${itinerary.Name}`;
-  
+    
+      // Construct the share URL with the itinerary ID
+      const shareUrl = `${currentUrl}?open=true&itinerary=${itinerary.itineraryId}`;
+    
+      // Construct the share text using the itinerary name
+      const shareText = `Check out this amazing itinerary: ${itinerary.name}`;
+    
+      // Handle different sharing methods
       if (method === "link") {
         navigator.clipboard.writeText(shareUrl).then(() => {
-          alert("Link copied to clipboard!");
+          toast("Link copied to Clipboard!", {
+            icon: "👏",
+            style: {
+              borderRadius: "10px",
+              background: "#826AF9",
+              color: "#fff",
+            },
+          });
           setIsShareOpen(false);
         });
       } else if (method === "email") {
@@ -89,11 +110,14 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
         setIsShareOpen(false);
       }
     };
+    
   
     return (
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>{children}</DialogTrigger>
+
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" size="full">
+          <Toaster/>
           <div className="relative">
             <Button
               variant="ghost"
@@ -138,69 +162,81 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                       </p>
                     </div>
   
-                    {/* Favorite and Share Buttons */}
-                    <div className="flex space-x-4">
-                      <Button
-                        className={`flex-1 ${
-                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
-                        }`}
-                        onClick={handleToggleFavorite}
-                      >
-                        <Icon
-                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-                          className="w-4 h-4 mr-2"
-                        />
-                        {isFavorite
-                          ? "Remove from Favorites"
-                          : "Add to Favorites"}
-                      </Button>
-                      <Popover
-                        open={isShareOpen}
-                        onOpenChange={setIsShareOpen}
-                        onClose={() => setIsShareOpen(false)}
-                        trigger={
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsShareOpen(true)}
-                          >
-                            <Icon
-                              icon="heroicons:share"
-                              className="w-4 h-4 mr-2"
-                            />
-                            Share
-                          </Button>
-                        }
-                      >
-                        <div className="w-48 p-2">
-                          <div className="flex flex-col space-y-2">
-                            <Button
-                              variant="ghost"
-                              onClick={() => handleShare("link")}
-                              className="w-full justify-start"
-                            >
-                              <Icon
-                                icon="heroicons:link"
-                                className="w-4 h-4 mr-2"
-                              />
-                              Copy Link
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              onClick={() => handleShare("email")}
-                              className="w-full justify-start"
-                            >
-                              <Icon
-                                icon="heroicons:envelope"
-                                className="w-4 h-4 mr-2"
-                              />
-                              Email
-                            </Button>
-                          </div>
-                        </div>
-                      </Popover>
-                    </div>
-                  </div>
-                </div>
+                   {/* Favorite and Share Buttons */}
+<div className="space-y-4">
+  <div className="flex space-x-4">
+    <Button
+      className={`flex-1 ${
+        isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+      }`}
+      onClick={handleToggleFavorite}
+    >
+      <Icon
+        icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+        className="w-4 h-4 mr-2"
+      />
+      {isFavorite
+        ? "Remove from Favorites"
+        : "Add to Favorites"}
+    </Button>
+    <Popover
+      open={isShareOpen}
+      onOpenChange={setIsShareOpen}
+      onClose={() => setIsShareOpen(false)}
+      trigger={
+        <Button
+          variant="outline"
+          onClick={() => setIsShareOpen(true)}
+        >
+          <Icon
+            icon="heroicons:share"
+            className="w-4 h-4 mr-2"
+          />
+          Share
+        </Button>
+      }
+    >
+      <div className="w-48 p-2">
+        <div className="flex flex-col space-y-2">
+          <Button
+            variant="ghost"
+            onClick={() => handleShare("link")}
+            className="w-full justify-start"
+          >
+            <Icon
+              icon="heroicons:link"
+              className="w-4 h-4 mr-2"
+            />
+            Copy Link
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => handleShare("email")}
+            className="w-full justify-start"
+          >
+            <Icon
+              icon="heroicons:envelope"
+              className="w-4 h-4 mr-2"
+            />
+            Email
+          </Button>
+        </div>
+      </div>
+    </Popover>
+  </div>
+  {/* Add spacing below the buttons */}
+  <div className="mt-6">
+    <Button
+      className="bg-blue-500 hover:bg-blue-600 text-white w-full"
+      onClick={() => alert("Booking feature is under development!")}
+    >
+      <Icon icon="heroicons:check-circle" className="w-4 h-4 mr-2" />
+      Book
+    </Button>
+  </div>
+</div>
+</div>
+</div>
               </div>
   
               {/* Itinerary Description Tabs */}

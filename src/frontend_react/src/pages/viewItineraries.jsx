@@ -33,7 +33,7 @@ export default function ViewItineraries() {
   const [selectedTags, setSelectedTags] = useState([]);
 
   // Filter states
-  const [budget, setBudget] = useState([0, 10000]);
+  const [budget, setBudget] = useState([0, 100000]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [language, setLanguage] = useState("");
@@ -111,7 +111,7 @@ export default function ViewItineraries() {
 
   const clearFilters = () => {
     setLanguage("");
-    setBudget([0, 10000]);
+    setBudget([0, 100000]);
     setStartDate("");
     setEndDate("");
     setSelectedTags([]);
@@ -121,6 +121,7 @@ export default function ViewItineraries() {
 
   const filterAndSortItineraries = () => {
     let filtered = itineraries.filter((itinerary) => {
+      if (itinerary.isFlagged) return false;
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
@@ -261,7 +262,7 @@ export default function ViewItineraries() {
                 <Slider
                   id="budget"
                   min={0}
-                  max={10000}
+                  max={100000}
                   step={100}
                   value={budget}
                   onValueChange={handleBudgetChange}
@@ -354,6 +355,7 @@ export default function ViewItineraries() {
           filteredItineraries.map((itinerary) => (
             <ItineraryCard
               key={itinerary._id}
+              itineraryId={itinerary._id}
               name={itinerary.Name}
               images={itinerary.LocationsToVisit.flatMap((location) => location.Pictures || [])}
               tags={[
@@ -368,6 +370,7 @@ export default function ViewItineraries() {
               AvailableDates = {itinerary.AvailableDates}
               PickUpLocation= {itinerary.PickUpLocation}
               DropOffLocation = {itinerary.DropOffLocation}
+              Language={itinerary.Language}
               
             />
           ))
