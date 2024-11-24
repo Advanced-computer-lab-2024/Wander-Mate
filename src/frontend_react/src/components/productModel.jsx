@@ -122,7 +122,7 @@ export default function ProductModal({
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true" && urlParams.get("product") === product.productId) {
       setIsOpen(true);
     }
   }, [isOpen, product.reviews]);

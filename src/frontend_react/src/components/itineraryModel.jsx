@@ -98,7 +98,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true") {
+    if (urlParams.get("open") === "true"  && urlParams.get("itinerary") === itinerary.itineraryId) {
       setIsOpen(true);
     }
     }, [isOpen, itinerary.Ratings]);
