@@ -46,6 +46,7 @@ import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
 import WhatPeopleSay from "./components/whatpeoplesay";
+import Explorer from "./components/exploreComponent";
 function App() {
   return (
     <Router>
@@ -100,6 +101,8 @@ function App() {
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
         
         <Route path="/WhatPeopleSay" element={<WhatPeopleSay />} />
+        <Route path="/Explorer" element={<Explorer />} />
+      
 
       </Routes>
     </Router>

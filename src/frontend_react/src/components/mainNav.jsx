@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 
-const MainNav = ({ targetId1, targetId2 }) => {
+const MainNav = ({ targetId1, targetId2, targetId3 }) => {
   const handleClick = (event) => {
     event.preventDefault();
     const target = document.getElementById(targetId1);
@@ -12,6 +12,15 @@ const MainNav = ({ targetId1, targetId2 }) => {
       target.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const handleClick3 = (event) => {
+    event.preventDefault();
+    const target = document.getElementById(targetId3);
+    console.log(document);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 
   const navigate = useNavigate();
   const handleRegister = () => {
@@ -83,7 +92,7 @@ const MainNav = ({ targetId1, targetId2 }) => {
         <a href="#process" className="nav-link process">
           Process
         </a>
-        <a href="#explore" className="nav-link explore">
+        <a href={`#${targetId3}`} className="nav-link explore" onClick={handleClick3}>
           Explore
         </a>
       </div>
