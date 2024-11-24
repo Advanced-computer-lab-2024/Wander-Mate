@@ -27,11 +27,17 @@ const ItineraryCard = ({
   name,
   images = [],
   tags,
-  
   duration,
   latitude,
   longitude,
   reviews,
+  TimeLine,
+  price,
+  AvailableDates,
+  Activities,
+  LocationsToVisit,
+  PickUpLocation,
+  DropOffLocation,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,6 +57,13 @@ const ItineraryCard = ({
     latitude,
     longitude,
     reviews,
+    TimeLine,
+    price,
+    AvailableDates,
+    Activities,
+    LocationsToVisit,
+    PickUpLocation,
+    DropOffLocation,
   };
 
   return (

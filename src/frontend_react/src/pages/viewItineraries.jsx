@@ -351,41 +351,30 @@ export default function ViewItineraries() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredItineraries.length > 0 ? (
-          filteredItineraries.map((itinerary) => {
-            console.log(itinerary);
-            const placeImages = itinerary.LocationsToVisit.flatMap(
-              (location) => location.Pictures || []
-            );
-            const placeTags = itinerary.LocationsToVisit.flatMap(
-              (location) => location.Tags || []
-            );
-            const activityTags = itinerary.Activities.flatMap(
-              (activity) => activity.Tags || []
-            );
-
-            const combinedTags = [...placeTags, ...activityTags];
-
-            return (
-              <ItineraryCard
-                key={itinerary._id}
-                name={itinerary.Name}
-                images={placeImages}
-                activities={itinerary.Activities.map(
-                  (activity) => activity.name
-                )}
-                locations={itinerary.LocationsToVisit.map(
-                  (location) => location.name
-                )}
-                tags={combinedTags.map((tagId) => tagMap[tagId])}
-                price={itinerary.Price}
-                rating={itinerary.Rating}
-              />
-            );
-          })
+          filteredItineraries.map((itinerary) => (
+            <ItineraryCard
+              key={itinerary._id}
+              name={itinerary.Name}
+              images={itinerary.LocationsToVisit.flatMap((location) => location.Pictures || [])}
+              tags={[
+                ...itinerary.LocationsToVisit.flatMap((location) => location.Tags || []),
+                ...itinerary.Activities.flatMap((activity) => activity.Tags || [])
+              ].map((tagId) => tagMap[tagId])}
+              price={itinerary.Price}
+              rating={itinerary.Ratings}
+              Activities={itinerary.Activities.map((activity) => activity.Name)}
+              LocationsToVisit={itinerary.LocationsToVisit.map((location) => location.Name)}
+              TimeLine = {itinerary.TimeLine}
+              AvailableDates = {itinerary.AvailableDates}
+              PickUpLocation= {itinerary.PickUpLocation}
+              DropOffLocation = {itinerary.DropOffLocation}
+              
+            />
+          ))
         ) : (
-          <p>No itineraries found</p>
+          <p className="col-span-full text-center text-gray-500">No itineraries found</p>
         )}
       </div>
     </div>
-  );
+  )
 }
