@@ -464,7 +464,7 @@ const searchProductsByName = async (req, res) => {
 const UpdateProduct = async (req, res) => {
   try {
     const id = req.params.id; // Get product ID from request parameters
-    const { price, description } = req.body; // Get updated fields from the request body
+    const { price, description, discount, quantity, name } = req.body; // Get updated fields from the request body
 
     if (!id) {
       return res.status(400).json({ message: "Product ID is required" });
@@ -473,6 +473,9 @@ const UpdateProduct = async (req, res) => {
     const product = await productModel.findByIdAndUpdate(id, {
       price: price,
       description: description,
+      discount: discount,
+      quantity,
+      name,
     });
 
     if (!product) {
@@ -484,6 +487,19 @@ const UpdateProduct = async (req, res) => {
     res
       .status(400)
       .json({ message: "Error to update product", error: err.message });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const id = req.params.id; // Get product ID from request parameters
+    const product = await productModel.findByIdAndDelete(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch {
+    res.status(400).json({ message: "Error to delete product" });
   }
 };
 
@@ -1690,4 +1706,5 @@ module.exports = {
   updateRevenueSales,
   markComplaintAsPending,
   deleteComplaint,
+  deleteProduct,
 };

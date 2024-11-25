@@ -403,6 +403,7 @@ const addTransportation = async (req, res) => {
       price,
       vehicleType,
       date,
+      discount,
     } = req.body;
 
     // Basic validation
@@ -422,12 +423,13 @@ const addTransportation = async (req, res) => {
     // Create a new transportation instance
     const transportation = await TransportationModel.create({
       advertiserId: advertiserID, // Link transportation to the advertiser
-      availability: isAvailable, // Set availability as boolean
+      availability,
       destination,
       startPlace,
       price,
       vehicleType,
       date,
+      discount,
     });
 
     // Respond with success and the transportation data

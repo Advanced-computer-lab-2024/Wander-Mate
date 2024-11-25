@@ -33,7 +33,9 @@ const FlightOrHotelSearch = () => {
 
   const fetchCountries = async () => {
     try {
-      const response = await axios.get("https://countriesnow.space/api/v0.1/countries");
+      const response = await axios.get(
+        "https://countriesnow.space/api/v0.1/countries"
+      );
       const countryOptions = response.data.data.map((country) => ({
         value: country.country,
         label: country.country,
@@ -54,7 +56,7 @@ const FlightOrHotelSearch = () => {
       );
       console.log(response);
       const stateOptions = response.data.data.states.map((state) => ({
-        value: state.name ,
+        value: state.name,
         label: state.name,
       }));
       setStates(stateOptions);
@@ -77,44 +79,39 @@ const FlightOrHotelSearch = () => {
     setLoading(true);
     setError(null);
     setSelectedPlace(`${selectedCountry.value},${selectedState.value}`);
-    console.log(checkInDate)
-    console.log(checkOutdate)
-    if(buttonText === "Search Hotels"){
-    try {
-      const response = await axios.put("http://localhost:8000/searchHotel",{
-        
-          place : selectedPlace,
-          checkInDate : checkInDate,
-          checkOutdate : checkOutdate,
-        
-       
-      }); 
-      console.log(response);
-    }catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to fetch results. Please try again.");
-    };
-  }else{
-    try {
-      const res = await axios.get("http://localhost:8000/search-flights", {
-
-
-        params: {
-          origin: flightData.origin,
-          destination: flightData.destination,
-          departureDate: flightData.departureDate,
-          returnDate: flightData.arrivalDate,
-        },
-      });
-      const fetchedFlights = res.data.data;
-      setFlights(fetchedFlights);
-    } catch (error) {
-      console.error("Error fetching flights:", error);
-      setError("Failed to fetch flights. Please try again.");
-    } finally {
-      setLoading(false);
+    console.log(checkInDate);
+    console.log(checkOutdate);
+    if (buttonText === "Search Hotels") {
+      try {
+        const response = await axios.put("http://localhost:8000/searchHotel", {
+          place: selectedPlace,
+          checkInDate: checkInDate,
+          checkOutdate: checkOutdate,
+        });
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to fetch results. Please try again.");
+      }
+    } else {
+      try {
+        const res = await axios.get("http://localhost:8000/search-flights", {
+          params: {
+            origin: flightData.origin,
+            destination: flightData.destination,
+            departureDate: flightData.departureDate,
+            returnDate: flightData.arrivalDate,
+          },
+        });
+        const fetchedFlights = res.data.data;
+        setFlights(fetchedFlights);
+      } catch (error) {
+        console.error("Error fetching flights:", error);
+        setError("Failed to fetch flights. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
-  }
   };
 
   return (
@@ -180,23 +177,27 @@ const FlightOrHotelSearch = () => {
                   </span>
                 </div>
                 <Select
-  options={states}
-  value={selectedState}
-  onChange={(selectedOption) => {
-    // Remove "Governorate" and trim spaces
-    const cleanedLabel = selectedOption.label.replace(/Governorate/gi, "").trim();
-    setSelectedState({ ...selectedOption, label: cleanedLabel, value: cleanedLabel });
-  }}
-  placeholder="Select State"
-  className="text-base text-[#283841]"
-/>
-
-
+                  options={states}
+                  value={selectedState}
+                  onChange={(selectedOption) => {
+                    // Remove "Governorate" and trim spaces
+                    const cleanedLabel = selectedOption.label
+                      .replace(/Governorate/gi, "")
+                      .trim();
+                    setSelectedState({
+                      ...selectedOption,
+                      label: cleanedLabel,
+                      value: cleanedLabel,
+                    });
+                  }}
+                  placeholder="Select State"
+                  className="text-base text-[#283841]"
+                />
               </div>
             )}
 
-             {/* Check-In Field */}
-             <div className="flex-1 min-w-[280px]">
+            {/* Check-In Field */}
+            <div className="flex-1 min-w-[280px]">
               <div className="mb-2">
                 <span className="font-bold text-base tracking-wider text-[#283841]">
                   Check-In
@@ -209,7 +210,6 @@ const FlightOrHotelSearch = () => {
                   onChange={(e) => setCheckInDate(e.target.value)}
                   className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
                 />
-                <Calendar className="w-6 h-6 text-[#826AF9]" />
               </div>
             </div>
 
@@ -227,7 +227,6 @@ const FlightOrHotelSearch = () => {
                   onChange={(e) => setCheckOutDate(e.target.value)}
                   className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
                 />
-                <Calendar className="w-6 h-6 text-[#826AF9]" />
               </div>
             </div>
 
@@ -269,4 +268,3 @@ const FlightOrHotelSearch = () => {
 };
 
 export default FlightOrHotelSearch;
-  

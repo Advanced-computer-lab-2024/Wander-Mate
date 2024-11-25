@@ -27,7 +27,7 @@ const TransportationCard = ({
   ratings = 0,
   date,
   advertiserId,
-  quantity
+  quantity = 3,
 }) => {
   const [isBooked, setIsBooked] = useState(false);
   const [count, setCount] = useState(1);
@@ -45,7 +45,7 @@ const TransportationCard = ({
       return false;
     }
   };
- 
+
   const goToBookings = () => {
     navigate("/bookings");
   };
@@ -66,8 +66,7 @@ const TransportationCard = ({
     setIsBooked(true);
   };
 
-
-  const finishBooking = async() => {
+  const finishBooking = async () => {
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
@@ -80,7 +79,6 @@ const TransportationCard = ({
           userId: userID,
           itemId: transportationId,
           bookedDate: date,
-          
         }
       );
       toast.success("Booking successful!");
@@ -89,7 +87,7 @@ const TransportationCard = ({
       toast.error("Failed to book transportation");
       setIsBooked(false);
     }
-  }
+  };
   const incrementCount = () => {
     setCount((prevCount) => prevCount + 1);
   };
@@ -97,7 +95,7 @@ const TransportationCard = ({
   const decrementCount = () => {
     if (count > 1) {
       setCount((prevCount) => prevCount - 1);
-    }else{
+    } else {
       setCount(1);
       setIsBooked(false);
     }
@@ -249,11 +247,11 @@ const TransportationCard = ({
               <div className="flex items-center justify-between mb-4">
                 <p className="space-x-4">
                   <span className="text-secondary-foreground text-base font-medium">
-                    ${price}
+                    {discount > 0 ? price - (price * discount) / 100 : price}
                   </span>
                   {discount > 0 && (
                     <del className="text-default-500 dark:text-default-500 font-normal text-base">
-                      ${price + (price * discount) / 100}
+                      {price}
                     </del>
                   )}
                 </p>
@@ -389,62 +387,71 @@ const TransportationCard = ({
                     <div className="flex space-x-4 mb-6">
                       {!isBooked ? (
                         <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isAvailable()) {
-                            handleBook();
-                          } else {
-                            // Implement notify me functionality here
-                            console.log("Notify me when available");
-                            // You can add a function to handle the notification sign-up
-                          }
-                        }}
-                      >
-                        <Icon
-                          icon={isAvailable() ? "heroicons:shopping-bag" : "heroicons:bell"}
-                          className="w-4 h-4 ltr:mr-2 rtl:ml-2"
-                        />
-                        {isAvailable() ? "Add to Cart" : "Notify Me When Available"}
-                      </Button>
+                          className="w-full"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isAvailable()) {
+                              handleBook();
+                            } else {
+                              // Implement notify me functionality here
+                              console.log("Notify me when available");
+                              // You can add a function to handle the notification sign-up
+                            }
+                          }}
+                        >
+                          <Icon
+                            icon={
+                              isAvailable()
+                                ? "heroicons:shopping-bag"
+                                : "heroicons:bell"
+                            }
+                            className="w-4 h-4 ltr:mr-2 rtl:ml-2"
+                          />
+                          {isAvailable()
+                            ? "Book a ticket"
+                            : "Notify Me When Available"}
+                        </Button>
                       ) : (
                         <div className="flex flex-wrap gap-4">
-              <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
-                <button
-                  type="button"
-                  className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    decrementCount();
-                  }}
-                >
-                  <Icon icon="eva:minus-fill" />
-                </button>
+                          <div className="flex-1 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
+                            <button
+                              type="button"
+                              className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                decrementCount();
+                              }}
+                            >
+                              <Icon icon="eva:minus-fill" />
+                            </button>
 
-                <div className="flex-1 text-base py-2 flex items-center min-w-[45px] justify-center text-primary font-medium">
-                  {count}
-                </div>
-                <button
-                  type="button"
-                  className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    incrementCount();
-                  }}
-                  disabled={count >= quantity}
-                >
-                  <Icon icon="eva:plus-fill" />
-                </button>
-              </div>
-              <Button
-                variant="outline"
-                className="py-2 px-5 flex-none"
-              >
-                <Icon icon="heroicons:shopping-bag" className="w-4 h-4" />
-                Pay now
-              </Button>
-            </div>
+                            <div className="flex-1 text-base py-2 flex items-center min-w-[45px] justify-center text-primary font-medium">
+                              {count}
+                            </div>
+                            <button
+                              type="button"
+                              className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                incrementCount();
+                              }}
+                              disabled={count >= quantity}
+                            >
+                              <Icon icon="eva:plus-fill" />
+                            </button>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="py-2 px-5 flex-none"
+                          >
+                            <Icon
+                              icon="heroicons:shopping-bag"
+                              className="w-4 h-4"
+                            />
+                            Pay now
+                          </Button>
+                        </div>
                       )}
                       <Popover
                         open={isShareOpen}
@@ -566,4 +573,3 @@ const TransportationCard = ({
 };
 
 export default TransportationCard;
-

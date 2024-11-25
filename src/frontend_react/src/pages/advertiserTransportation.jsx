@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import TransportationCard from "../components/transportCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Slider } from "../components/ui/slider";
 import { Input } from "../components/ui/input";
@@ -15,8 +14,12 @@ import { Card, CardContent } from "../components/ui/card";
 import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "../components/ui/button";
 import DatePickerWithRange from "./../components/date-picker-with-range";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import CreateTransportationDialog from "../components/addNewTransportationCard";
+import EditableTransportationCard from "../components/editableTransportationCard";
 
-const Transportation = () => {
+const AdvertiserTransportation = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [minPrice, setMinPrice] = useState(0);
@@ -242,6 +245,9 @@ const Transportation = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div style={{ alignSelf: "flex-end" }}>
+              <CreateTransportationDialog />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -253,7 +259,7 @@ const Transportation = () => {
           ))
         ) : filteredTransportations.length > 0 ? (
           filteredTransportations.map((transportation) => (
-            <TransportationCard
+            <EditableTransportationCard
               key={transportation._id}
               transportationId={transportation._id}
               destination={transportation.destination}
@@ -286,4 +292,4 @@ const Transportation = () => {
   );
 };
 
-export default Transportation;
+export default AdvertiserTransportation;

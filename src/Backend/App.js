@@ -172,6 +172,7 @@ const {
   updateRevenueSales,
   markComplaintAsPending,
   deleteComplaint,
+  deleteProduct,
 } = require("./Routes/adminController.js");
 
 const {
@@ -300,6 +301,7 @@ app.post("/createCategory", createCategory);
 app.delete("/deleteAccount", deleteAccount);
 app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
+app.delete("/deleteProduct/:id", deleteProduct);
 app.patch("/UpdateProductseller/:id", UpdateProductseller);
 app.get("/readItinerary/:id", readItinerary);
 //Read remaining

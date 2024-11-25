@@ -47,6 +47,7 @@ import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
 import WhatPeopleSay from "./components/whatpeoplesay";
 import Explorer from "./components/exploreComponent";
+import AdvertiserTransportation from "./pages/advertiserTransportation";
 function App() {
   return (
     <Router>
@@ -97,12 +98,12 @@ function App() {
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
-        <Route path="/activities" element={<Activities/>}/>
+        <Route path="/activities" element={<Activities />} />
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
-        
-        <Route path="/WhatPeopleSay" element={<WhatPeopleSay />} />
-      
-
+        <Route
+          path="/advertiserTransportations"
+          element={<AdvertiserTransportation />}
+        />
       </Routes>
     </Router>
   );

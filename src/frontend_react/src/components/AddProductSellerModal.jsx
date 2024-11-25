@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Icon } from "@iconify/react";
+import { toast, Toaster } from "react-hot-toast";
 
 const AddProductSellerModal = () => {
   const [formData, setFormData] = useState({
-    Name: '',
-    Price: '',
-    Description: '',
-    Quantity: '',
+    Name: "",
+    Price: "",
+    Description: "",
+    Quantity: "",
     picture: null,
   });
   const [previewImage, setPreviewImage] = useState(null);
@@ -20,7 +21,7 @@ const AddProductSellerModal = () => {
 
   useEffect(() => {
     // Get Seller ID from sessionStorage when the component mounts
-    const storedSellerId = sessionStorage.getItem('sellerId');
+    const storedSellerId = sessionStorage.getItem("sellerId");
     if (storedSellerId) {
       setSellerId(storedSellerId);
     }
@@ -29,8 +30,8 @@ const AddProductSellerModal = () => {
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
 
-    if (name === 'picture' && files) {
-      setFormData(prev => ({
+    if (name === "picture" && files) {
+      setFormData((prev) => ({
         ...prev,
         picture: files[0],
       }));
@@ -43,7 +44,7 @@ const AddProductSellerModal = () => {
         reader.readAsDataURL(files[0]);
       }
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
@@ -75,17 +76,18 @@ const AddProductSellerModal = () => {
       });
 
       if (response.ok) {
-        alert("Product added successfully!");
+        toast.success("Added successfully");
         setFormData({
-          Name: '',
-          Price: '',
-          Description: '',
-          Quantity: '',
+          Name: "",
+          Price: "",
+          Description: "",
+          Quantity: "",
           picture: null,
           seller: sellerId,
         });
         setPreviewImage(null);
         setIsOpen(false);
+        window.location.reload();
       } else {
         alert("Error adding product.");
       }
@@ -100,7 +102,11 @@ const AddProductSellerModal = () => {
       <DialogTrigger asChild>
         <Button>Add New Product</Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto" size="full">
+      <DialogContent
+        className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto"
+        size="full"
+      >
+        <Toaster />
         <div className="relative">
           <Button
             variant="ghost"
@@ -113,8 +119,9 @@ const AddProductSellerModal = () => {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col lg:flex-row gap-6 p-6">
               {/* Image Upload Section */}
-              <div className="flex-shrink-0 w-full lg:w-[250px] h-auto relative overflow-hidden rounded-lg bg-gray-200 flex justify-center items-center cursor-pointer"
-                onClick={() => document.getElementById('picture').click()}
+              <div
+                className="flex-shrink-0 w-full lg:w-[250px] h-auto relative overflow-hidden rounded-lg bg-gray-200 flex justify-center items-center cursor-pointer"
+                onClick={() => document.getElementById("picture").click()}
               >
                 {previewImage ? (
                   <img
@@ -135,7 +142,7 @@ const AddProductSellerModal = () => {
                 accept="image/*"
                 required
                 onChange={handleInputChange}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               />
 
               {/* Form Fields */}

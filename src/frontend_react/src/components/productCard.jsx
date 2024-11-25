@@ -166,11 +166,11 @@ const ProductCard = ({
           <div className="flex items-center justify-between mb-4">
             <p className="space-x-4">
               <span className="text-secondary-foreground text-base font-medium">
-                ${price}
+                {discount > 0 ? price - (price * discount) / 100 : price}
               </span>
               {discount && (
                 <del className="text-default-500 dark:text-default-500 font-normal text-base">
-                  ${price + (price * discount) / 100}
+                  {price}
                 </del>
               )}
             </p>
