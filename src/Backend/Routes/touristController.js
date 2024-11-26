@@ -2010,6 +2010,43 @@ const removeFromCart = async (req, res) => {
   }
 };
 
+const removeProduct = async (req, res) => {
+  const { touristID, productId } = req.body;
+
+  if (!touristID || !productId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Find the user's cart
+    const cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Debugging: Check the cart before removal
+    console.log("Cart before removal:", cart.items);
+
+    // Filter out all instances of the product from the cart
+    cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+
+    // Debugging: Check the cart after removal
+    console.log("Cart after removal:", cart.items);
+
+    // Save the updated cart
+    await cart.save();
+
+    return res.status(200).json({ message: "Product removed from cart successfully" });
+  } catch (error) {
+    console.error("Error removing product:", error);
+    return res.status(400).json({ message: "Error removing product from cart" });
+  }
+};
+
+
+
+
 const Bookmarkevent = async (req, res) => {
   const { userId, eventId, type } = req.body;
 
@@ -2886,4 +2923,5 @@ module.exports = {
   previewPromoCode,
   isInWishList,
   makeOrder,
+  removeProduct,
 };

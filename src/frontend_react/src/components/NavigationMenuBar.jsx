@@ -125,7 +125,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         touristID,
         productId: item._id,
         quantity: 1,
-        picture:getImageSrc(item.picture),
+        // picture:getImageSrc(item.picture),
 
       });
       

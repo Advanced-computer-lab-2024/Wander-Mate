@@ -95,6 +95,7 @@ const {
   Bookmarkevent,
   isInWishList,
   makeOrder,
+  removeProduct,
 } = require("./Routes/touristController");
 
 const {
@@ -177,6 +178,11 @@ const {
   deleteComplaint,
   deleteProduct,
   viewAllOrders,
+  getTourists,
+  getadvertisers,
+  getsellers,
+  gettourguides,
+  gettourismgov,
   viewTopUsers,
 } = require("./Routes/adminController.js");
 
@@ -320,7 +326,7 @@ app.get("/readCategory", readCategory);
 app.patch("/updatePreferenceTags", updatePreferenceTags);
 app.patch("/updatePreferenceTagById/:id", updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
-app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
+app.delete("/deletePreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
 app.delete("/deleteComplaint/:complaintId", deleteComplaint);
@@ -548,6 +554,7 @@ app.get(
 app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
 app.post("/addToWishlist", addToWishlist);
 app.post("/removeFromCart", removeFromCart);
+app.delete("/removeProduct", removeProduct);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
@@ -570,3 +577,9 @@ app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/create-payment-intent", PayByCard);
 app.get("/viewTopUsers", viewTopUsers);
+
+app.get("/gettourists",getTourists);
+app.get("/getadvertisers",getadvertisers);
+app.get("/getsellers",getsellers);
+app.get("/gettourguides",gettourguides);
+app.get("/gettourismgov",gettourismgov);

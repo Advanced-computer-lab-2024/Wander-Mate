@@ -546,19 +546,21 @@ const filterProductsByPrice = async (req, res) => {
 
 const createPreferenceTags = async (req, res) => {
   try {
-    const { Name } = req.body;
+    const { Name,icon } = req.body;
 
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
     }
-
+    if (!icon) {
+      return res.status(400).json({ message: "Icon is required" });
+    }
     const existingTag = await PreferenceTags.findOne({ Name });
     if (existingTag) {
       return res.status(400).json({ message: "Tag already exists" });
     }
 
     // Create the category
-    const Tag = await PreferenceTags.create({ Name });
+    const Tag = await PreferenceTags.create({ Name,icon });
 
     res.status(200).json(Tag);
   } catch (err) {
@@ -1184,49 +1186,57 @@ const flagEventOrItinerary = async (req, res) => {
 
     // Determine which model to use based on the type
     if (type === "event") {
-      // Use findByIdAndUpdate to update the flag for an event
-      updateData.isFlagged = true;
-      const updatedItem = await attractions.findByIdAndUpdate(
-        id,
-        { $set: { isFlagged: true } }, // Dynamically update the field `isFlagged`
-        { new: true, runValidators: true } // Return the updated document and run validations
-      );
-
-      // Check if the event exists
-      if (!updatedItem) {
+      // Check the current flag status of the event
+      const event = await attractions.findById(id);
+      if (!event) {
         return res.status(404).json({ message: "Event not found." });
       }
-      await notifyAdvertiser(updatedItem.Creator, id);
-      res.status(200).json({
-        message: "Event flagged successfully.",
-        updatedItem, // Return the updated item with the `isFlagged` field
-      });
-    } else if (type === "itinerary") {
-      // Use findByIdAndUpdate to update the flag for an itinerary
-      updateData.isFlagged = true;
-      const updatedItem = await Itinerary.findByIdAndUpdate(
+
+      // Toggle the flag
+      updateData.isFlagged = !event.isFlagged;
+
+      const updatedItem = await attractions.findByIdAndUpdate(
         id,
-        { $set: updateData }, // Dynamically update the field `isFlagged`
+        { $set: { isFlagged: updateData.isFlagged } }, // Dynamically toggle the `isFlagged` field
         { new: true, runValidators: true } // Return the updated document and run validations
       );
 
-      // Check if the itinerary exists
-      if (!updatedItem) {
-        return res.status(404).json({ message: "Itinerary not found." });
-      }
-      await notifyTourGuide(updatedItem.Creator, id);
+      // Notify the creator about the flag change
+      await notifyAdvertiser(updatedItem.Creator, id);
       res.status(200).json({
-        message: "Itinerary flagged successfully.",
+        message: `Event ${updatedItem.isFlagged ? 'flagged' : 'unflagged'} successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
+
+    } else if (type === "itinerary") {
+      // Check the current flag status of the itinerary
+      const itinerary = await Itinerary.findById(id);
+      if (!itinerary) {
+        return res.status(404).json({ message: "Itinerary not found." });
+      }
+
+      // Toggle the flag
+      updateData.isFlagged = !itinerary.isFlagged;
+
+      const updatedItem = await Itinerary.findByIdAndUpdate(
+        id,
+        { $set: { isFlagged: updateData.isFlagged } }, // Dynamically toggle the `isFlagged` field
+        { new: true, runValidators: true } // Return the updated document and run validations
+      );
+
+      // Notify the creator about the flag change
+      await notifyTourGuide(updatedItem.Creator, id);
+      res.status(200).json({
+        message: `Itinerary ${updatedItem.isFlagged ? 'flagged' : 'unflagged'} successfully.`,
+        updatedItem, // Return the updated item with the `isFlagged` field
+      });
+
     } else {
       return res.status(400).json({ message: "Invalid type specified." });
     }
   } catch (error) {
     console.error("Error flagging item:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1667,6 +1677,52 @@ const viewAllOrders = async (req, res) => {
   }
 };
 
+const getTourists = async (req, res) => {
+  try{
+    const tourists = await touristModel.find();
+    return res.status(200).json(tourists);
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const getadvertisers = async (req, res) => {
+  try{
+    const advertisers = await advertiserModel.find();
+    return res.status(200).json(advertisers);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const getsellers = async (req, res) => {
+  try{
+    const sellers = await sellerModel.find();
+    return res.status(200).json(sellers);
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const gettourguides = async (req, res) => {
+  try{
+    const tourGuides = await tourGuideModel.find();
+    return res.status(200).JSON(tourGuides);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+
+};
+const gettourismgov = async (req,res)=>{
+  try{
+    const tourismGov = await TourismGoverner.find();
+    return res.status(200).json(tourismGov);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+
+};
+
 const viewTopUsers = async (req, res) => {
   try {
     const topSellers = await salesModel
@@ -1736,5 +1792,10 @@ module.exports = {
   deleteComplaint,
   deleteProduct,
   viewAllOrders,
+  getTourists,
+  getadvertisers,
+  getsellers,
+  gettourguides,
+  gettourismgov,
   viewTopUsers,
 };
