@@ -300,10 +300,14 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                   </div>
 
                   {/* Address Dropdown beside Payment Method */}
-                  <div className="flex items-center mt-4 sm:mt-0">
-                    <Label className="mr-2">Select Address:</Label>
-                    <AddressDropDown />
-                  </div>
+                  <div className="flex flex-col items-start mt-4 sm:mt-0">
+  <Label className="mb-2">Select Address:</Label>
+  <AddressDropDown />
+</div>
+
+
+
+
                 </div>
               )}
 

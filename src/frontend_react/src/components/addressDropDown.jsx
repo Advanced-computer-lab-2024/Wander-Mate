@@ -102,51 +102,51 @@ const AddressDropDown = () => {
     );
   }
 
-        return (
-            <div className="min-h-screen bg-gray-100 p-4">
-         {/* <Card className="w-full max-w-2xl mx-auto"> */}
-                
-                <div className="flex justify-between items-center">
-                
-                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        style={{ opacity: 0, pointerEvents: 'auto' }}
-                        >
-                        </Button>
-
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                        <AddNewAddressCard onAddressAdded={() => {
-                        setIsPopoverOpen(false);
-                        refreshAddresses();
-                        }} />
-                    </PopoverContent>
-                    </Popover>
-                </div>
-                <div className="mt-2">
-                </div>
-                
-                <CardContent>
-                <select
-                    className="w- p-2 border rounded"
-                    value={selectedAddress || ""}
-                    onChange={handleSelectChange}
-                >
-                    <option value="" disabled>Select an address</option>
-                    {addresses.map((address, index) => (
-                    <option key={index} value={address.street}>
-                        {`${address.street}, ${address.city}, ${countryMapping[address.country] || address.country}`}
-                    </option>
-                    ))}
-                    <option value="add-new">+ Add New Delivery Address</option>
-                </select>
-                </CardContent>
-            {/* </Card> */}
-            </div>
-        );
-        };
+  return (
+    <div>
+      {/* <Card className="bg-transparent"> */}
+  
+      <div className="flex justify-between items-center">
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              style={{ opacity: 0, pointerEvents: 'none' }} // Disable click events
+            >
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <AddNewAddressCard
+              onAddressAdded={() => {
+                setIsPopoverOpen(false);
+                refreshAddresses();
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+  
+      <div className="mt-2"></div>
+  
+      <CardContent className="bg-transparent">
+        <select
+          className="w-48 p-1 border rounded text-sm mt-[-8px]" // Negative margin to move it upwards
+          value={selectedAddress || ""}
+          onChange={handleSelectChange}
+        >
+          <option value="" disabled>Select an address</option>
+          {addresses.map((address, index) => (
+            <option key={index} value={address.street}>
+              {`${address.street}, ${address.city}, ${countryMapping[address.country] || address.country}`}
+            </option>
+          ))}
+          <option value="add-new">+ Add New Delivery Address</option>
+        </select>
+      </CardContent>
+    </div>
+  );
+  
+}
 
 export default AddressDropDown;
