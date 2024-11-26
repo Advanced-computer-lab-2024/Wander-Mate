@@ -49,6 +49,7 @@ import WhatPeopleSay from "./components/whatpeoplesay";
 import Explorer from "./components/exploreComponent";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
+import PayNow from "./components/payNow";
 function App() {
   return (
     <Router>
@@ -96,6 +97,7 @@ function App() {
           path="/transportationCheckout"
           element={<TransportationCheckout />}
         />
+        <Route path="/payNow" element={<PayNow />} />
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />

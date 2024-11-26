@@ -568,5 +568,5 @@ app.get("/viewAllUsers", viewAllUsers);
 app.get("/ViewOrders/:userId", ViewOrders);
 app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
-app.post("/PayByCard/:id", PayByCard);
+app.post("/create-payment-intent", PayByCard);
 app.get("/viewTopUsers", viewTopUsers);
