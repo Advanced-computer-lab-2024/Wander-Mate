@@ -104,8 +104,8 @@ const AddressDropDown = () => {
 
         return (
             <div className="min-h-screen bg-gray-100 p-4">
-            <Card className="w-full max-w-2xl mx-auto">
-                <CardHeader>
+         {/* <Card className="w-full max-w-2xl mx-auto"> */}
+                
                 <div className="flex justify-between items-center">
                 
                     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -128,10 +128,10 @@ const AddressDropDown = () => {
                 </div>
                 <div className="mt-2">
                 </div>
-                </CardHeader>
+                
                 <CardContent>
                 <select
-                    className="w-full p-2 border rounded"
+                    className="w- p-2 border rounded"
                     value={selectedAddress || ""}
                     onChange={handleSelectChange}
                 >
@@ -144,7 +144,7 @@ const AddressDropDown = () => {
                     <option value="add-new">+ Add New Delivery Address</option>
                 </select>
                 </CardContent>
-            </Card>
+            {/* </Card> */}
             </div>
         );
         };

@@ -28,7 +28,7 @@ import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { toast } from "./ui/use-toast";
-
+import AddressDropDown from "./addressDropDown";
 const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -297,6 +297,9 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                         id="rwb_3"
                         className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                       />
+                      <label>
+                          <AddressDropDown/>
+                      </label>
                     </Label>
                   </RadioGroup>
                 </div>
