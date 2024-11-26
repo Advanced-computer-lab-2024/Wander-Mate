@@ -93,6 +93,8 @@ const {
   sendUpcomingEventNotifications,
   previewPromoCode,
   Bookmarkevent,
+  isInWishList,
+  makeOrder,
 } = require("./Routes/touristController");
 
 const {
@@ -116,6 +118,7 @@ const {
   getSellerImage,
   getSellerById,
   sendOutOfStockNotificationSeller,
+  viewProductsOfSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -173,6 +176,7 @@ const {
   markComplaintAsPending,
   deleteComplaint,
   deleteProduct,
+  viewAllOrders,
 } = require("./Routes/adminController.js");
 
 const {
@@ -303,6 +307,7 @@ app.post("/addTourismGov", createTourismGov);
 app.patch("/UpdateProduct/:id", UpdateProduct);
 app.delete("/deleteProduct/:id", deleteProduct);
 app.patch("/UpdateProductseller/:id", UpdateProductseller);
+app.get("/viewProductsOfSeller/:sellerId", viewProductsOfSeller);
 app.get("/readItinerary/:id", readItinerary);
 //Read remaining
 app.patch("/updateCategory", updateCategory);
@@ -356,7 +361,7 @@ app.post("/redeempoints", redeemPoints);
 app.post("/createHistoricalTags", createHistoricalTags);
 app.get("/readHistoricalTags", readHistoricalTags);
 app.patch("/updateHistoricalTags/:Id", updateHistoricalTags);
-app.delete("/deleteHistoricalTags/:Id",deleteHistoricalTags);
+app.delete("/deleteHistoricalTags/:Id", deleteHistoricalTags);
 app.post("/createItinerary", createItinerary);
 app.post("/createProfileInformation", createProfileInformation);
 app.post("/createAdvertiserInfo", createAdvertiserInfo);
@@ -543,21 +548,23 @@ app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
 app.post("/addToWishlist", addToWishlist);
 app.post("/removeFromCart", removeFromCart);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
+app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.delete("/cancel-order/:orderId", cancelOrder);
-app.delete("/cancel-order/:orderId", cancelOrder);
+app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
+app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
-app.put("/sendOutOfStockNotificationSeller",  sendOutOfStockNotificationSeller);
-app.put("/sendOutOfStockNotificationAdmin",  sendOutOfStockNotificationAdmin);
+app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
+app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post("/requestToBeNotified", requestToBeNotified);
 app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
-app.get("/viewAllUsers",  viewAllUsers);
-app.get("/ViewOrders/:userId",  ViewOrders);
-app.post("/updateRevenueSales",  updateRevenueSales);
-app.post("/sendUpcomingEventNotifications",sendUpcomingEventNotifications);
+app.get("/viewAllUsers", viewAllUsers);
+app.get("/ViewOrders/:userId", ViewOrders);
+app.post("/updateRevenueSales", updateRevenueSales);
+app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);

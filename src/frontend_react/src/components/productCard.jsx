@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
@@ -18,16 +18,48 @@ const ProductCard = ({
   reviews,
   quantity,
   seller,
+  onLike,
 }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [count, setCount] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userID, setUserID] = useState(0);
   const navigate = useNavigate();
 
   const goToCart = () => {
     navigate("/cart");
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+        const { userID } = await reply.json();
+        setUserID(userID);
+
+        const response = await axios.put("http://localhost:8000/isInWishlist", {
+          productId: productId,
+          touristId: userID,
+        });
+
+        if (response.status === 200) {
+          setIsLiked(true);
+        } else {
+          setIsLiked(false);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+
+    // No cleanup function needed here
+  }, [productId]);
 
   const isInStock = () => quantity > 0;
 
@@ -36,11 +68,6 @@ const ProductCard = ({
     console.log(reviews);
     setIsAdded(true);
     try {
-      const username = sessionStorage.getItem("username");
-      const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
-
-      const { userID } = await reply.json();
       const response = await axios.post(`http://localhost:8000/addItemToCart`, {
         touristID: userID,
         productId,
@@ -76,8 +103,38 @@ const ProductCard = ({
     }
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
     setIsLiked(!isLiked);
+
+    if (!isLiked) {
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/addToWishlist`,
+          {
+            touristId: userID,
+            productId: productId,
+          }
+        );
+      } catch (error) {
+        console.error("Error liking product:", error);
+      }
+    } else {
+      try {
+        const response = await axios.delete(
+          `http://localhost:8000/removeFromWishlist`,
+          {
+            data: {
+              touristId: userID,
+              productId: productId,
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error unliking product:", error);
+      }
+    }
+
+    onLike();
   };
 
   const decrementCount = () => {
@@ -102,6 +159,7 @@ const ProductCard = ({
         ratings,
         reviews,
         seller,
+        isLiked,
       }}
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}

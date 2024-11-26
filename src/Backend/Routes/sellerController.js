@@ -75,7 +75,12 @@ const createSeller = async (req, res) => {
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    await userModel.create({ Username: Username, userID, Type: "Seller", Email });
+    await userModel.create({
+      Username: Username,
+      userID,
+      Type: "Seller",
+      Email,
+    });
 
     res.status(200).json(seller);
   } catch (err) {
@@ -133,6 +138,16 @@ const viewSellerProducts = async (req, res) => {
     // Return the list of products
     res.status(200).json(products);
   } catch (err) {
+    res.status(400).json({ message: "Unable to fetch products" });
+  }
+};
+
+const viewProductsOfSeller = async (req, res) => {
+  try {
+    const { sellerId } = req.params; // Get the username from query parameters
+    const products = await ProductModel.find({ seller: sellerId }); // Query the database
+    res.status(200).json(products);
+  } catch {
     res.status(400).json({ message: "Unable to fetch products" });
   }
 };
@@ -271,7 +286,12 @@ const getSellerById = async (req, res) => {
     }
     res.status(200).json({ seller });
   } catch (error) {
-    res.status(400).json({ message: "Error fetching seller information", error: error.message });
+    res
+      .status(400)
+      .json({
+        message: "Error fetching seller information",
+        error: error.message,
+      });
   }
 };
 
@@ -541,8 +561,10 @@ const sendOutOfStockNotificationSeller = async (req, res) => {
     // Destructure data from the request body
     const { message, sellerId, productId } = req.body;
 
-    if (!message || !sellerId ) {
-      return res.status(400).json({ error: "Message, sellerId, and productId are required." });
+    if (!message || !sellerId) {
+      return res
+        .status(400)
+        .json({ error: "Message, sellerId, and productId are required." });
     }
 
     // Find or update the notification for the specified admin
@@ -593,4 +615,5 @@ module.exports = {
   getSellerImage,
   getSellerById,
   sendOutOfStockNotificationSeller,
+  viewProductsOfSeller,
 };

@@ -751,9 +751,10 @@ const searchHotellocation = async (place) => {
       },
     });
 
-    if (!response.ok){ 
+    if (!response.ok) {
       console.log(response);
-      throw new Error(`Error: ${response.status}`);}
+      throw new Error(`Error: ${response.status}`);
+    }
 
     const data = await response.json();
     return data;
@@ -786,10 +787,10 @@ const searchHotel = async (req, res) => {
 
     console.log("3");
 
-    if (!response.ok){
+    if (!response.ok) {
       console.log(response);
       throw new Error(`Error: ${response.status}`);
-  }
+    }
     console.log("1");
     const hotelData = await response.json();
     console.log("2");
@@ -2062,7 +2063,6 @@ const Bookmarkevent = async (req, res) => {
   }
 };
 
-
 const ViewBookmarkedAttractions = async (req, res) => {
   const { userId } = req.params;
 
@@ -2412,6 +2412,27 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const makeOrder = async (req, res) => {
+  const { userId, products, total, address, isPaid } = req.body;
+  try {
+    const order = new ordermodel({
+      userId,
+      products,
+      total,
+      address,
+      isPaid,
+    });
+    await order.save();
+    return res
+      .status(200)
+      .json({ message: "Order created successfully", order });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: "Error creating the order", error: error.message });
+  }
+};
+
 const addToWishlist = async (req, res) => {
   const { touristId, productId } = req.body;
 
@@ -2527,6 +2548,25 @@ const removeFromWishlist = async (req, res) => {
     console.error("Error removing product from wishlist:", error);
     res
       .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const isInWishList = async (req, res) => {
+  const { touristId, productId } = req.body; // Get touristId and productId from the
+  try {
+    const wishlist = await Wishlist.findOne({ userId: touristId });
+    if (wishlist) {
+      const productIndex = wishlist.products.indexOf(productId);
+      if (productIndex !== -1) {
+        return res.status(200).json({ message: "Product is in wishlist" });
+      }
+    }
+    return res.status(201).json({ message: "Product not found in wishlist" });
+  } catch (error) {
+    console.error("Error checking if product is in wishlist:", error);
+    res
+      .status(401)
       .json({ message: "Internal server error", error: error.message });
   }
 };
@@ -2843,4 +2883,6 @@ module.exports = {
   checkOut,
   sendUpcomingEventNotifications,
   previewPromoCode,
+  isInWishList,
+  makeOrder,
 };

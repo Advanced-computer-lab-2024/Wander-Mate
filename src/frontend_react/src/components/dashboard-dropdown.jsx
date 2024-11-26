@@ -1,13 +1,13 @@
 "use client";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 const DashboardDropdown = () => {
   return (
     <DropdownMenu>

@@ -27,6 +27,7 @@ const Notification = require("../Models/notifications.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
 const Sales = require("../Models/sales.js");
+const orderModel = require("../Models/order.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1652,6 +1653,19 @@ const updateRevenueSales = async (req, res) => {
   }
 };
 
+const viewAllOrders = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find()
+      .populate("products")
+      .populate("userId")
+      .sort({ date: -1 });
+    return res.status(200).json(orders);
+  } catch {
+    return res.status(400).json("ERROR");
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1707,4 +1721,5 @@ module.exports = {
   markComplaintAsPending,
   deleteComplaint,
   deleteProduct,
+  viewAllOrders,
 };
