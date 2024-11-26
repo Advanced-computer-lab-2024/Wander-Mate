@@ -49,6 +49,7 @@ import WhatPeopleSay from "./components/whatpeoplesay";
 import Explorer from "./components/exploreComponent";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
+import AdminItineraries from "./pages/adminItineray";
 function App() {
   return (
     <Router>
@@ -106,6 +107,8 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<TopUsers />} />
+        <Route path="/adminItineray" element={<AdminItineraries />} />
+
       </Routes>
     </Router>
   );
