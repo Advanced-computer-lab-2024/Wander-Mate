@@ -45,7 +45,7 @@ import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
-
+import PerferenceTagsPage from "./pages/preferenceTags";
 
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
@@ -104,6 +104,7 @@ function App() {
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
+        <Route path="/PerferenceTagsPage" element={<PerferenceTagsPage/>}/>
         <Route
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}

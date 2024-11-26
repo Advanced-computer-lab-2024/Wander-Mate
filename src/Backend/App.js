@@ -326,7 +326,7 @@ app.get("/readCategory", readCategory);
 app.patch("/updatePreferenceTags", updatePreferenceTags);
 app.patch("/updatePreferenceTagById/:id", updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
-app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
+app.delete("/deletePreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
 app.delete("/deleteComplaint/:complaintId", deleteComplaint);

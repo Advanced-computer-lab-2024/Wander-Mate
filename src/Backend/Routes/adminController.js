@@ -546,19 +546,21 @@ const filterProductsByPrice = async (req, res) => {
 
 const createPreferenceTags = async (req, res) => {
   try {
-    const { Name } = req.body;
+    const { Name,icon } = req.body;
 
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
     }
-
+    if (!icon) {
+      return res.status(400).json({ message: "Icon is required" });
+    }
     const existingTag = await PreferenceTags.findOne({ Name });
     if (existingTag) {
       return res.status(400).json({ message: "Tag already exists" });
     }
 
     // Create the category
-    const Tag = await PreferenceTags.create({ Name });
+    const Tag = await PreferenceTags.create({ Name,icon });
 
     res.status(200).json(Tag);
   } catch (err) {
