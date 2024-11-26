@@ -21,7 +21,12 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     const [isBooked, setIsBooked] = useState(false);
     const [count, setCount] = useState(1);
     const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
-  
+   
+    const openInMaps = (latitude, longitude) => {
+      const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      window.open(mapUrl, "_blank");
+    };
+
     const handleOpenChange = (open) => {
       setIsOpen(open);
       if (!open) {
@@ -367,15 +372,15 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                 <TabsContent value="map" className="mt-4">
                   <Card>
                     <CardContent className="p-6">
-                      {/* <p className="text-gray-600 mb-4">
-                        <span className="font-semibold">Pick-Up Location:</span>{" "}
-                        {itinerary.PickUpLocation?.coordinates?.join(", ") || "N/A"}
-                      </p> */}
-                      {/* <p className="text-gray-600 mb-4">
-                        <span className="font-semibold">Drop-Off Location:</span>{" "}
-                        {itinerary.DropOffLocation?.coordinates?.join(", ") || "N/A"}
-                      </p> */}
                       <div className="w-full h-64 rounded-lg overflow-hidden">
+                      <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => openInMaps(itinerary.PickUpLocation.coordinates[1], itinerary.PickUpLocation.coordinates[0])}
+                      >
+                        <Icon icon="heroicons:location-marker" className="w-4 h-4 mr-2" />
+                        Open in Maps
+                      </Button>
                         <NonMovableMap
                           initialLocation={itinerary.PickUpLocation?.coordinates}
                           onLocationSelect={doNothing}
@@ -387,11 +392,15 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                 <TabsContent value="map1" className="mt-4">
                   <Card>
                     <CardContent className="p-6">
-                      {/* <p className="text-gray-600 mb-4">
-                        <span className="font-semibold">Drop-Off Location:</span>{" "}
-                        {itinerary.DropOffLocation?.coordinates?.join(", ") || "N/A"}
-                      </p> */}
                       <div className="w-full h-64 rounded-lg overflow-hidden">
+                      <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => openInMaps(itinerary.DropOffLocation.coordinates[1], itinerary.DropOffLocation.coordinates[0])}
+                      >
+                        <Icon icon="heroicons:location-marker" className="w-4 h-4 mr-2" />
+                        Open in Maps
+                      </Button>
                         <NonMovableMap
                           initialLocation={itinerary.DropOffLocation?.coordinates}
                           onLocationSelect={doNothing}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
@@ -13,24 +13,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  Heart,
-  History,
-  LogOut,
-  Settings,
-  ShoppingCart,
-  User,
-  Plane,
-  Hotel,
-  Ticket,
-  MapPin,
-  Info,
-  Users,
-  Briefcase,
-  Plus,
-  Minus,
-  Trash2,
-} from "lucide-react";
+import { Heart, History, LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Plus, Minus, Trash2 } from 'lucide-react';
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
 import {
@@ -65,13 +48,15 @@ const SiteLogo = () => (
     />
   </svg>
 );
+
 const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [cartItems, setCartItems] = useState({});
-  const [ID, setTouristId] = useState(0);
+  const [touristID, setTouristId] = useState(0);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchTouristIdAndWishlist = async () => {
       try {
@@ -110,24 +95,51 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     setOpenDropdown(null);
   };
 
-  const removeFromWishlist = (id) => {
-    setWishlistItems(wishlistItems.filter((item) => item.id !== id));
-  };
-
-  const addToCart = async (item) => {
+  const removeFromWishlist = useCallback(async (productId) => {
     try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      setCartItems((prev) => ({
-        ...prev,
-        [item.id]: (prev[item.id] || 0) + 1,
-      }));
-
-      toast({
-        title: "Added to Cart",
-        description: `${item.name} has been added to your cart.`,
+      const response = await axios.delete("http://localhost:8000/removeFromWishlist", {
+        data: { touristId: touristID, productId }
       });
+      
+      if (response.status === 200) {
+        setWishlistItems(prevItems => prevItems.filter(item => item._id !== productId));
+        toast({
+          title: "Success",
+          description: "Item removed from wishlist.",
+        });
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove item from wishlist. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [touristID]);
+
+  const addToCart = useCallback(async (item) => {
+    console.log(item.picture);
+    try {
+      const response = await axios.post("http://localhost:8000/addWishlistItemToCart", {
+        touristID,
+        productId: item._id,
+        quantity: 1,
+        // picture:getImageSrc(item.picture),
+
+      });
+      
+      if (response.status === 200) {
+        setWishlistItems(prevItems => prevItems.filter(wishlistItem => wishlistItem._id !== item._id));
+setCartItems(prev => ({
+          ...prev,
+          [item._id]: { ...item, quantity: (prev[item._id]?.quantity || 0) + 1 }
+        }));
+        toast({
+          title: "Added to Cart",
+          description: `${item.name} has been added to your cart and removed from your wishlist.`,
+        });
+      }
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({
@@ -136,19 +148,24 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         variant: "destructive",
       });
     }
-  };
+  }, [touristID]);
 
   const incrementCartItem = async (item) => {
-    if ((cartItems[item.id] || 0) >= item.quantity) return;
+    if ((cartItems[item._id]?.quantity || 0) >= item.quantity) return;
 
     try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await axios.post("http://localhost:8000/addWishlistItemToCart", {
+        touristID,
+        productId: item._id,
+        quantity: 1
+      });
 
-      setCartItems((prev) => ({
-        ...prev,
-        [item.id]: (prev[item.id] || 0) + 1,
-      }));
+      if (response.status === 200) {
+        setCartItems((prev) => ({
+          ...prev,
+          [item._id]: { ...item, quantity: (prev[item._id]?.quantity || 0) + 1 },
+        }));
+      }
     } catch (error) {
       console.error("Error incrementing cart item:", error);
       toast({
@@ -160,20 +177,27 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   };
 
   const decrementCartItem = async (item) => {
-    if (!cartItems[item.id] || cartItems[item.id] <= 0) return;
+    if (!cartItems[item._id] || cartItems[item._id].quantity <= 0) return;
 
     try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await axios.post("http://localhost:8000/removeFromCart", {
+        touristID,
+        productId: item._id,
+        quantity: 1
+      });
 
-      setCartItems((prev) => ({
-        ...prev,
-        [item.id]: Math.max((prev[item.id] || 0) - 1, 0),
-      }));
-
-      if (cartItems[item.id] === 1) {
-        const { [item.id]: _, ...rest } = cartItems;
-        setCartItems(rest);
+      if (response.status === 200) {
+        setCartItems((prev) => {
+          const updatedQuantity = Math.max((prev[item._id]?.quantity || 0) - 1, 0);
+          if (updatedQuantity === 0) {
+            const { [item._id]: _, ...rest } = prev;
+            return rest;
+          }
+          return {
+            ...prev,
+            [item._id]: { ...item, quantity: updatedQuantity },
+          };
+        });
       }
     } catch (error) {
       console.error("Error decrementing cart item:", error);
@@ -184,9 +208,41 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
       });
     }
   };
+
+  const moveAllToCart = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/moveAllToCart", {
+        touristID
+      });
+
+      if (response.status === 200) {
+        const updatedCartItems = { ...cartItems };
+        wishlistItems.forEach(item => {
+          updatedCartItems[item._id] = {
+            ...item,
+            quantity: (updatedCartItems[item._id]?.quantity || 0) + 1
+          };
+        });
+        setCartItems(updatedCartItems);
+        setWishlistItems([]);
+        toast({
+          title: "Success",
+          description: "All items moved to cart.",
+        });
+      }
+    } catch (error) {
+      console.error("Error moving all items to cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to move items to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getImageSrc = (picture) => {
     if (picture && picture.data && picture.contentType) {
-      const bufferData = picture.data.data; // Access the `data` array inside the `Buffer`
+      const bufferData = picture.data.data;
       const base64String = btoa(
         new Uint8Array(bufferData).reduce(
           (data, byte) => data + String.fromCharCode(byte),
@@ -195,7 +251,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
       );
       return `data:${picture.contentType};base64,${base64String}`;
     }
-    return null; // Return null if picture is invalid
+    return null;
   };
 
   const goToProducts = () => {
@@ -343,10 +399,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link
-                    to="/places"
-                    className="flex items-center"
-                  >
+                  <Link to="/places" className="flex items-center">
                     <Ticket className="mr-2 h-4 w-4" />
                     <span>Attractions</span>
                   </Link>
@@ -368,7 +421,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   <Heart className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[2000px] sm:w-[7000px]">
+              <SheetContent className="w-[400px] sm:w-[540px]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <Heart className="h-5 w-5" />
@@ -387,7 +440,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <div className="space-y-4">
                       {wishlistItems.map((item) => (
                         <div
-                          key={item.id}
+                          key={item._id}
                           className="flex items-center justify-between space-x-4 border-b pb-4"
                         >
                           <div className="flex flex-col items-center space-y-2">
@@ -408,7 +461,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                           </div>
 
                           <div className="flex items-center space-x-2">
-                            {!cartItems[item.id] ? (
+                            {!cartItems[item._id] ? (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -428,14 +481,14 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                                     <Minus className="h-4 w-4" />
                                   </Button>
                                   <span className="px-2">
-                                    {cartItems[item.id]}
+                                    {cartItems[item._id].quantity}
                                   </span>
                                   <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => incrementCartItem(item)}
                                     disabled={
-                                      cartItems[item.id] >= item.quantity
+                                      cartItems[item._id].quantity >= item.quantity
                                     }
                                   >
                                     <Plus className="h-4 w-4" />
@@ -446,7 +499,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => removeFromWishlist(item.id)}
+                              onClick={() => removeFromWishlist(item._id)}
                             >
                               <Trash2 className="h-4 w-4" />
                               <span className="sr-only">
@@ -462,14 +515,8 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <div className="mt-1 mb-2 space-y-2">
                   <Button
                     className="w-full"
-                    onClick={() => {
-                      toast({
-                        title: "Action needed",
-                        description:
-                          "Implement 'Move All to Cart' functionality.",
-                      });
-                      setIsWishlistOpen(false);
-                    }}
+                    onClick={moveAllToCart}
+                    disabled={wishlistItems.length === 0}
                   >
                     Move All to Cart
                   </Button>
@@ -538,3 +585,4 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
 };
 
 export default NavigationMenuBar;
+

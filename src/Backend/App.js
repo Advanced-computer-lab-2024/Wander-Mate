@@ -95,6 +95,7 @@ const {
   Bookmarkevent,
   isInWishList,
   makeOrder,
+  removeProduct,
 } = require("./Routes/touristController");
 
 const {
@@ -182,6 +183,7 @@ const {
   getsellers,
   gettourguides,
   gettourismgov,
+  viewTopUsers,
 } = require("./Routes/adminController.js");
 
 const {
@@ -552,6 +554,7 @@ app.get(
 app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
 app.post("/addToWishlist", addToWishlist);
 app.post("/removeFromCart", removeFromCart);
+app.delete("/removeProduct", removeProduct);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
@@ -573,6 +576,7 @@ app.get("/ViewOrders/:userId", ViewOrders);
 app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);
+app.get("/viewTopUsers", viewTopUsers);
 
 app.get("/gettourists",getTourists);
 app.get("/getadvertisers",getadvertisers);

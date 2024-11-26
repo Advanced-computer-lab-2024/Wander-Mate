@@ -193,7 +193,7 @@ const AddNewAddressCard = () => {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[200px] overflow-y-auto">
+                <SelectContent className="max-h-[200px] overflow-y-auto" portal={false}>
                   {countries.map((country) => (
                     <SelectItem key={country._id} value={country._id}>
                       {country.country_name}

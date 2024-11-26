@@ -28,6 +28,7 @@ const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
 const Sales = require("../Models/sales.js");
 const orderModel = require("../Models/order.js");
+const salesModel = require("../Models/sales.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1712,6 +1713,19 @@ const gettourismgov = async (req,res)=>{
 
 };
 
+const viewTopUsers = async (req, res) => {
+  try {
+    const topSellers = await salesModel
+      .find()
+      .populate("user")
+      .sort({ revenue: -1 })
+      .limit(10);
+    return res.status(200).json(topSellers);
+  } catch {
+    return res.status(400).json("ERROR");
+  }
+};
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1773,4 +1787,5 @@ module.exports = {
   getsellers,
   gettourguides,
   gettourismgov,
+  viewTopUsers,
 };
