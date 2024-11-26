@@ -6,6 +6,7 @@ import OurService from "../components/OurServiceBlock";
 import WhatPeopleSay from "../components/whatpeoplesay"; // Import the WhatPeopleSay component
 import ExploreComponent from "../components/exploreComponent"; // Import the ExploreComponent
 import { useNavigate } from "react-router-dom";
+import BookingSteps from "../components/processComponent";
 
 const StartPage = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const StartPage = () => {
   const ourAchievementsRef = useRef(null);
   const whatPeopleSayRef = useRef(null);
   const exploreComponentRef = useRef(null); // Add ref for ExploreComponent
+  const bookingStepsRef = useRef(null); // Add ref for BookingSteps
 
   useEffect(() => {
     const observerOptions = {
@@ -39,23 +41,26 @@ const StartPage = () => {
     const achievementsElement = ourAchievementsRef.current;
     const whatPeopleSayElement = whatPeopleSayRef.current;
     const exploreComponentElement = exploreComponentRef.current;
+    const bookingStepsElement = bookingStepsRef.current;
 
     if (serviceElement) observer.observe(serviceElement);
     if (achievementsElement) observer.observe(achievementsElement);
     if (whatPeopleSayElement) observer.observe(whatPeopleSayElement);
     if (exploreComponentElement) observer.observe(exploreComponentElement);
+    if (bookingStepsElement) observer.observe(bookingStepsElement);
 
     return () => {
       if (serviceElement) observer.unobserve(serviceElement);
       if (achievementsElement) observer.unobserve(achievementsElement);
       if (whatPeopleSayElement) observer.unobserve(whatPeopleSayElement);
       if (exploreComponentElement) observer.unobserve(exploreComponentElement);
+      if (bookingStepsElement) observer.unobserve(bookingStepsElement);
     };
   }, []);
 
   return (
     <div className="full">
-      <MainNav targetId1="ourServiceSection" targetId3="exploreComponent"/>
+      <MainNav targetId1="ourServiceSection" targetId2="processComponent" targetId3="exploreComponent" />
       <div className="frame">
         <div className="inner-container">
           <h1 className="title">QUALITY & PASSION</h1>
@@ -72,17 +77,23 @@ const StartPage = () => {
         <OurService id="ourServiceSection" />
       </div>
 
+      {/* Booking Steps Section */}
+    
+
       {/* Our Achievements Section */}
       <div ref={ourAchievementsRef} className="fade-in">
         <OurAcheivementsBlock />
       </div>
-
+      <div ref={bookingStepsRef} className="fade-in" id="processComponent" >
+        <BookingSteps  />
+      </div>
       {/* What People Say Section */}
       <div ref={whatPeopleSayRef} className="fade-in">
         <WhatPeopleSay />
       </div>
-       {/* Explore Component Section */}
-       <div ref={exploreComponentRef} className="fade-in" id="exploreComponent">
+
+      {/* Explore Component Section */}
+      <div ref={exploreComponentRef} className="fade-in" id="exploreComponent">
         <ExploreComponent />
       </div>
     </div>

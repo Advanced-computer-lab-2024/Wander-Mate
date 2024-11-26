@@ -45,8 +45,8 @@ import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
-import WhatPeopleSay from "./components/whatpeoplesay";
-import Explorer from "./components/exploreComponent";
+
+
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import Orders from "./components/adminOrders";
 function App() {
