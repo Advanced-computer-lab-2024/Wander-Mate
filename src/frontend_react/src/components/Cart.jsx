@@ -306,6 +306,7 @@ export default function ShoppingCart() {
                 amount={subtotal + 20 - discount}
                 disabled={cartItems.length === 0}
                 voucherCode={appliedPromo}
+                cartItems={cartItems}
               />
             </div>
           </div>

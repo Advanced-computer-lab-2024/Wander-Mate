@@ -46,7 +46,7 @@ import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
 
-
+import AddressDropDown from "./components/addressDropDown";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
 import TouristTable from "./pages/touristtable";
@@ -118,7 +118,7 @@ function App() {
         <Route path="/tourismgovtable" element={<TourismGovTable/>}/>
         <Route path="/tourguidetable" element={<TourGuideTable/>}/>
         <Route path="/orderCard" element={<orderCard />} />
-        
+        <Route path="/addressDropDown" element={<AddressDropDown />} />
       </Routes>
     </Router>
   );
