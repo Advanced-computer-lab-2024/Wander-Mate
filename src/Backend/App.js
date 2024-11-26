@@ -177,6 +177,7 @@ const {
   deleteComplaint,
   deleteProduct,
   viewAllOrders,
+  viewTopUsers,
 } = require("./Routes/adminController.js");
 
 const {
@@ -568,3 +569,4 @@ app.get("/ViewOrders/:userId", ViewOrders);
 app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);
+app.get("/viewTopUsers", viewTopUsers);
