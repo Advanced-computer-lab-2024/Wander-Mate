@@ -1675,6 +1675,52 @@ const viewAllOrders = async (req, res) => {
   }
 };
 
+const getTourists = async (req, res) => {
+  try{
+    const tourists = await touristModel.find();
+    return res.status(200).json(tourists);
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const getadvertisers = async (req, res) => {
+  try{
+    const advertisers = await advertiserModel.find();
+    return res.status(200).json(advertisers);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const getsellers = async (req, res) => {
+  try{
+    const sellers = await sellerModel.find();
+    return res.status(200).json(sellers);
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+};
+const gettourguides = async (req, res) => {
+  try{
+    const tourGuides = await tourGuideModel.find();
+    return res.status(200).JSON(tourGuides);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+
+};
+const gettourismgov = async (req,res)=>{
+  try{
+    const tourismGov = await TourismGoverner.find();
+    return res.status(200).json(tourismGov);
+
+  }catch{
+    return res.status(400).json("ERROR");
+  }
+
+};
+
 const viewTopUsers = async (req, res) => {
   try {
     const topSellers = await salesModel
@@ -1744,5 +1790,10 @@ module.exports = {
   deleteComplaint,
   deleteProduct,
   viewAllOrders,
+  getTourists,
+  getadvertisers,
+  getsellers,
+  gettourguides,
+  gettourismgov,
   viewTopUsers,
 };

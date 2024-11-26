@@ -45,10 +45,16 @@ import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
-import WhatPeopleSay from "./components/whatpeoplesay";
-import Explorer from "./components/exploreComponent";
+
+import AddressDropDown from "./components/addressDropDown";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
+import TouristTable from "./pages/touristtable";
+import AdvertiserTable from "./pages/advertisertable";
+import SellerTable from "./pages/sellertable";
+import TourismGovTable from "./pages/tourismgovtable";
+import TourGuideTable from "./pages/tourguidetable";
+import orderCard from "./components/orderCard";
 import AdminItineraries from "./pages/adminItineray";
 function App() {
   return (
@@ -107,6 +113,13 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<TopUsers />} />
+        <Route path="/touristtable" element={<TouristTable />} />
+        <Route path ="/advertisertable" element={<AdvertiserTable/>}/>
+        <Route path="/sellertable" element={<SellerTable />} />
+        <Route path="/tourismgovtable" element={<TourismGovTable/>}/>
+        <Route path="/tourguidetable" element={<TourGuideTable/>}/>
+        <Route path="/orderCard" element={<orderCard />} />
+        <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
 
       </Routes>

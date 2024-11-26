@@ -28,8 +28,8 @@ import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { toast } from "./ui/use-toast";
-
-const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
+import AddressDropDown from "./addressDropDown";
+const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
@@ -94,16 +94,38 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
   
   const handlePayment = async () => {
     try {
-
-      console.log("jiji");
       await applyPromoCode();
+  
       // Proceed with payment logic here
       // For now, we'll just show a success message
       toast({
         title: "Payment Successful",
         description: "Your order has been placed successfully.",
       });
-      setActiveIndex(totalSlide);
+  
+      // Create the order after payment success
+      const orderData = {
+        userId: touristID, // Assuming the tourist ID is the user ID
+        products: cartItems.map(item => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total: amount, // Total amount after any discounts
+        address: formFields.billingAddress, // Address from the form
+        isPaid: true, // Assuming the payment was successful
+      };
+  
+      // Make the API call to create the order
+      const response = await axios.post("http://localhost:8000/makeOrder", orderData);
+      if (response.status === 200) {
+        toast({
+          title: "Order Created",
+          description: "Your order has been successfully created.",
+        });
+        setActiveIndex(totalSlide); // Move to the final step
+      }
     } catch (error) {
       console.error('Error processing payment:', error);
       toast({
@@ -113,6 +135,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
       });
     }
   };
+  
 
   const handleNextSlide = () => {
     if (activeIndex === 1) {
@@ -195,51 +218,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
             <ScrollArea className="h-full px-6">
               {activeIndex === 1 && (
                 <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
-                {/* Country Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="country">Country</Label>
-                  <NationalitySelect
-                    id="country"
-                    value={formFields.country}
-                    onChange={(e) => handleInputChange({ target: { name: "country", value: e } })}
-                  />
-                  {!formFields.country && alertMessage && (
-                    <p className="text-sm text-red-500">Country is required.</p>
-                  )}
-                </div>
-              
-                {/* City Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formFields.city}
-                    onChange={handleInputChange}
-                  />
-                  {!formFields.city && alertMessage && (
-                    <p className="text-sm text-red-500">City is required.</p>
-                  )}
-                </div>
-              
-                {/* Billing Address Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="billingAddress">Billing Address</Label>
-                  <Textarea
-                    id="billingAddress"
-                    name="billingAddress"
-                    type="text"
-                    placeholder="Billing address"
-                    rows="6.5"
-                    value={formFields.billingAddress}
-                    onChange={handleInputChange}
-                  />
-                  {!formFields.billingAddress && alertMessage && (
-                    <p className="text-sm text-red-500">Billing address is required.</p>
-                  )}
-                </div>
+                
               
                 {/* Payment Method */}
                 <div className="flex flex-col gap-2">
@@ -318,6 +297,9 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
                         id="rwb_3"
                         className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                       />
+                      <label>
+                          <AddressDropDown/>
+                      </label>
                     </Label>
                   </RadioGroup>
                 </div>
