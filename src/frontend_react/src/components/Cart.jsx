@@ -103,26 +103,36 @@ export default function ShoppingCart() {
     }
   };
 
-  const handleRemoveItem = async (item) => {
+  const handleRemoveItem = async (productId) => {
     try {
-      await axios.post('http://localhost:8000/removeFromCart', {
-        touristID: ID,
-        productId: item.productId,
-        attributes: item.attributes
+      setIsLoading(true);
+  
+      // Sending the DELETE request to the backend with touristID and productId
+      const response = await axios.delete('http://localhost:8000/removeProduct', { 
+        data: { touristID: ID, productId }
       });
-
-      const updatedItems = cartItems.filter(cartItem => cartItem.productId !== item.productId);
-      setCartItems(updatedItems);
-      calculateSubtotal(updatedItems);
+  
+      if (response.status === 200) {
+        // Remove the item from the cart
+        const updatedCart = cartItems.filter(item => item.productId !== productId);
+        setCartItems(updatedCart);
+  
+        // Recalculate the subtotal
+        const newSubtotal = updatedCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        setSubtotal(newSubtotal);
+  
+        toast({ description: "Product removed from cart successfully" });
+      } else {
+        throw new Error("Failed to remove product");
+      }
     } catch (error) {
-      console.error("Error removing item from cart:", error);
-      toast({
-        title: "Error",
-        description: "Failed to remove item from cart. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Error removing product:", error);
+      toast({ description: "Error removing product from cart" });
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   const handleRedeemVoucher = async () => {
     setVoucherError('');
@@ -202,7 +212,7 @@ export default function ShoppingCart() {
                 <tr key={item.productId} className="border-b">
                   <td className="py-4 flex items-center space-x-4">
                     <img
-                      src={item.picture}
+                      src={`http://localhost:8000/products/${item.productId}/image`}
                       alt={item.name}
                       width={100}
                       height={100}
@@ -232,7 +242,7 @@ export default function ShoppingCart() {
                   <td className="py-4">
                     <button
                       className="text-red-500"
-                      onClick={() => handleRemoveItem(item)}
+                      onClick={() => handleRemoveItem(item.productId)}
                     >
                       <Trash2 size={20} />
                     </button>

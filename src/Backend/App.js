@@ -95,6 +95,7 @@ const {
   Bookmarkevent,
   isInWishList,
   makeOrder,
+  removeProduct,
 } = require("./Routes/touristController");
 
 const {
@@ -548,6 +549,7 @@ app.get(
 app.get("/getDeliveryAddresses/:touristId", getDeliveryAddresses);
 app.post("/addToWishlist", addToWishlist);
 app.post("/removeFromCart", removeFromCart);
+app.delete("/removeProduct", removeProduct);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
