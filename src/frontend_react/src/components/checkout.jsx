@@ -218,93 +218,93 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
             <ScrollArea className="h-full px-6">
               {activeIndex === 1 && (
                 <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
-                
-              
-                {/* Payment Method */}
-                <div className="flex flex-col gap-2">
-                  <Label>Payment Method</Label>
-                  <RadioGroup defaultValue="rwb_1" onValueChange={handleValueChange}>
-                    {/* Credit/Debit Card Option */}
-                    <Label
-                      htmlFor="rwb_1"
-                      className={cn(
-                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                        { "bg-primary": selected === "rwb_1" }
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon icon="mdi:credit-card-outline" className="text-lg" />
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_1",
-                          })}
-                        >
-                          Credit/Debit Card
+                  {/* Payment Method */}
+                  <div className="flex flex-col gap-2">
+                    <Label>Payment Method</Label>
+                    <RadioGroup defaultValue="rwb_1" onValueChange={handleValueChange}>
+                      {/* Credit/Debit Card Option */}
+                      <Label
+                        htmlFor="rwb_1"
+                        className={cn(
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          { "bg-primary": selected === "rwb_1" }
+                        )}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon icon="mdi:credit-card-outline" className="text-lg" />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_1",
+                            })}
+                          >
+                            Credit/Debit Card
+                          </span>
                         </span>
-                      </span>
-                      <RadioGroupItem
-                        value="rwb_1"
-                        id="rwb_1"
-                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                      />
-                    </Label>
+                        <RadioGroupItem
+                          value="rwb_1"
+                          id="rwb_1"
+                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                        />
+                      </Label>
               
-                    {/* Cash on Delivery Option */}
-                    <Label
-                      htmlFor="rwb_2"
-                      className={cn(
-                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                        { "bg-primary": selected === "rwb_2" }
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon icon="mdi:cash-multiple" className="text-lg" />
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_2",
-                          })}
-                        >
-                          Cash on Delivery
+                      {/* Cash on Delivery Option */}
+                      <Label
+                        htmlFor="rwb_2"
+                        className={cn(
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          { "bg-primary": selected === "rwb_2" }
+                        )}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon icon="mdi:cash-multiple" className="text-lg" />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_2",
+                            })}
+                          >
+                            Cash on Delivery
+                          </span>
                         </span>
-                      </span>
-                      <RadioGroupItem
-                        value="rwb_2"
-                        id="rwb_2"
-                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                      />
-                    </Label>
+                        <RadioGroupItem
+                          value="rwb_2"
+                          id="rwb_2"
+                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                        />
+                      </Label>
               
-                    {/* Using Wallet Option */}
-                    <Label
-                      htmlFor="rwb_3"
-                      className={cn(
-                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                        { "bg-primary": selected === "rwb_3" }
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon icon="mdi:wallet" className="text-lg" />
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_3",
-                          })}
-                        >
-                          Using Wallet
+                      {/* Using Wallet Option */}
+                      <Label
+                        htmlFor="rwb_3"
+                        className={cn(
+                          "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                          { "bg-primary": selected === "rwb_3" }
+                        )}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon icon="mdi:wallet" className="text-lg" />
+                          <span
+                            className={cn("font-base text-default-800", {
+                              "text-primary-foreground": selected === "rwb_3",
+                            })}
+                          >
+                            Using Wallet
+                          </span>
                         </span>
-                      </span>
-                      <RadioGroupItem
-                        value="rwb_3"
-                        id="rwb_3"
-                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                      />
-                      <label>
-                          <AddressDropDown/>
-                      </label>
-                    </Label>
-                  </RadioGroup>
+                        <RadioGroupItem
+                          value="rwb_3"
+                          id="rwb_3"
+                          className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                        />
+                      </Label>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Address Dropdown beside Payment Method */}
+                  <div className="flex items-center mt-4 sm:mt-0">
+                    <Label className="mr-2">Select Address:</Label>
+                    <AddressDropDown />
+                  </div>
                 </div>
-              </div>
-              
               )}
 
               {activeIndex === 2 && selected === "rwb_1" && (
