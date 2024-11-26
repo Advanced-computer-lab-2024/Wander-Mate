@@ -1,8 +1,8 @@
 .map-wrapper2 {
     position: relative;
-    height: 250px;  
-    width: 250px; /* Added max-width */
-    margin: 20px auto; /* Center the map and add some margin */
+    height: 200px;  
+    width: 300px; /* Added max-width */
+    margin: 5px auto; /* Center the map and add some margin */
     border: 1px solid #ccc;
   }
   
@@ -12,8 +12,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 250px;  
-    width: 250px; /* Added max-width */
+    height: 200px;  
+    width: 300px; /* Added max-width */
   }
   
   .sidebar {

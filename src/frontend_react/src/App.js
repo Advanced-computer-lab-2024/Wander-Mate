@@ -45,10 +45,11 @@ import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
-import WhatPeopleSay from "./components/whatpeoplesay";
-import Explorer from "./components/exploreComponent";
+
+
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
+import orderCard from "./components/orderCard";
 function App() {
   return (
     <Router>
@@ -106,6 +107,8 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<TopUsers />} />
+        <Route path="/orderCard" element={<orderCard />} />
+        
       </Routes>
     </Router>
   );
