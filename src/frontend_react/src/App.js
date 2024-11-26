@@ -49,6 +49,8 @@ import WhatPeopleSay from "./components/whatpeoplesay";
 import Explorer from "./components/exploreComponent";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import Orders from "./components/adminOrders";
+import TouristTable from "./pages/touristtable";
+import AdvertiserTable from "./pages/advertisertable";
 function App() {
   return (
     <Router>
@@ -106,6 +108,8 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<Orders />} />
+        <Route path="/touristtable" element={<TouristTable />} />
+        <Route path ="/advertisertable" element={<AdvertiserTable/>}/>
       </Routes>
     </Router>
   );
