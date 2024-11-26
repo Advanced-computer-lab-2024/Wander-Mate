@@ -28,7 +28,6 @@ const DashboardDropdown = () => {
         <DropdownMenuLabel>View All</DropdownMenuLabel>
         <DropdownMenuItem>Download</DropdownMenuItem>
         <DropdownMenuItem>Refresh</DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );
