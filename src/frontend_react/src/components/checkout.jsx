@@ -94,16 +94,38 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
   
   const handlePayment = async () => {
     try {
-
-      console.log("jiji");
       await applyPromoCode();
+  
       // Proceed with payment logic here
       // For now, we'll just show a success message
       toast({
         title: "Payment Successful",
         description: "Your order has been placed successfully.",
       });
-      setActiveIndex(totalSlide);
+  
+      // Create the order after payment success
+      const orderData = {
+        userId: touristID, // Assuming the tourist ID is the user ID
+        products: cartItems.map(item => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total: amount, // Total amount after any discounts
+        address: formFields.billingAddress, // Address from the form
+        isPaid: true, // Assuming the payment was successful
+      };
+  
+      // Make the API call to create the order
+      const response = await axios.post("http://localhost:8000/makeOrder", orderData);
+      if (response.status === 200) {
+        toast({
+          title: "Order Created",
+          description: "Your order has been successfully created.",
+        });
+        setActiveIndex(totalSlide); // Move to the final step
+      }
     } catch (error) {
       console.error('Error processing payment:', error);
       toast({
@@ -113,6 +135,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
       });
     }
   };
+  
 
   const handleNextSlide = () => {
     if (activeIndex === 1) {
