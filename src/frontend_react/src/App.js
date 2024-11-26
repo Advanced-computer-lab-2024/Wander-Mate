@@ -49,6 +49,7 @@ import WhatPeopleSay from "./components/whatpeoplesay";
 import Explorer from "./components/exploreComponent";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import Orders from "./components/adminOrders";
+import orderCard from "./components/orderCard";
 function App() {
   return (
     <Router>
@@ -106,6 +107,7 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<Orders />} />
+        <Route path="/orderCard" element={<orderCard />} />
       </Routes>
     </Router>
   );
