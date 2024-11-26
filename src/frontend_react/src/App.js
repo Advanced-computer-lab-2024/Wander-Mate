@@ -51,6 +51,9 @@ import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
 import TouristTable from "./pages/touristtable";
 import AdvertiserTable from "./pages/advertisertable";
+import SellerTable from "./pages/sellertable";
+import TourismGovTable from "./pages/tourismgovtable";
+import TourGuideTable from "./pages/tourguidetable";
 import orderCard from "./components/orderCard";
 function App() {
   return (
@@ -111,6 +114,9 @@ function App() {
         <Route path="pop" element={<TopUsers />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path ="/advertisertable" element={<AdvertiserTable/>}/>
+        <Route path="/sellertable" element={<SellerTable />} />
+        <Route path="/tourismgovtable" element={<TourismGovTable/>}/>
+        <Route path="/tourguidetable" element={<TourGuideTable/>}/>
         <Route path="/orderCard" element={<orderCard />} />
         
       </Routes>

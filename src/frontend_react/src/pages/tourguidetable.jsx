@@ -13,19 +13,19 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Badge } from "../components/ui/badge";
 
-const TouristTable = () => {
+const TourGuideTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
-  const [tourists, setTourists] = useState([]);
+  const [tourGuides, setTourGuides] = useState([]); // Store tour guides here
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchTourists = async () => {
+    const fetchTourGuides = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/gettourists");
-        setTourists(response.data);
+        const response = await axios.get("http://localhost:8000/gettourguides");
+        console.log(response.data); // Check response data structure
+        setTourGuides(response.data.Creator); // Store tour guide data
         setLoading(false);
       } catch (err) {
         setError("Failed to load data");
@@ -33,7 +33,7 @@ const TouristTable = () => {
       }
     };
 
-    fetchTourists();
+    fetchTourGuides();
   }, []);
 
   const toggleRow = (id) => {
@@ -50,12 +50,12 @@ const TouristTable = () => {
       label: "User",
     },
     {
-      key: "role",
-      label: "Role",
+      key: "status",
+      label: "Status",
     },
     {
-      key: "wallet",
-      label: "Wallet",
+      key: "email",
+      label: "Email",
     },
     {
       key: "action",
@@ -73,18 +73,18 @@ const TouristTable = () => {
 
   const getImageSrc = (picture) => {
     if (picture && picture.data && picture.contentType) {
-      const base64String =
-        typeof picture.data === "string"
-          ? picture.data
-          : btoa(String.fromCharCode.apply(null, new Uint8Array(picture.data)));
-      return `data:${picture.contentType};base64,${base64String}`;
-    }
-    return null;
+        const base64String =
+          typeof picture.data === "string"
+            ? picture.data
+            : btoa(String.fromCharCode.apply(null, new Uint8Array(picture.data)));
+        return `data:${picture.contentType};base64,${base64String}`;
+      }
+      return null;
   };
 
   return (
     <Table>
-        <TableHeader className="text-left">
+      <TableHeader className="text-left">
         <TableRow>
           {columns.map((column) => (
             <TableHead key={column.key}>{column.label}</TableHead>
@@ -92,13 +92,13 @@ const TouristTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {tourists.map((tourist) => (
-          <Fragment key={tourist._id}>
+        {tourGuides.map((tourGuide) => (
+          <Fragment key={tourGuide._id}>
             <TableRow>
               <TableCell>
                 <div className="flex items-center gap-4">
                   <Button
-                    onClick={() => toggleRow(tourist._id)}
+                    onClick={() => toggleRow(tourGuide._id)}
                     size="icon"
                     variant="outline"
                     color="secondary"
@@ -107,51 +107,54 @@ const TouristTable = () => {
                     <Icon
                       icon="heroicons:chevron-down"
                       className={cn("h-5 w-5 transition-all duration-300", {
-                        "rotate-180": collapsedRows.includes(tourist._id),
+                        "rotate-180": collapsedRows.includes(tourGuide._id),
                       })}
                     />
                   </Button>
                   <div className="flex gap-3 items-center">
                     <Avatar className="rounded-full">
-                      <AvatarImage src={getImageSrc(tourist.picture)} />
-                      <AvatarFallback>{tourist.FullName[0]}</AvatarFallback>
+                      <AvatarImage src={getImageSrc(tourGuide.picture)} />
+                      <AvatarFallback>{tourGuide.Username[0]}</AvatarFallback>
                     </Avatar>
                     <div>
                       <span className="text-sm block text-card-foreground">
-                        {tourist.FullName}
+                        {tourGuide.Username}
                       </span>
                       <span className="text-xs mt-1 block font-normal">
-                        {tourist.Email}
+                        {tourGuide.Email}
                       </span>
                     </div>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>{tourist.Role}</TableCell>
-              <TableCell>${tourist.Wallet}</TableCell>
+              <TableCell>{tourGuide.status}</TableCell>
+              <TableCell>
+                <a href={`mailto:${tourGuide.Email}`} target="_blank" rel="noopener noreferrer">
+                  {tourGuide.Email}
+                </a>
+              </TableCell>
               <TableCell className="flex items-center justify-start px-4 py-6">
                 <Button
                   size="icon"
                   variant="outline"
                   color="destructive"
-                  className="h-7 w-7 border-none"
+                  className="h-7 w-7 border-none p-0"
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
               </TableCell>
             </TableRow>
-            {collapsedRows.includes(tourist._id) && (
+            {collapsedRows.includes(tourGuide._id) && (
               <TableRow>
                 <TableCell colSpan={4}>
                   <div className="pl-12 flex flex-col items-start">
-                    <p>Username: {tourist.Username}</p>
-                    <p>Phone: {tourist.MobileNumber}</p>
-                    <p>Badge: {tourist.Badge}</p>
-                    <p>Nationality: {tourist.Nationality}</p>
-                    <p>Date of Birth: {new Date(tourist.DOB).toLocaleDateString()}</p>
-                    <p>Points: {tourist.Points}</p>
-                    <p>Created At: {new Date(tourist.createdAt).toLocaleDateString()}</p>
-                    <p>Updated At: {new Date(tourist.updatedAt).toLocaleDateString()}</p>
+                    <p>Created At: {new Date(tourGuide.createdAt).toLocaleDateString()}</p>
+                    <p>Updated At: {new Date(tourGuide.updatedAt).toLocaleDateString()}</p>
+                    {tourGuide.MobileNumber && <p>Mobile: {tourGuide.MobileNumber}</p>}
+                    {tourGuide.PreviousWork && <p>Previous Work: {tourGuide.PreviousWork}</p>}
+                    {tourGuide.YearsOfExperience && <p>Experience: {tourGuide.YearsOfExperience} years</p>}
+                    {tourGuide.averageRating && <p>Average Rating: {tourGuide.averageRating}</p>}
+                    {tourGuide.totalRatings && <p>Total Ratings: {tourGuide.totalRatings}</p>}
                   </div>
                 </TableCell>
               </TableRow>
@@ -163,4 +166,4 @@ const TouristTable = () => {
   );
 };
 
-export default TouristTable;
+export default TourGuideTable;
