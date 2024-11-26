@@ -29,7 +29,7 @@ import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { toast } from "./ui/use-toast";
 
-const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
+const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
