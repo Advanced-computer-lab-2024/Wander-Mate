@@ -195,51 +195,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode }) => {
             <ScrollArea className="h-full px-6">
               {activeIndex === 1 && (
                 <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
-                {/* Country Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="country">Country</Label>
-                  <NationalitySelect
-                    id="country"
-                    value={formFields.country}
-                    onChange={(e) => handleInputChange({ target: { name: "country", value: e } })}
-                  />
-                  {!formFields.country && alertMessage && (
-                    <p className="text-sm text-red-500">Country is required.</p>
-                  )}
-                </div>
-              
-                {/* City Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formFields.city}
-                    onChange={handleInputChange}
-                  />
-                  {!formFields.city && alertMessage && (
-                    <p className="text-sm text-red-500">City is required.</p>
-                  )}
-                </div>
-              
-                {/* Billing Address Field */}
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="billingAddress">Billing Address</Label>
-                  <Textarea
-                    id="billingAddress"
-                    name="billingAddress"
-                    type="text"
-                    placeholder="Billing address"
-                    rows="6.5"
-                    value={formFields.billingAddress}
-                    onChange={handleInputChange}
-                  />
-                  {!formFields.billingAddress && alertMessage && (
-                    <p className="text-sm text-red-500">Billing address is required.</p>
-                  )}
-                </div>
+                
               
                 {/* Payment Method */}
                 <div className="flex flex-col gap-2">
