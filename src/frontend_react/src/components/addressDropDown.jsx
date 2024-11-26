@@ -2,25 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { MapPin, AlertCircle, Plus } from 'lucide-react';
-import NonMovableMap from './nonmovableMapAddress';
-import { Button } from "../ui/button";
-import { Icon } from '@iconify/react';
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { MapPin, AlertCircle } from 'lucide-react';
+import { Button } from "../components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../ui/popover"
-import AddNewAddressCard from '../addNewDeliveryAddress';
+} from "../components/ui/popover"
+import AddNewAddressCard from '../components/addNewDeliveryAddress';
 
-const AddressCard = () => {
+const AddressDropDown = () => {
   const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [username, setUsername] = useState('');
   const [countryMapping, setCountryMapping] = useState({});
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,25 +29,18 @@ const AddressCard = () => {
         if (!reply.ok) throw new Error("Failed to get tourist ID");
         const { userID } = await reply.json();
 
-        let touristId = userID;
-        if (!touristId) {
-          touristId = localStorage.getItem("touristId");
-        }
-
+        let touristId = userID || localStorage.getItem("touristId");
         if (!touristId) {
           setError("Tourist ID not found in storage.");
           return;
         }
 
-        // Fetch the username using the touristId
         const userResponse = await axios.get(`http://localhost:8000/getUsername/${touristId}`);
         setUsername(userResponse.data);
 
-        // Fetch the addresses
         const addressResponse = await axios.get(`http://localhost:8000/getDeliveryAddresses/${touristId}`);
         setAddresses(addressResponse.data.addresses);
 
-        // Fetch the country mapping
         const nationsResponse = await axios.get(`http://localhost:8000/getNations`);
         const nations = nationsResponse.data;
         const mapping = nations.reduce((acc, nation) => {
@@ -72,11 +64,7 @@ const AddressCard = () => {
       if (!reply.ok) throw new Error("Failed to get tourist ID");
       const { userID } = await reply.json();
 
-      let touristId = userID;
-      if (!touristId) {
-        touristId = localStorage.getItem("touristId");
-      }
-
+      let touristId = userID || localStorage.getItem("touristId");
       if (!touristId) {
         setError("Tourist ID not found in storage.");
         return;
@@ -87,6 +75,15 @@ const AddressCard = () => {
     } catch (error) {
       console.error("Error refreshing addresses:", error);
       setError("Failed to refresh addresses.");
+    }
+  };
+
+  const handleSelectChange = (event) => {
+    const selectedValue = event.target.value;
+    if (selectedValue === "add-new") {
+      setIsPopoverOpen(true);
+    } else {
+      setSelectedAddress(selectedValue);
     }
   };
 
@@ -105,86 +102,51 @@ const AddressCard = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <Card className="w-full max-w-7xl mx-auto">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl font-bold">Delivery Addresses</CardTitle>
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <AddNewAddressCard onAddressAdded={() => {
-                  setIsOpen(false);
-                  refreshAddresses();
-                }} />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="mt-2">
-            <Badge variant="secondary" className="inline-block px-3 py-1 rounded-full text-sm">
-              {username}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {addresses.length === 0 ? (
-            <p className="text-gray-500 italic">No addresses found.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {addresses.map((address, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4 shadow-lg h-[450px] flex flex-col justify-between">
-                  <div className="p-4 bg-white rounded-lg shadow-md border border-gray-200 space-y-2 custom-padding">
-                    <div className="flex-shrink-0 flex items-center">
-                      <MapPin className="text-blue-500 mt-1 w-6 h-6 mr-2" />
-                      <p className="text-gray-700 font-semibold">{address.street}</p>
-                    </div>
-                    <p className="text-sm text-gray-700">
-                      <span className="font-bold">City:</span> {address.city}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      <span className="font-bold">State:</span> {address.state}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      <span className="font-bold">Zip Code:</span> {address.zipCode}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      <span className="font-bold">Country:</span> {countryMapping[address.country] || address.country}
-                    </p>
+        return (
+            <div className="min-h-screen bg-gray-100 p-4">
+         {/* <Card className="w-full max-w-2xl mx-auto"> */}
+                
+                <div className="flex justify-between items-center">
+                
+                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
                     <Button
-                      variant="outline"
-                      className="mt-2 text-xs"
-                      onClick={() => {
-                        const mapUrl = `https://www.google.com/maps?q=${address.location.coordinates[1]},${address.location.coordinates[0]}`;
-                        window.open(mapUrl, "_blank");
-                      }}
-                    >
-                      <Icon
-                        icon="heroicons:location-marker"
-                        className="w-3 h-3 mr-1"
-                      />
-                      Open in Maps
-                    </Button>
-                  </div>
-                  <div className="mt-2 h-64 w-full">
-                    <NonMovableMap
-                      initialLocation={address.location.coordinates}
-                      onLocationSelect={() => {}}
-                      className="h-full w-full rounded-lg"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
+                        variant="outline"
+                        size="icon"
+                        style={{ opacity: 0, pointerEvents: 'auto' }}
+                        >
+                        </Button>
 
-export default AddressCard;
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                        <AddNewAddressCard onAddressAdded={() => {
+                        setIsPopoverOpen(false);
+                        refreshAddresses();
+                        }} />
+                    </PopoverContent>
+                    </Popover>
+                </div>
+                <div className="mt-2">
+                </div>
+                
+                <CardContent>
+                <select
+                    className="w- p-2 border rounded"
+                    value={selectedAddress || ""}
+                    onChange={handleSelectChange}
+                >
+                    <option value="" disabled>Select an address</option>
+                    {addresses.map((address, index) => (
+                    <option key={index} value={address.street}>
+                        {`${address.street}, ${address.city}, ${countryMapping[address.country] || address.country}`}
+                    </option>
+                    ))}
+                    <option value="add-new">+ Add New Delivery Address</option>
+                </select>
+                </CardContent>
+            {/* </Card> */}
+            </div>
+        );
+        };
+
+export default AddressDropDown;
