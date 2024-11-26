@@ -49,6 +49,8 @@ import AddNewAddressCard from "./components/addNewDeliveryAddress";
 import AddressDropDown from "./components/addressDropDown";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
+import TouristTable from "./pages/touristtable";
+import AdvertiserTable from "./pages/advertisertable";
 import orderCard from "./components/orderCard";
 function App() {
   return (
@@ -107,6 +109,8 @@ function App() {
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<TopUsers />} />
+        <Route path="/touristtable" element={<TouristTable />} />
+        <Route path ="/advertisertable" element={<AdvertiserTable/>}/>
         <Route path="/orderCard" element={<orderCard />} />
         <Route path="/addressDropDown" element={<AddressDropDown />} />
       </Routes>
