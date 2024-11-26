@@ -326,7 +326,7 @@ app.get("/readCategory", readCategory);
 app.patch("/updatePreferenceTags", updatePreferenceTags);
 app.patch("/updatePreferenceTagById/:id", updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
-app.delete("/deletPreferenceTagsById/:id", deletPreferenceTagsById);
+app.delete("/deletePreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
 app.delete("/deleteComplaint/:complaintId", deleteComplaint);
@@ -575,7 +575,7 @@ app.get("/viewAllUsers", viewAllUsers);
 app.get("/ViewOrders/:userId", ViewOrders);
 app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
-app.post("/PayByCard/:id", PayByCard);
+app.post("/create-payment-intent", PayByCard);
 app.get("/viewTopUsers", viewTopUsers);
 
 app.get("/gettourists",getTourists);
