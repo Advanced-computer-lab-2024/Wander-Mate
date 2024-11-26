@@ -178,6 +178,11 @@ const {
   deleteComplaint,
   deleteProduct,
   viewAllOrders,
+  getTourists,
+  getadvertisers,
+  getsellers,
+  gettourguides,
+  gettourismgov,
   viewTopUsers,
 } = require("./Routes/adminController.js");
 
@@ -572,3 +577,9 @@ app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/PayByCard/:id", PayByCard);
 app.get("/viewTopUsers", viewTopUsers);
+
+app.get("/gettourists",getTourists);
+app.get("/getadvertisers",getadvertisers);
+app.get("/getsellers",getsellers);
+app.get("/gettourguides",gettourguides);
+app.get("/gettourismgov",gettourismgov);
