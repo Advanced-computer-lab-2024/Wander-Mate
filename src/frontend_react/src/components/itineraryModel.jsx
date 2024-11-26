@@ -280,14 +280,14 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center border border-gray-300 rounded">
                         <button
-                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
+                          className="px-4 py-3 bg-blue-500 text-white rounded-l hover:bg-blue-600"
                           onClick={decrementCount}
                         >
                           <Icon icon="eva:minus-fill" />
                         </button>
                         <span className="px-4 py-2 text-gray-600">{count}</span>
                         <button
-                          className="px-4 py-2 text-blue-600 hover:bg-blue-100"
+                          className="px-4 py-3 bg-blue-500 text-white rounded-r hover:bg-blue-600"
                           onClick={incrementCount}
                           disabled={count >= maxQuantity}
                         >
