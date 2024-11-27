@@ -45,7 +45,7 @@ import HistoricalTagsPage from "./pages/historicaltags";
 import PaymentPage from "./pages/Payment";
 import Activities from "./pages/activities";
 import AddNewAddressCard from "./components/addNewDeliveryAddress";
-
+import PerferenceTagsPage from "./pages/preferenceTags";
 import AddressDropDown from "./components/addressDropDown";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
 import TopUsers from "./components/topUsers";
@@ -56,6 +56,7 @@ import TourismGovTable from "./pages/tourismgovtable";
 import TourGuideTable from "./pages/tourguidetable";
 import orderCard from "./components/orderCard";
 import AdminItineraries from "./pages/adminItineray";
+import PayNow from "./components/payNow";
 import AdvertiserActivities from "./pages/advertiseractivities";
 function App() {
   return (
@@ -104,11 +105,13 @@ function App() {
           path="/transportationCheckout"
           element={<TransportationCheckout />}
         />
+        <Route path="/payNow" element={<PayNow />} />
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
+        <Route path="/PerferenceTagsPage" element={<PerferenceTagsPage/>}/>
         <Route
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}

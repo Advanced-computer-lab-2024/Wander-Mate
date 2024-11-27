@@ -1,239 +1,122 @@
-// import React, { useState } from "react";
-// import { Button } from "../components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "../components/ui/card";
-// import { Input } from "../components/ui/input";
-// import { Label } from "../components/ui/label";
-// import { loadStripe } from "@stripe/stripe-js";
-// import {
-//   Elements,
-//   CardElement,
-//   useStripe,
-//   useElements,
-// } from "@stripe/react-stripe-js";
-
-// const stripePromise = loadStripe(
-//   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
-// );
-
-// const PaymentForm = () => {
-//   return (
-//     <Elements stripe={stripePromise}>
-//       <PaymentFormInner />
-//     </Elements>
-//   );
-// };
-// const PaymentFormInner = () => {
-//   const stripe = useStripe();
-//   const elements = useElements();
-//   const [loading, setLoading] = useState(false);
-//   const [errorMessage, setErrorMessage] = useState("");
-//   const handlePayment = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setErrorMessage("");
-
-//     try {
-//       // Step 1: Get card details
-//       if (!stripe || !elements) {
-//         setErrorMessage("Stripe has not loaded yet. Please try again later.");
-//         setLoading(false);
-//         return;
-//       }
-
-//       const cardElement = elements.getElement(CardElement);
-
-//       // Step 2: Call backend to create PaymentIntent
-//       const response = await fetch("/PayByCard/67325d260b78167e4249db6c", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           amount: 120, // $50.00 in cents
-//           currency: "usd",
-//           eventId: "672fcc3576d2804bd9ab0bc8", // Example: replace with actual event ID
-//         }),
-//       });
-
-//       const { clientSecret, error } = await response.json();
-
-//       if (error) {
-//         throw new Error(error);
-//       }
-
-//       // Step 3: Confirm payment using client secret
-//       const paymentResult = await stripe.confirmCardPayment(clientSecret, {
-//         payment_method: {
-//           card: cardElement,
-//           billing_details: {
-//             name: "John Doe", // Replace with user's name
-//           },
-//         },
-//       });
-
-//       if (paymentResult.error) {
-//         throw new Error(paymentResult.error.message);
-//       }
-
-//       if (paymentResult.paymentIntent.status === "succeeded") {
-//         alert("Payment successful!");
-//       } else {
-//         throw new Error("Payment failed. Please try again.");
-//       }
-//     } catch (error) {
-//       setErrorMessage(error.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   return (
-//     <React.Fragment>
-//       <Card className="w-full max-w-md mx-auto mt-5">
-//         <CardHeader>
-//           <CardTitle>Payment Details</CardTitle>
-//           <CardDescription>
-//             Enter your card information to complete your payment.
-//           </CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <form>
-//             <div className="grid w-full items-center gap-4">
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label htmlFor="card-element">Card Information</Label>{" "}
-//                 <Input type="text" placeholder="1234 5678 9012 3456" />
-//               </div>
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label>Expiration Date</Label>
-//                 <Input placeholder="MM/YY" />
-//               </div>
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label htmlFor="cvc">CVC</Label>
-//                 <Input placeholder="123" />
-//               </div>
-//             </div>
-//             <Button
-//               onClick={handlePayment}
-//               type="submit"
-//               className="mt-4 w-full"
-//               disabled={loading}
-//             >
-//               {loading ? "Processing..." : "Pay"}
-//             </Button>
-//           </form>
-//         </CardContent>
-//       </Card>
-//     </React.Fragment>
-//   );
-// };
-
-// export default PaymentForm;
-
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
-const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError }) => {
+const stripePromise = loadStripe(
+  "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
+);
+
+const PaymentForm = (props) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <PaymentFormInner 
+      amount={props.amount} 
+      Onsuccess={props.onPaymentSuccess}
+      Onerror={props.onPaymentError}
+      />
+    </Elements>
+  );
+};
+const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
   const stripe = useStripe();
   const elements = useElements();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsProcessing(true);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const handlePayment = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
 
     if (!stripe || !elements) {
-      onPaymentError("Stripe has not loaded yet. Please try again later.");
-      setIsProcessing(false);
       return;
     }
 
+    // Step 1: Get card details from CardElement
     const cardElement = elements.getElement(CardElement);
-
     if (!cardElement) {
-      onPaymentError("Card element not found.");
-      setIsProcessing(false);
+      setErrorMessage("Card details are missing.");
+      setLoading(false);
       return;
     }
 
     try {
-      const response = await fetch("/api/create-payment-intent", {
+      // Step 2: Create payment intent on your server (this step requires backend)
+      const response = await fetch("http://localhost:8000/create-payment-intent", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: Math.round(amount * 100), // Convert to cents and ensure it's an integer
-          currency: "usd",
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: amount }), // Example amount in cents
       });
+      const paymentIntentData = await response.json();
 
-      if (!response.ok) {
-        throw new Error("Failed to create payment intent");
-      }
-
-      const { clientSecret, error } = await response.json();
-
-      if (error) {
-        throw new Error(error);
-      }
-
-      const { error: paymentError, paymentIntent } =
-        await stripe.confirmCardPayment(clientSecret, {
+      // Step 3: Confirm the payment with Stripe
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        paymentIntentData.clientSecret,
+        {
           payment_method: {
             card: cardElement,
           },
-        });
+        }
+      );
 
-      if (paymentError) {
-        throw new Error(paymentError.message);
-      }
-
-      if (paymentIntent.status === "succeeded") {
-        onPaymentSuccess();
-      } else {
-        throw new Error("Payment failed. Please try again.");
+      if (error) {
+        setErrorMessage(error.message);
+        Onerror();
+        setLoading(false);
+      } else if (paymentIntent.status === "succeeded") {
+        setSuccessMessage("Payment successful!");
+        Onsuccess();
+        setLoading(false);
       }
     } catch (error) {
-      onPaymentError(error.message);
-    } finally {
-      setIsProcessing(false);
+      setErrorMessage("Payment failed. Please try again.");
+      setLoading(false);
     }
   };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="card-element">Credit or debit card</Label>
-        <div className="mt-1">
-          <CardElement id="card-element" className="p-3 border rounded-md" />
-        </div>
-      </div>
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        className="w-full"
-      >
-        {isProcessing
-          ? "Processing..."
-          : `Pay $${amount ? amount.toFixed(2) : "0.00"}`}
-      </Button>
-    </form>
+    <React.Fragment>
+      <Card>
+      <CardHeader>
+        <CardTitle>Payment Form</CardTitle>
+        <CardDescription>Enter your card details to make a payment.</CardDescription>
+        <CardDescription>Amount: {amount}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Label htmlFor="card-details">Card Details</Label>
+        <CardElement id="card-details" />
+        {errorMessage && <div className="error">{errorMessage}</div>}
+        {successMessage && <div className="success">{successMessage}</div>}
+      </CardContent>
+      <CardFooter>
+        <Button
+          onClick={handlePayment}
+          disabled={loading || !stripe || !elements}
+        >
+          {loading ? "Processing..." : "Pay Now"}
+        </Button>
+      </CardFooter>
+    </Card>
+    </React.Fragment>
   );
-};
-
-PaymentForm.propTypes = {
-  amount: PropTypes.number,
-  onPaymentSuccess: PropTypes.func.isRequired,
-  onPaymentError: PropTypes.func.isRequired,
-};
-
-PaymentForm.defaultProps = {
-  amount: 0,
 };
 
 export default PaymentForm;

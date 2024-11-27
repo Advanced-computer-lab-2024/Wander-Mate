@@ -13,6 +13,9 @@ import axios from "axios";
 import NonMovableMap from "./ui/nonMovableMap";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import { Navigate, useNavigate } from "react-router-dom";
+import PayNow from "./payNow";
+
 
 export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children }) {
     const [reviews, setReviews] = useState([]);
@@ -21,6 +24,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
     const [isBooked, setIsBooked] = useState(false);
     const [count, setCount] = useState(1);
     const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
+    const navigate=useNavigate();
    
     const openInMaps = (latitude, longitude) => {
       const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
@@ -62,6 +66,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
   
     const finishBooking = async () => {
       try {
+        navigate("/payNow");
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get user ID");
@@ -281,6 +286,7 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                       <Icon icon="heroicons:shopping-bag" className="w-4 h-4 mr-2" />
                       Book
                     </Button>
+                    
                   ) : (
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center border border-gray-300 rounded">
@@ -300,14 +306,15 @@ export default function ItineraryModel({ itinerary, isOpen, setIsOpen, children 
                         </button>
                       </div>
 
-                      <Button
+                      {/* <Button
                         variant="outline"
                         onClick={finishBooking}
                         className="py-2 px-5"
                       >
                         <Icon icon="heroicons:check-circle" className="w-4 h-4" />
                         Confirm Booking
-                      </Button>
+                      </Button> */}
+                      <PayNow amount={count*itinerary.price} itinerary={itinerary} count={count} />
                     </div>
                   )}
                   </div>
