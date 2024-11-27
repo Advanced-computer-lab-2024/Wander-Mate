@@ -29,6 +29,8 @@ const Cart = require("../Models/cart.js");
 const Wishlist = require("../Models/whishlist.js");
 const ordermodel = require("../Models/order.js");
 const bookmarked = require("../Models/bookMark.js");
+const emailjs = require("emailjs-com");
+emailjs.init(process.env.EMAILJS_USER_ID); // Initialize with public user ID
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
   return jwt.sign({ name }, "supersecret", {
@@ -1907,16 +1909,45 @@ const assignBirthdayPromo = async () => {
       expiryDate.setDate(expiryDate.getDate() + 7);
 
       const promoCode = await PromoCode.create({
-        code: `Happy Birthday ${tourist.Username}`,
+        code: `HappyBirthday${tourist.Username}`,
         expiryDate,
         assignedTo: tourist._id,
         isUsed: false,
       });
 
       // Push the promo code ID to the tourist's PromoCodes array
-      console.log(promoCode._id);
       tourist.PromoCode = promoCode._id; // Set the PromoCode field directly
       await tourist.save();
+      let data = {
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: "template_5zvk4eq",
+        user_id: process.env.EMAILJS_USER_ID,
+        accessToken: process.env.EMAILJS_PRIVATE_KEY,
+        template_params: {
+          to_email: tourist.Email,
+          recipient_name: tourist.FullName,
+          promo_code: promoCode.code,
+          expiry_date: promoCode.expiryDate,
+          cta_link: "http://localhost:3000/loginPage",
+          logo_url:
+            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
+        },
+      };
+      const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${process.env.EMAILJS_PRIVATE_KEY}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!reply.ok) {
+        const errorData = await reply.text();
+        console.error("Email sending failed:", errorData);
+      } else {
+        console.log("Email sent successfully!");
+      }
 
       console.log(
         `Promo code ${promoCode.code} is assigned to ${tourist.Username}`
@@ -1948,8 +1979,8 @@ const PayByCard = async (req, res) => {
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount, // Amount in cents
-      currency: 'usd',
-      payment_method_types: ['card'],
+      currency: "usd",
+      payment_method_types: ["card"],
       // payment_method_types: ["card"],
       // metadata: {
       //   userId: touristID,
@@ -2029,7 +2060,9 @@ const removeProduct = async (req, res) => {
     console.log("Cart before removal:", cart.items);
 
     // Filter out all instances of the product from the cart
-    cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+    cart.items = cart.items.filter(
+      (item) => item.productId.toString() !== productId
+    );
 
     // Debugging: Check the cart after removal
     console.log("Cart after removal:", cart.items);
@@ -2037,15 +2070,16 @@ const removeProduct = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
-    return res.status(200).json({ message: "Product removed from cart successfully" });
+    return res
+      .status(200)
+      .json({ message: "Product removed from cart successfully" });
   } catch (error) {
     console.error("Error removing product:", error);
-    return res.status(400).json({ message: "Error removing product from cart" });
+    return res
+      .status(400)
+      .json({ message: "Error removing product from cart" });
   }
 };
-
-
-
 
 const Bookmarkevent = async (req, res) => {
   const { userId, eventId, type } = req.body;
@@ -2763,11 +2797,15 @@ async function sendUpcomingEventNotifications() {
         $gte: today, // On or after today
         $lte: nextWeek, // On or before 7 days from today
       },
-    }).populate("userId"); // Populate user details for notification
+    })
+      .populate("userId")
+      .populate("itemId"); // Populate user details for notification
 
     for (const booking of upcomingBookings) {
       const { userId, bookedDate, itemId, itemModel } = booking;
-      const notificationMessage = `Reminder: You have an upcoming booking for ${itemModel} on ${bookedDate.toLocaleDateString()}.`;
+      const notificationMessage = `Reminder: You have an upcoming booking for an ${
+        itemId.Name
+      } on ${bookedDate.toLocaleDateString()}.`;
 
       // Check if the notification for this aboutID already exists
       const existingNotification = await Notification.findOne({
@@ -2794,6 +2832,36 @@ async function sendUpcomingEventNotifications() {
         },
         { upsert: true, new: true } // Create a new document if none exists
       );
+      var data = {
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: "template_ahs6ptu",
+        user_id: process.env.EMAILJS_USER_ID,
+        accessToken: process.env.EMAILJS_PRIVATE_KEY,
+        template_params: {
+          to_email: userId.Email,
+          user_name: userId.FullName,
+          event_name: itemId.Name,
+          event_date: bookedDate.toLocaleDateString(),
+          event_details_link: "http://localhost:3000/loginPage",
+          logo_url:
+            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
+        },
+      };
+      const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${process.env.EMAILJS_PRIVATE_KEY}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!reply.ok) {
+        const errorData = await reply.text();
+        console.error("Email sending failed:", errorData);
+      } else {
+        console.log("Email sent successfully!");
+      }
 
       // Simulate sending the notification
 
