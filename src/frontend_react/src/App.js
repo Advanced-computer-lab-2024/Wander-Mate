@@ -57,7 +57,7 @@ import TourGuideTable from "./pages/tourguidetable";
 import orderCard from "./components/orderCard";
 import AdminItineraries from "./pages/adminItineray";
 import PayNow from "./components/payNow";
-import HotelCard from "./components/hotelCard";
+import AdvertiserActivities from "./pages/advertiseractivities";
 function App() {
   return (
     <Router>
@@ -125,7 +125,6 @@ function App() {
         <Route path="/orderCard" element={<orderCard />} />
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
-        <Route path="/hotelcard" element={<HotelCard/>}/>
 
       </Routes>
     </Router>
