@@ -21,7 +21,7 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, Loader } from "lucide-react";
-import NavigationMenuBar from "../components/NavigationMenuBar";
+import AddAdvertiserActivityModel from "../components/AddAdvertsierActivityModel";
 
 export default function AdvertiserActivities() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -156,9 +156,8 @@ export default function AdvertiserActivities() {
 
   return (
     <>
-      <NavigationMenuBar />
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Activities</h1>
+        <h1 className="text-2xl font-bold mb-4"> My Activities</h1>
 
         <div className="flex items-center space-x-4 mb-4">
           <Input
@@ -168,6 +167,7 @@ export default function AdvertiserActivities() {
             onChange={handleSearch}
             className="max-w-sm"
           />
+          <AddAdvertiserActivityModel/>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant="outline">
