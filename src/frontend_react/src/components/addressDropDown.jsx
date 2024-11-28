@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "../components/ui/popover"
 import AddNewAddressCard from '../components/addNewDeliveryAddress';
-
+import { Portal } from '@radix-ui/react-portal';
 const AddressDropDown = () => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -106,28 +106,31 @@ const AddressDropDown = () => {
     <div>
       {/* <Card className="bg-transparent"> */}
   
-      <div className="flex justify-between items-center">
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              style={{ opacity: 0, pointerEvents: 'none' }} // Disable click events
-            >
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <AddNewAddressCard
-              onAddressAdded={() => {
-                setIsPopoverOpen(false);
-                refreshAddresses();
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-  
-      <div className="mt-2"></div>
+      <div className="flex justify-between items-center translate-y+80 translate-z-80">
+  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+    <PopoverTrigger asChild>
+      <Button
+        variant="outline"
+        size="icon"
+        style={{ opacity: 0, pointerEvents: 'none' }}
+      >
+      </Button>
+    </PopoverTrigger>
+    <Portal>
+      <PopoverContent className="w-70 translate-y+80 y-[9999] fixed translate-z+20 z-[9999] fixed">
+        <AddNewAddressCard
+          onAddressAdded={() => {
+            setIsPopoverOpen(false);
+            refreshAddresses();
+          }}
+        />
+      </PopoverContent>
+    </Portal>
+  </Popover>
+</div>
+
+<div className="mt-2"></div>
+
   
       <CardContent className="bg-transparent">
         <select

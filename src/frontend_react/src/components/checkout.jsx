@@ -193,14 +193,14 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
       <Dialog>
         <DialogTrigger asChild>
           <Button
-            className="w-full text-white py-2 rounded mt-4"
+            className="w-full text-white py-2 rounded mt-1"
             disabled={disabled}
           >
             Checkout
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
-          <DialogHeader className="p-6 pb-2">
+          <DialogHeader className="p-2 pb-0">
             {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">
                 <Icon
@@ -300,8 +300,8 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                   </div>
 
                   {/* Address Dropdown beside Payment Method */}
-                  <div className="flex flex-col items-start mt-4 sm:mt-0">
-  <Label className="mb-2">Select Address:</Label>
+                  <div className="flex flex-col items-start mt-2 sm:mt-0">
+  <Label className="mb--9">Select Address:</Label>
   <AddressDropDown />
 </div>
 
