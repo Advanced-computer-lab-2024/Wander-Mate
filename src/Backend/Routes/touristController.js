@@ -619,9 +619,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1960,32 +1960,18 @@ const assignBirthdayPromo = async () => {
 
 const PayByCard = async (req, res) => {
   try {
-    //const { touristID } = req.params;
     const { amount } = req.body;
 
     // Validate inputs
-    if (!amount || amount <= 0) {
-      throw new Error(
-        "Invalid input: amount, currency, and eventId are required"
-      );
+    if (!amount || amount <= 0 || !Number.isInteger(amount)) {
+      throw new Error("Invalid input: amount must be a positive integer");
     }
-
-    // Check user affordability (pseudo-code; replace with your logic)
-    // const userBalance = await getUserBalance(req.user.id);
-    // if (userBalance < amount) {
-    //   throw new Error('Insufficient balance to complete the payment');
-    // }
 
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount, // Amount in cents
       currency: "usd",
       payment_method_types: ["card"],
-      // payment_method_types: ["card"],
-      // metadata: {
-      //   userId: touristID,
-      //   eventId,
-      // },
     });
 
     // Respond with client secret
@@ -2803,9 +2789,8 @@ async function sendUpcomingEventNotifications() {
 
     for (const booking of upcomingBookings) {
       const { userId, bookedDate, itemId, itemModel } = booking;
-      const notificationMessage = `Reminder: You have an upcoming booking for an ${
-        itemId.Name
-      } on ${bookedDate.toLocaleDateString()}.`;
+      const notificationMessage = `Reminder: You have an upcoming booking for an ${itemId.Name
+        } on ${bookedDate.toLocaleDateString()}.`;
 
       // Check if the notification for this aboutID already exists
       const existingNotification = await Notification.findOne({

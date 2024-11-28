@@ -59,6 +59,7 @@ import AdminItineraries from "./pages/adminItineray";
 import PayNow from "./components/payNow";
 import AdvertiserActivities from "./pages/advertiseractivities";
 import HotelCard from "./components/hotelCard";
+import PayForFlight from "./components/payForFlight";
 function App() {
   return (
     <Router>
@@ -112,22 +113,23 @@ function App() {
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/addNewDeliveryAddress" element={<AddNewAddressCard />} />
-        <Route path="/PerferenceTagsPage" element={<PerferenceTagsPage/>}/>
+        <Route path="/PerferenceTagsPage" element={<PerferenceTagsPage />} />
         <Route
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
         <Route path="pop" element={<TopUsers />} />
         <Route path="/touristtable" element={<TouristTable />} />
-        <Route path ="/advertisertable" element={<AdvertiserTable/>}/>
+        <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />
-        <Route path="/tourismgovtable" element={<TourismGovTable/>}/>
-        <Route path="/tourguidetable" element={<TourGuideTable/>}/>
+        <Route path="/tourismgovtable" element={<TourismGovTable />} />
+        <Route path="/tourguidetable" element={<TourGuideTable />} />
         <Route path="/orderCard" element={<orderCard />} />
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
+        <Route path="/payForFlight" element={<PayForFlight />} />
 
       </Routes>
     </Router>
