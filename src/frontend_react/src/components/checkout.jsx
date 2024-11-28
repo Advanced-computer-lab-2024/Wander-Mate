@@ -30,6 +30,13 @@ import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { toast } from "./ui/use-toast";
 import AddressDropDown from "./addressDropDown";
 import { useNavigate } from "react-router-dom";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import PaymentForm from "../forms/PaymentForm";
+
+const stripePromise = loadStripe(
+  "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
+);
 const CheckOut = ({
   touristID,
   amount,
@@ -173,6 +180,13 @@ const CheckOut = ({
     const { name, value } = e.target;
     setCardDetails((prev) => ({ ...prev, [name]: value }));
   };
+  const handlePaymentSuccess = () => {
+    setActiveIndex(totalSlide);
+  };
+
+  const handlePaymentError = (error) => {
+    setAlertMessage(error);
+  };
 
   return (
     <>
@@ -300,76 +314,83 @@ const CheckOut = ({
               )}
 
               {activeIndex === 2 && selected === "rwb_1" && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Credit Card Details</h3>
+                // <div className="space-y-4">
+                //   <h3 className="text-lg font-medium">Credit Card Details</h3>
 
-                  <div className="flex items-center gap-4">
-                    <div className="w-1/2">
-                      <img
-                        src={CreditCard}
-                        alt="Credit Card"
-                        className="w-full h-auto"
-                      />
-                    </div>
+                //   <div className="flex items-center gap-4">
+                //     <div className="w-1/2">
+                //       <img
+                //         src={CreditCard}
+                //         alt="Credit Card"
+                //         className="w-full h-auto"
+                //       />
+                //     </div>
 
-                    <div className="flex flex-col gap-2 w-3/4">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="cardHolderName">Card Holder Name</Label>
-                        <Input
-                          type="text"
-                          id="cardHolderName"
-                          name="cardHolderName"
-                          placeholder="Card Holder Name"
-                          value={cardDetails.cardHolderName}
-                          onChange={handleCardInputChange}
-                          required
-                        />
-                      </div>
+                //     <div className="flex flex-col gap-2 w-3/4">
+                //       <div className="flex flex-col gap-2">
+                //         <Label htmlFor="cardHolderName">Card Holder Name</Label>
+                //         <Input
+                //           type="text"
+                //           id="cardHolderName"
+                //           name="cardHolderName"
+                //           placeholder="Card Holder Name"
+                //           value={cardDetails.cardHolderName}
+                //           onChange={handleCardInputChange}
+                //           required
+                //         />
+                //       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="cardNumber">Card Number</Label>
-                        <Input
-                          type="text"
-                          id="cardNumber"
-                          name="cardNumber"
-                          placeholder="Card Number"
-                          value={cardDetails.cardNumber}
-                          onChange={handleCardInputChange}
-                          required
-                        />
-                      </div>
+                //       <div className="flex flex-col gap-2">
+                //         <Label htmlFor="cardNumber">Card Number</Label>
+                //         <Input
+                //           type="text"
+                //           id="cardNumber"
+                //           name="cardNumber"
+                //           placeholder="Card Number"
+                //           value={cardDetails.cardNumber}
+                //           onChange={handleCardInputChange}
+                //           required
+                //         />
+                //       </div>
 
-                      <div className="flex gap-4">
-                        <div className="flex flex-col gap-2 w-1/2">
-                          <Label htmlFor="expirationDate">
-                            Expiration Date
-                          </Label>
-                          <Input
-                            type="text"
-                            id="expirationDate"
-                            name="expirationDate"
-                            placeholder="MM/YY"
-                            value={cardDetails.expirationDate}
-                            onChange={handleCardInputChange}
-                            required
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2 w-1/2">
-                          <Label htmlFor="cvv">CVV</Label>
-                          <Input
-                            type="text"
-                            id="cvv"
-                            name="cvv"
-                            placeholder="CVV"
-                            value={cardDetails.cvv}
-                            onChange={handleCardInputChange}
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                //       <div className="flex gap-4">
+                //         <div className="flex flex-col gap-2 w-1/2">
+                //           <Label htmlFor="expirationDate">
+                //             Expiration Date
+                //           </Label>
+                //           <Input
+                //             type="text"
+                //             id="expirationDate"
+                //             name="expirationDate"
+                //             placeholder="MM/YY"
+                //             value={cardDetails.expirationDate}
+                //             onChange={handleCardInputChange}
+                //             required
+                //           />
+                //         </div>
+                //         <div className="flex flex-col gap-2 w-1/2">
+                //           <Label htmlFor="cvv">CVV</Label>
+                //           <Input
+                //             type="text"
+                //             id="cvv"
+                //             name="cvv"
+                //             placeholder="CVV"
+                //             value={cardDetails.cvv}
+                //             onChange={handleCardInputChange}
+                //             required
+                //           />
+                //         </div>
+                //       </div>
+                //     </div>
+                //   </div>
+                // </div>
+                <Elements stripe={stripePromise}>
+                  <PaymentForm
+                    amount={100}
+                    onPaymentSuccess={handlePaymentSuccess}
+                    onPaymentError={handlePaymentError}
+                  />
+                </Elements>
               )}
 
               {activeIndex === totalSlide && (
