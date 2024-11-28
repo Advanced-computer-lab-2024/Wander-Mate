@@ -1,4 +1,3 @@
-
 import { Star, DollarSign, Shield, Award } from 'lucide-react'
 import { Card, CardContent } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
