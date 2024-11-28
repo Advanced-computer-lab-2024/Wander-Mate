@@ -386,7 +386,7 @@ const CheckOut = ({
                 // </div>
                 <Elements stripe={stripePromise}>
                   <PaymentForm
-                    amount={100}
+                    amount={amount}
                     onPaymentSuccess={handlePaymentSuccess}
                     onPaymentError={handlePaymentError}
                   />
