@@ -48,18 +48,17 @@ import AddNewAddressCard from "./components/addNewDeliveryAddress";
 import PerferenceTagsPage from "./pages/preferenceTags";
 import AddressDropDown from "./components/addressDropDown";
 import AdvertiserTransportation from "./pages/advertiserTransportation";
-import TopUsers from "./components/topUsers";
 import TouristTable from "./pages/touristtable";
 import AdvertiserTable from "./pages/advertisertable";
 import SellerTable from "./pages/sellertable";
 import TourismGovTable from "./pages/tourismgovtable";
 import TourGuideTable from "./pages/tourguidetable";
-import orderCard from "./components/orderCard";
 import AdminItineraries from "./pages/adminItineray";
 import PayNow from "./components/payNow";
 import AdvertiserActivities from "./pages/advertiseractivities";
 import HotelCard from "./components/hotelCard";
 import PayForFlight from "./components/payForFlight";
+import CompletedItineraries from "./components/completedItineraries";
 function App() {
   return (
     <Router>
@@ -118,7 +117,7 @@ function App() {
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
-        <Route path="pop" element={<TopUsers />} />
+        <Route path="pop" element={<CompletedItineraries />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />

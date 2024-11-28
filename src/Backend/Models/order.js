@@ -38,41 +38,36 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save middleware to generate invoice number
+const counterSchema = new mongoose.Schema({
+  yearMonth: { type: String, required: true, unique: true },
+  seq: { type: Number, default: 0 },
+});
+
+const Counter = mongoose.model("Counter", counterSchema);
+
 orderSchema.pre("save", async function (next) {
-  const currentYearMonth = moment().format("YYYY-MM"); // Format like "2024-11"
+  const currentYearMonth = moment().format("YYYY-MM");
 
-  try {
+  if (!this.invoiceNumber) {
+    try {
+      // Use findOneAndUpdate to atomically increment the counter
+      const counter = await Counter.findOneAndUpdate(
+        { yearMonth: currentYearMonth },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true } // Create if not exists
+      );
 
-    // Ensure that the invoice number is not already set (e.g., during updates)
-    if (!this.invoiceNumber) {
-
-      // Get the last order for the current month and year
-      const lastOrder = await mongoose
-        .model("Order")
-        .findOne({
-          invoiceNumber: new RegExp(`^${currentYearMonth}`), // Match invoice numbers starting with "2024-11"
-        })
-        .sort({ invoiceNumber: -1 })
-        .limit(1);
-
-      const lastInvoiceNumber = lastOrder
-        ? parseInt(lastOrder.invoiceNumber.split("-")[1])
-        : 0;
-
-      const newInvoiceNumber = `#${currentYearMonth}-${(lastInvoiceNumber + 1)
+      const newInvoiceNumber = `#${currentYearMonth}-${counter.seq
         .toString()
         .padStart(3, "0")}`;
 
-
-      // Set the new invoice number
       this.invoiceNumber = newInvoiceNumber;
+    } catch (error) {
+      return next(error);
     }
-  } catch (error) {
-    return next(error); // Pass error to the next middleware
   }
 
-  next(); // Proceed to save the order
+  next();
 });
 
 module.exports = mongoose.model("Order", orderSchema);

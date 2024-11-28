@@ -619,9 +619,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-      apiKey +
-      "&client_secret=" +
-      apiSecret,
+        apiKey +
+        "&client_secret=" +
+        apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -974,17 +974,38 @@ const addCommentONEvent = async (req, res) => {
 const rateItinerary = async (req, res) => {
   const { touristId, itineraryId, rating } = req.body;
   try {
-    const newRating = await RatingModel.create({
-      itemId: itineraryId,
+    // Check if the user has already rated this itinerary
+    const existingRating = await RatingModel.findOne({
       userId: touristId,
-      rating,
+      itemId: itineraryId,
     });
-    // await axios.put(
-    //   http://localhost:8000/updateItineraryRatings/${itineraryId}
-    // );
-    res
-      .status(200)
-      .json({ message: "Rating posted successfully", rating: newRating });
+
+    if (existingRating) {
+      // If the rating exists, update it
+      existingRating.rating = rating;
+      await existingRating.save(); // Save the updated rating
+      res
+        .status(200)
+        .json({
+          message: "Rating updated successfully",
+          rating: existingRating,
+        });
+    } else {
+      // If the rating does not exist, create a new one
+      const newRating = await RatingModel.create({
+        itemId: itineraryId,
+        userId: touristId,
+        rating,
+      });
+      res
+        .status(200)
+        .json({ message: "Rating posted successfully", rating: newRating });
+    }
+
+    // After updating/creating the rating, update the itinerary's ratings on the backend
+    await axios.put(
+      `http://localhost:8000/updateItineraryRatings/${itineraryId}`
+    );
   } catch (error) {
     console.error("Error posting rating:", error.message); // Log error for debugging
     res
@@ -992,6 +1013,7 @@ const rateItinerary = async (req, res) => {
       .json({ message: "Error posting rating", error: error.message });
   }
 };
+
 
 const updateItineraryRatings = async (req, res) => {
   const { itineraryId } = req.params;
@@ -1007,12 +1029,14 @@ const updateItineraryRatings = async (req, res) => {
       },
     ]);
 
+    console.log(averageRating);
+
     if (averageRating.length > 0) {
       // Await the findByIdAndUpdate call to get the updated document
       const updatedItinerary = await itineraryModel.findByIdAndUpdate(
         { _id: itineraryId },
         {
-          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          Ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
           totalRatings: averageRating[0].totalRatings,
         },
         { new: true } // Return the updated document
@@ -2485,6 +2509,7 @@ const makeOrder = async (req, res) => {
       .status(200)
       .json({ message: "Order created successfully", order });
   } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ message: "Error creating the order", error: error.message });
@@ -2546,7 +2571,7 @@ const viewMyWishlist = async (req, res) => {
     });
 
     if (!wishlist || wishlist.products.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No products found in the wishlist for this tourist.",
       });
     }
@@ -2789,8 +2814,9 @@ async function sendUpcomingEventNotifications() {
 
     for (const booking of upcomingBookings) {
       const { userId, bookedDate, itemId, itemModel } = booking;
-      const notificationMessage = `Reminder: You have an upcoming booking for an ${itemId.Name
-        } on ${bookedDate.toLocaleDateString()}.`;
+      const notificationMessage = `Reminder: You have an upcoming booking for an ${
+        itemId.Name
+      } on ${bookedDate.toLocaleDateString()}.`;
 
       // Check if the notification for this aboutID already exists
       const existingNotification = await Notification.findOne({
@@ -2898,6 +2924,25 @@ const previewPromoCode = async (req, res) => {
   }
 };
 
+const getMyRating = async (req, res) => {
+  const { touristId } = req.params;
+  const { itineraryId } = req.params;
+  try {
+    const rating = await RatingModel.findOne({
+      userId: touristId,
+      itemId: itineraryId,
+    });
+    if (!rating) {
+      return res.status(404).json({ message: "Rating not found" });
+    }
+    res.status(200).json(rating);
+  } catch (error) {
+    console.error("Error getting rating:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -2977,4 +3022,5 @@ module.exports = {
   isInWishList,
   makeOrder,
   removeProduct,
+  getMyRating,
 };

@@ -29,18 +29,21 @@ import axios from "axios";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { toast } from "./ui/use-toast";
 import AddressDropDown from "./addressDropDown";
-const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
+import { useNavigate } from "react-router-dom";
+const CheckOut = ({
+  touristID,
+  amount,
+  disabled,
+  voucherCode,
+  cartItems,
+  CheckOutDone,
+}) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
-  const [formFields, setFormFields] = useState({
-    country: "",
-    city: "",
-    billingAddress: "",
-  });
-  
+  const [address, setAddress] = useState(0);
   const [cardDetails, setCardDetails] = useState({
     cardHolderName: "",
     cardNumber: "",
@@ -48,15 +51,10 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
     cvv: "",
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormFields((prevFields) => ({
-      ...prevFields,
-      [name]: value,
-    }));
+  const navigate = useNavigate();
+  const handleAddressSelect = (address) => {
+    setAddress(address);
   };
-
-  
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -67,20 +65,19 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
     setTotalSlide(paymentMethod === "cash" ? 2 : 3);
   }, [paymentMethod]);
 
-  
   const applyPromoCode = async () => {
     if (voucherCode) {
       try {
         await axios.post(`http://localhost:8000/applyPromoCode/${touristID}`, {
           promoCode: voucherCode.code,
-          purchaseAmount: amount
+          purchaseAmount: amount,
         });
         toast({
           title: "Promo Code Applied",
           description: "Your promo code has been successfully applied.",
         });
       } catch (error) {
-        console.error('Error applying promo code:', error);
+        console.error("Error applying promo code:", error);
         toast({
           title: "Error",
           description: "Failed to apply promo code. Please try again.",
@@ -91,61 +88,51 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
     }
   };
 
-  
   const handlePayment = async () => {
     try {
       await applyPromoCode();
-  
+
       // Proceed with payment logic here
       // For now, we'll just show a success message
       toast({
         title: "Payment Successful",
         description: "Your order has been placed successfully.",
       });
-  
+
       // Create the order after payment success
       const orderData = {
         userId: touristID, // Assuming the tourist ID is the user ID
-        products: cartItems.map(item => ({
-          productId: item.productId,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        })),
+        products: cartItems.map((item) => item.productId),
         total: amount, // Total amount after any discounts
-        address: formFields.billingAddress, // Address from the form
+        address: address, // Address from the form
         isPaid: true, // Assuming the payment was successful
       };
-  
+
       // Make the API call to create the order
-      const response = await axios.post("http://localhost:8000/makeOrder", orderData);
+      const response = await axios.post(
+        "http://localhost:8000/makeOrder",
+        orderData
+      );
       if (response.status === 200) {
         toast({
           title: "Order Created",
           description: "Your order has been successfully created.",
         });
         setActiveIndex(totalSlide); // Move to the final step
+        CheckOutDone();
       }
     } catch (error) {
-      console.error('Error processing payment:', error);
+      console.error("Error processing payment:", error);
       toast({
         title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        description:
+          "There was an error processing your payment. Please try again.",
         variant: "destructive",
       });
     }
   };
-  
 
   const handleNextSlide = () => {
-    if (activeIndex === 1) {
-      const { country, city, billingAddress } = formFields;
-      if (!country || !city || !billingAddress) {
-        setAlertMessage("Please fill in all required fields: Country, City, and Billing Address.");
-        return;
-      }
-    }
-  
     if (activeIndex === 2 && selected === "rwb_1") {
       if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
         handlePayment();
@@ -159,7 +146,6 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
       setAlertMessage(null);
     }
   };
-  
 
   const handleWallet = async () => {
     try {
@@ -221,7 +207,10 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                   {/* Payment Method */}
                   <div className="flex flex-col gap-2">
                     <Label>Payment Method</Label>
-                    <RadioGroup defaultValue="rwb_1" onValueChange={handleValueChange}>
+                    <RadioGroup
+                      defaultValue="rwb_1"
+                      onValueChange={handleValueChange}
+                    >
                       {/* Credit/Debit Card Option */}
                       <Label
                         htmlFor="rwb_1"
@@ -231,7 +220,10 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                         )}
                       >
                         <span className="flex items-center gap-2">
-                          <Icon icon="mdi:credit-card-outline" className="text-lg" />
+                          <Icon
+                            icon="mdi:credit-card-outline"
+                            className="text-lg"
+                          />
                           <span
                             className={cn("font-base text-default-800", {
                               "text-primary-foreground": selected === "rwb_1",
@@ -246,7 +238,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                           className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                         />
                       </Label>
-              
+
                       {/* Cash on Delivery Option */}
                       <Label
                         htmlFor="rwb_2"
@@ -271,7 +263,7 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
                           className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                         />
                       </Label>
-              
+
                       {/* Using Wallet Option */}
                       <Label
                         htmlFor="rwb_3"
@@ -301,13 +293,9 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
 
                   {/* Address Dropdown beside Payment Method */}
                   <div className="flex flex-col items-start mt-2 sm:mt-0">
-  <Label className="mb--9">Select Address:</Label>
-  <AddressDropDown />
-</div>
-
-
-
-
+                    <Label className="mb--9">Select Address:</Label>
+                    <AddressDropDown onAddressSelect={handleAddressSelect} />
+                  </div>
                 </div>
               )}
 
@@ -353,7 +341,9 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
 
                       <div className="flex gap-4">
                         <div className="flex flex-col gap-2 w-1/2">
-                          <Label htmlFor="expirationDate">Expiration Date</Label>
+                          <Label htmlFor="expirationDate">
+                            Expiration Date
+                          </Label>
                           <Input
                             type="text"
                             id="expirationDate"
@@ -414,7 +404,9 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
             )}
             {activeIndex === totalSlide ? (
               <DialogClose asChild>
-                <Button type="button">Close</Button>
+                <Button type="button" onClick={() => navigate("/products")}>
+                  Close
+                </Button>
               </DialogClose>
             ) : (
               <Button
@@ -432,4 +424,3 @@ const CheckOut = ({ touristID, amount, disabled, voucherCode, cartItems }) => {
 };
 
 export default CheckOut;
-

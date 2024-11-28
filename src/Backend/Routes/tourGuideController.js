@@ -78,6 +78,7 @@ const createItinerary = async (req, res) => {
       DropOffLocation,
     } = req.body;
     const Ratings = 0.0;
+    const totalRatings = 0;
     // Validate required fields
     if (
       !Activities ||
@@ -106,6 +107,7 @@ const createItinerary = async (req, res) => {
       PickUpLocation,
       DropOffLocation,
       Ratings,
+      totalRatings,
     });
 
     // Save to the database

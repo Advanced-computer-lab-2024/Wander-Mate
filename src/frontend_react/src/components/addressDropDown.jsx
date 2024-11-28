@@ -1,22 +1,27 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { MapPin, AlertCircle } from 'lucide-react';
+import { MapPin, AlertCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../components/ui/popover"
-import AddNewAddressCard from '../components/addNewDeliveryAddress';
-import { Portal } from '@radix-ui/react-portal';
-const AddressDropDown = () => {
+} from "../components/ui/popover";
+import AddNewAddressCard from "../components/addNewDeliveryAddress";
+import { Portal } from "@radix-ui/react-portal";
+const AddressDropDown = ({ onAddressSelect }) => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [countryMapping, setCountryMapping] = useState({});
   const [error, setError] = useState(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -25,7 +30,9 @@ const AddressDropDown = () => {
     const fetchUserData = async () => {
       try {
         const usernameFromSession = sessionStorage.getItem("username");
-        const reply = await fetch(`http://localhost:8000/getID/${usernameFromSession}`);
+        const reply = await fetch(
+          `http://localhost:8000/getID/${usernameFromSession}`
+        );
         if (!reply.ok) throw new Error("Failed to get tourist ID");
         const { userID } = await reply.json();
 
@@ -35,13 +42,19 @@ const AddressDropDown = () => {
           return;
         }
 
-        const userResponse = await axios.get(`http://localhost:8000/getUsername/${touristId}`);
+        const userResponse = await axios.get(
+          `http://localhost:8000/getUsername/${touristId}`
+        );
         setUsername(userResponse.data);
 
-        const addressResponse = await axios.get(`http://localhost:8000/getDeliveryAddresses/${touristId}`);
+        const addressResponse = await axios.get(
+          `http://localhost:8000/getDeliveryAddresses/${touristId}`
+        );
         setAddresses(addressResponse.data.addresses);
 
-        const nationsResponse = await axios.get(`http://localhost:8000/getNations`);
+        const nationsResponse = await axios.get(
+          `http://localhost:8000/getNations`
+        );
         const nations = nationsResponse.data;
         const mapping = nations.reduce((acc, nation) => {
           acc[nation._id] = nation.country_name;
@@ -60,7 +73,9 @@ const AddressDropDown = () => {
   const refreshAddresses = async () => {
     try {
       const usernameFromSession = sessionStorage.getItem("username");
-      const reply = await fetch(`http://localhost:8000/getID/${usernameFromSession}`);
+      const reply = await fetch(
+        `http://localhost:8000/getID/${usernameFromSession}`
+      );
       if (!reply.ok) throw new Error("Failed to get tourist ID");
       const { userID } = await reply.json();
 
@@ -70,7 +85,9 @@ const AddressDropDown = () => {
         return;
       }
 
-      const addressResponse = await axios.get(`http://localhost:8000/getDeliveryAddresses/${touristId}`);
+      const addressResponse = await axios.get(
+        `http://localhost:8000/getDeliveryAddresses/${touristId}`
+      );
       setAddresses(addressResponse.data.addresses);
     } catch (error) {
       console.error("Error refreshing addresses:", error);
@@ -84,6 +101,9 @@ const AddressDropDown = () => {
       setIsPopoverOpen(true);
     } else {
       setSelectedAddress(selectedValue);
+      if (onAddressSelect) {
+        onAddressSelect(selectedValue);
+      }
     }
   };
 
@@ -105,43 +125,45 @@ const AddressDropDown = () => {
   return (
     <div>
       {/* <Card className="bg-transparent"> */}
-  
+
       <div className="flex justify-between items-center translate-y+80 translate-z-80">
-  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-    <PopoverTrigger asChild>
-      <Button
-        variant="outline"
-        size="icon"
-        style={{ opacity: 0, pointerEvents: 'none' }}
-      >
-      </Button>
-    </PopoverTrigger>
-    <Portal>
-      <PopoverContent className="w-70 translate-y+80 y-[9999] fixed translate-z+20 z-[9999] fixed">
-        <AddNewAddressCard
-          onAddressAdded={() => {
-            setIsPopoverOpen(false);
-            refreshAddresses();
-          }}
-        />
-      </PopoverContent>
-    </Portal>
-  </Popover>
-</div>
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              style={{ opacity: 0, pointerEvents: "none" }}
+            ></Button>
+          </PopoverTrigger>
+          <Portal>
+            <PopoverContent className="w-70 translate-y+80 y-[9999] fixed translate-z+20 z-[9999] fixed overflow-y" >
+              <AddNewAddressCard
+                onAddressAdded={() => {
+                  setIsPopoverOpen(false);
+                  refreshAddresses();
+                }}
+              />
+            </PopoverContent>
+          </Portal>
+        </Popover>
+      </div>
 
-<div className="mt-2"></div>
+      <div className="mt-2"></div>
 
-  
       <CardContent className="bg-transparent">
         <select
           className="w-48 p-1 border rounded text-sm mt-[-8px]" // Negative margin to move it upwards
           value={selectedAddress || ""}
           onChange={handleSelectChange}
         >
-          <option value="" disabled>Select an address</option>
+          <option value="" disabled>
+            Select an address
+          </option>
           {addresses.map((address, index) => (
-            <option key={index} value={address.street}>
-              {`${address.street}, ${address.city}, ${countryMapping[address.country] || address.country}`}
+            <option key={address._id} value={address._id}>
+              {`${address.street}, ${address.city}, ${
+                countryMapping[address.country] || address.country
+              }`}
             </option>
           ))}
           <option value="add-new">+ Add New Delivery Address</option>
@@ -149,7 +171,6 @@ const AddressDropDown = () => {
       </CardContent>
     </div>
   );
-  
-}
+};
 
 export default AddressDropDown;

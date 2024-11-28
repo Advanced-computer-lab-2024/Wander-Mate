@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { Rating as PluginRating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 const ratingVariants = cva(" ", {
