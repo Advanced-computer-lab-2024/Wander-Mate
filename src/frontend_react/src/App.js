@@ -127,6 +127,7 @@ function App() {
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
+        <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
 
       </Routes>
     </Router>
