@@ -95,7 +95,7 @@ export default function ShoppingCart() {
     try {
       const newQuantity = item.quantity + change;
       if (newQuantity <= 0) {
-        await handleRemoveItem(item);
+        await handleRemoveItem(item.productId);
         return;
       }
 

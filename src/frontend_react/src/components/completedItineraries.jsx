@@ -24,18 +24,6 @@ export default function CompletedItineraries() {
   useEffect(() => {
     const fetchItineraries = async () => {
       try {
-        const response = await fetch("http://localhost:8000/viewItineraries");
-        const data = await response.json();
-        setItineraries(data);
-      } catch (error) {
-        console.error("Error fetching itineraries:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const getUserId = async () => {
-      try {
         const username = sessionStorage.getItem("username");
         if (!username) throw new Error("Username not found in session storage");
 
@@ -44,12 +32,18 @@ export default function CompletedItineraries() {
 
         const { userID } = await reply.json();
         setUserid(userID);
-      } catch {
-        console.log("Error fetching user ID");
+        const response = await fetch(
+          `http://localhost:8000/viewAttendedItineraries/${userID}`
+        );
+        const data = await response.json();
+        console.log(data);
+        setItineraries(data);
+      } catch (error) {
+        console.error("Error fetching itineraries:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
-    getUserId();
 
     fetchItineraries();
   }, []);
@@ -57,7 +51,8 @@ export default function CompletedItineraries() {
   useEffect(() => {
     // Fetch all ratings when itineraries are fetched
     itineraries.forEach((itinerary) => {
-      getMyRating(itinerary._id);
+      getMyRating(itinerary.itemId._id);
+      getMyRating(itinerary.itemId.Creator._id);
     });
   }, [itineraries, userid]); // Runs when itineraries or userId change
 
@@ -93,7 +88,6 @@ export default function CompletedItineraries() {
       }));
     } catch (error) {
       console.error(error);
-      console.log("Error fetching rating");
     }
   };
 
@@ -143,35 +137,29 @@ export default function CompletedItineraries() {
               className="flex-shrink-0 w-full md:w-1/2 px-2"
             >
               <CompletedItineraryCard
-                itineraryId={itinerary._id}
-                name={itinerary.Name}
-                images={itinerary.LocationsToVisit.flatMap(
+                itineraryId={itinerary.itemId._id}
+                name={itinerary.itemId.Name}
+                images={itinerary.itemId.LocationsToVisit.flatMap(
                   (location) => location.Pictures || []
                 )}
-                tags={[
-                  ...itinerary.LocationsToVisit.flatMap(
-                    (location) => location.Tags || []
-                  ),
-                  ...itinerary.Activities.flatMap(
-                    (activity) => activity.Tags || []
-                  ),
-                ]}
-                price={itinerary.Price}
-                currrn={itinerary.Currency || "USD"}
-                rating={itinerary.Ratings}
-                Activities={itinerary.Activities.map(
+                price={itinerary.itemId.Price}
+                currrn={itinerary.itemId.Currency || "USD"}
+                rating={itinerary.itemId.Ratings}
+                Activities={itinerary.itemId.Activities.map(
                   (activity) => activity.Name
                 )}
-                LocationsToVisit={itinerary.LocationsToVisit.map(
+                LocationsToVisit={itinerary.itemId.LocationsToVisit.map(
                   (location) => location.Name
                 )}
-                TimeLine={itinerary.TimeLine}
-                AvailableDates={itinerary.AvailableDates}
-                PickUpLocation={itinerary.PickUpLocation}
-                DropOffLocation={itinerary.DropOffLocation}
-                Language={itinerary.Language}
-                totalRatings={itinerary.totalRatings}
-                myItRating={ratings[itinerary._id]}
+                TimeLine={itinerary.itemId.TimeLine}
+                BookedDate={itinerary.bookedDate}
+                PickUpLocation={itinerary.itemId.PickUpLocation}
+                DropOffLocation={itinerary.itemId.DropOffLocation}
+                Language={itinerary.itemId.Language}
+                totalRatings={itinerary.itemId.totalRatings}
+                myItRating={ratings[itinerary.itemId._id]}
+                myTourRating={ratings[itinerary.itemId.Creator._id]}
+                Creator={itinerary.itemId.Creator}
               />
             </div>
           ))}

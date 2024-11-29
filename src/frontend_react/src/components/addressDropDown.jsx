@@ -166,6 +166,7 @@ const AddressDropDown = ({ onAddressSelect }) => {
           align="start"
           sideOffset={100}
           ref={refs.setFloating}
+          overlayClass=" bg-gradient-to-b from-background/60 to-primary/30"
           style={{
             position: strategy,
             top: y ?? 0,

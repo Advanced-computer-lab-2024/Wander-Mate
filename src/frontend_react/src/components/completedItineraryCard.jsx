@@ -27,7 +27,7 @@ const CompletedItineraryCard = ({
   reviews,
   TimeLine,
   price,
-  AvailableDates,
+  BookedDate,
   Activities,
   LocationsToVisit,
   PickUpLocation,
@@ -39,6 +39,8 @@ const CompletedItineraryCard = ({
   rating,
   totalRatings,
   myItRating,
+  myTourRating,
+  Creator,
 }) => {
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
 
@@ -60,7 +62,7 @@ const CompletedItineraryCard = ({
     reviews,
     TimeLine,
     price,
-    AvailableDates,
+    BookedDate,
     Activities,
     LocationsToVisit,
     PickUpLocation,
@@ -164,6 +166,8 @@ const CompletedItineraryCard = ({
         isOpen={isCompletedModalOpen}
         setIsOpen={setIsCompletedModalOpen}
         myItRating={myItRating}
+        myTourRating={myTourRating}
+        Creator={Creator}
       />
     </>
   );

@@ -15,6 +15,8 @@ export default function CompletedItineraryModal({
   setIsOpen,
   children,
   myItRating,
+  myTourRating,
+  Creator,
 }) {
   const [itineraryRating, setItineraryRating] = useState(0);
   const [tourGuideRating, setTourGuideRating] = useState(0);
@@ -27,6 +29,7 @@ export default function CompletedItineraryModal({
 
   useEffect(() => {
     setItineraryRating(myItRating);
+    setTourGuideRating(myTourRating);
   }, [itineraryRating, isOpen]);
 
   const handleSubmitReview = async () => {
@@ -78,13 +81,40 @@ export default function CompletedItineraryModal({
                   {itinerary.name}
                 </h1>
                 <p className="text-sm text-gray-600 mb-4">
-                  <span className="font-semibold">Date:</span> {itinerary.date}
+                  <span className="font-semibold">Date:</span>{" "}
+                  {new Date(itinerary.BookedDate).toLocaleDateString()}
                 </p>
+
                 <p className="text-sm text-gray-600 mb-4">
                   <span className="font-semibold">Tour Guide:</span>{" "}
-                  {itinerary.tourGuide}
+                  {Creator.FullName || Creator.Username}
                 </p>
-                <p className="text-gray-600">{itinerary.description}</p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Locations visited:</span>{" "}
+                  {itinerary.LocationsToVisit &&
+                  itinerary.LocationsToVisit.length > 0 ? (
+                    <ul className="list-disc pl-5">
+                      {itinerary.LocationsToVisit.map((location, index) => (
+                        <li key={index}>{location}</li> // Customize how you display each location
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>No locations were to visit</span> // Fallback if there are no locations
+                  )}
+                </p>
+
+                <p className="text-gray-600">
+                  <span className="font-semibold">Activities:</span>{" "}
+                  {itinerary.Activities && itinerary.Activities.length > 0 ? (
+                    <ul className="list-disc pl-5">
+                      {itinerary.Activities.map((activity, index) => (
+                        <li key={index}>{activity}</li> // Customize how you display each activity
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>No activities were available</span> // Fallback if there are no activities
+                  )}
+                </p>
               </div>
             </div>
 

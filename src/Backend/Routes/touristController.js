@@ -984,12 +984,10 @@ const rateItinerary = async (req, res) => {
       // If the rating exists, update it
       existingRating.rating = rating;
       await existingRating.save(); // Save the updated rating
-      res
-        .status(200)
-        .json({
-          message: "Rating updated successfully",
-          rating: existingRating,
-        });
+      res.status(200).json({
+        message: "Rating updated successfully",
+        rating: existingRating,
+      });
     } else {
       // If the rating does not exist, create a new one
       const newRating = await RatingModel.create({
@@ -1013,7 +1011,6 @@ const rateItinerary = async (req, res) => {
       .json({ message: "Error posting rating", error: error.message });
   }
 };
-
 
 const updateItineraryRatings = async (req, res) => {
   const { itineraryId } = req.params;
@@ -1131,7 +1128,18 @@ const viewAttendedItineraries = async (req, res) => {
     const itineraries = await bookingSchema
       .find({ itemModel: model })
       .populate("itemId")
-      .populate({ path: "itemId", populate: { path: "Creator" } });
+      .populate({
+        path: "itemId",
+        populate: [
+          { path: "Creator" },
+          {
+            path: "LocationsToVisit",
+          },
+          {
+            path: "Activities",
+          },
+        ],
+      });
     const currentDate = new Date();
 
     // Check if any itineraries were found
@@ -2941,7 +2949,6 @@ const getMyRating = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 module.exports = {
   ViewOrders,
