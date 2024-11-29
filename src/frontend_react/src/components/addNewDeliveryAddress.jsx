@@ -30,6 +30,7 @@ const AddNewAddressCard = () => {
         coordinates: [-122.420679, 37.774929]
       }
     });
+    const [searchQuery, setSearchQuery] = useState('');
   
     useEffect(() => {
       const fetchUserData = async () => {
@@ -122,6 +123,10 @@ const AddNewAddressCard = () => {
       }));
     };
   
+    const filteredCountries = countries.filter(country =>
+      country.country_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  
     if (error) {
       return (
         <Card className="w-full max-w-md mx-auto">
@@ -136,7 +141,7 @@ const AddNewAddressCard = () => {
     }
   
     return (
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto max-h-[80vh] overflow-y-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add New Address</CardTitle>
           <div className="mt-2">
@@ -193,12 +198,23 @@ const AddNewAddressCard = () => {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[200px] overflow-y-auto" portal={false}>
-                  {countries.map((country) => (
-                    <SelectItem key={country._id} value={country._id}>
-                      {country.country_name}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-[300px]">
+                  <div className="p-2">
+                    <Input
+                      type="text"
+                      placeholder="Search countries..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="mb-2"
+                    />
+                  </div>
+                  <div className="max-h-[200px] overflow-y-auto">
+                    {filteredCountries.map((country) => (
+                      <SelectItem key={country._id} value={country._id}>
+                        {country.country_name}
+                      </SelectItem>
+                    ))}
+                  </div>
                 </SelectContent>
               </Select>
             </div>
@@ -216,4 +232,3 @@ const AddNewAddressCard = () => {
   };
   
   export default AddNewAddressCard;
-  

@@ -148,11 +148,11 @@ const AddressDropDown = ({ onAddressSelect }) => {
         </Popover>
       </div>
 
-      <div className="mt-2"></div>
+      {/* <div className="mt-2"></div> */}
 
-      <CardContent className="bg-transparent">
-        <select
-          className="w-48 p-1 border rounded text-sm mt-[-8px]" // Negative margin to move it upwards
+      <CardContent className="bg-transparent mt-[-20]" >
+      <select
+  className="w-48 p-1 border rounded text-sm ml-[-20px] mt-[-20px]"  // Negative margin to move it upwards
           value={selectedAddress || ""}
           onChange={handleSelectChange}
         >
