@@ -9,22 +9,24 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { MapPin, AlertCircle } from 'lucide-react';
+import { MapPin, AlertCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import AddNewAddressCard from "../components/addNewDeliveryAddress";
 import { Portal } from "@radix-ui/react-portal";
+import { useFloating, offset, flip, shift } from "@floating-ui/react";
+
 const AddressDropDown = ({ onAddressSelect }) => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [username, setUsername] = useState("");
   const [countryMapping, setCountryMapping] = useState({});
   const [error, setError] = useState(null);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -98,7 +100,7 @@ const AddressDropDown = ({ onAddressSelect }) => {
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
     if (selectedValue === "add-new") {
-      setIsPopoverOpen(true);
+      setIsDialogOpen(true);
     } else {
       setSelectedAddress(selectedValue);
       if (onAddressSelect) {
@@ -106,6 +108,14 @@ const AddressDropDown = ({ onAddressSelect }) => {
       }
     }
   };
+  const { x, y, strategy, refs, update } = useFloating({
+    placement: "right-start",
+    middleware: [
+      offset(10), // Space between Dialog and trigger
+      flip(), // Flip to opposite side if there's no space
+      shift({ padding: 10 }), // Shift to fit within the viewport
+    ],
+  });
 
   if (error) {
     return (
@@ -142,31 +152,37 @@ const AddressDropDown = ({ onAddressSelect }) => {
         <option value="add-new">+ Add New Delivery Address</option>
       </select>
 
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
           <Button
             variant="outline"
             size="icon"
             className="absolute right-0 top-0 opacity-0 pointer-events-none"
           />
-        </PopoverTrigger>
-        <PopoverContent
+        </DialogTrigger>
+        <DialogContent
           className="w-80 p-0"
           side="right"
           align="start"
           sideOffset={100}
+          ref={refs.setFloating}
+          style={{
+            position: strategy,
+            top: y ?? 0,
+            left: x ?? 0,
+            zIndex: 9999, // Ensure this is higher than the dialog's z-index
+          }}
         >
           <AddNewAddressCard
             onAddressAdded={() => {
-              setIsPopoverOpen(false);
+              setIsDialogOpen(false);
               refreshAddresses();
             }}
           />
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default AddressDropDown;
-

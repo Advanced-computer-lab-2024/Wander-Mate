@@ -309,9 +309,8 @@ const CheckOut = ({
                   <div className="flex flex-col items-start mt-0">
                     <Label className="mb--9">Select Address:</Label>
                     <div className="mt-[10px]">
-                    <AddressDropDown onAddressSelect={handleAddressSelect} />
-                  </div>
-
+                      <AddressDropDown onAddressSelect={handleAddressSelect} />
+                    </div>
                   </div>
                 </div>
               )}

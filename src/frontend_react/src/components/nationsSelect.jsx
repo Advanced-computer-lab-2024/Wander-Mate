@@ -49,6 +49,15 @@ const NationalitySelect = ({ value, onChange, error }) => {
       ...provided,
       fontSize: "14px",
     }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 1000, // Very high z-index to appear above the map
+      position: "absolute", // Ensure it is in a new stacking context
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 1000, // Ensures the portal menu appears above other elements
+    }),
   };
 
   return (
