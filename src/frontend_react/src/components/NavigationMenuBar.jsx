@@ -438,7 +438,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/activities/tours" className="flex items-center">
+                  <Link to="/viewItineraries" className="flex items-center">
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>Tours</span>
                   </Link>
