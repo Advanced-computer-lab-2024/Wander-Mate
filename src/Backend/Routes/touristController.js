@@ -180,6 +180,7 @@ const handleTourist = async (req, res) => {
         Nationality,
         Role,
         Points,
+        Currency,
       } = req.body;
 
       // Check if user is trying to update Username or DOB
@@ -234,6 +235,19 @@ const handleTourist = async (req, res) => {
         console.log("Updated Badge:", tourist.Badge);
       }
 
+      // Check and add Currency field if it doesn't exist
+      if (Currency) {
+        if (!tourist.Currency) {
+          // Add the Currency field if it doesn't exist
+          tourist.Currency = Currency;
+          console.log("Currency field added:", tourist.Currency);
+        } else {
+          // Update Currency if it's provided
+          tourist.Currency = Currency;
+          console.log("Currency updated:", tourist.Currency);
+        }
+      }
+
       // Save the updated tourist
       const updatedTourist = await tourist.save();
 
@@ -245,6 +259,7 @@ const handleTourist = async (req, res) => {
       return res.status(405).json({ message: "Method not allowed" }); // Handle unsupported methods
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Error processing request",
       error: error.message,

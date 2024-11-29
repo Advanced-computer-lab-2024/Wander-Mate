@@ -19,8 +19,8 @@ const steps = [
   {
     id: "welcome",
     attachTo: { element: "#container", on: "top" },
-    title: "Welcome to Itineraries",
-    text: "This tour will guide you through the main features of our itinerary page.",
+    title: "Welcome to Places",
+    text: "This tour will guide you through the main features of our places page.",
     buttons: [
       {
         action() {
@@ -34,7 +34,7 @@ const steps = [
     id: "search",
     attachTo: { element: "input[type='text']", on: "bottom" },
     title: "Search Itineraries",
-    text: "Use this search bar to find specific itineraries by name.",
+    text: "Use this search bar to find specific places by name.",
     buttons: [
       {
         action() {
@@ -50,26 +50,7 @@ const steps = [
       },
     ],
   },
-  {
-    id: "sort",
-    attachTo: { element: "#sort-criteria", on: "bottom" },
-    title: "Sort Itineraries",
-    text: "Sort itineraries by rating or price using this dropdown.",
-    buttons: [
-      {
-        action() {
-          return this.back();
-        },
-        text: "Back",
-      },
-      {
-        action() {
-          return this.next();
-        },
-        text: "Next",
-      },
-    ],
-  },
+ 
   {
     id: "filters",
     attachTo: { element: "#filter", on: "bottom" },
@@ -91,10 +72,10 @@ const steps = [
     ],
   },
   {
-    id: "itinerary-card",
+    id: "place-card",
     attachTo: { element: ".grid > div:first-child", on: "bottom" },
-    title: "Itinerary Card",
-    text: "Each card represents an itinerary. Click on a card to view more details and start your journey.",
+    title: "Place Card",
+    text: "Each card represents a unique place. Click on a card to view more details and start exploring.",
     buttons: [
       {
         action() {
@@ -165,7 +146,7 @@ const TourButton = () => {
   );
 };
 
-const ViewItinerariesTour = ({ children }) => {
+const ViewPlacesTour = ({ children }) => {
   return (
     <div>
       <TourButton />
@@ -174,4 +155,4 @@ const ViewItinerariesTour = ({ children }) => {
   );
 };
 
-export default ViewItinerariesTour;
+export default ViewPlacesTour;

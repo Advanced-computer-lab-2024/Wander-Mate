@@ -24,6 +24,7 @@ import {
 } from "../components/ui/sheet";
 import { Filter, X } from "lucide-react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
+import ViewPlacesTour from "../components/placesTour";
 
 export default function Places() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -151,107 +152,109 @@ export default function Places() {
 
   return (
     <>
+      <ViewPlacesTour>
         <NavigationMenuBar />
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Places</h1>
+        <div className="container mx-auto p-4" id="container">
+          <h1 className="text-2xl font-bold mb-4">Places</h1>
 
-        <div className="flex items-center space-x-4 mb-4">
-          <Input
-            type="text"
-            placeholder="Search by place name"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="max-w-sm"
-          />
-          <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline">
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
-                <SheetDescription>
-                  Refine your search with these filters.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={handleCategoryChange}
-                  >
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent portal={false}>
-                      <SelectItem value=" ">All Categories</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.Name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Tags</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {tags.map((tag) => (
-                      <div
-                        key={tag._id}
-                        className="flex items-center space-x-2"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`tag-${tag._id}`}
-                          checked={selectedTags.includes(tag._id)}
-                          onChange={() => handleTagChange(tag._id)}
-                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                        />
-                        <Label htmlFor={`tag-${tag._id}`}>{tag.Name}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Button onClick={clearFilters} variant="outline">
-                  Clear Filters
+          <div className="flex items-center space-x-4 mb-4">
+            <Input
+              type="text"
+              placeholder="Search by place name"
+              value={searchTerm}
+              onChange={handleSearch}
+              className="max-w-sm"
+            />
+            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" id="filter">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filters
                 </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle>Filters</SheetTitle>
+                  <SheetDescription>
+                    Refine your search with these filters.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent portal={false}>
+                        <SelectItem value=" ">All Categories</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.Name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tags</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {tags.map((tag) => (
+                        <div
+                          key={tag._id}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            id={`tag-${tag._id}`}
+                            checked={selectedTags.includes(tag._id)}
+                            onChange={() => handleTagChange(tag._id)}
+                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                          />
+                          <Label htmlFor={`tag-${tag._id}`}>{tag.Name}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <Button onClick={clearFilters} variant="outline">
+                    Clear Filters
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <ECommerceDefaultSkeleton key={index} />
-            ))
-          ) : filteredPlaces.length > 0 ? (
-            filteredPlaces.map((place) => (
-              <PlaceCard
-                key={place._id}
-                name={place.Name}
-                images={place.Pictures}
-                latitude={place.Location.coordinates[1]}
-                longitude={place.Location.coordinates[0]}
-                description={place.Description}
-                tags={place.Tags.map((tagId) => tagMap[tagId])}
-                category={
-                  categories.find((cat) => cat._id === place.Category)?.Name ||
-                  "No Category"
-                }
-                TicketPrices={place.TicketPrices}
-              />
-            ))
-          ) : (
-            <p>No places found</p>
-          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <ECommerceDefaultSkeleton key={index} />
+              ))
+            ) : filteredPlaces.length > 0 ? (
+              filteredPlaces.map((place) => (
+                <PlaceCard
+                  key={place._id}
+                  name={place.Name}
+                  images={place.Pictures}
+                  latitude={place.Location.coordinates[1]}
+                  longitude={place.Location.coordinates[0]}
+                  description={place.Description}
+                  tags={place.Tags.map((tagId) => tagMap[tagId])}
+                  category={
+                    categories.find((cat) => cat._id === place.Category)
+                      ?.Name || "No Category"
+                  }
+                  TicketPrices={place.TicketPrices}
+                />
+              ))
+            ) : (
+              <p>No places found</p>
+            )}
+          </div>
         </div>
-      </div>
+      </ViewPlacesTour>
     </>
   );
 }

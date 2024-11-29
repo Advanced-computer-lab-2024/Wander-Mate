@@ -111,6 +111,11 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     setOpenDropdown(null);
   };
 
+  const logout = () => {
+    sessionStorage.removeItem("username");
+    navigate("/loginPage");
+  };
+
   const removeFromWishlist = useCallback(
     async (productId) => {
       try {
@@ -623,7 +628,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span onClick={logout}>Log out</span>
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>
