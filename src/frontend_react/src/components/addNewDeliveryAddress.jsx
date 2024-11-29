@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import BasicMap from './ui/basic-map';
-
+import { Portal } from "@radix-ui/react-portal";
 const AddNewAddressCard = () => {
     const [username, setUsername] = useState('');
     const [countries, setCountries] = useState([]);
@@ -194,7 +194,7 @@ const AddNewAddressCard = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
-              <Select onValueChange={handleCountryChange} value={newAddress.country}>
+              <Select onValueChange={handleCountryChange} value={newAddress.country} Portal ={false}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>

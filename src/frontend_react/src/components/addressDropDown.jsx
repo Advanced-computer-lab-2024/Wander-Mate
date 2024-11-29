@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { MapPin, AlertCircle } from "lucide-react";
+import { MapPin, AlertCircle } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import {
   Popover,
@@ -123,54 +123,50 @@ const AddressDropDown = ({ onAddressSelect }) => {
   }
 
   return (
-    <div>
-      {/* <Card className="bg-transparent"> */}
-
-      <div className="flex justify-between items-center translate-y+80 translate-z-80">
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              style={{ opacity: 0, pointerEvents: "none" }}
-            ></Button>
-          </PopoverTrigger>
-          <Portal>
-            <PopoverContent className="w-70 translate-y+80 y-[9999] fixed translate-z+20 z-[9999] fixed overflow-y" >
-              <AddNewAddressCard
-                onAddressAdded={() => {
-                  setIsPopoverOpen(false);
-                  refreshAddresses();
-                }}
-              />
-            </PopoverContent>
-          </Portal>
-        </Popover>
-      </div>
-
-      {/* <div className="mt-2"></div> */}
-
-      <CardContent className="bg-transparent mt-[-20]" >
+    <div className="relative">
       <select
-  className="w-48 p-1 border rounded text-sm ml-[-20px] mt-[-20px]"  // Negative margin to move it upwards
-          value={selectedAddress || ""}
-          onChange={handleSelectChange}
-        >
-          <option value="" disabled>
-            Select an address
+        className="w-full p-2 border rounded text-sm"
+        value={selectedAddress || ""}
+        onChange={handleSelectChange}
+      >
+        <option value="" disabled>
+          Select an address
+        </option>
+        {addresses.map((address) => (
+          <option key={address._id} value={address._id}>
+            {`${address.street}, ${address.city}, ${
+              countryMapping[address.country] || address.country
+            }`}
           </option>
-          {addresses.map((address, index) => (
-            <option key={address._id} value={address._id}>
-              {`${address.street}, ${address.city}, ${
-                countryMapping[address.country] || address.country
-              }`}
-            </option>
-          ))}
-          <option value="add-new">+ Add New Delivery Address</option>
-        </select>
-      </CardContent>
+        ))}
+        <option value="add-new">+ Add New Delivery Address</option>
+      </select>
+
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-0 top-0 opacity-0 pointer-events-none"
+          />
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-80 p-0"
+          side="right"
+          align="start"
+          sideOffset={100}
+        >
+          <AddNewAddressCard
+            onAddressAdded={() => {
+              setIsPopoverOpen(false);
+              refreshAddresses();
+            }}
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
 
 export default AddressDropDown;
+
