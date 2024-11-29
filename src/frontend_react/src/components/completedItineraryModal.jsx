@@ -8,6 +8,7 @@ import { Label } from "./ui/label";
 import { X } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { toast } from "react-hot-toast";
+import axios from "axios";
 
 export default function CompletedItineraryModal({
   itinerary,
@@ -17,7 +18,10 @@ export default function CompletedItineraryModal({
   myItRating,
   myTourRating,
   Creator,
+  reFetchratings,
 }) {
+  const [reviews, setReviews] = useState([]);
+  const [GuideReviews, setGuideReviews] = useState([]);
   const [itineraryRating, setItineraryRating] = useState(0);
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [itineraryReview, setItineraryReview] = useState("");
@@ -30,24 +34,125 @@ export default function CompletedItineraryModal({
   useEffect(() => {
     setItineraryRating(myItRating);
     setTourGuideRating(myTourRating);
-  }, [itineraryRating, isOpen]);
+  }, [isOpen]);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/getItineraryReviews/${itinerary._id}`
+        );
+        const data = await response.json();
+        setReviews(data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    const fetchGuideReviews = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/getGuideReviews/${Creator._id}`
+        );
+        const data = await response.json();
+        console.log(data);
+        setGuideReviews(data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    if (isOpen) {
+      fetchReviews();
+      fetchGuideReviews();
+    }
+  }, [isOpen, itinerary.Ratings]);
 
   const handleSubmitReview = async () => {
     try {
-      // Here you would typically send this data to your backend
-      // For now, we'll just log it and show a success message
-      console.log({
-        itineraryId: itinerary._id,
-        itineraryRating,
-        tourGuideRating,
-        itineraryReview,
-        tourGuideReview,
-      });
-      toast.success("Review submitted successfully!");
+      const username = sessionStorage.getItem("username");
+      if (!username) throw new Error("Username not found in session storage");
+
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      if (itineraryReview !== "") {
+        const response = await axios.post(
+          `http://localhost:8000/comment-on-itinerary/${userID}`,
+          {
+            itineraryID: itinerary._id,
+            Body: itineraryReview,
+            username,
+          }
+        );
+        if (response.status === 200) {
+          toast.success("Review submitted successfully!");
+          setItineraryReview("");
+        }
+      }
+      if (tourGuideReview !== "") {
+        const response = await axios.post(
+          `http://localhost:8000/commentOnGuide/${userID}`,
+          {
+            guideID: Creator._id,
+            text: tourGuideReview,
+            username,
+          }
+        );
+        if (response.status === 200) {
+          toast.success("Review submitted successfully!");
+          setTourGuideReview("");
+        }
+      }
+
       setIsOpen(false);
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("Failed to submit review");
+    }
+  };
+
+  const rateItinerary = async (rating) => {
+    try {
+      const username = sessionStorage.getItem("username");
+      if (!username) throw new Error("Username not found in session storage");
+
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post("http://localhost:8000/rateItinerary", {
+        touristId: userID,
+        itineraryId: itinerary._id,
+        rating: rating,
+      });
+      if (!response.status === 200) throw new Error("Failed to rate itinerary");
+      setItineraryRating(rating);
+      reFetchratings(itinerary._id);
+    } catch {
+      console.log("Error");
+    }
+  };
+
+  const rateTourGuide = async (rating) => {
+    try {
+      const username = sessionStorage.getItem("username");
+      if (!username) throw new Error("Username not found in session storage");
+
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post("http://localhost:8000/RateGuide", {
+        touristId: userID,
+        guideId: Creator._id,
+        rating: rating,
+      });
+      if (!response.status === 200) throw new Error("Failed to rate itinerary");
+      setTourGuideRating(rating);
+      reFetchratings(Creator._id);
+    } catch {
+      console.log("Error");
     }
   };
 
@@ -122,6 +227,10 @@ export default function CompletedItineraryModal({
               <TabsList>
                 <TabsTrigger value="itinerary">Rate Itinerary</TabsTrigger>
                 <TabsTrigger value="tourguide">Rate Tour Guide</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="GuideReviews">
+                  Tour Guide Reviews
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="itinerary" className="mt-4">
                 <Card>
@@ -133,7 +242,7 @@ export default function CompletedItineraryModal({
                         </Label>
                         <StarRating
                           rating={itineraryRating}
-                          onRatingChange={setItineraryRating}
+                          onRatingChange={rateItinerary}
                         />
                       </div>
                       <div>
@@ -161,7 +270,7 @@ export default function CompletedItineraryModal({
                         </Label>
                         <StarRating
                           rating={tourGuideRating}
-                          onRatingChange={setTourGuideRating}
+                          onRatingChange={rateTourGuide}
                         />
                       </div>
                       <div>
@@ -176,6 +285,56 @@ export default function CompletedItineraryModal({
                         />
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="reviews" className="mt-4">
+                <Card>
+                  <CardContent className="p-6">
+                    {reviews.length > 0 ? (
+                      <ul className="space-y-4">
+                        {reviews.map((review, index) => (
+                          <li
+                            key={index}
+                            className="border-b pb-4 last:border-b-0"
+                          >
+                            <div className="flex items-center mb-2">
+                              <span className="text-sm font-medium">
+                                {review.username}
+                              </span>
+                            </div>
+                            <p className="text-gray-600">{review.review}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-600">No reviews yet.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="GuideReviews" className="mt-4">
+                <Card>
+                  <CardContent className="p-6">
+                    {reviews.length > 0 ? (
+                      <ul className="space-y-4">
+                        {GuideReviews.map((review, index) => (
+                          <li
+                            key={index}
+                            className="border-b pb-4 last:border-b-0"
+                          >
+                            <div className="flex items-center mb-2">
+                              <span className="text-sm font-medium">
+                                {review.username}
+                              </span>
+                            </div>
+                            <p className="text-gray-600">{review.Body}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-600">No reviews yet.</p>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

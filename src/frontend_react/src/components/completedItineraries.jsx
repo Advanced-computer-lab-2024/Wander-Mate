@@ -160,6 +160,7 @@ export default function CompletedItineraries() {
                 myItRating={ratings[itinerary.itemId._id]}
                 myTourRating={ratings[itinerary.itemId.Creator._id]}
                 Creator={itinerary.itemId.Creator}
+                reFetchratings={getMyRating}
               />
             </div>
           ))}

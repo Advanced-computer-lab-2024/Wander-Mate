@@ -867,7 +867,7 @@ const bookHotel = async (req, res) => {
 
 const commentOnGuide = async (req, res) => {
   try {
-    const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
+    const { guideID, text, username } = req.body; // Expecting guide ID and comment text in the request body
     const touristID = req.params.id; // Assuming you have user info stored in req.user
 
     // Validate input
@@ -885,15 +885,15 @@ const commentOnGuide = async (req, res) => {
 
     // Create a new comment
     const newComment = await CommentModel.create({
-      touristID, // Change to match your schema
-      aboutId: guideID, // Change to match your schema
-      Body: text, // Assuming `text` is a field in your comment schema
+      touristID,
+      aboutId: guideID,
+      Body: text,
+      username,
     });
 
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-    console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
@@ -905,15 +905,34 @@ const commentOnGuide = async (req, res) => {
 const RateGuide = async (req, res) => {
   const { touristId, guideId, rating } = req.body;
   try {
-    const newRating = await RatingModel.create({
-      itemId: guideId,
+    // Check if the user has already rated the guide
+    const existingRating = await RatingModel.findOne({
       userId: touristId,
-      rating,
+      itemId: guideId,
     });
+
+    if (existingRating) {
+      // If the user has already rated, update the rating
+      existingRating.rating = rating;
+      await existingRating.save(); // Save the updated rating
+      res.status(200).json({
+        message: "Rating updated successfully",
+        rating: existingRating,
+      });
+    } else {
+      // If the user hasn't rated yet, create a new rating
+      const newRating = await RatingModel.create({
+        itemId: guideId,
+        userId: touristId,
+        rating,
+      });
+      res
+        .status(200)
+        .json({ message: "Rating posted successfully", rating: newRating });
+    }
+
+    // After updating or creating the rating, update the guide's ratings
     await axios.put(`http://localhost:8000/updateGuideRatings/${guideId}`);
-    res
-      .status(200)
-      .json({ message: "Rating posted successfully", rating: newRating });
   } catch (error) {
     console.error("Error posting rating:", error.message); // Log error for debugging
     res
@@ -1026,8 +1045,6 @@ const updateItineraryRatings = async (req, res) => {
       },
     ]);
 
-    console.log(averageRating);
-
     if (averageRating.length > 0) {
       // Await the findByIdAndUpdate call to get the updated document
       const updatedItinerary = await itineraryModel.findByIdAndUpdate(
@@ -1055,7 +1072,7 @@ const updateItineraryRatings = async (req, res) => {
 
 const commentOnItinerary = async (req, res) => {
   try {
-    const { itineraryID, Body } = req.body; // Expecting itinerary ID and comment text in the request body
+    const { itineraryID, Body, username } = req.body; // Expecting itinerary ID and comment text in the request body
     const touristID = req.params.id; // Assuming tourist ID is passed as a parameter
 
     // Validate input
@@ -1072,14 +1089,15 @@ const commentOnItinerary = async (req, res) => {
     }
 
     // Create a new comment
-    const newComment = await CommentModel.create({
-      touristID, // Assuming `touristID` matches your schema
-      aboutId: itineraryID, // Change to match your schema
-      Body, // Assuming `text` is a field in your comment schema
+    const newComment = await ReviewModel.create({
+      userId: touristID, // Assuming `touristID` matches your schema
+      itemId: itineraryID,
+      username,
+      review: Body, // Assuming `text` is a field in your comment schema
     });
 
     res
-      .status(201)
+      .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
@@ -2950,6 +2968,34 @@ const getMyRating = async (req, res) => {
   }
 };
 
+const getItineraryReviews = async (req, res) => {
+  const { itineraryId } = req.params;
+  try {
+    const reviews = await ReviewModel.find({ itemId: itineraryId });
+    if (!reviews) {
+      return res.status(404).json({ message: "No reviews found" });
+    }
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getGuideReviews = async (req, res) => {
+  const { guideId } = req.params;
+  try {
+    const reviews = await CommentModel.find({ aboutId: guideId });
+    if (!reviews) {
+      return res.status(201).json({ message: "No reviews found" });
+    }
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3030,4 +3076,6 @@ module.exports = {
   makeOrder,
   removeProduct,
   getMyRating,
+  getItineraryReviews,
+  getGuideReviews,
 };

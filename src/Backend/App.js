@@ -97,6 +97,8 @@ const {
   makeOrder,
   removeProduct,
   getMyRating,
+  getItineraryReviews,
+  getGuideReviews,
 } = require("./Routes/touristController");
 
 const {
@@ -590,3 +592,5 @@ app.put("/updateProductQuantity", updateProductQuantity);
 app.put("/updateSellerSales", updateSellerSales);
 app.put("/emptyCart/:cartId", emptyCart);
 app.get("/getMyRating/:touristId/:itineraryId", getMyRating);
+app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
+app.get("/getGuideReviews/:guideId", getGuideReviews);

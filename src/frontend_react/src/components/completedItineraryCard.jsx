@@ -41,6 +41,7 @@ const CompletedItineraryCard = ({
   myItRating,
   myTourRating,
   Creator,
+  reFetchratings,
 }) => {
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
 
@@ -168,6 +169,7 @@ const CompletedItineraryCard = ({
         myItRating={myItRating}
         myTourRating={myTourRating}
         Creator={Creator}
+        reFetchratings={reFetchratings}
       />
     </>
   );
