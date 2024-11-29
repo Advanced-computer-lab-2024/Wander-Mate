@@ -59,6 +59,9 @@ import AdvertiserActivities from "./pages/advertiseractivities";
 import HotelCard from "./components/hotelCard";
 import PayForFlight from "./components/payForFlight";
 import CompletedItineraries from "./components/completedItineraries";
+import AdminNavBar from "./components/AdminNavBar";
+import Orders from "./components/adminOrders";
+import SellerPage from "./pages/productSeller";
 function App() {
   return (
     <Router>
@@ -129,6 +132,10 @@ function App() {
         <Route path="/hotelcard" element={<HotelCard />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/payForFlight" element={<PayForFlight />} />
+        <Route path="/adminNavBar" element={<AdminNavBar />} />
+        <Route path="/adminOrders" element={<Orders />} />
+        <Route path="/sellerProduct" element={<SellerPage />} />
+
 
       </Routes>
     </Router>
