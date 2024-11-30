@@ -38,7 +38,7 @@ export default function ActivityModal({ activity, isOpen, setIsOpen, children })
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
 
-      const { userID } = await reply.json();
+      const { userID, userModel } = await reply.json();
 
       // Step 3: Post the booking request to the backend
       const bookedDate = new Date().toISOString(); // Use the current date as bookedDate
@@ -61,13 +61,35 @@ export default function ActivityModal({ activity, isOpen, setIsOpen, children })
       setIsBookingConfirmed(true);
       toast.success("Booking successful!");
 
+      // Step 5: Call the `updateRevenueSales` API to update the user's revenue
+      const salesResponse = await fetch("http://localhost:8000/updateRevenueSales", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userID, // User ID obtained from step 2
+          userModel, // User model (TourGuide, Advertiser, Seller, Admin) you can get it from the backend or frontend
+          amount: activity.price, // The amount to add to the revenue (the price of the activity)
+        }),
+      });
+
+      const salesData = await salesResponse.json();
+      if (!salesResponse.ok) {
+        throw new Error(salesData.message || "Error updating revenue sales.");
+      }
+
+      // Optionally, update the UI or provide feedback to the user here
+      toast.success("Revenue updated successfully!");
+
     } catch (error) {
       // Handle any errors
       console.error("Error booking activity:", error);
-      toast.error("Failed to book activity");
+      toast.error("Failed to book activity or update revenue.");
       setIsBookingConfirmed(false);
     }
   };
+
 
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
