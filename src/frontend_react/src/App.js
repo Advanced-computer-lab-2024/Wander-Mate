@@ -140,6 +140,7 @@ function App() {
         <Route path="/sellerProduct" element={<SellerPage />} />
         <Route path="/purchasedProducts" element={<PurchasedProducts />} />
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
+        <Route path="/UserProfilePage" element={<UserProfilePage />} />
 
       </Routes>
     </Router>
