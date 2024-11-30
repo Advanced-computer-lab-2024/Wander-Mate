@@ -99,7 +99,7 @@ const readActivities = async (req, res) => {
 
 const updateActivity = async (req, res) => {
   const {
-    Creator,
+    
     Name,
     id,
     DateString,
@@ -114,6 +114,7 @@ const updateActivity = async (req, res) => {
   try {
     let activity = await attractionModel.findById(id);
     if (!activity) {
+      console.log("hii");
       return res.status(400).json({ message: "Activity not found." });
     }
     let dateObject;
@@ -122,10 +123,9 @@ const updateActivity = async (req, res) => {
     } else {
       dateObject = activity.Date;
     }
+    console.log(Location);
 
-    if (activity.Creator !== Creator) {
-      return res.status(400).json({ message: "You are not the creator." });
-    }
+    
     activity = await attractionModel.findByIdAndUpdate(
       id,
       {
@@ -144,7 +144,8 @@ const updateActivity = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Activity updated successfully.", activity });
-  } catch {
+  } catch(error) {
+    console.log(error);
     res.status(400).json({ error: "Error updating activity" });
   }
 };

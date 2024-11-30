@@ -60,7 +60,7 @@ import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
-import PurchasedProducts from "./components/PurchasedProductsModal";
+// import PurchasedProducts from "./components/PurchasedProductsModal";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 function App() {
@@ -135,7 +135,7 @@ function App() {
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
-        <Route path="/PurchasedProductsModal" element={<PurchasedProducts />} />
+        {/* <Route path="/PurchasedProductsModal" element={<PurchasedProducts />} /> */}
 
 
       </Routes>
