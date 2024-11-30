@@ -60,8 +60,10 @@ import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
+import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 function App() {
   return (
@@ -130,12 +132,14 @@ function App() {
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
+        <Route path="/hotelcheckout" element={<HotelCheckout />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/payForFlight" element={<PayForFlight />} />
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
-        <Route path="/UserProfilePage" element={<UserProfilePage />} />
+        <Route path="/purchasedProducts" element={<PurchasedProducts />} />
+        <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
 
       </Routes>
     </Router>

@@ -28,6 +28,7 @@ export default function ItineraryModel({
   const [isBooked, setIsBooked] = useState(false);
   const [count, setCount] = useState(1);
   const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
+  const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
 
   const openInMaps = (latitude, longitude) => {
@@ -167,6 +168,10 @@ export default function ItineraryModel({
     }
   };
 
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -202,23 +207,46 @@ export default function ItineraryModel({
                     {itinerary.name}
                   </h1>
                   <div className="space-y-2 mb-6">
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Timeline:</span>{" "}
-                      {itinerary.TimeLine}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Price:</span>{" "}
-                      {itinerary.currrn} {itinerary.price || "N/A"}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Available Dates:</span>{" "}
-                      {itinerary.AvailableDates
-                        ? itinerary.AvailableDates.map((date) =>
-                            new Date(date.$date || date).toLocaleDateString()
-                          ).join(", ")
-                        : "N/A"}
-                    </p>
-                  </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Timeline:</span> {itinerary.TimeLine}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Price:</span> {itinerary.currrn} {itinerary.price || "N/A"}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Available Dates:</span>
+                      </p>
+                      <div className="flex space-x-4">
+                      {itinerary.AvailableDates ? (
+                        itinerary.AvailableDates.map((date, index) => {
+                          const formattedDate = new Date(date.$date || date).toLocaleDateString();
+                          return (
+                            <button
+                              key={index}
+                              className={`px-4 py-2 rounded transition-colors duration-200 ${
+                                selectedDate === formattedDate
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-gray-200 text-gray-700 hover:bg-blue-300 hover:text-white'
+                              }`}
+                              onClick={() => handleDateSelect(formattedDate)}
+                            >
+                              {formattedDate}
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <span>N/A</span>
+                      )}
+                    </div>
+
+                      {/* Display selected date */}
+                      {selectedDate && (
+                        <p className="text-sm text-gray-600 mt-4">
+                          <span className="font-semibold">Selected Date:</span> {selectedDate}
+                        </p>
+                      )}
+                    </div>
+
 
                   {/* Favorite and Share Buttons */}
                   <div className="space-y-4">
@@ -327,6 +355,7 @@ export default function ItineraryModel({
                           amount={count * itinerary.price}
                           itinerary={itinerary}
                           count={count}
+                          bookedDate={selectedDate}
                         />
                       </div>
                     )}

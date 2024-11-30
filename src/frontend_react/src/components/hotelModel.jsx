@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
+import HotelCheckOut from "./hotelCheckout";
 
 const HotelModal = ({ children, hotel, isOpen, setIsOpen }) => {
   const [roomType, setRoomType] = useState("single");
@@ -163,7 +164,7 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen }) => {
               <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleBooking}>Book Now</Button>
+              <HotelCheckOut hotel={hotel}/>
             </div>
           </div>
         </DialogContent>
