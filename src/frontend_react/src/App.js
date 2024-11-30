@@ -60,9 +60,16 @@ import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
-// import PurchasedProducts from "./components/PurchasedProductsModal";
+// import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import HotelCheckout from "./components/hotelCheckout";
+import UserProfilePage from "./pages/userProfilePage";
+import AboutUs from "./pages/aboutUs";
+import MyBookings from "./components/myBookings";
+import admin from "./pages/admin";
+import Admin from "./pages/admin";
+import RevinueChart from "./components/RevinueChart";
 function App() {
   return (
     <Router>
@@ -101,6 +108,7 @@ function App() {
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/paymentByCard" element={<PaymentPage />} />
+        <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"
           element={<TourGuideProfileManager />}
@@ -130,14 +138,18 @@ function App() {
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
+        <Route path="/hotelcheckout" element={<HotelCheckout />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/payForFlight" element={<PayForFlight />} />
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
-        {/* <Route path="/PurchasedProductsModal" element={<PurchasedProducts />} /> */}
+        {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
+        <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
+        <Route path="/UserProfilePage" element={<UserProfilePage />} />
+        <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
 
-
+        <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>
   );

@@ -452,7 +452,8 @@ const viewItineraries = async (req, res) => {
     const itineraries = await itineraryModel
       .find(itineraryDateFilter)
       .populate("Activities")
-      .populate("LocationsToVisit");
+      .populate("LocationsToVisit")
+      .populate("Creator");
     res.status(200).json(itineraries);
   } catch (error) {
     console.error(error); // Log the error to the console for debugging
@@ -1596,6 +1597,17 @@ const cancelBooking = async (req, res) => {
   try {
     // Find the booking by ID
     const booking = await Booking.findById(bookingID);
+    const tourist = await userModel.findById(booking.userId);
+    const attractionId = await attractionModel.findById(booking.itemId);
+    const itineraryId = await itineraryModel.findById(booking.itemId);
+    const transportId = await TransportationModel.findById(booking.itemId);
+    const bookedHotelId = await HotelBooked.findById(booking.itemId);
+    const bookedFlightId = await BookedFlight.findById(booking.itemId);
+
+    const itemModel = booking.itemModel;
+    console.log(tourist);
+    console.log(booking.userId);
+
 
     // Check if the booking exists
     if (!booking) {
@@ -1617,7 +1629,32 @@ const cancelBooking = async (req, res) => {
     }
     // If eligible, proceed to cancel the booking
     await Booking.findByIdAndDelete(bookingID);
+    if (tourist) {
+      console.log(tourist.Wallet);
+      switch (itemModel) {
+  case "Attraction":
+      tourist.Wallet = (tourist.Wallet || 0) + attractionId.Price;
+    break;
+  case "Itinerary":
+      tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
+    break;
+  case "Transportation":
+      tourist.Wallet = (tourist.Wallet || 0) + transportId.Price;
+          break;
+  case "HotelBooked":
+      tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
+          break;
+  case "BookedFlights":
+      tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.Price;
+  default:
+    break;
+}
 
+      console.log(attractionId);
+      console.log(itemModel);
+      console.log(tourist.Wallet)
+      await tourist.save();
+    }
     res.status(200).json({ message: "Booking cancelled successfully." });
   } catch (err) {
     console.error("Error cancelling booking:", err);
@@ -1654,9 +1691,10 @@ const bookItinerary = async (req, res) => {
     // Check if the itinerary exists
     const itinerary = await itineraryModel.findById(itineraryId);
     if (!itinerary) {
-      return res.status(40).json({ message: "Itinerary not found." });
+      return res.status(400).json({ message: "Itinerary not found." });
     }
 
+    console.log(bookedDate);
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: itineraryId,

@@ -47,6 +47,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
+import UserProfilePage from "../pages/userProfilePage";
 
 const SiteLogo = () => (
   <svg
@@ -363,6 +364,10 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
       });
     }
   };
+
+  const goToProfile = async () =>{
+    navigate("/UserProfilePage")
+  }
   
 
   const deleteNotification = useCallback(
@@ -412,7 +417,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         <nav className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <SiteLogo />
-            <span className="text-xl font-bold">Wandermate</span>
+            <span className="text-xl font-bold">WanderMate</span>
           </Link>
 
           <div className="hidden md:flex space-x-6">
@@ -432,7 +437,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/about/story" className="flex items-center">
+                  <Link to="/aboutUs" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>
@@ -728,7 +733,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span onClick={goToProfile}>Profile</span>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
