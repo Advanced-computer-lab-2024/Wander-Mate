@@ -2,6 +2,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
+import { Skeleton } from "./ui/skeleton"; // Importing Skeleton component
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { format, parseISO } from "date-fns";
@@ -11,8 +12,8 @@ const PersonalDetails = () => {
   const [userData, setUserData] = useState(null); // User data from backend
   const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
   const [loading, setLoading] = useState(true); // Loading state
-  const [currencies, setCurrencies] = useState([]);
-  const [nations, setNations] = useState([]); // State for nations
+  const [currencies, setCurrencies] = useState([]); // Currency options
+  const [nations, setNations] = useState([]); // Nationality options
 
   const [jobs] = useState([
     { value: "developer", label: "Developer" },
@@ -24,7 +25,6 @@ const PersonalDetails = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Fetch user data
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get tourist ID");
@@ -35,7 +35,6 @@ const PersonalDetails = () => {
         );
         const user = await userResponse.json();
 
-        // Fetch currency options
         const exchangeResponse = await fetch(
           "https://api.exchangerate-api.com/v4/latest/USD"
         );
@@ -47,7 +46,6 @@ const PersonalDetails = () => {
           })
         );
 
-        // Fetch nationality options
         const nationResponse = await axios.get(
           "http://localhost:8000/getNations"
         );
@@ -56,7 +54,6 @@ const PersonalDetails = () => {
           label: nation.country_name,
         }));
 
-        // Sort nations alphabetically
         setNations(
           nationOptions.sort((a, b) => a.label.localeCompare(b.label))
         );
@@ -65,12 +62,15 @@ const PersonalDetails = () => {
           ...user,
           selectedCurrency: currencyOptions.find(
             (option) => option.value === user.Currency
-          ) || { value: "USD", label: "USD" }, // Default to USD
+          ) || {
+            value: "USD",
+            label: "USD",
+          },
           selectedJob: jobs.find((job) => job.value === user.Role),
           selectedNationality:
             nationOptions.find((nation) => nation.value === user.Nationality) ||
-            null, // Default to null if no nationality
-          DOB: user.DOB ? format(parseISO(user.DOB), "yyyy-MM-dd") : "", // Format DOB
+            null,
+          DOB: user.DOB ? format(parseISO(user.DOB), "yyyy-MM-dd") : "",
         });
         setCurrencies(currencyOptions);
         setLoading(false);
@@ -91,12 +91,10 @@ const PersonalDetails = () => {
     try {
       const updatedData = {
         ...userData,
-        Currency: userData.selectedCurrency.value, // Save currency value
-        Nationality: userData.selectedNationality?.value || "", // Save nationality value
+        Currency: userData.selectedCurrency.value,
+        Nationality: userData.selectedNationality?.value || "",
       };
 
-      console.log(updatedData);
-      // Save updated data to backend
       const response = await axios.put(
         `http://localhost:8000/handleTourist/${updatedData._id}`,
         {
@@ -110,7 +108,6 @@ const PersonalDetails = () => {
       );
 
       if (response.status === 200) {
-        console.log("Saved data:", updatedData);
         setIsEditing(false);
       } else {
         console.log("Error saving data:", response.data);
@@ -128,7 +125,22 @@ const PersonalDetails = () => {
   };
 
   if (loading || !userData) {
-    return <p>Loading...</p>;
+    return (
+      <Card className="rounded-t-none pt-6">
+        <CardContent className="p-0">
+          <div className="w-full h-[191px] overflow-hidden rounded-t-md">
+            <Skeleton className="w-full h-full" />
+          </div>
+          <div className="p-4">
+            <Skeleton className="w-full mb-2 h-3" />
+            <Skeleton className="w-full h-3 mb-0.5" />
+            <Skeleton className="w-full h-3 mb-0.5" />
+            <Skeleton className="w-full h-3 mb-0.5" />
+            <Skeleton className="w-full h-3 mb-0.5" />
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -252,15 +264,15 @@ const PersonalDetails = () => {
               </div>
             )}
           </div>
-        </div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-4 mt-6">
-          {isEditing ? (
-            <Button onClick={handleSave}>Save</Button>
-          ) : (
-            <Button onClick={handleEdit}>Edit</Button>
-          )}
+          {/* Save / Edit Button */}
+          <div className="col-span-12 flex justify-between mt-5">
+            {isEditing ? (
+              <Button onClick={handleSave}>Save</Button>
+            ) : (
+              <Button onClick={handleEdit}>Edit</Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

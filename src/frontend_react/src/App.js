@@ -10,9 +10,7 @@ import ErrorPage from "./pages/errorPage";
 import Products from "./pages/products";
 import AdvertiserHomePage from "./pages/AdvertiserHomePage";
 import CreateActivity from "./pages/createActivity";
-import PersonalDetails from "./components/personalDetails";
 import ViewAllComplaints from "./components/viewAllComplaints";
-import ChangePasword from "./components/changePassword";
 import ViewItineraries from "./pages/viewItineraries";
 import Rating from "./pages/ratings";
 import UploadDocs from "./pages/uploadDocsPage";
@@ -63,6 +61,8 @@ import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
 import PurchasedProducts from "./components/PurchasedProductsModal";
+import TouristSettings from "./components/TouristSettings";
+import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 function App() {
   return (
     <Router>
@@ -74,11 +74,10 @@ function App() {
         <Route path="/AdvertiserHomepage" element={<AdvertiserHomePage />} />
         <Route path="/createActivity" element={<CreateActivity />} />
         <Route path="/places" element={<Places />} />
-        <Route path="/personalDetails" element={<PersonalDetails />} />
+        <Route path="/personalDetails" element={<TouristSettings />} />
         <Route path="/viewAllComplaints" element={<ViewAllComplaints />} />
         <Route path="/viewItineraries" element={<ViewItineraries />} />
         <Route path="/ratings" element={<Rating />} />
-        <Route path="/changePassword" element={<ChangePasword />} />
         <Route path="/uploadDocs" element={<UploadDocs />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
@@ -121,7 +120,7 @@ function App() {
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
-        <Route path="pop" element={<CompletedItineraries />} />
+        <Route path="pop" element={<TouristPrefrenceTags />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />
