@@ -24,6 +24,7 @@ const jwt = require("jsonwebtoken");
 const PromoCode = require("../Models/promoCode.js");
 const attractions = require("../Models/attractions.js");
 const Notification = require("../Models/notifications.js");
+const bookings = require("../Models/bookings.js");
 const { notifyAdvertiser } = require("./AdvertiserController.js");
 const { notifyTourGuide } = require("./tourGuideController.js");
 const Sales = require("../Models/sales.js");
@@ -31,6 +32,11 @@ const orderModel = require("../Models/order.js");
 const salesModel = require("../Models/sales.js");
 const Product = require("../Models/products.js");
 const cartModel = require("../Models/cart.js");
+const Comment = require("../Models/comments.js");
+const Rating = require("../Models/rating.js");
+const Review = require("../Models/review.js");
+const BookedFlights= require("../Models/bookedFlights.js");
+const BookedHotel=require("../Models/bookedHotel.js");
 const { default: axios } = require("axios");
 
 // Creating an admin
@@ -226,7 +232,7 @@ const deleteCategoryById = async (req, res) => {
 
 const deleteAccount = async (req, res) => {
   try {
-    const { Username } = req.body;
+    const { Username, userID } = req.body;
 
     if (!Username) {
       return res.status(400).json({ message: "Username is required" });
@@ -265,8 +271,12 @@ const deleteAccount = async (req, res) => {
     }
 
     const existingTourist = await tourist.findOne({ Username });
+    
     if (existingTourist) {
       await tourist.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
       accountDeleted = true;
     }
 

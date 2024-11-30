@@ -21,6 +21,8 @@ const HotelCard = ({
   cardPhotos = [],
   cancellationPolicy,
   sponsor,
+  checkInDate, // Destructure this prop
+  checkOutdate, // Destructure this prop
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,7 +34,8 @@ const HotelCard = ({
     provider,
     cardPhotos,
     cancellationPolicy,
-    sponsor,
+    sponsor, 
+
   };
 
   return (
@@ -112,7 +115,14 @@ const HotelCard = ({
           </div>
         </CardContent>
       </Card>
-      <HotelModal hotel={hotel} isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+      <HotelModal
+  hotel={hotel}
+  checkInDate={checkInDate} // Pass checkInDate
+  checkOutdate={checkOutdate} // Pass checkOutdate
+  isOpen={isModalOpen}
+  setIsOpen={setIsModalOpen}
+/>
+
     </>
   );
 };
