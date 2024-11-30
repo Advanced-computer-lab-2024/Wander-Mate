@@ -153,6 +153,7 @@ const UpcomingBookings = () => {
                     <p className="text-sm text-gray-500">Item ID: {booking.itemId}</p>
                     <p className="text-sm text-gray-500">
                       Created: {new Date(booking.createdAt).toLocaleDateString()}
+
                     </p>
                     <p className="text-sm text-gray-500">
                       Booked for: {new Date(booking.bookedDate).toLocaleDateString()}
@@ -192,7 +193,7 @@ const UpcomingBookings = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
-                      {selectedBooking?.itemDetails && (
+                      {selectedBooking?.itemId && (
                         <>
                           <DialogHeader>
                             <DialogTitle>{selectedBooking.itemModel} Details</DialogTitle>
@@ -200,42 +201,42 @@ const UpcomingBookings = () => {
                           <DialogDescription>
                             {selectedBooking.itemModel === 'Attraction' && (
                               <>
-                                <p>Name: {selectedBooking.itemDetails.Name}</p>
-                                <p>Type: {selectedBooking.itemDetails.Type}</p>
-                                <p>Price: ${selectedBooking.itemDetails.Price}</p>
+                                <p>Name: {selectedBooking.itemId.Name}</p>
+                                <p>Type: {selectedBooking.itemId.Type}</p>
+                                <p>Price: ${selectedBooking.itemId.Price}</p>
                               </>
                             )}
                             {selectedBooking.itemModel === 'Itinerary' && (
                               <>
-                                <p>Name: {selectedBooking.itemDetails.Name}</p>
-                                <p>Language: {selectedBooking.itemDetails.Language}</p>
-                                <p>Price: ${selectedBooking.itemDetails.Price}</p>
-                                <p>Timeline: {selectedBooking.itemDetails.TimeLine}</p>
+                                <p>Name: {selectedBooking.itemId.Name}</p>
+                                <p>Language: {selectedBooking.itemId.Language}</p>
+                                <p>Price: ${selectedBooking.itemId.Price}</p>
+                                <p>Timeline: {selectedBooking.itemId.TimeLine}</p>
                               </>
                             )}
                             {selectedBooking.itemModel === 'Transportation' && (
                               <>
-                                <p>Destination: {selectedBooking.itemDetails.destination}</p>
-                                <p>Start Place: {selectedBooking.itemDetails.startPlace}</p>
-                                <p>Vehicle Type: {selectedBooking.itemDetails.vehicleType}</p>
-                                <p>Price: ${selectedBooking.itemDetails.price}</p>
+                                <p>Destination: {selectedBooking.itemId.destination}</p>
+                                <p>Start Place: {selectedBooking.itemId.startPlace}</p>
+                                <p>Vehicle Type: {selectedBooking.itemId.vehicleType}</p>
+                                <p>Price: ${selectedBooking.itemId.price}</p>
                               </>
                             )}
                             {selectedBooking.itemModel === 'HotelBooked' && (
                               <>
-                                <p>Title: {selectedBooking.itemDetails.title}</p>
-                                <p>Check-in: {new Date(selectedBooking.itemDetails.checkIn).toLocaleDateString()}</p>
-                                <p>Check-out: {new Date(selectedBooking.itemDetails.checkOut).toLocaleDateString()}</p>
-                                <p>Price: ${selectedBooking.itemDetails.price}</p>
-                                <p>Provider: {selectedBooking.itemDetails.provider}</p>
+                                <p>Title: {selectedBooking.itemId.title}</p>
+                                <p>Check-in: {new Date(selectedBooking.itemId.checkIn).toLocaleDateString()}</p>
+                                <p>Check-out: {new Date(selectedBooking.itemId.checkOut).toLocaleDateString()}</p>
+                                <p>Price: ${selectedBooking.itemId.price}</p>
+                                <p>Provider: {selectedBooking.itemId.provider}</p>
                               </>
                             )}
                             {selectedBooking.itemModel === 'BookedFlights' && (
                               <>
-                                <p>Flight ID: {selectedBooking.itemDetails.flightID}</p>
-                                <p>Departure: {new Date(selectedBooking.itemDetails.departureDate).toLocaleString()}</p>
-                                <p>Arrival: {new Date(selectedBooking.itemDetails.arrivalDate).toLocaleString()}</p>
-                                <p>Price: ${selectedBooking.itemDetails.price}</p>
+                                <p>Flight ID: {selectedBooking.itemId.flightID}</p>
+                                <p>Departure: {new Date(selectedBooking.itemId.departureDate).toLocaleString()}</p>
+                                <p>Arrival: {new Date(selectedBooking.itemId.arrivalDate).toLocaleString()}</p>
+                                <p>Price: ${selectedBooking.itemId.price}</p>
                               </>
                             )}
                           </DialogDescription>

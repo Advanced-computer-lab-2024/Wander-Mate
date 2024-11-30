@@ -81,11 +81,11 @@ const data = {
 
 export default function RevenueChart() {
   return (
-    <div className="w-full p-6 bg-white rounded-lg shadow">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-6 bg-white rounded-lg shadow">
+      <div className="mb-9">
         <h2 className="text-xl font-semibold">Average Revenue</h2>
         <Select defaultValue="2023">
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[80px]">
             <SelectValue placeholder="Select Date" />
           </SelectTrigger>
           <SelectContent>
