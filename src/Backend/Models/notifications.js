@@ -8,12 +8,16 @@ const notificationSchema = new mongoose.Schema({
   aboutModel: {
     type: String,
     required: true,
-    enum: ["Product", "Itinerary", "Attraction"],
+    enum: ["Product", "Itinerary", "Attraction","Transportation"],
   },
   message: {
     type: String,
     required: true,
   },
+  isRead: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const notificationModel = new mongoose.Schema({

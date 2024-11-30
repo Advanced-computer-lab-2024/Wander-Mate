@@ -30,6 +30,7 @@ import {
   Plus,
   Minus,
   Trash2,
+  Bell,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -41,6 +42,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 
 const SiteLogo = () => (
   <svg
@@ -72,6 +78,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [touristID, setTouristId] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +109,33 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
 
     fetchTouristIdAndWishlist();
   }, [likedItemsCount]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) throw new Error("Username not found in session storage");
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+        const { userID } = await reply.json();
+        setTouristId(userID);
+
+        const response = await axios.get(`http://localhost:8000/viewMyNotifications/${userID}`);
+        setNotifications(response.data.notifications || []);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load notifications. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -156,7 +190,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
             touristID,
             productId: item._id,
             quantity: 1,
-            // picture:getImageSrc(item.picture),
           }
         );
 
@@ -308,6 +341,71 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     navigate("/products");
   };
 
+  const markNotificationAsRead = async (id) => {
+    try {
+      // Send a POST request to mark the notification as read
+      const response = await axios.put(`http://localhost:8000/markNotificationAsRead/${touristID}/${id}`);
+  
+      if (response.status === 200) {
+        // Update the notification state by setting the `isRead` flag to true
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notification) =>
+            notification._id === id ? { ...notification, isRead: true } : notification
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark notification as read. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+
+  const deleteNotification = useCallback(
+    async (notificationId) => {
+      try {
+        
+  
+        // Send delete request to the backend API to remove the notification from the database
+        const response = await axios.delete(`http://localhost:8000/removeNotification/${touristID}/${notificationId}`);
+  
+        // Check if the delete was successful (status code 200)
+        if (response.status === 200) {
+          // Remove the notification from the state (UI update)
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter((notification) => notification._id !== notificationId)
+          );
+  
+          // Show success toast
+          toast({
+            title: "Success",
+            description: "Notification deleted successfully.",
+          });
+        } else {
+          // If the response status is not 200, show an error toast
+          toast({
+            title: "Error",
+            description: "Failed to delete notification. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+  
+        // Show error toast
+        toast({
+          title: "Error",
+          description: "Failed to delete notification. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [touristID] // Make sure this dependency is correct. If the touristID changes, the callback will be recreated.
+  );
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -365,30 +463,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   Shop
                 </Button>
               </DropdownMenuTrigger>
-              {/* <DropdownMenuContent
-                className="w-56"
-                onMouseEnter={() => handleMouseEnter("shop")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownMenuItem>
-                  <Link to="/shop/travel-gear" className="flex items-center">
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    <span>Travel Gear</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/shop/accessories" className="flex items-center">
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    <span>Accessories</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/shop/souvenirs" className="flex items-center">
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    <span>Souvenirs</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
             </DropdownMenu>
 
             <DropdownMenu open={openDropdown === "bookings"}>
@@ -564,13 +638,13 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   )}
                 </ScrollArea>
                 <div className="mt-1 mb-2 space-y-2">
-                  {/* <Button
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={moveAllToCart}
-                    disabled={wishlistItems.length === 0}
                   >
                     Move All to Cart
-                  </Button> */}
+                  </Button>
                   <Button
                     variant="outline"
                     className="w-full"
@@ -586,6 +660,54 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <ShoppingCart className="h-5 w-5" />
               </Button>
             </Link>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Notifications">
+                  <Bell className="h-5 w-5" />
+                  {notifications.some(n => !n.isRead) && (
+                     <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-lg">Notifications</h3>
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-gray-500">No new notifications</p>
+                  ) : (
+                    <ScrollArea className="h-[300px]">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          className={`p-4 ${
+                            notification.isRead ? 'bg-gray-50' : 'bg-blue-50'
+                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                        >
+                          <p 
+                            className="text-sm"
+                            onClick={() => markNotificationAsRead(notification._id)}
+                          >
+                            {notification.message}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification._id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete notification</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -609,11 +731,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <span>Profile</span>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                  {/* <DropdownMenuItem>
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
-                    <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
-                  </DropdownMenuItem> */}
                   <DropdownMenuItem>
                     <History className="mr-2 h-4 w-4" />
                     <span>History</span>
