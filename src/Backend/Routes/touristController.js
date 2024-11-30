@@ -1596,6 +1596,17 @@ const cancelBooking = async (req, res) => {
   try {
     // Find the booking by ID
     const booking = await Booking.findById(bookingID);
+    const tourist = await userModel.findById(booking.userId);
+    const attractionId = await attractionModel.findById(booking.itemId);
+    const itineraryId = await itineraryModel.findById(booking.itemId);
+    const transportId = await TransportationModel.findById(booking.itemId);
+    const bookedHotelId = await HotelBooked.findById(booking.itemId);
+    const bookedFlightId = await BookedFlight.findById(booking.itemId);
+
+    const itemModel = booking.itemModel;
+    console.log(tourist);
+    console.log(booking.userId);
+
 
     // Check if the booking exists
     if (!booking) {
@@ -1617,7 +1628,32 @@ const cancelBooking = async (req, res) => {
     }
     // If eligible, proceed to cancel the booking
     await Booking.findByIdAndDelete(bookingID);
+    if (tourist) {
+      console.log(tourist.Wallet);
+      switch (itemModel) {
+  case "Attraction":
+      tourist.Wallet = (tourist.Wallet || 0) + attractionId.Price;
+    break;
+  case "Itinerary":
+      tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
+    break;
+  case "Transportation":
+      tourist.Wallet = (tourist.Wallet || 0) + transportId.Price;
+          break;
+  case "HotelBooked":
+      tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
+          break;
+  case "BookedFlights":
+      tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.Price;
+  default:
+    break;
+}
 
+      console.log(attractionId);
+      console.log(itemModel);
+      console.log(tourist.Wallet)
+      await tourist.save();
+    }
     res.status(200).json({ message: "Booking cancelled successfully." });
   } catch (err) {
     console.error("Error cancelling booking:", err);
@@ -3066,6 +3102,121 @@ const getGuideReviews = async (req, res) => {
   }
 };
 
+const viewMyNotifications = async (req, res) => {
+  const { touristId } = req.params; // Assuming the tourist ID is passed as a URL parameter
+
+  try {
+    // Find the notifications for the given tourist ID
+    const notifications = await Notification.findOne({ userID: touristId });
+
+    if (!notifications || notifications.notifications.length === 0) {
+      return res.status(201).json({
+        message: "No notifications found for this tourist.",
+      });
+    }
+
+    res.status(200).json({
+      message: "Notifications retrieved successfully.",
+      notifications: notifications.notifications, // Return all the notifications array for the tourist
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const removeNotification = async (req, res) => {
+  const { touristId, notificationId } = req.params; // Get touristId and notificationId from the request body
+  try {
+    // Validate input
+    if (!touristId || !notificationId) {
+      return res.status(400).json({ message: "Tourist ID and Notification ID are required." });
+    }
+
+    // Validate that the touristId and notificationId are valid ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(touristId) || !mongoose.Types.ObjectId.isValid(notificationId)) {
+      return res.status(400).json({ message: "Invalid Tourist ID or Notification ID." });
+    }
+
+    // Find the notification document for the given tourist ID
+    const notificationDoc = await Notification.findOne({ userID: touristId });
+
+    if (!notificationDoc) {
+      return res.status(404).json({ message: "No notifications found for this tourist." });
+    }
+
+    // Find the index of the notification to remove by notificationId
+    const notificationIndex = notificationDoc.notifications.findIndex(
+      (notification) => notification._id.toString() === notificationId
+    );
+
+    if (notificationIndex === -1) {
+      return res.status(404).json({ message: "Notification not found in the list." });
+    }
+
+    // Remove the notification from the array
+    notificationDoc.notifications.splice(notificationIndex, 1);
+
+    // Save the updated notification document
+    await notificationDoc.save();
+
+    res.status(200).json({
+      message: "Notification removed successfully.",
+      notifications: notificationDoc.notifications, // Return the updated notifications array
+    });
+  } catch (error) {
+    console.error("Error removing notification:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const markNotificationAsRead= async (req, res) => {
+  const { userID, notificationId } = req.params;
+
+  try {
+    // Validate input
+    if (!userID || !notificationId) {
+      return res.status(400).json({ message: "UserID and NotificationID are required." });
+    }
+
+    // Step 1: Find the user notification document by userID
+    const notificationDocument = await Notification.findOne({ "userID": userID });
+
+    if (!notificationDocument) {
+      return res.status(404).json({ message: "No notifications found for this user." });
+    }
+
+    // Step 2: Find the specific notification by notificationId
+    const notification = notificationDocument.notifications.find(
+      (notif) => notif._id.toString() === notificationId
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found." });
+    }
+
+    // Step 3: Check if isRead is not defined, set it to false if undefined
+    if (notification.isRead === undefined) {
+      notification.isRead = false;
+    }
+
+    // Step 4: Mark the notification as read (set isRead to true)
+    notification.isRead = true;
+
+    // Step 5: Save the updated notifications array in the user document
+    await notificationDocument.save();
+
+    // Step 6: Respond with a success message
+    res.status(200).json({
+      message: "Notification marked as read successfully.",
+      notification: notification,
+    });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3151,4 +3302,7 @@ module.exports = {
   getPreferences,
   addPreference,
   removePreference,
+  viewMyNotifications,
+  removeNotification,
+  markNotificationAsRead
 };
