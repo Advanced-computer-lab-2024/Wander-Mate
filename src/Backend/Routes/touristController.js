@@ -1654,9 +1654,10 @@ const bookItinerary = async (req, res) => {
     // Check if the itinerary exists
     const itinerary = await itineraryModel.findById(itineraryId);
     if (!itinerary) {
-      return res.status(40).json({ message: "Itinerary not found." });
+      return res.status(400).json({ message: "Itinerary not found." });
     }
 
+    console.log(bookedDate);
     // Create a new booking record using the bookingSchema model
     const newBooking = new bookingSchema({
       itemId: itineraryId,

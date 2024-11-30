@@ -28,7 +28,7 @@ const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const PayNow = ({ touristID, amount, disabled, itinerary, count }) => {
+const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
@@ -127,13 +127,12 @@ const PayNow = ({ touristID, amount, disabled, itinerary, count }) => {
         if (!reply.ok) throw new Error("Failed to get user ID");
   
         const { userID } = await reply.json();
-        
+        console.log(itinerary);
         await axios.post(`http://localhost:8000/bookItinerary`, {
           userId: userID,
-          itineraryId: itinerary._id,
-          bookedCount: count,
+          itineraryId: itinerary.itineraryId,
+          bookedDate: bookedDate,
         });
-  
         toast.success("Booking successful!");
       } catch (error) {
         console.error("Error booking itinerary:", error);
