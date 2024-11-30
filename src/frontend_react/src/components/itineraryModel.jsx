@@ -37,6 +37,7 @@ export default function ItineraryModel({
   };
 
   const handleOpenChange = (open) => {
+    console.log(itinerary.Creator);
     setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
@@ -214,6 +215,9 @@ export default function ItineraryModel({
                         <span className="font-semibold">Price:</span> {itinerary.currrn} {itinerary.price || "N/A"}
                       </p>
                       <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Ratings:</span> {itinerary.rating}
+                      </p>
+                      <p className="text-sm text-gray-600">
                         <span className="font-semibold">Available Dates:</span>
                       </p>
                       <div className="flex space-x-4">
@@ -368,11 +372,10 @@ export default function ItineraryModel({
             <Tabs defaultValue="info">
               <TabsList>
                 <TabsTrigger value="info">Itinerary Information</TabsTrigger>
-                <TabsTrigger value="reviews">
-                  Reviews ({reviews.length})
-                </TabsTrigger>
+                <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
                 <TabsTrigger value="map">Pickup Location</TabsTrigger>
                 <TabsTrigger value="map1">Dropoff Location</TabsTrigger>
+                <TabsTrigger value="tourGuide">Tour Guide Details:</TabsTrigger>
               </TabsList>
               <TabsContent value="info" className="mt-4">
                 <Card>
@@ -477,6 +480,19 @@ export default function ItineraryModel({
                   </CardContent>
                 </Card>
               </TabsContent>
+              <TabsContent value="tourGuide" className="mt-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="w-full h-64 rounded-lg overflow-hidden">
+                      <p className="text-gray-600">
+                        Tour Guide Details:{" "}
+                        {itinerary.Creator|| "N/A"}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
             </Tabs>
           </div>
         </div>
