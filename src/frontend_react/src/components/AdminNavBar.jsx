@@ -183,30 +183,7 @@ const AdminNavBar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu open={openDropdown === "changePassword"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("changePassword")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Password
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("changePassword")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/changePassword" className="flex items-center">
-                  <LockKeyholeIcon className="mr-2 h-4 w-4" />
-                  <span>Change Password</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">

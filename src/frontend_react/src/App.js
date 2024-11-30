@@ -63,6 +63,9 @@ import SellerPage from "./pages/productSeller";
 import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import admin from "./pages/admin";
+import Admin from "./pages/admin";
+import RevinueChart from "./components/RevinueChart";
 function App() {
   return (
     <Router>
@@ -101,6 +104,7 @@ function App() {
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/paymentByCard" element={<PaymentPage />} />
+        <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"
           element={<TourGuideProfileManager />}
@@ -137,6 +141,7 @@ function App() {
         <Route path="/sellerProduct" element={<SellerPage />} />
         <Route path="/purchasedProducts" element={<PurchasedProducts />} />
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
+        <Route path="/revinueChart" element={<RevinueChart />} />
 
       </Routes>
     </Router>
