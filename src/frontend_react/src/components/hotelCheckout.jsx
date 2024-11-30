@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { Button } from "../components/ui/button";
-import { toast } from "../components/ui/use-toast";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,32 +9,51 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "../components/ui/dialog";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import { ScrollArea } from "../components/ui/scroll-area";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Separator } from "../components/ui/separator";
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { ScrollArea } from "./ui/scroll-area";
+import { cn } from "../lib/utils";
 import axios from "axios";
+import { Alert, AlertDescription } from "./ui/alert";
+import { toast } from "./ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import PaymentForm from "../forms/PaymentForm";
+import { Bed, Users, Wifi, Coffee, Tv, Calendar } from 'lucide-react';
 
-const HotelCheckout = ({ hotel, userId }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const stripePromise = loadStripe(
+  "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
+);
+
+const HotelCheckOut = ({ hotel, userId, voucherCode }) => {
   const [activeIndex, setActiveIndex] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [totalSlide, setTotalSlide] = useState(3);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [selected, setSelected] = useState("rwb_1");
   const [roomType, setRoomType] = useState("single");
   const [roomCount, setRoomCount] = useState(1);
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [additionalServices, setAdditionalServices] = useState([]);
-  const [alertMessage, setAlertMessage] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleValueChange = (value) => {
-    setPaymentMethod(value === "wallet" ? "wallet" : "credit");
+    setSelected(value);
+    setPaymentMethod(value === "rwb_2" ? "cash" : "credit");
   };
 
+  useEffect(() => {
+    setTotalSlide(paymentMethod === "cash" ? 2 : 3);
+  }, [paymentMethod]);
+
   const calculateTotalPrice = () => {
+    if (!hotel || !hotel.price) return 0;
     const numericPrice = parseFloat(hotel.price.replace(/[^0-9.]/g, ""));
     let roomTypeIncrement = 0;
     if (roomType === "double") {
@@ -48,25 +66,38 @@ const HotelCheckout = ({ hotel, userId }) => {
     return basePrice + additionalCost;
   };
 
-  const handleNextSlide = () => {
-    if (activeIndex === 1) {
-      if (!checkInDate || !checkOutDate) {
-        setAlertMessage("Please select check-in and check-out dates.");
-        return;
+  const applyPromoCode = async () => {
+    if (voucherCode) {
+      try {
+        await axios.post(`http://localhost:8000/applyPromoCode/${userId}`, {
+          promoCode: voucherCode.code,
+          purchaseAmount: calculateTotalPrice(),
+        });
+        toast({
+          title: "Promo Code Applied",
+          description: "Your promo code has been successfully applied.",
+        });
+      } catch (error) {
+        console.error("Error applying promo code:", error);
+        toast({
+          title: "Error",
+          description: "Failed to apply promo code. Please try again.",
+          variant: "destructive",
+        });
+        throw error;
       }
     }
-    setActiveIndex((prevIndex) => prevIndex + 1);
-    setAlertMessage(null);
   };
 
-  const handlePrevSlide = () => {
-    if (activeIndex > 1) {
-      setActiveIndex((prevIndex) => prevIndex - 1);
+  const handlePayment = async () => {
+    if (!hotel) {
+      setAlertMessage("Hotel information is missing. Please try again.");
+      return;
     }
-  };
 
-  const handleBooking = async () => {
     try {
+      await applyPromoCode();
+
       const response = await axios.post("http://localhost:8000/bookHotel", {
         userId,
         hotelId: hotel.id,
@@ -75,162 +106,254 @@ const HotelCheckout = ({ hotel, userId }) => {
         checkOut: checkOutDate,
         price: calculateTotalPrice(),
         provider: hotel.provider,
+        roomType,
+        roomCount,
+        additionalServices,
       });
 
       if (response.status === 201) {
-        setActiveIndex(3); // Move to success screen
         toast({
           title: "Booking Successful",
-          description: "Your hotel has been booked successfully!",
+          description: "Your hotel has been booked successfully.",
         });
+        setActiveIndex(totalSlide);
       }
     } catch (error) {
-      console.error("Booking failed:", error);
-      setAlertMessage("Failed to book the hotel. Please try again.");
+      console.error("Error processing booking:", error);
+      toast({
+        title: "Booking Failed",
+        description: "There was an error processing your booking. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
+  const handleNextSlide = () => {
+    if (activeIndex === 2 && selected === "rwb_1") {
+      handlePayment();
+    } else if (activeIndex === totalSlide - 1) {
+      handlePayment();
+    } else {
+      setActiveIndex(activeIndex + 1);
+      setAlertMessage(null);
+    }
+  };
+
+  const handleWallet = async () => {
+    try {
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        userId,
+        amount: calculateTotalPrice(),
+      });
+      if (response.status !== 200) {
+        setAlertMessage(response.data || "Payment failed.");
+      } else {
+        await handlePayment();
+      }
+    } catch (error) {
+      setAlertMessage("Insufficient balance");
+    }
+  };
+
+  const handlePrevSlide = () => {
+    if (activeIndex > 1) {
+      setActiveIndex(activeIndex - 1);
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+    setActiveIndex(totalSlide);
+  };
+
+  const handlePaymentError = (error) => {
+    setAlertMessage(error);
+  };
+
+  if (!hotel) {
+    return <div>Loading hotel information...</div>;
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Button onClick={() => setIsOpen(true)}>Book Now</Button>
+        <Button className="w-full text-white py-2 rounded mt-1">
+          Book Now
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Book Your Stay at {hotel.title}</DialogTitle>
+      <DialogContent size="2xl" className="p-0">
+        <DialogHeader className="p-2 pb-0">
+          {alertMessage && (
+            <Alert color="destructive" variant="soft" className="mb-4">
+              <Icon
+                icon="heroicons:exclamation-triangle"
+                className="h-4 w-4"
+              />
+              <AlertDescription>{alertMessage}</AlertDescription>
+            </Alert>
+          )}
+          <DialogTitle className="text-base font-medium">
+            Book Hotel
+          </DialogTitle>
         </DialogHeader>
-        {alertMessage && (
-          <Alert variant="destructive">
-            <AlertDescription>{alertMessage}</AlertDescription>
-          </Alert>
-        )}
-        <ScrollArea className="mt-4 max-h-[60vh]">
-          {activeIndex === 1 && (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="checkInDate">Check-in Date</Label>
-                <Input
-                  id="checkInDate"
-                  type="date"
-                  value={checkInDate}
-                  onChange={(e) => setCheckInDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="checkOutDate">Check-out Date</Label>
-                <Input
-                  id="checkOutDate"
-                  type="date"
-                  value={checkOutDate}
-                  onChange={(e) => setCheckOutDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="roomType">Room Type</Label>
-                <Select value={roomType} onValueChange={setRoomType}>
-                  <SelectTrigger id="roomType">
-                    <SelectValue placeholder="Select room type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="single">Single Room</SelectItem>
-                    <SelectItem value="double">Double Room</SelectItem>
-                    <SelectItem value="suite">Suite</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="roomCount">Number of Rooms</Label>
-                <Input
-                  id="roomCount"
-                  type="number"
-                  value={roomCount}
-                  onChange={(e) => setRoomCount(parseInt(e.target.value, 10))}
-                  min={1}
-                  max={10}
-                />
-              </div>
-              <div>
-                <Label>Additional Services</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {["wifi", "breakfast", "parking", "gym"].map((service) => (
-                    <div key={service} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={service}
-                        checked={additionalServices.includes(service)}
-                        onChange={(e) => {
-                          setAdditionalServices(prev =>
-                            e.target.checked
-                              ? [...prev, service]
-                              : prev.filter(s => s !== service)
-                          );
-                        }}
-                        className="form-checkbox h-4 w-4"
+        <div className="max-h-[60vh]">
+          <ScrollArea className="h-full px-6">
+            {activeIndex === 1 && (
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label>Payment Method</Label>
+                  <RadioGroup
+                    defaultValue="rwb_1"
+                    onValueChange={handleValueChange}
+                  >
+                    <Label
+                      htmlFor="rwb_1"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_1" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon
+                          icon="mdi:credit-card-outline"
+                          className="text-lg"
+                        />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_1",
+                          })}
+                        >
+                          Credit/Debit Card
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_1"
+                        id="rwb_1"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
                       />
-                      <Label htmlFor={service}>{service.charAt(0).toUpperCase() + service.slice(1)}</Label>
-                    </div>
-                  ))}
+                    </Label>
+
+                    {/* <Label
+                      htmlFor="rwb_2"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_2" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon icon="mdi:cash-multiple" className="text-lg" />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_2",
+                          })}
+                        >
+                          Cash on Arrival
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_2"
+                        id="rwb_2"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                      />
+                    </Label> */}
+
+                    <Label
+                      htmlFor="rwb_3"
+                      className={cn(
+                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                        { "bg-primary": selected === "rwb_3" }
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon icon="mdi:wallet" className="text-lg" />
+                        <span
+                          className={cn("font-base text-default-800", {
+                            "text-primary-foreground": selected === "rwb_3",
+                          })}
+                        >
+                          Using Wallet
+                        </span>
+                      </span>
+                      <RadioGroupItem
+                        value="rwb_3"
+                        id="rwb_3"
+                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                      />
+                    </Label>
+                  </RadioGroup>
+                </div>
+               
+                <div className="bg-default-100 p-4 rounded-md">
+                  <h3 className="font-semibold mb-2">Booking Summary</h3>
+                  <p><strong>Hotel:</strong> {hotel.title}</p>
+                  <p><strong>Room Type:</strong> {roomType}</p>
+                  <p><strong>Number of Rooms:</strong> {roomCount}</p>
+                  <p><strong>Check-in:</strong> {checkInDate || 'Not set'}</p>
+                  <p><strong>Check-out:</strong> {checkOutDate || 'Not set'}</p>
+                  <p><strong>Additional Services:</strong> {additionalServices.join(', ') || 'None'}</p>
+                  <p><strong>Total Price:</strong> ${calculateTotalPrice()}</p>
                 </div>
               </div>
-            </div>
-          )}
-          {activeIndex === 2 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Payment Method</h3>
-              <RadioGroup defaultValue="credit" onValueChange={handleValueChange}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="credit" id="credit" />
-                  <Label htmlFor="credit">Credit Card</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet">Wallet</Label>
-                </div>
-              </RadioGroup>
-              <Separator />
-              <div>
-                <h4 className="font-medium">Booking Summary</h4>
-                <p>Check-in: {checkInDate}</p>
-                <p>Check-out: {checkOutDate}</p>
-                <p>Room Type: {roomType}</p>
-                <p>Number of Rooms: {roomCount}</p>
-                <p>Additional Services: {additionalServices.join(", ")}</p>
-                <p className="font-bold">Total Price: ${calculateTotalPrice()}</p>
+            )}
+
+            {activeIndex === 2 && selected === "rwb_1" && (
+              <Elements stripe={stripePromise}>
+                <PaymentForm
+                  amount={calculateTotalPrice()}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentError={handlePaymentError}
+                />
+              </Elements>
+            )}
+
+            {activeIndex === totalSlide && (
+              <div className="flex flex-col items-center">
+                <span className="text-7xl text-success">
+                  <Icon icon="material-symbols:check-circle-outline" />
+                </span>
+                <h3 className="mt-3 text-success text-2xl font-semibold">
+                  Booking Successful
+                </h3>
+                <p className="mt-4 text-lg font-semibold text-default-600">
+                  Thank you for your reservation!
+                </p>
               </div>
-            </div>
-          )}
-          {activeIndex === 3 && (
-            <div className="flex flex-col items-center">
-              <Icon icon="mdi:check-circle" className="text-6xl text-green-500" />
-              <h3 className="mt-4 text-xl font-semibold">Booking Successful!</h3>
-              <p className="mt-2 text-center">
-                Thank you for booking with us. We hope you enjoy your stay!
-              </p>
-            </div>
-          )}
-        </ScrollArea>
-        <DialogFooter>
-          {activeIndex > 1 && activeIndex < 3 && (
-            <Button variant="outline" onClick={handlePrevSlide}>
-              Back
+            )}
+          </ScrollArea>
+        </div>
+        <div className="p-6 pt-4 flex justify-between">
+          {activeIndex !== 1 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePrevSlide}
+              disabled={activeIndex === 1 || activeIndex === totalSlide}
+            >
+              Previous
             </Button>
-          )}
-          {activeIndex < 2 && (
-            <Button onClick={handleNextSlide}>Next</Button>
-          )}
-          {activeIndex === 2 && (
-            <Button onClick={handleBooking}>Confirm Booking</Button>
-          )}
-          {activeIndex === 3 && (
-            <DialogClose asChild>
-              <Button>Close</Button>
+          ) : (
+            <DialogClose asChild variant="outline">
+              <Button type="button">Close</Button>
             </DialogClose>
           )}
-        </DialogFooter>
+          {activeIndex === totalSlide ? (
+            <DialogClose asChild>
+              <Button type="button" onClick={() => navigate("/hotels")}>
+                Close
+              </Button>
+            </DialogClose>
+          ) : (
+            <Button
+              type="button"
+              onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
+            >
+              Next
+            </Button>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default HotelCheckout;
+export default HotelCheckOut;
 
