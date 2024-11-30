@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -14,38 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
-  Heart,
-  History,
-  LogOut,
-  Settings,
   ShoppingCart,
   User,
-  Plane,
-  Hotel,
+  AlertTriangle,
+  Backpack,
+  CloudUploadIcon,
+  LockKeyholeIcon,
   Ticket,
-  MapPin,
-  Info,
-  Users,
-  Briefcase,
-  Plus,
-  Minus,
-  Trash2,
-  BookmarkCheck,
-  createLucideIcon,
 } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area";
-import { toast } from "./ui/use-toast";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
-import AdminItineraries from "../pages/adminItineray";
-import CreatePlace from "./createPlace";
-import CreateActivity from "../pages/createActivity";
 
 const SiteLogo = () => (
   <svg
@@ -73,11 +48,6 @@ const SiteLogo = () => (
 
 const AdminNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [wishlistItems, setWishlistItems] = useState([]);
-  const [cartItems, setCartItems] = useState({});
-  const [touristID, setTouristId] = useState(0);
-  const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -160,7 +130,7 @@ const AdminNavBar = () => {
             >
               <DropdownMenuItem>
                 <Link to="/viewAllComplaints" className="flex items-center">
-                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <AlertTriangle className="mr-2 h-4 w-4" />
                   <span>View Complaints</span>
                 </Link>
               </DropdownMenuItem>
@@ -184,7 +154,7 @@ const AdminNavBar = () => {
             >
               <DropdownMenuItem>
                 <Link to="/createActivity" className="flex items-center">
-                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <Backpack className="mr-2 h-4 w-4" />
                   <span>Create Activity</span>
                 </Link>
               </DropdownMenuItem>
@@ -207,36 +177,12 @@ const AdminNavBar = () => {
             >
               <DropdownMenuItem>
                 <Link to="/uploadDocs" className="flex items-center">
-                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <CloudUploadIcon className="mr-2 h-4 w-4" />
                   <span>Upload Documents</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <DropdownMenu open={openDropdown === "changePassword"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("changePassword")}
-                onMouseLeave={handleMouseLeave}
-                onClick={goToChangePassword}
-              >
-                Password
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("about")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/about/story" className="flex items-center">
-                  <createLucideIcon className="mr-2 h-4 w-4" />
-                  <span> Change Password</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
           <DropdownMenu open={openDropdown === "changePassword"}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -254,22 +200,18 @@ const AdminNavBar = () => {
             >
               <DropdownMenuItem>
                 <Link to="/changePassword" className="flex items-center">
-                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <LockKeyholeIcon className="mr-2 h-4 w-4" />
                   <span>Change Password</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <DropdownMenu>
+
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar>
-                  <AvatarFallback>
-                    {sessionStorage
-                      .getItem("username")
-                      .slice(0, 2)
-                      .toUpperCase() || "WM"}
-                  </AvatarFallback>
+                  <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -282,30 +224,9 @@ const AdminNavBar = () => {
                   <span>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
-                    <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <History className="mr-2 h-4 w-4" />
-                  <span>History</span>
-                  <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span onClick={logout}>Log out</span>
-                <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-              </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu> */}
+          </DropdownMenu>
         </nav>
       </div>
     </header>
