@@ -71,7 +71,7 @@ import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
-import AllProducts from "./components/AllProducts";
+
 function App() {
   return (
     <Router>
