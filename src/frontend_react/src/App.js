@@ -60,9 +60,9 @@ import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
-import PurchasedProducts from "./components/PurchasedProductsModal";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import UserProfilePage from "./pages/userProfilePage";
 function App() {
   return (
     <Router>
@@ -135,8 +135,7 @@ function App() {
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
-        <Route path="/PurchasedProductsModal" element={<PurchasedProducts />} />
-
+        <Route path="/UserProfilePage" element={<UserProfilePage />} />
 
       </Routes>
     </Router>
