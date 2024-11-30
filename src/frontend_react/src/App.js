@@ -67,6 +67,9 @@ import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
 import MyBookings from "./components/myBookings";
+import admin from "./pages/admin";
+import Admin from "./pages/admin";
+import RevinueChart from "./components/RevinueChart";
 function App() {
   return (
     <Router>
@@ -105,6 +108,7 @@ function App() {
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/paymentByCard" element={<PaymentPage />} />
+        <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"
           element={<TourGuideProfileManager />}
@@ -143,7 +147,8 @@ function App() {
         <Route path="/purchasedProducts" element={<PurchasedProducts />} />
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
-        <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
+
         <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>

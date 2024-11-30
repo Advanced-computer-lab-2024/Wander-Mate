@@ -437,7 +437,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/about/story" className="flex items-center">
+                  <Link to="/aboutUs" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>

@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import { Navigate, useNavigate } from "react-router-dom";
 import PayNow from "./payNow";
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'; // Import the star icons
 
 export default function ItineraryModel({
   itinerary,
@@ -30,6 +31,18 @@ export default function ItineraryModel({
   const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
   const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating); // Full stars (integer part of the rating)
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half star if the remainder is >= 0.5
+    const emptyStars = 5 - fullStars - halfStars; // Remaining empty stars
+    
+    // Create an array of JSX elements for the stars
+    return [
+      ...Array(fullStars).fill(<FaStar className="text-yellow-500" />), // Full stars
+      ...Array(halfStars).fill(<FaStarHalfAlt className="text-yellow-500" />), // Half star
+      ...Array(emptyStars).fill(<FaRegStar className="text-yellow-500" />), // Empty stars
+    ];
+  };
 
   const openInMaps = (latitude, longitude) => {
     const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
@@ -37,7 +50,7 @@ export default function ItineraryModel({
   };
 
   const handleOpenChange = (open) => {
-    console.log(itinerary.Creator);
+    console.log("MMMMMAAAADDDIIIHAAAA", itinerary.Creator);
     setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
@@ -176,7 +189,7 @@ export default function ItineraryModel({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-
+      
       <DialogContent
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
@@ -370,6 +383,7 @@ export default function ItineraryModel({
 
             {/* Itinerary Description Tabs */}
             <Tabs defaultValue="info">
+            
               <TabsList>
                 <TabsTrigger value="info">Itinerary Information</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
@@ -385,7 +399,7 @@ export default function ItineraryModel({
                       {itinerary.Activities
                         ? itinerary.Activities.map(
                             (activity) => activity.$oid || activity
-                          ).join(", ")
+                          ).join(",  ")
                         : "N/A"}
                     </p>
                     <p className="text-gray-600">
@@ -484,14 +498,33 @@ export default function ItineraryModel({
                 <Card>
                   <CardContent className="p-6">
                     <div className="w-full h-64 rounded-lg overflow-hidden">
-                      <p className="text-gray-600">
-                        Tour Guide Details:{" "}
-                        {itinerary.Creator|| "N/A"}
-                      </p>
-                    </div>
-                  </CardContent>
+                      <div className="space-y-4 mt-4">
+                        <div>
+                          <strong>Email: </strong>
+                          <span>{itinerary.Creator.Email || "N/A"}</span>
+                        </div>
+
+                        <div>
+                          <strong>Username: </strong>
+                          <span>{itinerary.Creator.Username || "N/A"}</span>
+                        </div>
+
+                        <div>
+                          <strong>Average Rating: </strong>
+                          <div className="flex items-center">
+                            {itinerary.Creator.averageRating
+                              ? renderStars(itinerary.Creator.averageRating).map((star, index) => (
+                                  <span key={index}>{star}</span>
+                                ))
+                              : "N/A"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </CardContent>
                 </Card>
               </TabsContent>
+
 
             </Tabs>
           </div>
