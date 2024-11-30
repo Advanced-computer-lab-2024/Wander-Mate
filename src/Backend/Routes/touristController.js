@@ -452,7 +452,8 @@ const viewItineraries = async (req, res) => {
     const itineraries = await itineraryModel
       .find(itineraryDateFilter)
       .populate("Activities")
-      .populate("LocationsToVisit");
+      .populate("LocationsToVisit")
+      .populate("Creator");
     res.status(200).json(itineraries);
   } catch (error) {
     console.error(error); // Log the error to the console for debugging

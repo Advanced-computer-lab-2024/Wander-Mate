@@ -40,6 +40,8 @@ const ItineraryCard = ({
   DropOffLocation,
   Language,
   currrn,
+  rating,
+  Creator,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -68,6 +70,8 @@ const ItineraryCard = ({
     DropOffLocation,
     Language,
     currrn,
+    rating,
+    Creator,
   };
 
   return (
