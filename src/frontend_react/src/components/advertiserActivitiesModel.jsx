@@ -145,11 +145,6 @@ export default function AdvertiserActivityModal({ activity, isOpen, setIsOpen, c
                   </span>
                 </div>
                 <div className="flex space-x-4 mb-6">
-                {activity.isAvailable && !isBookingConfirmed && (
-                  <Button onClick={handleBooking} className="w-full mb-4">
-                    Book Now
-                  </Button>
-                )}
                     <Popover
                       open={isShareOpen}
                       onOpenChange={setIsShareOpen}

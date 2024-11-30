@@ -92,12 +92,11 @@ const PayNow = ({
 
   const handlePaymentSuccess = async () => {
     try {
-      const username = "Tourist";
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
 
-      const response = await axios.get(
-        `http://localhost:8000/getID/${username}`
-      );
-      const userID = response.data.userID;
+      const { userID } = await reply.json();
 
       const bookingData = {
         userID,

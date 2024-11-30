@@ -50,6 +50,7 @@ const touristSchema = new Schema(
     },
     PreferenceTags: {
       type: [ObjectId],
+      ref: "PreferenceTags",
       default: [],
     },
     PromoCode: {
