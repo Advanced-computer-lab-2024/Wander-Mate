@@ -149,7 +149,9 @@ function App() {
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
-        <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
+        <Route path="/AboutUs" element={<AboutUs />} />        
+        <Route path="/revinueChart" element={<RevinueChart />} />
+        <Route path="/completedActivities" element={<CompletedActivities />} />
 
         <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
