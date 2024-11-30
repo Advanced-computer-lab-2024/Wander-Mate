@@ -60,15 +60,17 @@ import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
 import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
-import PurchasedProducts from "./components/purchasedProducts";
+// import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
+import MyBookings from "./components/myBookings";
 import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
+import CompletedActivities from "./components/completedActivities";
 import AllProducts from "./components/AllProducts";
 function App() {
   return (
@@ -144,12 +146,12 @@ function App() {
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
-        <Route path="/purchasedProducts" element={<PurchasedProducts />} />
+        {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
-        <Route path="/allProducts" element={<AllProducts />} />
 
+        <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>
   );

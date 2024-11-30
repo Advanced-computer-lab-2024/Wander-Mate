@@ -247,12 +247,14 @@ export default function AdvertiserActivities() {
                   "Unknown Category"
                 }
                 tags={activity.Tags.map((tagId) => tagMap[tagId])}
+                checkedTags = {activity.Tags}
                 price={activity.Price}
                 date={activity.Date}
                 time={activity.Time}
                 category={activity.Category}
                 isAvailable={activity.IsAvailable}
                 rating={activity.rating}
+                discounts={activity.Discounts}
               />
             ))
           ) : (

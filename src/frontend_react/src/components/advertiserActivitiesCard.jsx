@@ -18,6 +18,8 @@ export default function AdvertiserActivityCard({
   category,
   isAvailable,
   rating,
+  discounts,
+  checkedTags,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,6 +35,8 @@ export default function AdvertiserActivityCard({
     category,
     isAvailable,
     rating,
+    discounts,
+    checkedTags,
   };
 
   return (
@@ -52,6 +56,19 @@ export default function AdvertiserActivityCard({
           <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
             Price: ${price}
           </p>
+
+          {discounts[0] && discounts.length > 0 ? (
+            <div className="mb-3">
+              <p className="text-sm font-bold">Discounts:</p>
+              <ul className="list-disc pl-5">
+                {discounts.map((discount, index) => (
+                  <li key={index} className="text-sm text-green-600">
+                    {discount.description}: {discount.percentage}% off
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
         <div className="flex items-center mb-2">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -64,6 +81,7 @@ export default function AdvertiserActivityCard({
           ))}
           <span className="ml-2 text-sm text-gray-600">({rating.toFixed(1)})</span>
         </div>
+        
         <div className="flex flex-wrap gap-1 mb-2">
           {tags && tags.length > 0 ? (
             tags.map((tag, index) => (
@@ -75,6 +93,7 @@ export default function AdvertiserActivityCard({
             <div className="w-full h-4" />
           )}
         </div>
+
         <div className="flex items-center mb-2">
           <Icon
             icon={isAvailable ? "ph:check-circle" : "ph:x-circle"}
@@ -86,6 +105,7 @@ export default function AdvertiserActivityCard({
             {isAvailable ? "Available" : "Not Available"}
           </span>
         </div>
+
         <Button
           className="w-full"
           variant="outline"
@@ -101,4 +121,3 @@ export default function AdvertiserActivityCard({
     </AdvertiserActivityModal>
   );
 }
-
