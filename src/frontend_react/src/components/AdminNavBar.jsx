@@ -30,6 +30,8 @@ import {
   Plus,
   Minus,
   Trash2,
+  BookmarkCheck,
+  createLucideIcon,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -69,7 +71,7 @@ const SiteLogo = () => (
   </svg>
 );
 
-const NavigationMenuBar = () => {
+const AdminNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -85,25 +87,6 @@ const NavigationMenuBar = () => {
     setOpenDropdown(null);
   };
 
-  const goToItinerary = () => {
-    navigate("/adminItineray");
-  };
-  const goToOrders = () => {
-    navigate("/adminOrders");
-  };
-  const goToComplaints = () => {
-    navigate("/viewAllComplaints");
-  };
-  const goToCreateActivity = () => {
-    navigate("/createActivity");
-  };
-  const goToUploadDocs = () => {
-    navigate("/uploadDocs");
-  };
-  const goToChangePassword = () => {
-    navigate("/changePassword");
-  };
-
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -112,54 +95,29 @@ const NavigationMenuBar = () => {
             <SiteLogo />
             <span className="text-xl font-bold">Wandermate</span>
           </Link>
-          <div className="hidden md:flex space-x-6">
-            <DropdownMenu open={openDropdown === "about"}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onMouseEnter={() => handleMouseEnter("about")}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  About Us
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-56"
-                onMouseEnter={() => handleMouseEnter("about")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownMenuItem>
-                  <Link to="/about/story" className="flex items-center">
-                    <Info className="mr-2 h-4 w-4" />
-                    <span>Our Story</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/team" className="flex items-center">
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Meet the Team</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+
           <DropdownMenu open={openDropdown === "adminItineray"}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 onMouseEnter={() => handleMouseEnter("adminItineray")}
                 onMouseLeave={handleMouseLeave}
-                onClick={goToItinerary}
               >
                 Itineray
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("adminItineray")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/adminItineray" className="flex items-center">
+                  <Ticket className="mr-2 h-4 w-4" />
+                  <span>View Itineraries</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu open={openDropdown === "orders"}>
             <DropdownMenuTrigger asChild>
@@ -167,40 +125,70 @@ const NavigationMenuBar = () => {
                 variant="ghost"
                 onMouseEnter={() => handleMouseEnter("orders")}
                 onMouseLeave={handleMouseLeave}
-                onClick={goToOrders}
               >
                 Orders
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("orders")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/adminOrders" className="flex items-center">
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  <span>View Orders</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
+
           <DropdownMenu open={openDropdown === "complaints"}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 onMouseEnter={() => handleMouseEnter("complaints")}
                 onMouseLeave={handleMouseLeave}
-                onClick={goToComplaints}
               >
                 Complaints
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("complaints")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/viewAllComplaints" className="flex items-center">
+                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <span>View Complaints</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu open={openDropdown === "createPlace"}>
-            <DropdownMenuTrigger asChild>
-              <CreatePlace />
-            </DropdownMenuTrigger>
-          </DropdownMenu>
+
           <DropdownMenu open={openDropdown === "createActivity"}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 onMouseEnter={() => handleMouseEnter("createActivity")}
                 onMouseLeave={handleMouseLeave}
-                onClick={goToCreateActivity}
               >
-                Create Activity
+                Activity
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("createActivity")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/createActivity" className="flex items-center">
+                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <span>Create Activity</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu open={openDropdown === "uploadDocs"}>
             <DropdownMenuTrigger asChild>
@@ -208,13 +196,24 @@ const NavigationMenuBar = () => {
                 variant="ghost"
                 onMouseEnter={() => handleMouseEnter("uploadDocs")}
                 onMouseLeave={handleMouseLeave}
-                onClick={goToUploadDocs}
               >
-                Upload Documents
+                Documents
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("uploadDocs")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/uploadDocs" className="flex items-center">
+                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <span>Upload Documents</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu open={openDropdown === "changePassword"}>
+          {/* <DropdownMenu open={openDropdown === "changePassword"}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -222,14 +221,95 @@ const NavigationMenuBar = () => {
                 onMouseLeave={handleMouseLeave}
                 onClick={goToChangePassword}
               >
-                Change Password
+                Password
               </Button>
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("about")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/about/story" className="flex items-center">
+                  <createLucideIcon className="mr-2 h-4 w-4" />
+                  <span> Change Password</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+          <DropdownMenu open={openDropdown === "changePassword"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("changePassword")}
+                onMouseLeave={handleMouseLeave}
+              >
+                Password
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("changePassword")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/changePassword" className="flex items-center">
+                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  <span>Change Password</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
+          {/* <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Avatar>
+                  <AvatarFallback>
+                    {sessionStorage
+                      .getItem("username")
+                      .slice(0, 2)
+                      .toUpperCase() || "WM"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Wishlist</span>
+                    <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <History className="mr-2 h-4 w-4" />
+                  <span>History</span>
+                  <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span onClick={logout}>Log out</span>
+                <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
         </nav>
       </div>
     </header>
   );
 };
 
-export default NavigationMenuBar;
+export default AdminNavBar;
