@@ -559,7 +559,7 @@ const getSellerImage = async (req, res) => {
 const sendOutOfStockNotificationSeller = async (req, res) => {
   try {
     // Destructure data from the request body
-    const { message, sellerId, productId } = req.body;
+    const { message, sellerId, productId, productName } = req.body;
 
     if (!message || !sellerId) {
       return res
@@ -580,12 +580,36 @@ const sendOutOfStockNotificationSeller = async (req, res) => {
         },
       },
       { upsert: true, new: true } // Create a new document if it doesn't exist
-    );
+    ).populate("userID");
+
+    let data = {
+      service_id: process.env.EMAILJS_SERVICE_ID_2,
+      template_id: "template_duqg74i",
+      user_id: process.env.EMAILJS_USER_ID_2,
+      accessToken: process.env.EMAILJS_PRIVATE_KEY_2,
+      template_params: {
+        to_email: notification.userID.Email,
+        product_name: productName,
+        restock_alert_link: "http://localhost:3000/loginPage",
+        logo_url:
+          "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
+      },
+    };
+    const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${process.env.EMAILJS_PRIVATE_KEY_2}`,
+      },
+      body: JSON.stringify(data),
+    });
 
     res.status(200).json({
       message: "Notification added successfully for seller.",
       notification,
     });
+
+
 
     console.log("Notification added for seller:", notification);
   } catch (error) {
