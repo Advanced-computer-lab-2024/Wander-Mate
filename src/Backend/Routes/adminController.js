@@ -1619,9 +1619,7 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
         to_email: user.Email,
         product_name: productName,
         restock_alert_link: "http://localhost:3000/loginPage",
-        logo_url:
-          "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
-      },
+
     };
     const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
       method: "POST",
