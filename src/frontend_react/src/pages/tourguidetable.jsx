@@ -13,6 +13,8 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const TourGuideTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
@@ -43,6 +45,46 @@ const TourGuideTable = () => {
       setCollapsedRows([...collapsedRows, id]);
     }
   };
+
+  const deletetourguide = async (tourGuide) => {
+    
+      const deleteTourguide =  axios.delete("http://localhost:8000/deleteaccount", {
+        data: { Username: tourGuide.Username,
+          userID: tourGuide._id,
+         },
+      });
+      toast.promise(
+        deleteTourguide,
+        {
+          loading: "Deleting TourGuide...",
+          success: "TourGuide account deleted successfully!",
+          error: "Error deleting the account.",
+        },
+        {
+          // Optional settings for the toast (you can customize these)
+          success: {
+            duration: 4000, // The toast will disappear after 4 seconds
+            icon: "✅",
+          },
+          error: {
+            duration: 4000,
+            icon: "❌",
+          },
+        }
+      );
+      try {
+        const response = await deleteTourguide;
+      if (response.status === 200) {
+        // Remove the tourist from the state if the deletion is successful
+        setTourGuides(tourGuides.filter(tourGuide1 => tourGuide1.Username !== tourGuide.Username));
+        alert("tourGuide account deleted successfully!");
+      }
+    } catch (err) {
+      setError("An error occurred while deleting the account");
+      alert("Error deleting account");
+    }
+  };
+
 
   const columns = [
     {
@@ -83,6 +125,8 @@ const TourGuideTable = () => {
   };
 
   return (
+    <>
+    <Toaster/>
     <Table>
       <TableHeader className="text-left">
         <TableRow>
@@ -138,7 +182,7 @@ const TourGuideTable = () => {
                   size="icon"
                   variant="outline"
                   color="destructive"
-                  className="h-7 w-7 border-none p-0"
+                  className="h-7 w-7 border-none p-0" onClick={()=> deletetourguide(tourGuide)}
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
@@ -163,6 +207,7 @@ const TourGuideTable = () => {
         ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 

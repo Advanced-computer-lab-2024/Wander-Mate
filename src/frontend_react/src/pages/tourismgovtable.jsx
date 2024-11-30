@@ -13,12 +13,15 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const TourismGovTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
   const [tourismGovs, setTourismGovs] = useState([]); // Store tourism governor data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
 
   useEffect(() => {
     const fetchTourismGovs = async () => {
@@ -44,10 +47,50 @@ const TourismGovTable = () => {
     }
   };
 
+  const deleteTourismGov = async (tourismGov) => {
+    
+      const deletetourismgov =  axios.delete("http://localhost:8000/deleteaccount", {
+        data: { Username: tourismGov.Username,
+          userID: tourismGov._id,
+         },
+      });
+      toast.promise(
+        deletetourismgov,
+        {
+          loading: "Deleting seller...",
+          success: "Seller account deleted successfully!",
+          error: "Error deleting the account.",
+        },
+        {
+          // Optional settings for the toast (you can customize these)
+          success: {
+            duration: 4000, // The toast will disappear after 4 seconds
+            icon: "✅",
+          },
+          error: {
+            duration: 4000,
+            icon: "❌",
+          },
+        }
+      );
+      try {
+        const response = await deletetourismgov;
+      if (response.status === 200) {
+        // Remove the tourist from the state if the deletion is successful
+        setTourismGovs(tourismGovs.filter(tourismGov1 => tourismGov1.Username !== tourismGov.Username));
+        //alert("tourismGov account deleted successfully!");
+      }
+    } catch (err) {
+      setError("An error occurred while deleting the account");
+      //alert("Error deleting account");
+    }
+  };
+
+
   const columns = [
     {
       key: "user",
-      label: "User",
+      label: "Tourism Governor",
     },
     {
       key: "createdAt",
@@ -77,6 +120,8 @@ const TourismGovTable = () => {
   };
 
   return (
+    <>
+    <Toaster/>
     <Table>
       <TableHeader className="text-left">
         <TableRow>
@@ -111,7 +156,7 @@ const TourismGovTable = () => {
                   size="icon"
                   variant="outline"
                   color="destructive"
-                  className="h-7 w-7 border-none p-0"
+                  className="h-7 w-7 border-none p-0" onClick={()=> deleteTourismGov(tourismGov)} 
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
@@ -121,6 +166,7 @@ const TourismGovTable = () => {
         ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 

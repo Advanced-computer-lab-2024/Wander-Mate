@@ -13,6 +13,8 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const AdvertiserTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
@@ -43,11 +45,49 @@ const AdvertiserTable = () => {
       setCollapsedRows([...collapsedRows, id]);
     }
   };
+  const deleteAdvertiser = async (advertiser) => {
+    
+      const deleteadvertiser =  axios.delete("http://localhost:8000/deleteaccount", {
+        data: { Username: advertiser.Username,
+          userID: advertiser._id,
+         },
+      });
+      toast.promise(
+        deleteadvertiser,
+        {
+          loading: "Deleting advertiser...",
+          success: "Advertiser account deleted successfully!",
+          error: "Error deleting the account.",
+        },
+        {
+          // Optional settings for the toast (you can customize these)
+          success: {
+            duration: 4000, // The toast will disappear after 4 seconds
+            icon: "✅",
+          },
+          error: {
+            duration: 4000,
+            icon: "❌",
+          },
+        }
+      );
+      try {
+        const response = await deleteadvertiser;
+      if (response.status === 200) {
+        // Remove the tourist from the state if the deletion is successful
+        setAdvertisers(advertisers.filter(advertiser1 => advertiser1.Username !== advertiser.Username));
+        //alert("Advertiser account deleted successfully!");
+      }
+    } catch (err) {
+      setError("An error occurred while deleting the account");
+      //alert("Error deleting account");
+    }
+  };
 
   const columns = [
     {
       key: "user",
-      label: "User",
+      label: "Advertiser",
     },
     {
       key: "company",
@@ -83,6 +123,8 @@ const AdvertiserTable = () => {
   };
 
   return (
+    <>
+    <Toaster/>
     <Table>
       <TableHeader className="text-left">
         <TableRow>
@@ -139,7 +181,7 @@ const AdvertiserTable = () => {
                   size="icon"
                   variant="outline"
                   color="destructive"
-                  className="h-7 w-7 border-none p-0"
+                  className="h-7 w-7 border-none p-0" onClick={()=> deleteAdvertiser(advertiser)}
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
@@ -166,6 +208,7 @@ const AdvertiserTable = () => {
         ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 
