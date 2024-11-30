@@ -44,6 +44,24 @@ const TouristTable = () => {
     }
   };
 
+  const deleteTourist = async (tourist) => {
+    try {
+      const response = await axios.delete("http://localhost:8000/deleteaccount", {
+        data: { Username: tourist.Username,
+          userID: tourist._id,
+         },
+      });
+      if (response.status === 200) {
+        // Remove the tourist from the state if the deletion is successful
+        setTourists(tourists.filter(tourist1 => tourist1.Username !== tourist.Username));
+        alert("Tourist account deleted successfully!");
+      }
+    } catch (err) {
+      setError("An error occurred while deleting the account");
+      alert("Error deleting account");
+    }
+  };
+
   const columns = [
     {
       key: "user",
@@ -84,7 +102,7 @@ const TouristTable = () => {
 
   return (
     <Table>
-        <TableHeader className="text-left">
+      <TableHeader className="text-left">
         <TableRow>
           {columns.map((column) => (
             <TableHead key={column.key}>{column.label}</TableHead>
@@ -135,6 +153,7 @@ const TouristTable = () => {
                   variant="outline"
                   color="destructive"
                   className="h-7 w-7 border-none"
+                  onClick={() => deleteTourist(tourist)} // Call deleteTourist with the username
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
