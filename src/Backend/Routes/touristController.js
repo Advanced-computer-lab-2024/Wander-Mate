@@ -1858,6 +1858,32 @@ const getProductReviews = async (req, res) => {
   }
 };
 
+const addPreference = async (req, res) => {
+  const { touristId, preference } = req.body; // Get preference from the request body
+  try {
+    // Check if the touristId exists in the database
+    const tourist = await userModel.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({
+        message: "Tourist not found",
+      });
+    }
+    // Add the preference to the tourist's preferences array
+    tourist.PreferenceTags.push(preference);
+    await tourist.save();
+    res.status(201).json({
+      message: "Preference added successfully",
+      preference: preference,
+    });
+  } catch (error) {
+    console.error("Error adding preference:", error.message);
+    res.status(400).json({
+      message: "Error adding preference",
+      error: error.message,
+    });
+  }
+};
+
 // Method to select preferences
 const selectPreferences = async (req, res) => {
   try {
@@ -1886,6 +1912,44 @@ const selectPreferences = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating preferences:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+const getPreferences = async (req, res) => {
+  try {
+    const { touristId } = req.params;
+    const tourist = await userModel
+      .findById(touristId)
+      .populate("PreferenceTags");
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+    return res.status(200).json({
+      message: "Preferences retrieved successfully.",
+      data: tourist.PreferenceTags,
+    });
+  } catch (error) {
+    console.error("Error fetching preferences:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+const removePreference = async (req, res) => {
+  try {
+    const { touristId, preferenceId } = req.params;
+    const tourist = await userModel.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+    tourist.PreferenceTags.pull(preferenceId);
+    await tourist.save();
+    return res.status(200).json({
+      message: "Preference removed successfully.",
+      data: tourist.PreferenceTags,
+    });
+  } catch (error) {
+    console.error("Error removing preference:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -3093,4 +3157,7 @@ module.exports = {
   getMyRating,
   getItineraryReviews,
   getGuideReviews,
+  getPreferences,
+  addPreference,
+  removePreference,
 };
