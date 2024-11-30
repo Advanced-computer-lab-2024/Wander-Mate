@@ -5,41 +5,42 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
-import { X } from "lucide-react";
-import { StarRating } from "./StarRating";
+import { X } from 'lucide-react';
+import { StarRating } from "./star-rating";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
 export default function PurchasedProductsModal({
-  itinerary,
+  product,
   isOpen,
   setIsOpen,
   children,
-  myItRating,
-  myTourRating,
-  Creator,
-  reFetchratings,
+  myProductRating,
+  mySellerRating,
+  seller,
+  reFetchRatings,
 }) {
   const [reviews, setReviews] = useState([]);
-  const [GuideReviews, setGuideReviews] = useState([]);
-  const [itineraryRating, setItineraryRating] = useState(0);
-  const [tourGuideRating, setTourGuideRating] = useState(0);
-  const [itineraryReview, setItineraryReview] = useState("");
-  const [tourGuideReview, setTourGuideReview] = useState("");
+  const [sellerReviews, setSellerReviews] = useState([]);
+  const [productRating, setProductRating] = useState(0);
+  const [sellerRating, setSellerRating] = useState(0);
+  const [productReview, setProductReview] = useState("");
+  const [sellerReview, setSellerReview] = useState("");
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
   };
 
   useEffect(() => {
-    setItineraryRating(myItRating);
-    setTourGuideRating(myTourRating);
+    setProductRating(myProductRating);
+    setSellerRating(mySellerRating);
   }, [isOpen]);
+
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(
-            `http://localhost:8000/getProductReviews/${productId}`
+          `http://localhost:8000/getProductReviews/${product._id}`
         );
         const data = await response.json();
         setReviews(data);
@@ -48,14 +49,14 @@ export default function PurchasedProductsModal({
       }
     };
 
-    const fetchGuideReviews = async () => {
+    const fetchSellerReviews = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/getGuideReviews/${Creator._id}`
+          `http://localhost:8000/getSellerReviews/${seller._id}`
         );
         const data = await response.json();
         console.log(data);
-        setGuideReviews(data);
+        setSellerReviews(data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -63,9 +64,9 @@ export default function PurchasedProductsModal({
 
     if (isOpen) {
       fetchReviews();
-      fetchGuideReviews();
+      fetchSellerReviews();
     }
-  }, [isOpen, itinerary.Ratings]);
+  }, [isOpen, product.ratings]);
 
   const handleSubmitReview = async () => {
     try {
@@ -73,35 +74,37 @@ export default function PurchasedProductsModal({
       if (!username) throw new Error("Username not found in session storage");
 
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
-      if (itineraryReview !== "") {
+      if (productReview !== "") {
         const response = await axios.post(
-          `http://localhost:8000/comment-on-itinerary/${userID}`,
+          `http://localhost:8000/reviewProduct`,
           {
-            itineraryID: itinerary._id,
-            Body: itineraryReview,
+            productId: product._id,
+            userId: userID,
+            review: productReview,
             username,
           }
         );
         if (response.status === 200) {
-          toast.success("Review submitted successfully!");
-          setItineraryReview("");
+          toast.success("Product review submitted successfully!");
+          setProductReview("");
         }
       }
-      if (tourGuideReview !== "") {
+      if (sellerReview !== "") {
         const response = await axios.post(
-          `http://localhost:8000/commentOnGuide/${userID}`,
+          `http://localhost:8000/reviewSeller`,
           {
-            guideID: Creator._id,
-            text: tourGuideReview,
+            sellerId: seller._id,
+            userId: userID,
+            review: sellerReview,
             username,
           }
         );
         if (response.status === 200) {
-          toast.success("Review submitted successfully!");
-          setTourGuideReview("");
+          toast.success("Seller review submitted successfully!");
+          setSellerReview("");
         }
       }
 
@@ -112,45 +115,45 @@ export default function PurchasedProductsModal({
     }
   };
 
-  const rateItinerary = async (rating) => {
+  const rateProduct = async (rating) => {
     try {
       const username = sessionStorage.getItem("username");
       if (!username) throw new Error("Username not found in session storage");
 
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
-      const response = await axios.post("http://localhost:8000/rateItinerary", {
-        touristId: userID,
-        itineraryId: itinerary._id,
+      const response = await axios.post("http://localhost:8000/rateProduct", {
+        userId: userID,
+        productId: product._id,
         rating: rating,
       });
-      if (!response.status === 200) throw new Error("Failed to rate itinerary");
-      setItineraryRating(rating);
-      reFetchratings(itinerary._id);
+      if (!response.status === 200) throw new Error("Failed to rate product");
+      setProductRating(rating);
+      reFetchRatings(product._id);
     } catch {
       console.log("Error");
     }
   };
 
-  const rateTourGuide = async (rating) => {
+  const rateSeller = async (rating) => {
     try {
       const username = sessionStorage.getItem("username");
       if (!username) throw new Error("Username not found in session storage");
 
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
-      const response = await axios.post("http://localhost:8000/RateGuide", {
-        touristId: userID,
-        guideId: Creator._id,
+      const response = await axios.post("http://localhost:8000/rateSeller", {
+        userId: userID,
+        sellerId: seller._id,
         rating: rating,
       });
-      if (!response.status === 200) throw new Error("Failed to rate itinerary");
-      setTourGuideRating(rating);
-      reFetchratings(Creator._id);
+      if (!response.status === 200) throw new Error("Failed to rate seller");
+      setSellerRating(rating);
+      reFetchRatings(seller._id);
     } catch {
       console.log("Error");
     }
@@ -176,112 +179,86 @@ export default function PurchasedProductsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                 <img
-                  src={itinerary.image || "/placeholder.svg"}
-                  alt={itinerary.name}
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {itinerary.name}
+                  {product.name}
                 </h1>
                 <p className="text-sm text-gray-600 mb-4">
-                  <span className="font-semibold">Date:</span>{" "}
-                  {new Date(itinerary.BookedDate).toLocaleDateString()}
+                  <span className="font-semibold">Price:</span> ${product.price.toFixed(2)}
                 </p>
-
                 <p className="text-sm text-gray-600 mb-4">
-                  <span className="font-semibold">Tour Guide:</span>{" "}
-                  {Creator.FullName || Creator.Username}
+                  <span className="font-semibold">Seller:</span> {seller.Username}
                 </p>
                 <p className="text-gray-600">
-                  <span className="font-semibold">Locations visited:</span>{" "}
-                  {itinerary.LocationsToVisit &&
-                  itinerary.LocationsToVisit.length > 0 ? (
-                    <ul className="list-disc pl-5">
-                      {itinerary.LocationsToVisit.map((location, index) => (
-                        <li key={index}>{location}</li> // Customize how you display each location
-                      ))}
-                    </ul>
-                  ) : (
-                    <span>No locations were to visit</span> // Fallback if there are no locations
-                  )}
-                </p>
-
-                <p className="text-gray-600">
-                  <span className="font-semibold">Activities:</span>{" "}
-                  {itinerary.Activities && itinerary.Activities.length > 0 ? (
-                    <ul className="list-disc pl-5">
-                      {itinerary.Activities.map((activity, index) => (
-                        <li key={index}>{activity}</li> // Customize how you display each activity
-                      ))}
-                    </ul>
-                  ) : (
-                    <span>No activities were available</span> // Fallback if there are no activities
-                  )}
+                  <span className="font-semibold">Description:</span> {product.description}
                 </p>
               </div>
             </div>
 
-            <Tabs defaultValue="itinerary">
+            <Tabs defaultValue="product">
               <TabsList>
-                <TabsTrigger value="itinerary">Rate Itinerary</TabsTrigger>
-                <TabsTrigger value="tourguide">Rate Tour Guide</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                <TabsTrigger value="GuideReviews">
-                  Tour Guide Reviews
+                <TabsTrigger value="product">Rate Product</TabsTrigger>
+                <TabsTrigger value="seller">Rate Seller</TabsTrigger>
+                <TabsTrigger value="reviews">Product Reviews</TabsTrigger>
+                <TabsTrigger value="sellerReviews">
+                  Seller Reviews
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="itinerary" className="mt-4">
+              <TabsContent value="product" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="itinerary-rating">
-                          Itinerary Rating
+                        <Label htmlFor="product-rating">
+                          Product Rating
                         </Label>
                         <StarRating
-                          rating={itineraryRating}
-                          onRatingChange={rateItinerary}
+                          rating={productRating}
+                          onRatingChange={rateProduct}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="itinerary-review">
-                          Itinerary Review
+                        <Label htmlFor="product-review">
+                          Product Review
                         </Label>
                         <Textarea
-                          id="itinerary-review"
-                          placeholder="Share your thoughts about the itinerary..."
-                          value={itineraryReview}
-                          onChange={(e) => setItineraryReview(e.target.value)}
+                          id="product-review"
+                          placeholder="Share your thoughts about the product..."
+                          value={productReview}
+                          onChange={(e) => setProductReview(e.target.value)}
                         />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="tourguide" className="mt-4">
+              <TabsContent value="seller" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="tourguide-rating">
-                          Tour Guide Rating
+                        <Label htmlFor="seller-rating">
+                          Seller Rating
                         </Label>
                         <StarRating
-                          rating={tourGuideRating}
-                          onRatingChange={rateTourGuide}
+                          rating={sellerRating}
+                          onRatingChange={rateSeller}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="tourguide-review">
-                          Tour Guide Review
+                        <Label htmlFor="seller-review">
+                          Seller Review
                         </Label>
                         <Textarea
-                          id="tourguide-review"
-                          placeholder="Share your thoughts about the tour guide..."
-                          value={tourGuideReview}
-                          onChange={(e) => setTourGuideReview(e.target.value)}
+                          id="seller-review"
+                          placeholder="Share your thoughts about the seller..."
+                          value={sellerReview}
+                          onChange={(e) => setSellerReview(e.target.value)}
                         />
                       </div>
                     </div>
@@ -313,12 +290,12 @@ export default function PurchasedProductsModal({
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="GuideReviews" className="mt-4">
+              <TabsContent value="sellerReviews" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    {reviews.length > 0 ? (
+                    {sellerReviews.length > 0 ? (
                       <ul className="space-y-4">
-                        {GuideReviews.map((review, index) => (
+                        {sellerReviews.map((review, index) => (
                           <li
                             key={index}
                             className="border-b pb-4 last:border-b-0"
@@ -328,12 +305,12 @@ export default function PurchasedProductsModal({
                                 {review.username}
                               </span>
                             </div>
-                            <p className="text-gray-600">{review.Body}</p>
+                            <p className="text-gray-600">{review.review}</p>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-gray-600">No reviews yet.</p>
+                      <p className="text-gray-600">No seller reviews yet.</p>
                     )}
                   </CardContent>
                 </Card>
@@ -349,3 +326,4 @@ export default function PurchasedProductsModal({
     </Dialog>
   );
 }
+
