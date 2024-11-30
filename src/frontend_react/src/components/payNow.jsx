@@ -122,25 +122,30 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
   };
   const handlePaymentSuccess = async () => {
     try {
-        const username = sessionStorage.getItem("username");
-        const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get user ID");
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
   
-        const { userID } = await reply.json();
-        console.log(itinerary);
-        await axios.post(`http://localhost:8000/bookItinerary`, {
-          userId: userID,
-          itineraryId: itinerary.itineraryId,
-          bookedDate: bookedDate,
-        });
-        toast.success("Booking successful!");
-      } catch (error) {
-        console.error("Error booking itinerary:", error);
-        toast.error("Failed to book itinerary");
-        setIsBooked(false);
-      }
+      const { userID } = await reply.json();
+      console.log(itinerary);
+  
+      await axios.post(`http://localhost:8000/bookItinerary`, {
+        userId: userID,
+        itineraryId: itinerary.itineraryId,
+        bookedDate: bookedDate,
+      });
+  
+      toast.success("Booking successful!");
+      
+      window.location.href = "http://localhost:3000/viewItineraries";
+    } catch (error) {
+      console.error("Error booking itinerary:", error);
+      toast.error("Failed to book itinerary");
+      setIsBooked(false);
+    }
     setActiveIndex(totalSlide);
   };
+  
 
   const handlePaymentError = (error) => {
     setAlertMessage(error);
