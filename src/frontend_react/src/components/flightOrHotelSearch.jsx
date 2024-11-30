@@ -294,6 +294,8 @@ const FlightOrHotelSearch = () => {
               key={hotel.id}
               id={hotel.id}
               title={hotel.title.replace(/^\d+\.\s*/, '')}
+              checkInDate={checkInDate}
+              checkOutdate={checkOutdate}
               price={hotel.price}
               rating={hotel.rating}
               provider={hotel.provider}
