@@ -7,12 +7,11 @@ import { Input } from "../components/ui/input";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
+import HotelCheckOut from "./hotelCheckout";
 
-const HotelModal = ({ children, hotel, isOpen, setIsOpen }) => {
+const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDate }) => {
   const [roomType, setRoomType] = useState("single");
   const [roomCount, setRoomCount] = useState(1);
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
   const [additionalServices, setAdditionalServices] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
 
@@ -92,6 +91,7 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen }) => {
             </div>
             <div>
               <Label htmlFor="roomCount">Number of Rooms</Label>
+            
               <Input
                 id="roomCount"
                 type="number"
@@ -131,39 +131,26 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen }) => {
                 ))}
               </div>
             </div>
-            <Separator />
-            <div>
-              <Label>Payment Method</Label>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={setPaymentMethod}
-                className="flex flex-col space-y-1 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="credit_card" id="credit_card" />
-                  <Label htmlFor="credit_card" className="flex items-center">
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Credit Card
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="paypal" id="paypal" />
-                  <Label htmlFor="paypal">Wallet</Label>
-                </div>
-              </RadioGroup>
-            </div>
+            
           </div>
-          <Separator />
-          <div className="mt-4 flex justify-between items-center">
-            <div>
-              <p className="text-lg font-semibold">Total Price</p>
-              <p className="text-2xl font-bold">${calculateTotalPrice()}</p>
-            </div>
-            <div className="space-x-2">
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleBooking}>Book Now</Button>
+          <div className="mt-4">
+            <p className="text-lg font-semibold">Total Price</p>
+            <p className="text-2xl font-bold">${calculateTotalPrice()}</p>
+          </div>
+          <Separator className="my-6" />
+          <div className="mt-4  flex justify-between items-center" >
+            <Button variant="outline" onClick={() => setIsOpen(false)}className = "mt-5">
+              Cancel
+            </Button>
+            <div className="mt-4 py-15 flex justify-between items-center" >
+            <HotelCheckOut
+              hotel={hotel}
+              roomType={roomType}
+              roomCount={roomCount}
+              checkInDate={checkInDate}
+              checkOutDate={checkOutDate}
+              additionalServices={additionalServices}
+            />
             </div>
           </div>
         </DialogContent>
