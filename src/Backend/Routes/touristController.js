@@ -815,6 +815,7 @@ const searchHotel = async (req, res) => {
   }
 };
 
+
 const bookHotel = async (req, res) => {
   const { userId, hotelId, title, checkIn, checkOut, price, provider } =
     req.body;
