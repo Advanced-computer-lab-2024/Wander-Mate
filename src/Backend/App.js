@@ -99,6 +99,9 @@ const {
   getMyRating,
   getItineraryReviews,
   getGuideReviews,
+  getPreferences,
+  addPreference,
+  removePreference,
 } = require("./Routes/touristController");
 
 const {
@@ -334,6 +337,7 @@ app.patch("/updatePreferenceTagById/:id", updatePreferenceTagById);
 app.delete("/deletePreferenceTags", deletePreferenceTags);
 app.delete("/deletePreferenceTagsById/:id", deletPreferenceTagsById);
 app.get("/readPreferenceTags", readPreferenceTags);
+app.post("/addPreferenceTag", addPreference);
 app.post("/complaints/:complaintId/reply", replytoComplaints);
 app.delete("/deleteComplaint/:complaintId", deleteComplaint);
 app.get(
@@ -594,3 +598,5 @@ app.put("/emptyCart/:cartId", emptyCart);
 app.get("/getMyRating/:touristId/:itineraryId", getMyRating);
 app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
 app.get("/getGuideReviews/:guideId", getGuideReviews);
+app.get("/getPreferences/:touristId", getPreferences);
+app.delete("/removePreference/:touristId/:preferenceId", removePreference);
