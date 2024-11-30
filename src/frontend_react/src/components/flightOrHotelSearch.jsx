@@ -4,6 +4,7 @@ import FlightForm from "../forms/flightForm";
 import Flight from "../components/flight";
 import axios from "axios";
 import Select from "react-select";
+import HotelCard from "./hotelCard";
 
 const FlightOrHotelSearch = () => {
   const [selected, setSelected] = useState(0);
@@ -25,6 +26,8 @@ const FlightOrHotelSearch = () => {
   const [selectedPlace, setSelectedPlace] = useState("");
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutdate, setCheckOutDate] = useState("");
+  const [hotels, setHotels] = useState([]);
+
 
   // Fetch countries on component mount
   useEffect(() => {
@@ -101,6 +104,7 @@ const FlightOrHotelSearch = () => {
           checkOutdate: checkOutdate,
         });
         console.log(response);
+        setHotels(response.data);
         // Handle the response data here
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -282,6 +286,23 @@ const FlightOrHotelSearch = () => {
             </div>
           )}
         </React.Fragment>
+      )}
+      {selected === 0 && !loading && !error && hotels.length > 0 && (
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {hotels.map((hotel) => (
+            <HotelCard
+              key={hotel.id}
+              id={hotel.id}
+              title={hotel.title.replace(/^\d+\.\s*/, '')}
+              price={hotel.price}
+              rating={hotel.rating}
+              provider={hotel.provider}
+              cardPhotos={hotel.cardPhotos}
+              cancellationPolicy={hotel.cancellationPolicy}
+              sponsor={hotel.sponsor}
+            />
+          ))}
+    </div>
       )}
     </div>
   );
