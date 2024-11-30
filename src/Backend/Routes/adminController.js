@@ -1834,6 +1834,16 @@ const emptyCart = async (req, res) => {
   }
 };
 
+const getRevenue = async (req, res) => {
+  const {userID} = req.params;
+  try{
+    const sales = await Sales.findOne({user: userID});
+    return res.status(200).json(sales.revenue);
+  }catch{
+    res.status(400).json("ERROR");
+  }
+}
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1899,4 +1909,5 @@ module.exports = {
   updateSellerSales,
   updateProductQuantity,
   emptyCart,
+  getRevenue,
 };

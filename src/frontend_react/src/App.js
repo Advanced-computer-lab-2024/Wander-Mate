@@ -69,6 +69,7 @@ import AboutUs from "./pages/aboutUs";
 import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
+import AllProducts from "./components/AllProducts";
 function App() {
   return (
     <Router>
@@ -147,6 +148,7 @@ function App() {
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
+        <Route path="/allProducts" element={<AllProducts />} />
 
       </Routes>
     </Router>

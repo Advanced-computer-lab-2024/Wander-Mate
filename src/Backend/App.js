@@ -196,6 +196,7 @@ const {
   updateProductQuantity,
   updateSellerSales,
   emptyCart,
+  getRevenue,
 } = require("./Routes/adminController.js");
 
 const {
@@ -606,3 +607,4 @@ app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
 app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
+app.get("/getRevenue/:userID", getRevenue);
