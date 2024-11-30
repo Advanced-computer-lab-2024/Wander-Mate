@@ -785,15 +785,12 @@ const searchHotel = async (req, res) => {
   const { place, checkInDate, checkOutdate } = req.body;
   try {
     const locationData = await searchHotellocation(place);
-    console.log(locationData);
     if (!locationData || !locationData.data || locationData.data.length === 0) {
       return res.status(400).json({ message: "No location data found" });
     }
-    console.log("to");
 
     const geoId = locationData.data[0].geoId;
     const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
-    console.log("0");
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -802,22 +799,17 @@ const searchHotel = async (req, res) => {
       },
     });
 
-    console.log("3");
-
     if (!response.ok) {
-      console.log(response);
       throw new Error(`Error: ${response.status}`);
     }
-    console.log("1");
+
     const hotelData = await response.json();
-    console.log("2");
-    // Check if the response data has hotels
+
     if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
-      console.log("hiii");
       return res.status(400).json({ message: "No hotels found" });
     }
 
-    // Retrieve the first 5 hotels and extract relevant details
+    // Extract relevant details including photos
     const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
       id: hotel.id,
       title: hotel.title,
@@ -826,20 +818,18 @@ const searchHotel = async (req, res) => {
       provider: hotel.provider || "N/A",
       cancellationPolicy: hotel.priceDetails || "N/A",
       isSponsored: hotel.isSponsored || false,
-      imageUrl:
-        hotel.cardPhotos && hotel.cardPhotos[0]
-          ? hotel.cardPhotos[0].url
-          : "N/A",
+      cardPhotos: hotel.cardPhotos
+        ? hotel.cardPhotos.map((photo) => photo.sizes.urlTemplate.replace("{width}", "400").replace("{height}", "300"))
+        : [], // Default to empty array if no photos
     }));
 
     res.status(200).json(hotels);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const bookHotel = async (req, res) => {
   const { userId, hotelId, title, checkIn, checkOut, price, provider } =

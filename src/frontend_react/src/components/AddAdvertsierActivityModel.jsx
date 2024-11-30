@@ -208,7 +208,7 @@ const AddAdvertiserActivityModel = () => {
       <DialogTrigger asChild>
         <Button>Add New Activity</Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto" size="full">
         <Toaster />
         <div className="relative">
           <Button
