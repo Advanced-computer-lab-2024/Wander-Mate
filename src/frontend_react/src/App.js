@@ -66,6 +66,7 @@ import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
+import MyBookings from "./components/myBookings";
 import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
@@ -148,6 +149,7 @@ function App() {
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />        <Route path="/revinueChart" element={<RevinueChart />} />
 
+        <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>
   );
