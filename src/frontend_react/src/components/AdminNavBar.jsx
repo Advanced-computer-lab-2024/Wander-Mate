@@ -66,23 +66,23 @@ const AdminNavBar = () => {
             <span className="text-xl font-bold">Wandermate</span>
           </Link>
 
-          <DropdownMenu open={openDropdown === "adminItineray"}>
+          <DropdownMenu open={openDropdown === "adminItinerary"}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                onMouseEnter={() => handleMouseEnter("adminItineray")}
+                onMouseEnter={() => handleMouseEnter("adminItinerary")}
                 onMouseLeave={handleMouseLeave}
               >
-                Itineray
+                Itineraries
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-56"
-              onMouseEnter={() => handleMouseEnter("adminItineray")}
+              onMouseEnter={() => handleMouseEnter("adminItinerary")}
               onMouseLeave={handleMouseLeave}
             >
               <DropdownMenuItem>
-                <Link to="/adminItineray" className="flex items-center">
+                <Link to="/adminItinerary" className="flex items-center">
                   <Ticket className="mr-2 h-4 w-4" />
                   <span>View Itineraries</span>
                 </Link>
