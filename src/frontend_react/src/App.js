@@ -63,6 +63,7 @@ import SellerPage from "./pages/productSeller";
 import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import CompletedActivities from "./components/completedActivities";
 function App() {
   return (
     <Router>
@@ -137,6 +138,7 @@ function App() {
         <Route path="/sellerProduct" element={<SellerPage />} />
         <Route path="/purchasedProducts" element={<PurchasedProducts />} />
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
+        <Route path="/completedActivities" element={<CompletedActivities/>}/>
 
       </Routes>
     </Router>

@@ -979,12 +979,14 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { Body, eventId, touristID } = req.body;
+  const { Body, eventId, touristID,username } = req.body;
   try {
-    const newComment = await CommentModel.create({
-      touristID,
-      Body,
-      aboutId: eventId,
+
+    const newComment = await ReviewModel.create({
+      userId: touristID, // Assuming `touristID` matches your schema
+      itemId: eventId,
+      username,
+      review: Body, // Assuming `text` is a field in your comment schema
     });
     res
       .status(200)
@@ -1671,15 +1673,52 @@ const rateEvent = async (req, res) => {
       userId, // Refers to the user rating the event
       rating,
     });
-    await axios.put(`http://localhost:8000/updateEventRatings/${eventId}`);
+    await axios.put(`http://localhost:8000/updateActivityRating/${eventId}`);
     res
       .status(200)
       .json({ message: "Rating posted successfully", rating: newRating });
   } catch (error) {
-    console.error("Error posting rating:", error.message);
+    console.error("Error posting rating:", error);
     res
       .status(400)
       .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+const updateActivityRatings = async (req, res) => {
+  const{eventId} = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(eventId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      const updatedEvent = await attractionModel.findByIdAndUpdate(
+        { _id: eventId },
+        {
+          Ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        event: updatedEvent, // Return the updated event data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this event." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -3303,5 +3342,6 @@ module.exports = {
   removePreference,
   viewMyNotifications,
   removeNotification,
-  markNotificationAsRead
+  markNotificationAsRead,
+  updateActivityRatings,
 };
