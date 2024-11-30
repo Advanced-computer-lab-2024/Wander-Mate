@@ -102,6 +102,9 @@ const {
   getPreferences,
   addPreference,
   removePreference,
+  viewMyNotifications,
+  removeNotification,
+  markNotificationAsRead
 } = require("./Routes/touristController");
 
 const {
@@ -568,10 +571,12 @@ app.delete("/removeProduct", removeProduct);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
+app.get("/viewMyNotifications/:touristId",viewMyNotifications);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
+app.delete("/removeNotification/:touristId/:notificationId",removeNotification);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
@@ -600,3 +605,4 @@ app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
 app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
+app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
