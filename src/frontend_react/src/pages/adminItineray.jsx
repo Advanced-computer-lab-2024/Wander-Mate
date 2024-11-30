@@ -393,7 +393,7 @@ export default function AdminItineraries() {
               DropOffLocation = {itinerary.DropOffLocation}
               Language={itinerary.Language}
               flag={itinerary.isFlagged}
-              
+              Creator={itinerary.Creator}
             />
           ))
         ) : (

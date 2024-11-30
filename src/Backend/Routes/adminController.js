@@ -37,6 +37,14 @@ const Rating = require("../Models/rating.js");
 const Review = require("../Models/review.js");
 const BookedFlights= require("../Models/bookedFlights.js");
 const BookedHotel=require("../Models/bookedHotel.js");
+const BookedMarks=require("../Models/bookMark.js");
+const address =require("../Models/address.js");
+const cart = require("../Models/cart.js");
+const wishlist = require("../Models/whishlist.js");
+const notifications = require("../Models/notifications.js");
+const promocode = require("../Models/promoCode.js");
+const sales = require("../Models/sales.js");
+const transportations = require("../Models/transportation.js");
 const { default: axios } = require("axios");
 
 // Creating an admin
@@ -243,30 +251,131 @@ const deleteAccount = async (req, res) => {
     const existingAdmin = await adminModel.findOne({ Username });
     if (existingAdmin) {
       await adminModel.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
       accountDeleted = true;
     }
 
     const existingAdvertiser = await Advertiser.findOne({ Username });
     if (existingAdvertiser) {
       await Advertiser.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
       accountDeleted = true;
     }
 
     const existingSeller = await Seller.findOne({ Username });
     if (existingSeller) {
       await Seller.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
       accountDeleted = true;
     }
 
     const existingTourGuide = await tourGuide.findOne({ Username });
     if (existingTourGuide) {
       await tourGuide.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
       accountDeleted = true;
     }
 
     const existingTourismGoverner = await TourismGoverner.findOne({ Username });
     if (existingTourismGoverner) {
       await TourismGoverner.deleteOne({ Username });
+      await bookings.deleteMany({userId : userID});
+      await Comment.deleteMany({userId : userID});
+      await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
+
       accountDeleted = true;
     }
 
@@ -277,6 +386,24 @@ const deleteAccount = async (req, res) => {
       await bookings.deleteMany({userId : userID});
       await Comment.deleteMany({userId : userID});
       await Rating.deleteMany({userId : userID});
+      await BookedFlights.deleteMany({userId : userID});
+      await BookedHotel.deleteMany({userId : userID});
+      await orderModel.deleteMany({userId : userID});
+      await Review.deleteMany({userId : userID});
+      await Complaints.deleteMany({Maker : userID});
+      await BookedMarks.deleteMany({userId : userID});
+      await address.deleteMany({userId : userID});
+      await cart.deleteMany({touristID : userID});
+      await wishlist.deleteMany({userId : userID});
+      await notifications.deleteMany({userID : userID});
+      await attractions.deleteMany({Creator : userID});
+      await Itinerary.deleteMany({Creator : userID});
+      await Product.deleteMany({Seller : userID});
+      await promocode.deleteMany({assignedTo : userID});
+      await sales.deleteMany({user : userID});
+      await transportations.deleteMany({advertiserId : userID});
+      await PdfDetails.deleteMany({Owner : userID});
+
       accountDeleted = true;
     }
 
@@ -1854,6 +1981,16 @@ const getRevenue = async (req, res) => {
   }
 }
 
+const getEmail = async (req, res) => {
+  const {userID} = req.params;
+  try{
+    const response = await userModel.findOne({userID});
+    return res.status(200).json(response);
+  }catch{
+    res.status(400).json("Error");
+  }
+}
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -1920,4 +2057,5 @@ module.exports = {
   updateProductQuantity,
   emptyCart,
   getRevenue,
+  getEmail
 };
