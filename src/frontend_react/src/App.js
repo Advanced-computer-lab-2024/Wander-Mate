@@ -72,6 +72,7 @@ import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
+import AddTourismGovButton from "./components/AddTourismGovButton";
 function App() {
   return (
     <Router>
@@ -155,6 +156,7 @@ function App() {
 
         <Route path="/myBookings" element={<MyBookings />} />
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
+        <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
       </Routes>
     </Router>
   );
