@@ -1,16 +1,17 @@
+'use client'
+
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Card, CardContent } from "./ui/card";
-import { Textarea } from "./ui/textarea";
-import { Label } from "./ui/label";
+import { Card, CardContent } from "../components/ui/card";
+import { Textarea } from "../components/ui/textarea";
+import { Label } from "../components/ui/label";
 import { X } from 'lucide-react';
-import { StarRating } from "./star-rating";
+import { StarRating } from "../components/StarRating";
 import { toast } from "react-hot-toast";
-import axios from "axios";
 
-export default function PurchasedProductsModal({
+export default function PurchasedProductModal({
   product,
   isOpen,
   setIsOpen,
@@ -20,7 +21,7 @@ export default function PurchasedProductsModal({
   seller,
   reFetchRatings,
 }) {
-  const [reviews, setReviews] = useState([]);
+  const [productReviews, setProductReviews] = useState([]);
   const [sellerReviews, setSellerReviews] = useState([]);
   const [productRating, setProductRating] = useState(0);
   const [sellerRating, setSellerRating] = useState(0);
@@ -39,24 +40,13 @@ export default function PurchasedProductsModal({
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8000/getProductReviews/${product._id}`
-        );
-        const data = await response.json();
-        setReviews(data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
+        const productResponse = await fetch(`/api/getProductReviews/${product._id}`);
+        const productData = await productResponse.json();
+        setProductReviews(productData);
 
-    const fetchSellerReviews = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/getSellerReviews/${seller._id}`
-        );
-        const data = await response.json();
-        console.log(data);
-        setSellerReviews(data);
+        const sellerResponse = await fetch(`/api/getSellerReviews/${seller._id}`);
+        const sellerData = await sellerResponse.json();
+        setSellerReviews(sellerData);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -64,9 +54,8 @@ export default function PurchasedProductsModal({
 
     if (isOpen) {
       fetchReviews();
-      fetchSellerReviews();
     }
-  }, [isOpen, product.ratings]);
+  }, [isOpen, product._id, seller._id]);
 
   const handleSubmitReview = async () => {
     try {
@@ -77,32 +66,40 @@ export default function PurchasedProductsModal({
       if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
+
       if (productReview !== "") {
-        const response = await axios.post(
-          `http://localhost:8000/reviewProduct`,
-          {
+        const response = await fetch(`/api/reviewProduct`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             productId: product._id,
             userId: userID,
             review: productReview,
             username,
-          }
-        );
-        if (response.status === 200) {
+          }),
+        });
+        if (response.ok) {
           toast.success("Product review submitted successfully!");
           setProductReview("");
         }
       }
+
       if (sellerReview !== "") {
-        const response = await axios.post(
-          `http://localhost:8000/reviewSeller`,
-          {
+        const response = await fetch(`/api/reviewSeller`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             sellerId: seller._id,
             userId: userID,
             review: sellerReview,
             username,
-          }
-        );
-        if (response.status === 200) {
+          }),
+        });
+        if (response.ok) {
           toast.success("Seller review submitted successfully!");
           setSellerReview("");
         }
@@ -124,16 +121,23 @@ export default function PurchasedProductsModal({
       if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
-      const response = await axios.post("http://localhost:8000/rateProduct", {
-        userId: userID,
-        productId: product._id,
-        rating: rating,
+      const response = await fetch("/api/rateProduct", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userID,
+          productId: product._id,
+          rating: rating,
+        }),
       });
-      if (!response.status === 200) throw new Error("Failed to rate product");
+      if (!response.ok) throw new Error("Failed to rate product");
       setProductRating(rating);
       reFetchRatings(product._id);
-    } catch {
-      console.log("Error");
+    } catch (error) {
+      console.error("Error rating product:", error);
+      toast.error("Failed to rate product");
     }
   };
 
@@ -146,26 +150,29 @@ export default function PurchasedProductsModal({
       if (!reply.ok) throw new Error("Failed to get user ID");
 
       const { userID } = await reply.json();
-      const response = await axios.post("http://localhost:8000/rateSeller", {
-        userId: userID,
-        sellerId: seller._id,
-        rating: rating,
-      });
-      if (!response.status === 200) throw new Error("Failed to rate seller");
-      setSellerRating(rating);
-      reFetchRatings(seller._id);
-    } catch {
-      console.log("Error");
+      // const response = await fetch("/api/rateSeller", {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     userId: userID,
+      //     sellerId: seller._id,
+      //     rating: rating,
+      //   }),
+      // });
+      // if (!response.ok) throw new Error("Failed to rate seller");
+      // setSellerRating(rating);
+      // reFetchRatings(seller._id);
+    } catch (error) {
+      console.error("Error rating seller:", error);
+      toast.error("Failed to rate seller");
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent
-        className="max-w-4xl max-h-[90vh] overflow-y-auto"
-        size="full"
-      >
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="relative">
           <Button
             variant="ghost"
@@ -179,7 +186,7 @@ export default function PurchasedProductsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                 <img
-                  src={product.image || "/placeholder.svg"}
+                  src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -189,14 +196,12 @@ export default function PurchasedProductsModal({
                   {product.name}
                 </h1>
                 <p className="text-sm text-gray-600 mb-4">
-                  <span className="font-semibold">Price:</span> ${product.price.toFixed(2)}
+                  <span className="font-semibold">Price:</span> {product.price} {product.currency}
                 </p>
                 <p className="text-sm text-gray-600 mb-4">
-                  <span className="font-semibold">Seller:</span> {seller.Username}
+                  <span className="font-semibold">Seller:</span> {seller.name}
                 </p>
-                <p className="text-gray-600">
-                  <span className="font-semibold">Description:</span> {product.description}
-                </p>
+                <p className="text-gray-600">{product.description}</p>
               </div>
             </div>
 
@@ -204,28 +209,22 @@ export default function PurchasedProductsModal({
               <TabsList>
                 <TabsTrigger value="product">Rate Product</TabsTrigger>
                 <TabsTrigger value="seller">Rate Seller</TabsTrigger>
-                <TabsTrigger value="reviews">Product Reviews</TabsTrigger>
-                <TabsTrigger value="sellerReviews">
-                  Seller Reviews
-                </TabsTrigger>
+                <TabsTrigger value="product-reviews">Product Reviews</TabsTrigger>
+                <TabsTrigger value="seller-reviews">Seller Reviews</TabsTrigger>
               </TabsList>
               <TabsContent value="product" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="product-rating">
-                          Product Rating
-                        </Label>
+                        <Label htmlFor="product-rating">Product Rating</Label>
                         <StarRating
                           rating={productRating}
                           onRatingChange={rateProduct}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="product-review">
-                          Product Review
-                        </Label>
+                        <Label htmlFor="product-review">Product Review</Label>
                         <Textarea
                           id="product-review"
                           placeholder="Share your thoughts about the product..."
@@ -242,18 +241,14 @@ export default function PurchasedProductsModal({
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="seller-rating">
-                          Seller Rating
-                        </Label>
+                        <Label htmlFor="seller-rating">Seller Rating</Label>
                         <StarRating
                           rating={sellerRating}
                           onRatingChange={rateSeller}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="seller-review">
-                          Seller Review
-                        </Label>
+                        <Label htmlFor="seller-review">Seller Review</Label>
                         <Textarea
                           id="seller-review"
                           placeholder="Share your thoughts about the seller..."
@@ -265,45 +260,35 @@ export default function PurchasedProductsModal({
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="reviews" className="mt-4">
+              <TabsContent value="product-reviews" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    {reviews.length > 0 ? (
+                    {productReviews.length > 0 ? (
                       <ul className="space-y-4">
-                        {reviews.map((review, index) => (
-                          <li
-                            key={index}
-                            className="border-b pb-4 last:border-b-0"
-                          >
+                        {productReviews.map((review, index) => (
+                          <li key={index} className="border-b pb-4 last:border-b-0">
                             <div className="flex items-center mb-2">
-                              <span className="text-sm font-medium">
-                                {review.username}
-                              </span>
+                              <span className="text-sm font-medium">{review.username}</span>
                             </div>
                             <p className="text-gray-600">{review.review}</p>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-gray-600">No reviews yet.</p>
+                      <p className="text-gray-600">No product reviews yet.</p>
                     )}
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="sellerReviews" className="mt-4">
+              <TabsContent value="seller-reviews" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
                     {sellerReviews.length > 0 ? (
                       <ul className="space-y-4">
                         {sellerReviews.map((review, index) => (
-                          <li
-                            key={index}
-                            className="border-b pb-4 last:border-b-0"
-                          >
+                          <li key={index} className="border-b pb-4 last:border-b-0">
                             <div className="flex items-center mb-2">
-                              <span className="text-sm font-medium">
-                                {review.username}
-                              </span>
+                              <span className="text-sm font-medium">{review.username}</span>
                             </div>
                             <p className="text-gray-600">{review.review}</p>
                           </li>
@@ -318,7 +303,7 @@ export default function PurchasedProductsModal({
             </Tabs>
 
             <Button className="w-full" onClick={handleSubmitReview}>
-              Submit Review
+              Submit Reviews
             </Button>
           </div>
         </div>
