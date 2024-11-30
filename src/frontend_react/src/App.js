@@ -66,6 +66,7 @@ import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
+import MyBookings from "./components/myBookings";
 function App() {
   return (
     <Router>
@@ -143,6 +144,7 @@ function App() {
         <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>
   );
