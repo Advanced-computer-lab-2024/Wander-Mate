@@ -417,6 +417,7 @@ export default function ViewItineraries() {
                   PickUpLocation={itinerary.PickUpLocation}
                   DropOffLocation={itinerary.DropOffLocation}
                   Language={itinerary.Language}
+                  Creator = {itinerary.Creator}
                 />
               ))
             ) : (
