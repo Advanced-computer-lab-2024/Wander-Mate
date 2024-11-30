@@ -63,6 +63,7 @@ import SellerPage from "./pages/productSeller";
 import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
 import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
+import HotelCheckout from "./components/hotelCheckout";
 function App() {
   return (
     <Router>
@@ -130,6 +131,7 @@ function App() {
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
+        <Route path="/hotelcheckout" element={<HotelCheckout />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/payForFlight" element={<PayForFlight />} />
         <Route path="/adminNavBar" element={<AdminNavBar />} />
