@@ -60,8 +60,11 @@ const touristSchema = new Schema(
     bookmarkedAttractions: {
       type: [ObjectId],
       default: [],
-    }
-
+    },
+    Currency: {
+      type: String,
+      default: "USD",
+    },
   },
   { timestamps: true, strict: false }
 );

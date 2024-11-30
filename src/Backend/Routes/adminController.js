@@ -29,6 +29,8 @@ const { notifyTourGuide } = require("./tourGuideController.js");
 const Sales = require("../Models/sales.js");
 const orderModel = require("../Models/order.js");
 const salesModel = require("../Models/sales.js");
+const Product = require("../Models/products.js");
+const cartModel = require("../Models/cart.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -546,7 +548,7 @@ const filterProductsByPrice = async (req, res) => {
 
 const createPreferenceTags = async (req, res) => {
   try {
-    const { Name,icon } = req.body;
+    const { Name, icon } = req.body;
 
     if (!Name) {
       return res.status(400).json({ message: "Tag name is required" });
@@ -560,7 +562,7 @@ const createPreferenceTags = async (req, res) => {
     }
 
     // Create the category
-    const Tag = await PreferenceTags.create({ Name,icon });
+    const Tag = await PreferenceTags.create({ Name, icon });
 
     res.status(200).json(Tag);
   } catch (err) {
@@ -1204,10 +1206,11 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyAdvertiser(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Event ${updatedItem.isFlagged ? 'flagged' : 'unflagged'} successfully.`,
+        message: `Event ${
+          updatedItem.isFlagged ? "flagged" : "unflagged"
+        } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
-
     } else if (type === "itinerary") {
       // Check the current flag status of the itinerary
       const itinerary = await Itinerary.findById(id);
@@ -1227,16 +1230,19 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyTourGuide(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Itinerary ${updatedItem.isFlagged ? 'flagged' : 'unflagged'} successfully.`,
+        message: `Itinerary ${
+          updatedItem.isFlagged ? "flagged" : "unflagged"
+        } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
-
     } else {
       return res.status(400).json({ message: "Invalid type specified." });
     }
   } catch (error) {
     console.error("Error flagging item:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -1678,49 +1684,44 @@ const viewAllOrders = async (req, res) => {
 };
 
 const getTourists = async (req, res) => {
-  try{
+  try {
     const tourists = await touristModel.find();
     return res.status(200).json(tourists);
-  }catch{
+  } catch {
     return res.status(400).json("ERROR");
   }
 };
 const getadvertisers = async (req, res) => {
-  try{
+  try {
     const advertisers = await advertiserModel.find();
     return res.status(200).json(advertisers);
-
-  }catch{
+  } catch {
     return res.status(400).json("ERROR");
   }
 };
 const getsellers = async (req, res) => {
-  try{
+  try {
     const sellers = await sellerModel.find();
     return res.status(200).json(sellers);
-  }catch{
+  } catch {
     return res.status(400).json("ERROR");
   }
 };
 const gettourguides = async (req, res) => {
-  try{
+  try {
     const tourGuides = await tourGuideModel.find();
     return res.status(200).JSON(tourGuides);
-
-  }catch{
+  } catch {
     return res.status(400).json("ERROR");
   }
-
 };
-const gettourismgov = async (req,res)=>{
-  try{
+const gettourismgov = async (req, res) => {
+  try {
     const tourismGov = await TourismGoverner.find();
     return res.status(200).json(tourismGov);
-
-  }catch{
+  } catch {
     return res.status(400).json("ERROR");
   }
-
 };
 
 const viewTopUsers = async (req, res) => {
@@ -1732,6 +1733,68 @@ const viewTopUsers = async (req, res) => {
       .limit(10);
     return res.status(200).json(topSellers);
   } catch {
+    return res.status(400).json("ERROR");
+  }
+};
+
+const updateProductQuantity = async (req, res) => {
+  const { productId, quantity } = req.body;
+  try {
+    const updatedProduct = await productModel.findByIdAndUpdate(
+      productId,
+      { $inc: { quantity: -quantity } }, // Use $inc to decrement the quantity
+      { new: true } // Ensure the returned document is the updated one
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json("Product not found");
+    }
+    return res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json("ERROR");
+  }
+};
+
+const updateSellerSales = async (req, res) => {
+  const { productId, sales } = req.body;
+  try {
+    const product = await Product.findById(productId);
+    const sellerId = product.seller;
+    const seller = await salesModel.findOne({ user: sellerId });
+    if (!seller) {
+      const user = await userModel.findOne({ userID: sellerId });
+      const type = user.Type;
+      const newSales = new salesModel({
+        user: sellerId,
+        userModel: type,
+        revenue: sales,
+      });
+      await newSales.save();
+    } else {
+      seller.revenue = sales + seller.revenue;
+      await seller.save();
+      return res.status(200).json(seller);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json("ERROR");
+  }
+};
+
+const emptyCart = async (req, res) => {
+  const { cartId } = req.params;
+  try {
+    const cart = await cartModel.findById(cartId);
+    if (!cart) {
+      return res.status(404).json("Cart not found");
+    }
+    cart.items = [];
+    cart.subtotal = 0;
+    await cart.save();
+    return res.status(200).json(cart);
+  } catch (error) {
+    console.log(error);
     return res.status(400).json("ERROR");
   }
 };
@@ -1798,4 +1861,7 @@ module.exports = {
   gettourguides,
   gettourismgov,
   viewTopUsers,
+  updateSellerSales,
+  updateProductQuantity,
+  emptyCart,
 };

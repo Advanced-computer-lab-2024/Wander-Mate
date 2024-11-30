@@ -78,40 +78,60 @@ const FlightOrHotelSearch = () => {
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
-    setSelectedPlace(`${selectedCountry.value},${selectedState.value}`);
-    console.log(checkInDate);
-    console.log(checkOutdate);
+
     if (buttonText === "Search Hotels") {
+      if (!selectedCountry || !selectedState) {
+        setError("Please select both country and state.");
+        setLoading(false);
+        return;
+      }
+
+      setSelectedPlace(`${selectedCountry.value},${selectedState.value}`);
+
+      if (!checkInDate || !checkOutdate) {
+        setError("Please select both check-in and check-out dates.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.put("http://localhost:8000/searchHotel", {
-          place: selectedPlace,
+          place: `${selectedCountry.value},${selectedState.value}`,
           checkInDate: checkInDate,
           checkOutdate: checkOutdate,
         });
         console.log(response);
+        // Handle the response data here
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to fetch results. Please try again.");
       }
     } else {
+      // Flight search logic
+      if (
+        !flightData.origin ||
+        !flightData.destination ||
+        !flightData.departureDate ||
+        !flightData.arrivalDate
+      ) {
+        setError("Please fill in all flight search fields.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await axios.get("http://localhost:8000/search-flights", {
-          params: {
-            origin: flightData.origin,
-            destination: flightData.destination,
-            departureDate: flightData.departureDate,
-            returnDate: flightData.arrivalDate,
-          },
+          params: flightData,
         });
         const fetchedFlights = res.data.data;
         setFlights(fetchedFlights);
       } catch (error) {
         console.error("Error fetching flights:", error);
         setError("Failed to fetch flights. Please try again.");
-      } finally {
-        setLoading(false);
       }
     }
+
+    setLoading(false);
   };
 
   return (

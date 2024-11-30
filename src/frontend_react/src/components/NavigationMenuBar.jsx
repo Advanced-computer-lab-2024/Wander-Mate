@@ -13,7 +13,24 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Heart, History, LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Plus, Minus, Trash2 } from 'lucide-react';
+import {
+  Heart,
+  History,
+  LogOut,
+  Settings,
+  ShoppingCart,
+  User,
+  Plane,
+  Hotel,
+  Ticket,
+  MapPin,
+  Info,
+  Users,
+  Briefcase,
+  Plus,
+  Minus,
+  Trash2,
+} from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
 import {
@@ -72,7 +89,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         const response = await axios.get(
           `http://localhost:8000/viewMyWishlist/${userID}`
         );
-        console.log(response);
         setWishlistItems(response.data.wishlist || []);
       } catch (error) {
         console.error("Error fetching tourist ID or wishlist:", error);
@@ -95,75 +111,103 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     setOpenDropdown(null);
   };
 
-  const removeFromWishlist = useCallback(async (productId) => {
-    try {
-      const response = await axios.delete("http://localhost:8000/removeFromWishlist", {
-        data: { touristId: touristID, productId }
-      });
-      
-      if (response.status === 200) {
-        setWishlistItems(prevItems => prevItems.filter(item => item._id !== productId));
+  const logout = () => {
+    sessionStorage.removeItem("username");
+    navigate("/loginPage");
+  };
+
+  const removeFromWishlist = useCallback(
+    async (productId) => {
+      try {
+        const response = await axios.delete(
+          "http://localhost:8000/removeFromWishlist",
+          {
+            data: { touristId: touristID, productId },
+          }
+        );
+
+        if (response.status === 200) {
+          setWishlistItems((prevItems) =>
+            prevItems.filter((item) => item._id !== productId)
+          );
+          toast({
+            title: "Success",
+            description: "Item removed from wishlist.",
+          });
+        }
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
         toast({
-          title: "Success",
-          description: "Item removed from wishlist.",
+          title: "Error",
+          description: "Failed to remove item from wishlist. Please try again.",
+          variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error("Error removing from wishlist:", error);
-      toast({
-        title: "Error",
-        description: "Failed to remove item from wishlist. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [touristID]);
+    },
+    [touristID]
+  );
 
-  const addToCart = useCallback(async (item) => {
-    console.log(item.picture);
-    try {
-      const response = await axios.post("http://localhost:8000/addWishlistItemToCart", {
-        touristID,
-        productId: item._id,
-        quantity: 1,
-        // picture:getImageSrc(item.picture),
+  const addToCart = useCallback(
+    async (item) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/addWishlistItemToCart",
+          {
+            touristID,
+            productId: item._id,
+            quantity: 1,
+            // picture:getImageSrc(item.picture),
+          }
+        );
 
-      });
-      
-      if (response.status === 200) {
-        setWishlistItems(prevItems => prevItems.filter(wishlistItem => wishlistItem._id !== item._id));
-setCartItems(prev => ({
-          ...prev,
-          [item._id]: { ...item, quantity: (prev[item._id]?.quantity || 0) + 1 }
-        }));
+        if (response.status === 200) {
+          setWishlistItems((prevItems) =>
+            prevItems.filter((wishlistItem) => wishlistItem._id !== item._id)
+          );
+          setCartItems((prev) => ({
+            ...prev,
+            [item._id]: {
+              ...item,
+              quantity: (prev[item._id]?.quantity || 0) + 1,
+            },
+          }));
+          toast({
+            title: "Added to Cart",
+            description: `${item.name} has been added to your cart and removed from your wishlist.`,
+          });
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
         toast({
-          title: "Added to Cart",
-          description: `${item.name} has been added to your cart and removed from your wishlist.`,
+          title: "Error",
+          description: "Failed to add item to cart. Please try again.",
+          variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [touristID]);
+    },
+    [touristID]
+  );
 
   const incrementCartItem = async (item) => {
     if ((cartItems[item._id]?.quantity || 0) >= item.quantity) return;
 
     try {
-      const response = await axios.post("http://localhost:8000/addWishlistItemToCart", {
-        touristID,
-        productId: item._id,
-        quantity: 1
-      });
+      const response = await axios.post(
+        "http://localhost:8000/addWishlistItemToCart",
+        {
+          touristID,
+          productId: item._id,
+          quantity: 1,
+        }
+      );
 
       if (response.status === 200) {
         setCartItems((prev) => ({
           ...prev,
-          [item._id]: { ...item, quantity: (prev[item._id]?.quantity || 0) + 1 },
+          [item._id]: {
+            ...item,
+            quantity: (prev[item._id]?.quantity || 0) + 1,
+          },
         }));
       }
     } catch (error) {
@@ -180,15 +224,21 @@ setCartItems(prev => ({
     if (!cartItems[item._id] || cartItems[item._id].quantity <= 0) return;
 
     try {
-      const response = await axios.post("http://localhost:8000/removeFromCart", {
-        touristID,
-        productId: item._id,
-        quantity: 1
-      });
+      const response = await axios.post(
+        "http://localhost:8000/removeFromCart",
+        {
+          touristID,
+          productId: item._id,
+          quantity: 1,
+        }
+      );
 
       if (response.status === 200) {
         setCartItems((prev) => {
-          const updatedQuantity = Math.max((prev[item._id]?.quantity || 0) - 1, 0);
+          const updatedQuantity = Math.max(
+            (prev[item._id]?.quantity || 0) - 1,
+            0
+          );
           if (updatedQuantity === 0) {
             const { [item._id]: _, ...rest } = prev;
             return rest;
@@ -212,15 +262,15 @@ setCartItems(prev => ({
   const moveAllToCart = async () => {
     try {
       const response = await axios.post("http://localhost:8000/moveAllToCart", {
-        touristID
+        touristID,
       });
 
       if (response.status === 200) {
         const updatedCartItems = { ...cartItems };
-        wishlistItems.forEach(item => {
+        wishlistItems.forEach((item) => {
           updatedCartItems[item._id] = {
             ...item,
-            quantity: (updatedCartItems[item._id]?.quantity || 0) + 1
+            quantity: (updatedCartItems[item._id]?.quantity || 0) + 1,
           };
         });
         setCartItems(updatedCartItems);
@@ -315,7 +365,7 @@ setCartItems(prev => ({
                   Shop
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
+              {/* <DropdownMenuContent
                 className="w-56"
                 onMouseEnter={() => handleMouseEnter("shop")}
                 onMouseLeave={handleMouseLeave}
@@ -338,7 +388,7 @@ setCartItems(prev => ({
                     <span>Souvenirs</span>
                   </Link>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
+              </DropdownMenuContent> */}
             </DropdownMenu>
 
             <DropdownMenu open={openDropdown === "bookings"}>
@@ -393,7 +443,7 @@ setCartItems(prev => ({
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/activities/tours" className="flex items-center">
+                  <Link to="/viewItineraries" className="flex items-center">
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>Tours</span>
                   </Link>
@@ -488,7 +538,8 @@ setCartItems(prev => ({
                                     size="icon"
                                     onClick={() => incrementCartItem(item)}
                                     disabled={
-                                      cartItems[item._id].quantity >= item.quantity
+                                      cartItems[item._id].quantity >=
+                                      item.quantity
                                     }
                                   >
                                     <Plus className="h-4 w-4" />
@@ -513,13 +564,13 @@ setCartItems(prev => ({
                   )}
                 </ScrollArea>
                 <div className="mt-1 mb-2 space-y-2">
-                  <Button
+                  {/* <Button
                     className="w-full"
                     onClick={moveAllToCart}
                     disabled={wishlistItems.length === 0}
                   >
                     Move All to Cart
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="outline"
                     className="w-full"
@@ -540,7 +591,12 @@ setCartItems(prev => ({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarFallback>MA</AvatarFallback>
+                    <AvatarFallback>
+                      {sessionStorage
+                        .getItem("username")
+                        .slice(0, 2)
+                        .toUpperCase() || "WM"}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -553,11 +609,11 @@ setCartItems(prev => ({
                     <span>Profile</span>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <Heart className="mr-2 h-4 w-4" />
                     <span>Wishlist</span>
                     <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuItem>
                     <History className="mr-2 h-4 w-4" />
                     <span>History</span>
@@ -572,7 +628,7 @@ setCartItems(prev => ({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span onClick={logout}>Log out</span>
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -585,4 +641,3 @@ setCartItems(prev => ({
 };
 
 export default NavigationMenuBar;
-

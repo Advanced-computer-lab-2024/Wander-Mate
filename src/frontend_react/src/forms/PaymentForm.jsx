@@ -25,20 +25,22 @@ const stripePromise = loadStripe(
 const PaymentForm = (props) => {
   return (
     <Elements stripe={stripePromise}>
-      <PaymentFormInner 
-      amount={props.amount} 
-      Onsuccess={props.onPaymentSuccess}
-      Onerror={props.onPaymentError}
+      <PaymentFormInner
+        amount={props.amount}
+        onSuccess={props.onPaymentSuccess}
+        onError={props.onPaymentError}
       />
     </Elements>
   );
 };
-const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
+
+const PaymentFormInner = ({ amount, onSuccess, onError }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
   const handlePayment = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -49,7 +51,6 @@ const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
       return;
     }
 
-    // Step 1: Get card details from CardElement
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
       setErrorMessage("Card details are missing.");
@@ -58,17 +59,21 @@ const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
     }
 
     try {
-      // Step 2: Create payment intent on your server (this step requires backend)
-      const response = await fetch("http://localhost:8000/create-payment-intent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: amount }), // Example amount in cents
-      });
+      // Convert amount to cents and ensure it's an integer
+      const amountInCents = Math.round(parseFloat(amount) * 100);
+
+      const response = await fetch(
+        "http://localhost:8000/create-payment-intent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: amountInCents }),
+        }
+      );
       const paymentIntentData = await response.json();
 
-      // Step 3: Confirm the payment with Stripe
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         paymentIntentData.clientSecret,
         {
@@ -80,31 +85,37 @@ const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
 
       if (error) {
         setErrorMessage(error.message);
-        Onerror();
-        setLoading(false);
+        onError(error);
       } else if (paymentIntent.status === "succeeded") {
         setSuccessMessage("Payment successful!");
-        Onsuccess();
-        setLoading(false);
+        onSuccess();
       }
     } catch (error) {
       setErrorMessage("Payment failed. Please try again.");
+      onError(error);
+    } finally {
       setLoading(false);
     }
   };
+
   return (
-    <React.Fragment>
-      <Card>
+    <Card>
       <CardHeader>
         <CardTitle>Payment Form</CardTitle>
-        <CardDescription>Enter your card details to make a payment.</CardDescription>
-        <CardDescription>Amount: {amount}</CardDescription>
+        <CardDescription>
+          Enter your card details to make a payment.
+        </CardDescription>
+        <CardDescription>Amount: ${amount}</CardDescription>
       </CardHeader>
       <CardContent>
         <Label htmlFor="card-details">Card Details</Label>
         <CardElement id="card-details" />
-        {errorMessage && <div className="error">{errorMessage}</div>}
-        {successMessage && <div className="success">{successMessage}</div>}
+        {errorMessage && (
+          <div className="text-red-500 mt-2">{errorMessage}</div>
+        )}
+        {successMessage && (
+          <div className="text-green-500 mt-2">{successMessage}</div>
+        )}
       </CardContent>
       <CardFooter>
         <Button
@@ -115,7 +126,6 @@ const PaymentFormInner = ({amount,Onsuccess,Onerror}) => {
         </Button>
       </CardFooter>
     </Card>
-    </React.Fragment>
   );
 };
 

@@ -180,6 +180,7 @@ const handleTourist = async (req, res) => {
         Nationality,
         Role,
         Points,
+        Currency,
       } = req.body;
 
       // Check if user is trying to update Username or DOB
@@ -234,6 +235,19 @@ const handleTourist = async (req, res) => {
         console.log("Updated Badge:", tourist.Badge);
       }
 
+      // Check and add Currency field if it doesn't exist
+      if (Currency) {
+        if (!tourist.Currency) {
+          // Add the Currency field if it doesn't exist
+          tourist.Currency = Currency;
+          console.log("Currency field added:", tourist.Currency);
+        } else {
+          // Update Currency if it's provided
+          tourist.Currency = Currency;
+          console.log("Currency updated:", tourist.Currency);
+        }
+      }
+
       // Save the updated tourist
       const updatedTourist = await tourist.save();
 
@@ -245,6 +259,7 @@ const handleTourist = async (req, res) => {
       return res.status(405).json({ message: "Method not allowed" }); // Handle unsupported methods
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Error processing request",
       error: error.message,
@@ -857,7 +872,7 @@ const bookHotel = async (req, res) => {
 
 const commentOnGuide = async (req, res) => {
   try {
-    const { guideID, text } = req.body; // Expecting guide ID and comment text in the request body
+    const { guideID, text, username } = req.body; // Expecting guide ID and comment text in the request body
     const touristID = req.params.id; // Assuming you have user info stored in req.user
 
     // Validate input
@@ -875,15 +890,15 @@ const commentOnGuide = async (req, res) => {
 
     // Create a new comment
     const newComment = await CommentModel.create({
-      touristID, // Change to match your schema
-      aboutId: guideID, // Change to match your schema
-      Body: text, // Assuming `text` is a field in your comment schema
+      touristID,
+      aboutId: guideID,
+      Body: text,
+      username,
     });
 
     res
       .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
-    console.log("Commented");
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
     res
@@ -895,15 +910,34 @@ const commentOnGuide = async (req, res) => {
 const RateGuide = async (req, res) => {
   const { touristId, guideId, rating } = req.body;
   try {
-    const newRating = await RatingModel.create({
-      itemId: guideId,
+    // Check if the user has already rated the guide
+    const existingRating = await RatingModel.findOne({
       userId: touristId,
-      rating,
+      itemId: guideId,
     });
+
+    if (existingRating) {
+      // If the user has already rated, update the rating
+      existingRating.rating = rating;
+      await existingRating.save(); // Save the updated rating
+      res.status(200).json({
+        message: "Rating updated successfully",
+        rating: existingRating,
+      });
+    } else {
+      // If the user hasn't rated yet, create a new rating
+      const newRating = await RatingModel.create({
+        itemId: guideId,
+        userId: touristId,
+        rating,
+      });
+      res
+        .status(200)
+        .json({ message: "Rating posted successfully", rating: newRating });
+    }
+
+    // After updating or creating the rating, update the guide's ratings
     await axios.put(`http://localhost:8000/updateGuideRatings/${guideId}`);
-    res
-      .status(200)
-      .json({ message: "Rating posted successfully", rating: newRating });
   } catch (error) {
     console.error("Error posting rating:", error.message); // Log error for debugging
     res
@@ -964,17 +998,36 @@ const addCommentONEvent = async (req, res) => {
 const rateItinerary = async (req, res) => {
   const { touristId, itineraryId, rating } = req.body;
   try {
-    const newRating = await RatingModel.create({
-      itemId: itineraryId,
+    // Check if the user has already rated this itinerary
+    const existingRating = await RatingModel.findOne({
       userId: touristId,
-      rating,
+      itemId: itineraryId,
     });
-    // await axios.put(
-    //   http://localhost:8000/updateItineraryRatings/${itineraryId}
-    // );
-    res
-      .status(200)
-      .json({ message: "Rating posted successfully", rating: newRating });
+
+    if (existingRating) {
+      // If the rating exists, update it
+      existingRating.rating = rating;
+      await existingRating.save(); // Save the updated rating
+      res.status(200).json({
+        message: "Rating updated successfully",
+        rating: existingRating,
+      });
+    } else {
+      // If the rating does not exist, create a new one
+      const newRating = await RatingModel.create({
+        itemId: itineraryId,
+        userId: touristId,
+        rating,
+      });
+      res
+        .status(200)
+        .json({ message: "Rating posted successfully", rating: newRating });
+    }
+
+    // After updating/creating the rating, update the itinerary's ratings on the backend
+    await axios.put(
+      `http://localhost:8000/updateItineraryRatings/${itineraryId}`
+    );
   } catch (error) {
     console.error("Error posting rating:", error.message); // Log error for debugging
     res
@@ -1002,7 +1055,7 @@ const updateItineraryRatings = async (req, res) => {
       const updatedItinerary = await itineraryModel.findByIdAndUpdate(
         { _id: itineraryId },
         {
-          averageRating: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+          Ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
           totalRatings: averageRating[0].totalRatings,
         },
         { new: true } // Return the updated document
@@ -1024,7 +1077,7 @@ const updateItineraryRatings = async (req, res) => {
 
 const commentOnItinerary = async (req, res) => {
   try {
-    const { itineraryID, Body } = req.body; // Expecting itinerary ID and comment text in the request body
+    const { itineraryID, Body, username } = req.body; // Expecting itinerary ID and comment text in the request body
     const touristID = req.params.id; // Assuming tourist ID is passed as a parameter
 
     // Validate input
@@ -1041,14 +1094,15 @@ const commentOnItinerary = async (req, res) => {
     }
 
     // Create a new comment
-    const newComment = await CommentModel.create({
-      touristID, // Assuming `touristID` matches your schema
-      aboutId: itineraryID, // Change to match your schema
-      Body, // Assuming `text` is a field in your comment schema
+    const newComment = await ReviewModel.create({
+      userId: touristID, // Assuming `touristID` matches your schema
+      itemId: itineraryID,
+      username,
+      review: Body, // Assuming `text` is a field in your comment schema
     });
 
     res
-      .status(201)
+      .status(200)
       .json({ message: "Comment posted successfully", comment: newComment });
   } catch (error) {
     console.error("Error posting comment:", error); // Log error for debugging
@@ -1097,7 +1151,18 @@ const viewAttendedItineraries = async (req, res) => {
     const itineraries = await bookingSchema
       .find({ itemModel: model })
       .populate("itemId")
-      .populate({ path: "itemId", populate: { path: "Creator" } });
+      .populate({
+        path: "itemId",
+        populate: [
+          { path: "Creator" },
+          {
+            path: "LocationsToVisit",
+          },
+          {
+            path: "Activities",
+          },
+        ],
+      });
     const currentDate = new Date();
 
     // Check if any itineraries were found
@@ -1950,32 +2015,18 @@ const assignBirthdayPromo = async () => {
 
 const PayByCard = async (req, res) => {
   try {
-    //const { touristID } = req.params;
     const { amount } = req.body;
 
     // Validate inputs
-    if (!amount || amount <= 0) {
-      throw new Error(
-        "Invalid input: amount, currency, and eventId are required"
-      );
+    if (!amount || amount <= 0 || !Number.isInteger(amount)) {
+      throw new Error("Invalid input: amount must be a positive integer");
     }
-
-    // Check user affordability (pseudo-code; replace with your logic)
-    // const userBalance = await getUserBalance(req.user.id);
-    // if (userBalance < amount) {
-    //   throw new Error('Insufficient balance to complete the payment');
-    // }
 
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount, // Amount in cents
       currency: "usd",
       payment_method_types: ["card"],
-      // payment_method_types: ["card"],
-      // metadata: {
-      //   userId: touristID,
-      //   eventId,
-      // },
     });
 
     // Respond with client secret
@@ -2489,6 +2540,7 @@ const makeOrder = async (req, res) => {
       .status(200)
       .json({ message: "Order created successfully", order });
   } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ message: "Error creating the order", error: error.message });
@@ -2550,7 +2602,7 @@ const viewMyWishlist = async (req, res) => {
     });
 
     if (!wishlist || wishlist.products.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No products found in the wishlist for this tourist.",
       });
     }
@@ -2903,6 +2955,52 @@ const previewPromoCode = async (req, res) => {
   }
 };
 
+const getMyRating = async (req, res) => {
+  const { touristId } = req.params;
+  const { itineraryId } = req.params;
+  try {
+    const rating = await RatingModel.findOne({
+      userId: touristId,
+      itemId: itineraryId,
+    });
+    if (!rating) {
+      return res.status(404).json({ message: "Rating not found" });
+    }
+    res.status(200).json(rating);
+  } catch (error) {
+    console.error("Error getting rating:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getItineraryReviews = async (req, res) => {
+  const { itineraryId } = req.params;
+  try {
+    const reviews = await ReviewModel.find({ itemId: itineraryId });
+    if (!reviews) {
+      return res.status(404).json({ message: "No reviews found" });
+    }
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getGuideReviews = async (req, res) => {
+  const { guideId } = req.params;
+  try {
+    const reviews = await CommentModel.find({ aboutId: guideId });
+    if (!reviews) {
+      return res.status(201).json({ message: "No reviews found" });
+    }
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -2982,4 +3080,7 @@ module.exports = {
   isInWishList,
   makeOrder,
   removeProduct,
+  getMyRating,
+  getItineraryReviews,
+  getGuideReviews,
 };

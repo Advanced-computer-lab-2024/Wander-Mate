@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
@@ -9,18 +10,40 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
+  Heart,
+  History,
   LogOut,
   Settings,
+  ShoppingCart,
   User,
+  Plane,
+  Hotel,
+  Ticket,
+  MapPin,
   Info,
   Users,
   Briefcase,
-  MapPin,
-  Tag,
+  Plus,
+  Minus,
+  Trash2,
 } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "./ui/use-toast";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import AdminItineraries from "../pages/adminItineray";
+import CreatePlace from "./createPlace";
+import CreateActivity from "../pages/createActivity";
 
 const SiteLogo = () => (
   <svg
@@ -46,8 +69,13 @@ const SiteLogo = () => (
   </svg>
 );
 
-const NavigationMenuBarTGov = () => {
+const NavigationMenuBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [cartItems, setCartItems] = useState({});
+  const [touristID, setTouristId] = useState(0);
+  const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -55,6 +83,25 @@ const NavigationMenuBarTGov = () => {
 
   const handleMouseLeave = () => {
     setOpenDropdown(null);
+  };
+
+  const goToItinerary = () => {
+    navigate("/adminItineray");
+  };
+  const goToOrders = () => {
+    navigate("/adminOrders");
+  };
+  const goToComplaints = () => {
+    navigate("/viewAllComplaints");
+  };
+  const goToCreateActivity = () => {
+    navigate("/createActivity");
+  };
+  const goToUploadDocs = () => {
+    navigate("/uploadDocs");
+  };
+  const goToChangePassword = () => {
+    navigate("/changePassword");
   };
 
   return (
@@ -65,7 +112,6 @@ const NavigationMenuBarTGov = () => {
             <SiteLogo />
             <span className="text-xl font-bold">Wandermate</span>
           </Link>
-
           <div className="hidden md:flex space-x-6">
             <DropdownMenu open={openDropdown === "about"}>
               <DropdownMenuTrigger asChild>
@@ -102,63 +148,88 @@ const NavigationMenuBarTGov = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <Button
-              variant="ghost"
-              onMouseEnter={() => handleMouseEnter("places")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <MapPin className="mr-2 h-4 w-4" />
-              Places
-            </Button>
-
-            <Button
-              asChild
-              variant="ghost"
-              onMouseEnter={() => handleMouseEnter("tags")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link to="/historicaltags">
-                <Tag className="mr-2 h-4 w-4" />
-                Tags
-              </Link>
-            </Button>
           </div>
-
-          <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar>
-                    <AvatarFallback>TG</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu open={openDropdown === "adminItineray"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("adminItineray")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToItinerary}
+              >
+                Itineray
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "orders"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("orders")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToOrders}
+              >
+                Orders
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "complaints"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("complaints")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToComplaints}
+              >
+                Complaints
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "createPlace"}>
+            <DropdownMenuTrigger asChild>
+              <CreatePlace />
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "createActivity"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("createActivity")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToCreateActivity}
+              >
+                Create Activity
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "uploadDocs"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("uploadDocs")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToUploadDocs}
+              >
+                Upload Documents
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+          <DropdownMenu open={openDropdown === "changePassword"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("changePassword")}
+                onMouseLeave={handleMouseLeave}
+                onClick={goToChangePassword}
+              >
+                Change Password
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
         </nav>
       </div>
     </header>
   );
 };
 
-export default NavigationMenuBarTGov;
+export default NavigationMenuBar;

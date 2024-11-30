@@ -96,6 +96,9 @@ const {
   isInWishList,
   makeOrder,
   removeProduct,
+  getMyRating,
+  getItineraryReviews,
+  getGuideReviews,
 } = require("./Routes/touristController");
 
 const {
@@ -184,6 +187,9 @@ const {
   gettourguides,
   gettourismgov,
   viewTopUsers,
+  updateProductQuantity,
+  updateSellerSales,
+  emptyCart,
 } = require("./Routes/adminController.js");
 
 const {
@@ -577,9 +583,14 @@ app.post("/updateRevenueSales", updateRevenueSales);
 app.post("/sendUpcomingEventNotifications", sendUpcomingEventNotifications);
 app.post("/create-payment-intent", PayByCard);
 app.get("/viewTopUsers", viewTopUsers);
-
-app.get("/gettourists",getTourists);
-app.get("/getadvertisers",getadvertisers);
-app.get("/getsellers",getsellers);
-app.get("/gettourguides",gettourguides);
-app.get("/gettourismgov",gettourismgov);
+app.get("/gettourists", getTourists);
+app.get("/getadvertisers", getadvertisers);
+app.get("/getsellers", getsellers);
+app.get("/gettourguides", gettourguides);
+app.get("/gettourismgov", gettourismgov);
+app.put("/updateProductQuantity", updateProductQuantity);
+app.put("/updateSellerSales", updateSellerSales);
+app.put("/emptyCart/:cartId", emptyCart);
+app.get("/getMyRating/:touristId/:itineraryId", getMyRating);
+app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
+app.get("/getGuideReviews/:guideId", getGuideReviews);

@@ -47,20 +47,16 @@ export default function AdminItineraryModel({ itinerary, isOpen, setIsOpen, chil
   
     useEffect(() => {
       const fetchReviews = async () => {
-        if (itinerary.Ratings && itinerary.Ratings.length > 0) {
-          try {
-            const response = await axios.post(
-              "http://localhost:8000/getItineraryReviews",
-              {
-                reviewIds: itinerary.Ratings,
-              }
-            );
-            setReviews(response.data.reviews);
-          } catch (error) {
-            console.error("Error fetching reviews:", error);
-          }
-        }
-      };
+      try {
+        const response = await fetch(
+          `http://localhost:8000/getItineraryReviews/${itinerary.itineraryId}`
+        );
+        const data = await response.json();
+        setReviews(data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
   
       if (isOpen) {
         fetchReviews();

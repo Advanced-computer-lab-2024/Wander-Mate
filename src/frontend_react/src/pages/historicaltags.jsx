@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "../components/ui/select"
 import { Plus, Church, Castle, University, Landmark, Mountain, Snowflake, Trees, LandPlot, Pencil, X } from 'lucide-react';
+import NavigationMenuBarTGov from '../components/NavigationMenuBarTGov';
+import TourismGovernerFooter from '../components/tourismGovernerFooter';
 
 const iconOptions = [
   { value: 'church', label: 'Church', icon: <Church className="h-5 w-5" /> },
@@ -100,70 +102,108 @@ const HistoricalTagsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Historical Tags</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {tags.map((tag) => (
-          <div key={tag._id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-            <div className="flex items-center space-x-2">
-              {tag.icon}
-              {editingTag === tag._id ? (
-                <Input
-                  type="text"
-                  value={tag.Name}
-                  onChange={(e) => setTags(tags.map(t => t._id === tag._id ? { ...t, Name: e.target.value } : t))}
-                  onBlur={() => {
-                    console.log(tag);
-                    handleUpdateTag(tag._id, tag.Name);}}
-                  className="w-full"
-                />
-              ) : (
-                <span>{tag.Name}</span>
-              )}
+    <>
+    <NavigationMenuBarTGov/>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Historical Tags</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {tags.map((tag) => (
+            <div
+              key={tag._id}
+              className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
+            >
+              <div className="flex items-center space-x-2">
+                {tag.icon}
+                {editingTag === tag._id ? (
+                  <Input
+                    type="text"
+                    value={tag.Name}
+                    onChange={(e) =>
+                      setTags(
+                        tags.map((t) =>
+                          t._id === tag._id ? { ...t, Name: e.target.value } : t
+                        )
+                      )
+                    }
+                    onBlur={() => {
+                      console.log(tag);
+                      handleUpdateTag(tag._id, tag.Name);
+                    }}
+                    className="w-full"
+                  />
+                ) : (
+                  <span>{tag.Name}</span>
+                )}
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditingTag(tag._id)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDeleteTag(tag._id)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="ghost" size="icon" onClick={() => setEditingTag(tag._id)}>
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleDeleteTag(tag._id)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="flex space-x-2">
+          <Input
+            type="text"
+            placeholder="Enter new tag name"
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            className="flex-grow"
+          />
+          <Select value={selectedIcon} onValueChange={setSelectedIcon}>
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder="Select an icon" />
+            </SelectTrigger>
+            <SelectContent>
+              {iconOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <div className="flex items-center">
+                    {option.icon && (
+                      <span
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        {option.icon}
+                      </span>
+                    )}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={handleCreateTag}>
+            <Plus className="h-5 w-5 mr-2" />
+            Create New Tag
+          </Button>
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <Input
-          type="text"
-          placeholder="Enter new tag name"
-          value={newTagName}
-          onChange={(e) => setNewTagName(e.target.value)}
-          className="flex-grow"
-        />
-        <Select value={selectedIcon} onValueChange={setSelectedIcon}>
-          <SelectTrigger className="w-[70px]">
-            <SelectValue placeholder="Select an icon" />
-          </SelectTrigger>
-          <SelectContent>
-            {iconOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <div className="flex items-center">
-                  {option.icon && (
-                    <span style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                      {option.icon}
-                    </span>
-                  )}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button onClick={handleCreateTag}>
-          <Plus className="h-5 w-5 mr-2" />
-          Create New Tag
-        </Button>
-      </div>
-    </div>
+      <TourismGovernerFooter/>
+    </>
   );
 };
 
