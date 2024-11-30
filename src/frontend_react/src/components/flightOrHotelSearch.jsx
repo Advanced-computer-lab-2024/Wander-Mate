@@ -5,6 +5,7 @@ import Flight from "../components/flight";
 import axios from "axios";
 import Select from "react-select";
 import HotelCard from "./hotelCard";
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 
 const FlightOrHotelSearch = () => {
   const [selected, setSelected] = useState(0);
@@ -287,23 +288,31 @@ const FlightOrHotelSearch = () => {
           )}
         </React.Fragment>
       )}
-      {selected === 0 && !loading && !error && hotels.length > 0 && (
+     {selected === 0 && (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hotels.map((hotel) => (
-            <HotelCard
-              key={hotel.id}
-              id={hotel.id}
-              title={hotel.title.replace(/^\d+\.\s*/, '')}
-              checkInDate={checkInDate}
-              checkOutdate={checkOutdate}
-              price={hotel.price}
-              rating={hotel.rating}
-              provider={hotel.provider}
-              cardPhotos={hotel.cardPhotos}
-              cancellationPolicy={hotel.cancellationPolicy}
-              sponsor={hotel.sponsor}
-            />
-          ))}
+          {loading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <ECommerceDefaultSkeleton key={index} />
+            ))
+          ) : hotels.length > 0 ? (
+            hotels.map((hotel) => (
+              <HotelCard
+                key={hotel.id}
+                id={hotel.id}
+                title={hotel.title.replace(/^\d+\.\s*/, '')}
+                checkInDate={checkInDate}
+                checkOutdate={checkOutdate}
+                price={hotel.price}
+                rating={hotel.rating}
+                provider={hotel.provider}
+                cardPhotos={hotel.cardPhotos}
+                cancellationPolicy={hotel.cancellationPolicy}
+                sponsor={hotel.sponsor}
+              />
+            ))
+          ) : (
+            <p className="col-span-full text-center">No hotels found</p>
+          )}
     </div>
       )}
     </div>
