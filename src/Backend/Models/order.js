@@ -12,6 +12,10 @@ const orderSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
+  quantities: {
+    type: [Number], // Array of quantities corresponding to products
+    default: [], // Default to an empty array
+  },
   total: {
     type: Number,
     required: true,

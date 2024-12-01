@@ -35,10 +35,10 @@ const cartModel = require("../Models/cart.js");
 const Comment = require("../Models/comments.js");
 const Rating = require("../Models/rating.js");
 const Review = require("../Models/review.js");
-const BookedFlights= require("../Models/bookedFlights.js");
-const BookedHotel=require("../Models/bookedHotel.js");
-const BookedMarks=require("../Models/bookMark.js");
-const address =require("../Models/address.js");
+const BookedFlights = require("../Models/bookedFlights.js");
+const BookedHotel = require("../Models/bookedHotel.js");
+const BookedMarks = require("../Models/bookMark.js");
+const address = require("../Models/address.js");
 const cart = require("../Models/cart.js");
 const wishlist = require("../Models/whishlist.js");
 const notifications = require("../Models/notifications.js");
@@ -251,158 +251,158 @@ const deleteAccount = async (req, res) => {
     const existingAdmin = await adminModel.findOne({ Username });
     if (existingAdmin) {
       await adminModel.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
       accountDeleted = true;
     }
 
     const existingAdvertiser = await Advertiser.findOne({ Username });
     if (existingAdvertiser) {
       await Advertiser.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
       accountDeleted = true;
     }
 
     const existingSeller = await Seller.findOne({ Username });
     if (existingSeller) {
       await Seller.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
       accountDeleted = true;
     }
 
     const existingTourGuide = await tourGuide.findOne({ Username });
     if (existingTourGuide) {
       await tourGuide.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
       accountDeleted = true;
     }
 
     const existingTourismGoverner = await TourismGoverner.findOne({ Username });
     if (existingTourismGoverner) {
       await TourismGoverner.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
 
       accountDeleted = true;
     }
 
     const existingTourist = await tourist.findOne({ Username });
-    
+
     if (existingTourist) {
       await tourist.deleteOne({ Username });
-      await bookings.deleteMany({userId : userID});
-      await Comment.deleteMany({userId : userID});
-      await Rating.deleteMany({userId : userID});
-      await BookedFlights.deleteMany({userId : userID});
-      await BookedHotel.deleteMany({userId : userID});
-      await orderModel.deleteMany({userId : userID});
-      await Review.deleteMany({userId : userID});
-      await Complaints.deleteMany({Maker : userID});
-      await BookedMarks.deleteMany({userId : userID});
-      await address.deleteMany({userId : userID});
-      await cart.deleteMany({touristID : userID});
-      await wishlist.deleteMany({userId : userID});
-      await notifications.deleteMany({userID : userID});
-      await attractions.deleteMany({Creator : userID});
-      await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({seller : userID});
-      await promocode.deleteMany({assignedTo : userID});
-      await sales.deleteMany({user : userID});
-      await transportations.deleteMany({advertiserId : userID});
-      await PdfDetails.deleteMany({Owner : userID});
+      await bookings.deleteMany({ userId: userID });
+      await Comment.deleteMany({ userId: userID });
+      await Rating.deleteMany({ userId: userID });
+      await BookedFlights.deleteMany({ userId: userID });
+      await BookedHotel.deleteMany({ userId: userID });
+      await orderModel.deleteMany({ userId: userID });
+      await Review.deleteMany({ userId: userID });
+      await Complaints.deleteMany({ Maker: userID });
+      await BookedMarks.deleteMany({ userId: userID });
+      await address.deleteMany({ userId: userID });
+      await cart.deleteMany({ touristID: userID });
+      await wishlist.deleteMany({ userId: userID });
+      await notifications.deleteMany({ userID: userID });
+      await attractions.deleteMany({ Creator: userID });
+      await Itinerary.deleteMany({ Creator: userID });
+      await Product.deleteMany({ seller: userID });
+      await promocode.deleteMany({ assignedTo: userID });
+      await sales.deleteMany({ user: userID });
+      await transportations.deleteMany({ advertiserId: userID });
+      await PdfDetails.deleteMany({ Owner: userID });
 
       accountDeleted = true;
     }
@@ -1510,7 +1510,14 @@ const login = async (req, res) => {
     };
 
     res.cookie("jwt", token, cookieOptions);
-    res.status(200).json({ Username: Username, Type: user.Type, status });
+    res
+      .status(200)
+      .json({
+        Username: Username,
+        Type: user.Type,
+        status,
+        curr: userLogged.Currency,
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An error occurred during login" });
@@ -1723,7 +1730,7 @@ const viewAllUsers = async (req, res) => {
 const sendOutOfStockNotificationAdmin = async (req, res) => {
   try {
     // Destructure data from the request body
-    const { message, adminId, productId,productName } = req.body;
+    const { message, adminId, productId, productName } = req.body;
 
     if (!message || !adminId) {
       return res
@@ -1744,7 +1751,7 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
         },
       },
       { upsert: true, new: true } // Create a new document if it doesn't exist
-    )
+    );
     const user = await userModel.findOne({ userID: adminId });
     console.log(process.env.EMAILJS_SERVICE_ID_2);
     let data = {
@@ -1756,9 +1763,9 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
         to_email: user.Email,
         product_name: productName,
         restock_alert_link: "http://localhost:3000/loginPage",
-      }
-      };
-    
+      },
+    };
+
     const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
       method: "POST",
       headers: {
@@ -1773,7 +1780,6 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
       message: "Notification added successfully for admin.",
       notification,
     });
-
   } catch (error) {
     console.error("Error adding notification for admin:", error);
     res.status(500).json({ error: "Failed to add notification for admin." });
@@ -1909,13 +1915,13 @@ const updateProductQuantity = async (req, res) => {
 
     console.log(updatedProduct);
 
-    if(updatedProduct.quantity <= 0){
-      await axios.put("http://localhost:8000/sendOutOfStockNotificationAdmin",{
+    if (updatedProduct.quantity <= 0) {
+      await axios.put("http://localhost:8000/sendOutOfStockNotificationAdmin", {
         message: `Be aware Product ${updatedProduct.name} is out of stock`,
         adminId: updatedProduct.seller,
         productId: updatedProduct._id,
-        productName: updatedProduct.name
-      })
+        productName: updatedProduct.name,
+      });
     }
 
     if (!updatedProduct) {
@@ -1972,24 +1978,24 @@ const emptyCart = async (req, res) => {
 };
 
 const getRevenue = async (req, res) => {
-  const {userID} = req.params;
-  try{
-    const sales = await Sales.findOne({user: userID});
+  const { userID } = req.params;
+  try {
+    const sales = await Sales.findOne({ user: userID });
     return res.status(200).json(sales.revenue);
-  }catch{
+  } catch {
     res.status(400).json("ERROR");
   }
-}
+};
 
 const getEmail = async (req, res) => {
-  const {userID} = req.params;
-  try{
-    const response = await userModel.findOne({userID});
+  const { userID } = req.params;
+  try {
+    const response = await userModel.findOne({ userID });
     return res.status(200).json(response);
-  }catch{
+  } catch {
     res.status(400).json("Error");
   }
-}
+};
 
 module.exports = {
   createAdmin,
@@ -2057,5 +2063,5 @@ module.exports = {
   updateProductQuantity,
   emptyCart,
   getRevenue,
-  getEmail
+  getEmail,
 };
