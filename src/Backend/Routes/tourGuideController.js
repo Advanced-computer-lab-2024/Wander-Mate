@@ -582,10 +582,12 @@ const viewItineraryReport = async (req, res) => {
       return {
         itineraryName: itinerary.Name,
         totalTourists: bookings.length,
+        itineraryPrice : itinerary.Price,
+        itineraryActive : itinerary.isActive,
       };
     }));
 
-    res.status(200).json({ report });
+    res.status(200).json({ report,itineraries });
   } catch (error) {
     console.error("Error generating itinerary usage report:", error);
     res.status(500).json({ message: "Internal server error" });

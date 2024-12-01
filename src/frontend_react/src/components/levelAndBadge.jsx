@@ -44,7 +44,7 @@ const LevelAndBadge = () => {
             <CardContent className="flex items-center justify-between p-6">
                 <Badge>
                     <Star className="mr-1 h-3 w-3" />
-                    {touristBadge ? `Level: ${touristBadge}` : 'Loading...'} {/* Displaying Badge */}
+                    {touristBadge ? `${touristBadge}` : 'Loading...'} {/* Displaying Badge */}
                 </Badge>
                 {/* Displaying Wallet */}
                 <div>{touristWallet ? `Wallet: ${touristWallet}` : 'Loading wallet...'}</div>

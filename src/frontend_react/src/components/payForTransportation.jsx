@@ -27,21 +27,14 @@ const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const PayForFlight = ({
-  amount,
-  disabled,
-  flight,
-  departureSegment,
-  arrivalSegment,
-}) => {
+const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
-  const [userPoints, setUserPoints] = useState(0);
+  const [isBooked, setIsBooked] = useState(false);
   const navigate = useNavigate();
-  const [bookingError, setBookingError] = useState(null);
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -53,25 +46,27 @@ const PayForFlight = ({
   }, [paymentMethod]);
 
   const handleWallet = async () => {
-    const username = sessionStorage.getItem("username");
-    const reply = await fetch(`http://localhost:8000/getID/${username}`);
-    if (!reply.ok) throw new Error("Failed to get tourist ID");
-
-    const { userID } = await reply.json();
-
     try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+
       const response = await axios.put("http://localhost:8000/payWithWallet", {
         touristID: userID,
         amount,
       });
+
       if (response.status === 200) {
         setAlertMessage(null);
-        handlePaymentSuccess();
+        await handlePaymentSuccess();
         handleNextSlide();
       } else {
         setAlertMessage(response.data || "Payment failed.");
       }
     } catch (error) {
+      console.error("Wallet payment error:", error);
       setAlertMessage("An error occurred during the transaction.");
     }
   };
@@ -98,24 +93,27 @@ const PayForFlight = ({
       if (!reply.ok) throw new Error("Failed to get tourist ID");
 
       const { userID } = await reply.json();
-
-      const bookingData = {
-        userID,
-        flightID: flight.id,
-        price: flight.price.total,
-        departureDate: departureSegment?.departure?.at,
-        arrivalDate: arrivalSegment?.arrival?.at,
-      };
-
-      const response2 = await axios.post(
-        `http://localhost:8000/book-flight/${userID}`,
-        bookingData
+      const response = await axios.post(
+        `http://localhost:8000/bookTransportation`,
+        {
+          userId: userID,
+          itemId: transportationId,
+          bookedDate: date,
+        }
       );
+
+      if (response.status === 200) {
+        setIsBooked(true);
+        toast.success("Booking successful!");
+      } else {
+        throw new Error("Booking failed");
+      }
     } catch (error) {
-      console.error("Error booking flight:", error);
-      setBookingError("Failed to book the flight. Please try again later.");
+      console.error("Error booking transportation:", error);
+      toast.error("Failed to book transportation");
+      setIsBooked(false);
+      throw error; // Re-throw the error to be caught in the calling function
     }
-    setActiveIndex(totalSlide);
   };
 
   const handlePaymentError = (error) => {
@@ -277,4 +275,4 @@ const PayForFlight = ({
   );
 };
 
-export default PayForFlight;
+export default PayForTransportation;

@@ -15,6 +15,7 @@ import Bus from "../public/images/bus.png";
 import Boat from "../public/images/boat.png";
 import Helicopter from "../public/images/helicopter.png";
 import Transportation from "../pages/transportations";
+import PayForTransportation from "./payForTransportation";
 
 const TransportationCard = ({
   transportationId,
@@ -37,6 +38,8 @@ const TransportationCard = ({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
 
   const isAvailable = () => {
     if (availability) {
@@ -61,33 +64,33 @@ const TransportationCard = ({
     }
   }, [location, transportationId]);
 
-  const handleBook = () => {
-    if (!availability) return;
-    setIsBooked(true);
-  };
+  // const handleBook = () => {
+  //   if (!availability) return;
+  //   setIsBooked(true);
+  // };
 
-  const finishBooking = async () => {
-    try {
-      const username = sessionStorage.getItem("username");
-      const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+  // const finishBooking = async () => {
+  //   try {
+  //     const username = sessionStorage.getItem("username");
+  //     const reply = await fetch(`http://localhost:8000/getID/${username}`);
+  //     if (!reply.ok) throw new Error("Failed to get tourist ID");
 
-      const { userID } = await reply.json();
-      const response = await axios.post(
-        `http://localhost:8000/bookTransportation`,
-        {
-          userId: userID,
-          itemId: transportationId,
-          bookedDate: date,
-        }
-      );
-      toast.success("Booking successful!");
-    } catch (error) {
-      console.error("Error booking transportation:", error);
-      toast.error("Failed to book transportation");
-      setIsBooked(false);
-    }
-  };
+  //     const { userID } = await reply.json();
+  //     const response = await axios.post(
+  //       `http://localhost:8000/bookTransportation`,
+  //       {
+  //         userId: userID,
+  //         itemId: transportationId,
+  //         bookedDate: date,
+  //       }
+  //     );
+  //     toast.success("Booking successful!");
+  //   } catch (error) {
+  //     console.error("Error booking transportation:", error);
+  //     toast.error("Failed to book transportation");
+  //     setIsBooked(false);
+  //   }
+  // };
   const incrementCount = () => {
     setCount((prevCount) => prevCount + 1);
   };
@@ -180,6 +183,21 @@ const TransportationCard = ({
     }
     return null;
   };
+  const handleBook = () => {
+    setIsBooking(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setIsBooking(false);
+    setBookingError(null);
+    // Additional logic for successful booking
+    console.log("Booking successful!");
+  };
+
+  const handlePaymentError = (error) => {
+    setBookingError(error.message || "Payment failed. Please try again.");
+    setIsBooking(false);
+  };
 
   return (
     <>
@@ -196,10 +214,10 @@ const TransportationCard = ({
                     vehicleType === "Car"
                       ? Car
                       : vehicleType === "Bus"
-                      ? Bus
-                      : vehicleType === "Boat"
-                      ? Boat
-                      : Helicopter
+                        ? Bus
+                        : vehicleType === "Boat"
+                          ? Boat
+                          : Helicopter
                   }
                   alt={`${vehicleType} to ${destination}`}
                   className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
@@ -312,10 +330,10 @@ const TransportationCard = ({
                       vehicleType === "Car"
                         ? Car
                         : vehicleType === "Bus"
-                        ? Bus
-                        : vehicleType === "Boat"
-                        ? Boat
-                        : Helicopter
+                          ? Bus
+                          : vehicleType === "Boat"
+                            ? Boat
+                            : Helicopter
                     }
                     alt={`${vehicleType} to ${destination}`}
                     className="w-full h-full object-cover"
@@ -385,7 +403,7 @@ const TransportationCard = ({
                     </div>
 
                     <div className="flex space-x-4 mb-6">
-                      {!isBooked ? (
+                      {/* {!isBooked ? (
                         <Button
                           className="w-full"
                           variant="outline"
@@ -452,6 +470,29 @@ const TransportationCard = ({
                             Pay now
                           </Button>
                         </div>
+                      )} */}
+                      {!isBooking ? (
+                        <Button
+                          className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
+                          onClick={handleBook}
+                        >
+                          <Icon
+                            icon="heroicons:shopping-bag"
+                            className="w-4 h-4 mr-2"
+                          />
+                          Book Transportation
+                        </Button>
+                      ) : (
+                        <PayForTransportation
+                          amount={price}
+                          transportationId={transportationId}
+                          date={date}
+                          onPaymentSuccess={handlePaymentSuccess}
+                          onPaymentError={handlePaymentError}
+                        />
+                      )}
+                      {bookingError && (
+                        <p className="text-red-500 mt-2">{bookingError}</p>
                       )}
                       <Popover
                         open={isShareOpen}
