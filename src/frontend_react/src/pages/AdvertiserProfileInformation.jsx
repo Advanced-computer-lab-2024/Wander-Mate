@@ -134,13 +134,13 @@ const AdvertiserProfileManager = () => {
                   />
                 </div>
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Label>Status</Label>
                   <Badge className="ml-2">
                     <Star className="mr-1 h-3 w-3" />
                     {status ? status : "Loading..."}
                   </Badge>
-                </div>
+                </div> */}
 
                 <div className="flex gap-4">
                   <Button type="button" onClick={() => setIsEditing(!isEditing)}>

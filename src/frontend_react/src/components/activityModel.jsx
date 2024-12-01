@@ -8,12 +8,13 @@ import { Badge } from "./ui/badge";
 import NonMovableMap from "./ui/nonMovableMap";
 import { StarIcon } from "lucide-react";
 import PayForActivity from "./PayForActivity";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import {
   CustomPopover as Popover,
   PopoverTrigger,
   PopoverContent,
 } from "./ui/popover";
-import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function ActivityModal({
@@ -55,7 +56,7 @@ export default function ActivityModal({
 
     if (method === "link") {
       navigator.clipboard.writeText(shareUrl).then(() => {
-        alert("Link copied to clipboard!");
+        toast.success("Link copied to clipboard!");
         setIsShareOpen(false);
       });
     } else if (method === "email") {
@@ -152,8 +153,8 @@ export default function ActivityModal({
                   {activity.category || "Not specified"}
                 </p>
                 <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-semibold">Price:</span> $
-                  {activity.price}
+                  <span className="font-semibold">Price: </span> 
+                  {activity.currency} {activity.price}
                 </p>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {activity.tags.map((tag, index) => (

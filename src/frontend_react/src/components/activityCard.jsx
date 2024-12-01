@@ -18,6 +18,7 @@ export default function ActivityCard({
   category,
   isAvailable,
   rating,
+  currency,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,6 +34,7 @@ export default function ActivityCard({
     category,
     isAvailable,
     rating,
+    currency,
   };
 
   return (
@@ -50,7 +52,7 @@ export default function ActivityCard({
             Category: {category || "Not specified"}
           </p>
           <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
-            Price: ${price}
+            Price: {currency} {price}
           </p>
         </div>
         <div className="flex items-center mb-2">
