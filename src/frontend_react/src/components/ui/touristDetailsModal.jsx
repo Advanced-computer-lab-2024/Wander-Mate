@@ -9,6 +9,19 @@ import {
 } from "./dialog";
 
 const TouristDetailsModal = ({ isOpen, onClose, tourists, itineraryName }) => {
+  // Group tourists by username and count occurrences
+  const touristCount = tourists.reduce((acc, tourist) => {
+    const username = tourist.name || tourist.Username;
+    if (acc[username]) {
+      acc[username].count += 1;
+    } else {
+      acc[username] = { ...tourist, count: 1 };
+    }
+    return acc;
+  }, {});
+
+  const groupedTourists = Object.values(touristCount);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6" size="full">
@@ -22,9 +35,9 @@ const TouristDetailsModal = ({ isOpen, onClose, tourists, itineraryName }) => {
         </DialogHeader>
 
         <div className="mt-6">
-          {tourists.length > 0 ? (
+          {groupedTourists.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
-              {tourists.map((tourist, index) => (
+              {groupedTourists.map((tourist, index) => (
                 <div
                   key={index}
                   className="flex flex-col items-center bg-gray-50 p-3 rounded-md shadow-sm"
@@ -38,6 +51,10 @@ const TouristDetailsModal = ({ isOpen, onClose, tourists, itineraryName }) => {
                   <span className="mt-1 font-medium text-gray-700 text-xs">
                     {tourist.name || tourist.Username}
                   </span>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <span className="font-semibold">Number of Tickets: </span>
+                    {tourist.count}
+                  </div>
                 </div>
               ))}
             </div>
