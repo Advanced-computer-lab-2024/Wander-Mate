@@ -67,13 +67,15 @@ import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
 import MyBookings from "./components/myBookings";
-import admin from "./pages/admin";
+import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
-import SimpleTable from "./components/ui/simpleTable";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
+import ItineraryReport from "./components/ui/ItineraryReport";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";import TourGuideItinerary from "./pages/tourguideItinerary";
+
+import BasicDataTable from "./components/salestable"
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
 function App() {
@@ -160,11 +162,14 @@ function App() {
         <Route path="/myBookings" element={<MyBookings />} />
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
-        <Route path="/SimpleTable" element={<SimpleTable />} />
+        <Route path="/ItineraryReport" element={<ItineraryReport />} />
         <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
         <Route path="/AdminSettings" element={<AdminSettings />} />
         <Route path="/AdminPersonalDetails" element={<AdminPersonalDetails />} />
 
+        <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
+
+        <Route path="/AdminProducts" element={<AdminProducts/>}/>
       </Routes>
     </Router>
   );

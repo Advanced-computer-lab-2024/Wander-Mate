@@ -20,6 +20,7 @@ import {
   CloudUploadIcon,
   LockKeyholeIcon,
   Ticket,
+  ShoppingBasket,
 } from "lucide-react";
 
 const SiteLogo = () => (
@@ -89,6 +90,33 @@ const AdminNavBar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+
+          <DropdownMenu open={openDropdown === "products"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("products")}
+                onMouseLeave={handleMouseLeave}
+              >
+                Products
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("products")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/AdminProducts" className="flex items-center">
+                  <ShoppingBasket className="mr-2 h-4 w-4" />
+                  <span>View Products</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+
           <DropdownMenu open={openDropdown === "orders"}>
             <DropdownMenuTrigger asChild>
               <Button

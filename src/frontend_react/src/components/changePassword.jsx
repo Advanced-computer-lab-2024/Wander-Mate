@@ -36,39 +36,58 @@ const ChangePassword = ({ URL }) => {
     return Object.values(updatedRequirements).every(Boolean);
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!validatePassword(newPassword)) {
       setError("Password does not meet the requirements.");
       return;
     }
-
+  
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
-    // Call API to change the password
-    fetch(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        currentPassword,
-        newPassword,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setError("");
-          alert("Password changed successfully.");
-        } else {
-          setError(data.message || "Error changing password.");
-        }
-      })
-      .catch(() => setError("Network error. Please try again later."));
+  
+    try {
+      // Fetch the username from sessionStorage
+      const username = sessionStorage.getItem("username");
+      if (!username) {
+        setError("Username not found in session.");
+        return;
+      }
+  
+      // Fetch the user ID from the backend using the username
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+  
+      // Destructure userID from the response
+      const { userID } = await reply.json();
+  
+      // Call API to change the password (backend method)
+      const response = await fetch('http://localhost:8000/changePasswordTourist', {  // Adjust URL as necessary
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userID,          // Use the userID received from the backend
+          oldPassword: currentPassword,
+          newPassword: newPassword,
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.message === "Password updated successfully") {
+        setError("");
+        alert("Password changed successfully.");
+      } else {
+        setError(data.message || "Error changing password.");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error.message || "An unexpected error occurred.");
+    }
   };
+  
 
   return (
     <div className="space-y-6">

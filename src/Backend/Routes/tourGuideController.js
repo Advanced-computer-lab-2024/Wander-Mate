@@ -51,7 +51,12 @@ const createTourGuide = async (req, res) => {
     });
 
     const userID = tourGuide._id;
-    await userModel.create({ Username: Username, userID, Type: "TourGuide", Email });
+    await userModel.create({
+      Username: Username,
+      userID,
+      Type: "TourGuide",
+      Email,
+    });
     const token = createToken(Username);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -132,6 +137,28 @@ const deleteItinerary = async (req, res) => {
     }
     if (itinerary.Creator !== Creator) {
       return res.status(403).json({ message: "You are not the creator." });
+    }
+    if (itinerary.Bookings && itinerary.Bookings.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete itinerary with existing bookings." });
+    }
+    await Itinerary.findByIdAndDelete(id);
+    res.status(200).json({ message: "Itinerary deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting itinerary:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error deleting itinerary", error: error.message });
+  }
+};
+
+const deleteMyItinerary = async (req, res) => {
+  try {
+    const { id } = req.params; // Destructure id and Creator from the request body
+    let itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
     }
     if (itinerary.Bookings && itinerary.Bookings.length > 0) {
       return res
@@ -576,16 +603,24 @@ const viewItineraryReport = async (req, res) => {
     // Find all itineraries created by this tour guide
     const itineraries = await Itinerary.find({ Creator: guideID });
 
-    // Map through itineraries to calculate the number of tourists for each
+    // Map through itineraries to calculate the number of tourists for each and fetch their details
     const report = await Promise.all(itineraries.map(async (itinerary) => {
-      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" });
+      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" }).populate("userId");
+
+      // Extract tourist names (assuming the 'userId' object has a 'name' or 'username' field)
+      const tourists = bookings.map(booking => booking.userId.name || booking.userId.username); 
+
       return {
         itineraryName: itinerary.Name,
         totalTourists: bookings.length,
+        itineraryPrice: itinerary.Price,
+        itineraryActive: itinerary.isActive,
+        tourists: bookings.map((booking)=>  booking.userId) // Add tourist names here
       };
     }));
 
-    res.status(200).json({ report });
+    // Send the response with the report and itinerary details
+    res.status(200).json({ report, itineraries });
   } catch (error) {
     console.error("Error generating itinerary usage report:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -594,7 +629,8 @@ const viewItineraryReport = async (req, res) => {
 
 const notifyTourGuide = async (tourGuideId, itineraryId) => {
   try {
-    const notificationMessage = "Your itinerary has been flagged as inappropriate by the admin.";
+    const notificationMessage =
+      "Your itinerary has been flagged as inappropriate by the admin.";
 
     // Add the notification
     const notification = await Notification.findOneAndUpdate(
@@ -637,4 +673,5 @@ module.exports = {
   gettourGuideImage,
   viewItineraryReport,
   notifyTourGuide,
+  deleteMyItinerary,
 };
