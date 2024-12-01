@@ -40,7 +40,7 @@ const TouristSettings = () => {
             <PersonalDetails />
           </TabsContent>
           <TabsContent value="password" className="mt-0">
-            <ChangePassword URL="http://localhost:8000/changePassword"/>
+            <ChangePassword URL="http://localhost:8000/changePasswordTourist"/>
           </TabsContent>
           
         </Tabs>
