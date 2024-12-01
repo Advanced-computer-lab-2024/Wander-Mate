@@ -5,6 +5,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Star } from "lucide-react";
 
 const API_URL = "http://localhost:8000";
 
@@ -13,7 +15,8 @@ const TourGuideProfileManager = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [yearsOfExperience, setYearsOfExperience] = useState(0);
+  const [touristBadge, setTouristBadge] = useState(null);
   const username = sessionStorage.getItem("username");
 
   useEffect(() => {
@@ -41,6 +44,8 @@ const TourGuideProfileManager = () => {
 
         setProfile(data);
         setProfilePicture(pictureUrl);
+        setYearsOfExperience(data.YearsOfExperience || 0);  // Initialize with profile data
+        setTouristBadge(data.status);
         setErrorMessage("");
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -73,6 +78,11 @@ const TourGuideProfileManager = () => {
     }
   };
 
+  const handleYearsOfExperienceChange = (event) => {
+    const value = Math.max(0, parseInt(event.target.value, 10));  // Ensure non-negative value
+    setYearsOfExperience(value);
+  };
+
   if (errorMessage) {
     return <div style={{ color: "red" }}>{errorMessage}</div>;
   }
@@ -83,7 +93,7 @@ const TourGuideProfileManager = () => {
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <Tabs defaultValue="profile">
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="profile">Profile Information</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -92,7 +102,6 @@ const TourGuideProfileManager = () => {
               <form onSubmit={handleProfileSubmit} className="space-y-6">
                 {/* Profile Picture */}
                 <div>
-                  <Label>Profile Picture</Label>
                   <div className="flex items-center gap-4">
                     {profilePicture && (
                       <img
@@ -102,18 +111,6 @@ const TourGuideProfileManager = () => {
                       />
                     )}
                   </div>
-                </div>
-
-                {/* Name */}
-                <div>
-                  <Label htmlFor="Name">Name</Label>
-                  <Input
-                    id="Name"
-                    name="Name"
-                    defaultValue={profile?.FullName || ""}
-                    disabled={!isEditing}
-                    required
-                  />
                 </div>
 
                 {/* Username */}
@@ -135,7 +132,7 @@ const TourGuideProfileManager = () => {
                     name="Email"
                     type="email"
                     defaultValue={profile?.Email || ""}
-                    disabled={!isEditing}
+                    disabled={true}
                     required
                   />
                 </div>
@@ -171,10 +168,19 @@ const TourGuideProfileManager = () => {
                     id="YearsOfExperience"
                     name="YearsOfExperience"
                     type="number"
-                    defaultValue={profile?.YearsOfExperience || ""}
+                    value={yearsOfExperience}
+                    onChange={handleYearsOfExperienceChange}
                     disabled={!isEditing}
                     required
                   />
+                </div>
+                 {/* Tour Guide Status Badge */}
+                 <div className="flex items-center">
+                  <Label>Status</Label>
+                  <Badge className="ml-2">
+                    <Star className="mr-1 h-3 w-3" />
+                    {touristBadge ? touristBadge : "Loading..."} {/* Displaying Badge */}
+                  </Badge>
                 </div>
 
                 {/* Toggle Edit Mode */}
