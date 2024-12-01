@@ -28,7 +28,6 @@ const stripePromise = loadStripe(
 );
 
 const PayNow = ({
-  touristID,
   amount,
   disabled,
   flight,
@@ -77,6 +76,7 @@ const PayNow = ({
       });
       if (response.status === 200) {
         setAlertMessage(null);
+        handlePaymentSuccess();
         handleNextSlide();
       } else {
         setAlertMessage(response.data || "Payment failed.");
