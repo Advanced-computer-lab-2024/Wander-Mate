@@ -7,7 +7,7 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Star } from "lucide-react";
-
+import ChangePassword from "../components/changePassword";
 const API_URL = "http://localhost:8000"
 
 const SellerProfileManager = () => {
@@ -132,7 +132,7 @@ const SellerProfileManager = () => {
         </TabsContent>
 
         <TabsContent value="campaigns">
-          {/* <CampaignsTab /> */}
+        <ChangePassword URL="http://localhost:8000/changePasswordSeller"/>
         </TabsContent>
       </Tabs>
     </div>
