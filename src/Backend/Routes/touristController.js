@@ -3270,6 +3270,34 @@ const gettourist = async (req, res) => {
     console.error("Error getting tourist:", error);
   }
 };
+const getBookingDetails = async (req, res) => {
+  const { bookingID } = req.params; // Booking ID passed in the URL
+
+  try {
+    // Step 1: Find the booking by its ID
+    console.log("Booking ID:", bookingID); // Debugging line
+
+    const booking = await Booking.findById(bookingID).populate("itemId");
+    
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+
+    
+    console.log("Item Model:", booking); // Debugging line
+
+    
+    res.status(200).json({
+      message: "Booking details retrieved successfully.",
+      booking,
+    });
+
+  } catch (err) {
+    console.error("Error retrieving booking details:", err);
+    res.status(500).json({ error: "Failed to retrieve booking details." });
+  }
+};
+
 
 module.exports = {
   ViewOrders,
@@ -3361,4 +3389,5 @@ module.exports = {
   markNotificationAsRead,
   updateActivityRatings,
   gettourist,
+  getBookingDetails,
 };

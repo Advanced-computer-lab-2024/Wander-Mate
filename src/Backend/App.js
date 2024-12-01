@@ -107,6 +107,7 @@ const {
   markNotificationAsRead,
   updateActivityRatings,
   gettourist,
+  getBookingDetails,
 } = require("./Routes/touristController");
 
 const {
@@ -612,5 +613,5 @@ app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
 app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
 app.get("/getRevenue/:userID", getRevenue);
-app.get("/getEmail/:userID", getEmail);
+app.get("/getBookingDetails/:bookingID", getBookingDetails);  app.get("/getEmail/:userID", getEmail);
 app.get("/gettourist/:touristID",gettourist);
