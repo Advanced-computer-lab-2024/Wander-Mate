@@ -94,6 +94,7 @@ const TourGuideProfileManager = () => {
       <Tabs defaultValue="profile">
         <TabsList>
           <TabsTrigger value="profile">Profile Information</TabsTrigger>
+          <TabsTrigger value="changePassword">Change Password</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">

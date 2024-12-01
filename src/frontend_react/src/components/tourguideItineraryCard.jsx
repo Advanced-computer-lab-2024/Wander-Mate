@@ -21,7 +21,7 @@ import {
 } from "./ui/carousel";
 import BasicMap from "./ui/basic-map"; // Import the map component
 
-import TourGuideItineraryModel from "./tourguideItineraryModel";
+import EditableItineraryModel from "./editableItineraryModel";
 const TourGuideItineraryCard = ({
   itineraryId,
   name,
@@ -56,7 +56,7 @@ const TourGuideItineraryCard = ({
         : "/placeholder.svg?height=300&width=300",
     images: images.map((img) =>
       img.data ? `data:${img.contentType};base64,${img.data}` : img
-    ),    
+    ),
     duration,
     latitude,
     longitude,
@@ -77,7 +77,7 @@ const TourGuideItineraryCard = ({
   return (
     <>
       {/* Modal for Itinerary Details */}
-      <TourGuideItineraryModel
+      <EditableItineraryModel
         cur={currrn}
         itinerary={itinerary}
         isOpen={isModalOpen}
@@ -145,7 +145,7 @@ const TourGuideItineraryCard = ({
             </Button>
           </div>
         </Card>
-      </TourGuideItineraryModel>
+      </EditableItineraryModel>
     </>
   );
 };
