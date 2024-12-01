@@ -226,6 +226,9 @@ const {
   gettourGuideImage,
   viewItineraryReport,
   notifyTourGuide,
+  viewMyNotificationsTG,
+  removeNotificationTG,
+  markNotificationAsReadTG,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -582,11 +585,13 @@ app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.get("/viewMyNotifications/:touristId",viewMyNotifications);
+app.get("/viewMyNotificationsTG/:guideID",viewMyNotificationsTG);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
 app.delete("/removeNotification/:touristId/:notificationId",removeNotification);
+app.delete("/removeNotificationTG/:guideID/:notificationId",removeNotificationTG);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
@@ -616,6 +621,7 @@ app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
 app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
+app.put("/markNotificationAsReadTG/:userID/:notificationId",markNotificationAsReadTG);
 app.get("/getRevenue/:userID", getRevenue);
 app.get("/getBookingDetails/:bookingID", getBookingDetails);  app.get("/getEmail/:userID", getEmail);
 app.get("/gettourist/:touristID",gettourist);

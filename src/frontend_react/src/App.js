@@ -74,7 +74,7 @@ import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
 import ItineraryReport from "./components/ui/ItineraryReport";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";import TourGuideItinerary from "./pages/tourguideItinerary";
-
+import TourGuidePage from "./pages/tourGuideHomePage";
 import BasicDataTable from "./components/salestable"
 function App() {
   return (
@@ -164,7 +164,7 @@ function App() {
         <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
 
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
-
+        <Route path="/TourGuidePage" element={<TourGuidePage/>}/>
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
       </Routes>
     </Router>

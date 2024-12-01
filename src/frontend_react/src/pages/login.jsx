@@ -118,7 +118,7 @@ const LogInForm = () => {
 
             setTimeout(() => {
               if (response.data.status === "accepted") {
-                navigate("/tourGuide");
+                navigate("/TourGuidePage");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");
