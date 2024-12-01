@@ -107,7 +107,7 @@ const {
   markNotificationAsRead,
   updateActivityRatings,
   gettourist,
-  getBookingDetails,,
+  getBookingDetails,
   getTouristLevel,
 } = require("./Routes/touristController");
 
