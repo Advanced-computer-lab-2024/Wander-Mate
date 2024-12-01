@@ -40,6 +40,7 @@ const PaymentFormInner = ({ amount, onSuccess, onError }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [promoCode, setPromoCode] = useState(false);
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -97,6 +98,9 @@ const PaymentFormInner = ({ amount, onSuccess, onError }) => {
       setLoading(false);
     }
   };
+  const handlePromoCode = () => {
+    setPromoCode(!promoCode);
+  };
 
   return (
     <Card>
@@ -117,13 +121,23 @@ const PaymentFormInner = ({ amount, onSuccess, onError }) => {
           <div className="text-green-500 mt-2">{successMessage}</div>
         )}
       </CardContent>
-      <CardFooter>
-        <Button
-          onClick={handlePayment}
-          disabled={loading || !stripe || !elements}
-        >
-          {loading ? "Processing..." : "Pay Now"}
-        </Button>
+
+      <CardFooter className="flex flex-col space-y-4">
+        <div className="flex justify-between w-full">
+          <Button onClick={handlePromoCode}>Promo Code</Button>
+          <Button
+            onClick={handlePayment}
+            disabled={loading || !stripe || !elements}
+          >
+            {loading ? "Processing..." : "Pay Now"}
+          </Button>
+        </div>
+        {promoCode && (
+          <Input
+            placeholder="Apply Promo Code Here"
+            onChange={(e) => setPromoCode(e.target.value)}
+          />
+        )}
       </CardFooter>
     </Card>
   );
