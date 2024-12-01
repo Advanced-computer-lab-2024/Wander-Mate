@@ -198,22 +198,13 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                       <span className="font-semibold">Category:</span>{" "}
                       {place.category}
                     </p>
-                    {Array.isArray(place.TicketPrices) && place.TicketPrices.length > 0 ? (
-    <div>
-      <span className="font-semibold">Ticket Prices:</span>
-      <ul className="text-sm text-gray-600">
-        {place.TicketPrices.map((price, index) => (
-          <li key={index}>
-            {price}
-          </li>
-        ))}
-      </ul>
-    </div>
-  ) : (
-    <p className="text-sm text-gray-600">
-      No ticket prices available.
-    </p>
-  )}
+                    
+                      <div>
+                        <span className="font-semibold">Ticket Prices:</span>
+                        <ul className="text-sm text-gray-600">
+                         {place.currency} {place.TicketPrices}
+                        </ul>
+                      </div>
                   </div>
                   {/* Favorite Button and Share Button */}
                   <div className="flex space-x-4 mb-6">

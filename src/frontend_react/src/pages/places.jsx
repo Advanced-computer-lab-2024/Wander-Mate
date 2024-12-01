@@ -36,6 +36,9 @@ export default function Places() {
   const [tagMap, setTagMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
+  const combo=sessionStorage.getItem("curr");
 
   const fetchImages = async (activityId) => {
     try {
@@ -106,6 +109,20 @@ export default function Places() {
   };
 
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c=sessionStorage.getItem("curr");
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
+          
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     const fetchData = async () => {
       setLoading(true);
       await fetchCategories();
@@ -235,6 +252,7 @@ export default function Places() {
             ) : filteredPlaces.length > 0 ? (
               filteredPlaces.map((place) => (
                 <PlaceCard
+                  currency={combo}
                   key={place._id}
                   name={place.Name}
                   images={place.Pictures}
@@ -246,7 +264,8 @@ export default function Places() {
                     categories.find((cat) => cat._id === place.Category)
                       ?.Name || "No Category"
                   }
-                  TicketPrices={place.TicketPrices}
+                  TicketPrices={(place.TicketPrices / (exchangeRates[currency] || 1)
+                  )}
                 />
               ))
             ) : (
