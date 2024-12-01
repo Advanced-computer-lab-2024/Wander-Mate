@@ -71,6 +71,7 @@ import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
+import LevelAndBadge from "./components/levelAndBadge";
 
 function App() {
   return (
@@ -152,7 +153,7 @@ function App() {
         <Route path="/AboutUs" element={<AboutUs />} />        
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
-
+        <Route path="/levelAndBadge" element={<LevelAndBadge />} />
         <Route path="/myBookings" element={<MyBookings />} />
       </Routes>
     </Router>

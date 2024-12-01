@@ -3257,6 +3257,30 @@ const markNotificationAsRead= async (req, res) => {
   }
 };
 
+const getTouristLevel = async (req, res) => {
+  try {
+      const { touristId } = req.params;  // Get touristId from the URL parameter
+      if (!touristId) {
+          return res.status(400).json({ message: "touristId is required" });
+      }
+      
+      // Fetch the tourist data from the database using the touristId
+      const tourist = await userModel.findById(touristId);  // Corrected variable name to match touristId
+      if (!tourist) {
+          return res.status(404).json({ message: "Tourist not found" });
+      }
+
+      // Send the response with the level (Badge)
+      res.json({ Badge: tourist.Badge });
+  } catch (error) {
+      console.error('Error fetching tourist level:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3346,4 +3370,5 @@ module.exports = {
   removeNotification,
   markNotificationAsRead,
   updateActivityRatings,
+  getTouristLevel,
 };

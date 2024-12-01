@@ -105,7 +105,8 @@ const {
   viewMyNotifications,
   removeNotification,
   markNotificationAsRead,
-  updateActivityRatings
+  updateActivityRatings,
+  getTouristLevel,
 } = require("./Routes/touristController");
 
 const {
@@ -443,6 +444,7 @@ app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
 app.post("/reviewProduct", reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
+app.get("/getTouristLevel/:touristId",getTouristLevel);
 // app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
