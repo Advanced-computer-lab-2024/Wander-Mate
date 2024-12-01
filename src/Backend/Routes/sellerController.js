@@ -287,12 +287,10 @@ const getSellerById = async (req, res) => {
     }
     res.status(200).json({ seller });
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        message: "Error fetching seller information",
-        error: error.message,
-      });
+    res.status(400).json({
+      message: "Error fetching seller information",
+      error: error.message,
+    });
   }
 };
 
@@ -610,8 +608,6 @@ const sendOutOfStockNotificationSeller = async (req, res) => {
       notification,
     });
 
-
-
     console.log("Notification added for seller:", notification);
   } catch (error) {
     console.error("Error adding notification for seller:", error);
@@ -619,15 +615,19 @@ const sendOutOfStockNotificationSeller = async (req, res) => {
   }
 };
 
-const getSalesReport = async (req,res) => {
+const getSalesReport = async (req, res) => {
   const { sellerId } = req.params;
   try {
     // Step 1: Get all products by the seller
-    const sellerProducts = await ProductModel.find({ seller: sellerId }).select("_id name price");
+    const sellerProducts = await ProductModel.find({ seller: sellerId }).select(
+      "_id name"
+    );
     const productIds = sellerProducts.map((product) => product._id);
 
     if (sellerProducts.length === 0) {
-      return res.status(404).json({ message: "No products found for this seller." });
+      return res
+        .status(404)
+        .json({ message: "No products found for this seller." });
     }
 
     // Step 2: Aggregate orders containing the seller's products
@@ -635,48 +635,66 @@ const getSalesReport = async (req,res) => {
       {
         $match: {
           products: { $in: productIds }, // Orders containing seller's products
-          status: { $in: ["shipped", "delivered"] }, // Only include completed sales
+          status: { $in: ["shipped", "delivered", "pending", "cancelled"] }, // Include relevant statuses
         },
       },
       {
-        $unwind: "$products", // Flatten products array for individual processing
+        $unwind: { path: "$products", preserveNullAndEmptyArrays: true }, // Unwind products
+      },
+      {
+        $unwind: { path: "$quantities", preserveNullAndEmptyArrays: true }, // Unwind quantities to align with products
+      },
+      {
+        $lookup: {
+          from: "products", // Join with Product collection
+          localField: "products",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails", // Unwind product details
       },
       {
         $match: {
-          products: { $in: productIds }, // Match seller's products again after unwinding
+          products: { $in: productIds }, // Ensure seller's products are included
         },
       },
       {
         $group: {
           _id: "$products", // Group by product ID
-          totalSales: { $sum: 1 }, // Count quantity sold
-          totalRevenue: { $sum: "$total" }, // Sum total revenue
+          totalQuantity: { $sum: { $ifNull: ["$quantities", 1] } }, // Sum quantities, default to 1 if missing
+          totalRevenue: {
+            $sum: { $multiply: ["$quantities", "$productDetails.price"] },
+          }, // Calculate revenue
         },
       },
       {
         $lookup: {
-          from: "products", // Join with Product collection for product details
+          from: "products", // Join for product details
           localField: "_id",
           foreignField: "_id",
           as: "productDetails",
         },
       },
       {
-        $unwind: "$productDetails", // Unwind product details array
+        $unwind: "$productDetails", // Unwind product details
       },
       {
         $project: {
           _id: 0,
           productId: "$_id",
           productName: "$productDetails.name",
-          totalSales: 1,
+          totalQuantity: 1,
           totalRevenue: 1,
         },
       },
     ]);
 
     if (salesData.length === 0) {
-      return res.status(404).json({ message: "No sales data found for this seller." });
+      return res
+        .status(404)
+        .json({ message: "No sales data found for this seller." });
     }
 
     // Step 3: Send response
@@ -686,10 +704,11 @@ const getSalesReport = async (req,res) => {
     });
   } catch (error) {
     console.error("Error generating sales report:", error);
-    res.status(500).json({ message: "Server error while generating sales report." });
+    res
+      .status(500)
+      .json({ message: "Server error while generating sales report." });
   }
 };
-
 
 module.exports = {
   createSeller,

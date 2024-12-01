@@ -17,7 +17,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import axios from "axios";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 export default function CreateTransportationDialog() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -82,13 +83,14 @@ export default function CreateTransportationDialog() {
           discount: 0,
           date: "",
         });
+        toast.success("Added successfully");
         setOpen(false);
       } else {
-        alert("Error adding transportation.");
+        toast.error("Error adding transportation.");
       }
     } catch (error) {
       console.log(error);
-      alert("Failed to add transportation: " + error.message);
+      toast.error("Failed to add transportation: " + error.message);
     }
   };
 
@@ -98,6 +100,7 @@ export default function CreateTransportationDialog() {
         <Button>Add New Transportation</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]" size="lg">
+        <Toaster/>
         <DialogHeader>
           <DialogTitle>Create New Transportation</DialogTitle>
         </DialogHeader>

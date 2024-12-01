@@ -8,17 +8,14 @@ import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Star } from "lucide-react";
 import ChangePassword from "../components/changePassword";
-
 const API_URL = "http://localhost:8000"
 
-const AdvertiserProfileManager = () => {
+const SellerProfileManager = () => {
   const [profile, setProfile] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  const [status, setStatus] = useState("")
-  const [website, setWebsite] = useState("")
-  const [hotline, setHotline] = useState("")
-  const [companyProfile, setCompanyProfile] = useState("")
+  const [fullName, setFullName] = useState("")
+  const [description, setDescription] = useState("")
   const username = sessionStorage.getItem("username")
 
   useEffect(() => {
@@ -29,17 +26,18 @@ const AdvertiserProfileManager = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.patch(`${API_URL}/readAdvertiserInfo`, { Username: username })
+        // Pass the username as a query parameter
+        const { data } = await axios.get(`${API_URL}/readSeller`, {
+          params: { username }
+        })
 
         if (Array.isArray(data) && data.length > 0) {
-          const advertiser = data[0]
-          setProfile(advertiser)
-          setStatus(advertiser.status || "")
-          setWebsite(advertiser.Website || "")
-          setHotline(advertiser.Hotline || "")
-          setCompanyProfile(advertiser.CompanyProfile || "")
+          const seller = data[0]
+          setProfile(seller)
+          setFullName(seller.FullName || "")
+          setDescription(seller.Description || "")
         } else {
-          setErrorMessage("Advertiser not found.")
+          setErrorMessage("Seller not found.")
         }
 
         setErrorMessage("")
@@ -59,8 +57,8 @@ const AdvertiserProfileManager = () => {
     formData.append("Username", username)
 
     try {
-      const { data } = await axios.put(`${API_URL}/updateAdvertiserInfo`, Object.fromEntries(formData))
-      setProfile(data.advertiser)
+      const { data } = await axios.put(`${API_URL}/updateSeller`, Object.fromEntries(formData))
+      setProfile(data.seller)
       setIsEditing(false)
     } catch (error) {
       console.error("Failed to update profile:", error)
@@ -72,7 +70,7 @@ const AdvertiserProfileManager = () => {
     return <div style={{ color: "red" }}>{errorMessage}</div>
   }
 
-  if (!profile) return <div>Loading...</div>
+//   if (!profile) return <div>Loading...</div>
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -99,48 +97,28 @@ const AdvertiserProfileManager = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="Website">Website</Label>
+                  <Label htmlFor="FullName">Full Name</Label>
                   <Input
-                    id="Website"
-                    name="Website"
-                    value={website}
+                    id="FullName"
+                    name="FullName"
+                    value={fullName}
                     disabled={!isEditing}
-                    onChange={(e) => setWebsite(e.target.value)}
+                    onChange={(e) => setFullName(e.target.value)}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="Hotline">Hotline</Label>
+                  <Label htmlFor="Description">Description</Label>
                   <Input
-                    id="Hotline"
-                    name="Hotline"
-                    value={hotline}
+                    id="Description"
+                    name="Description"
+                    value={description}
                     disabled={!isEditing}
-                    onChange={(e) => setHotline(e.target.value)}
+                    onChange={(e) => setDescription(e.target.value)}
                     required
                   />
                 </div>
-
-                <div>
-                  <Label htmlFor="CompanyProfile">Company Profile</Label>
-                  <Input
-                    id="CompanyProfile"
-                    name="CompanyProfile"
-                    value={companyProfile}
-                    disabled={!isEditing}
-                    onChange={(e) => setCompanyProfile(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* <div className="flex items-center">
-                  <Label>Status</Label>
-                  <Badge className="ml-2">
-                    <Star className="mr-1 h-3 w-3" />
-                    {status ? status : "Loading..."}
-                  </Badge>
-                </div> */}
 
                 <div className="flex gap-4">
                   <Button type="button" onClick={() => setIsEditing(!isEditing)}>
@@ -154,11 +132,11 @@ const AdvertiserProfileManager = () => {
         </TabsContent>
 
         <TabsContent value="campaigns">
-        <ChangePassword URL="http://localhost:8000/changePasswordAdvertiser"/>
+        <ChangePassword URL="http://localhost:8000/changePasswordSeller"/>
         </TabsContent>
       </Tabs>
     </div>
   )
 }
 
-export default AdvertiserProfileManager
+export default SellerProfileManager;

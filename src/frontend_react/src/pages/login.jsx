@@ -87,7 +87,8 @@ const LogInForm = () => {
             reToast.success("Logged in successfully!", {
               id: toastId,
             });
-            sessionStorage.setItem("Type", "Advertiser");
+            sessionStorage.setItem("Type", "Tourist");
+            sessionStorage.setItem("curr", response.data.curr || "USD");
 
             setTimeout(() => {
               navigate("/touristHomepage");
