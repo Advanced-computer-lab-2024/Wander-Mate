@@ -7,7 +7,8 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Icon } from "@iconify/react";
-
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 const CreatePlace = () => {
   const [formData, setFormData] = useState({
     Username: '',
@@ -43,7 +44,7 @@ const CreatePlace = () => {
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      alert("Could not load categories. Please try again later.");
+      toast.error("Could not load categories. Please try again later.");
     } finally {
       setLoadingCategories(false);
     }
@@ -58,7 +59,7 @@ const CreatePlace = () => {
       setTags(data);
     } catch (error) {
       console.error("Error fetching tags:", error);
-      alert("Could not load tags. Please try again later.");
+      toast.error("Could not load tags. Please try again later.");
     } finally {
       setLoadingTags(false);
     }
@@ -132,7 +133,7 @@ const CreatePlace = () => {
       });
 
       if (response.ok) {
-        alert("Place created successfully!");
+        toast.success("Place created successfully!");
         setFormData({
           Username: '',
           Name: '',
@@ -147,11 +148,11 @@ const CreatePlace = () => {
         setSelectedTags([]);
         setIsOpen(false);
       } else {
-        alert("Error creating place.");
+        toast.error("Error creating place.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to create place.");
+      toast.error("Failed to create place.");
     }
   };
 
