@@ -109,7 +109,7 @@ const {
   gettourist,
   getBookingDetails,
   getTouristLevel,
-  getTouristWallet
+  getTouristWallet,
 } = require("./Routes/touristController");
 
 const {
@@ -226,6 +226,7 @@ const {
   gettourGuideImage,
   viewItineraryReport,
   notifyTourGuide,
+  deleteMyItinerary,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -397,6 +398,7 @@ app.get("/readProfileInformation/:Username", readProfileInformation);
 app.put("/updateProfileInformation", updateProfileInformation);
 app.put("/updateItinerary/:id", updateItinerary);
 app.delete("/deleteItinerary", deleteItinerary);
+app.delete("/deleteMyItinerary/:id", deleteMyItinerary);
 app.post("/filterItineraries", filterItineraries);
 app.patch("/readAdvertiserInfo", readAdvertiserInfo);
 app.put("/updateAdvertiserInfo", updateAdvertiserInfo);
@@ -449,7 +451,7 @@ app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
 app.post("/reviewProduct", reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
-app.get("/getTouristLevel/:touristId",getTouristLevel);
+app.get("/getTouristLevel/:touristId", getTouristLevel);
 // app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
@@ -581,12 +583,15 @@ app.delete("/removeProduct", removeProduct);
 app.get("/viewOrderDetails/:OrderId", viewOrderDetails);
 app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
-app.get("/viewMyNotifications/:touristId",viewMyNotifications);
+app.get("/viewMyNotifications/:touristId", viewMyNotifications);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
 app.delete("/removeFromWishlist", removeFromWishlist);
-app.delete("/removeNotification/:touristId/:notificationId",removeNotification);
+app.delete(
+  "/removeNotification/:touristId/:notificationId",
+  removeNotification
+);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
@@ -615,9 +620,13 @@ app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
 app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
-app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
+app.put(
+  "/markNotificationAsRead/:userID/:notificationId",
+  markNotificationAsRead
+);
 app.get("/getRevenue/:userID", getRevenue);
-app.get("/getBookingDetails/:bookingID", getBookingDetails);  app.get("/getEmail/:userID", getEmail);
-app.get("/gettourist/:touristID",gettourist);
-app.get("/getTouristWallet/:touristId",getTouristWallet);
+app.get("/getBookingDetails/:bookingID", getBookingDetails);
+app.get("/getEmail/:userID", getEmail);
+app.get("/gettourist/:touristID", gettourist);
+app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId",getSalesReport);

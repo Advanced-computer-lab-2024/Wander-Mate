@@ -8,14 +8,14 @@ import {
   TableRow,
 } from "./table";
 import { Button } from "./button";
-import TouristDetailsModal from './touristDetailsModal'; // Import the modal
+import TouristDetailsModal from "./touristDetailsModal";  // Import the modal
 
 const ItineraryReportTable = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const [selectedItinerary, setSelectedItinerary] = useState(null); // Selected itinerary
+  const [selectedItinerary, setSelectedItinerary] = useState(null); // State to store the selected itinerary
+  const [tourists, setTourists] = useState([]); // State to store tourists
 
   const columns = [
     { key: "itineraryName", label: "Itinerary Name" },
@@ -62,9 +62,12 @@ const ItineraryReportTable = () => {
     }
   };
 
-  const handleViewDetails = (itinerary) => {
-    setSelectedItinerary(itinerary); // Set the selected itinerary
-    setIsModalOpen(true); // Open the modal
+  const handleViewDetails = async (itineraryName) => {
+    const selected = reports.find((report) => report.itineraryName === itineraryName);
+    if (selected) {
+      setTourists(selected.tourists);
+      setSelectedItinerary(selected.itineraryName);  // Set the selected itinerary
+    }
   };
 
   useEffect(() => {
@@ -86,7 +89,6 @@ const ItineraryReportTable = () => {
         </TableHeader>
         <TableBody>
           {reports.map((report, index) => {
-            console.log("Report in Table Row:", report); // Log each row for debugging
             return (
               <TableRow key={index}>
                 <TableCell className="px-4 py-2">{report.itineraryName}</TableCell>
@@ -107,9 +109,9 @@ const ItineraryReportTable = () => {
                     : 'N/A'}
                 </TableCell>
                 <TableCell className="px-4 py-2">
-                  <Button
+                  <Button 
+                    onClick={() => handleViewDetails(report.itineraryName)}  // Pass the itinerary name here
                     className="p-0 px-15 h-auto hover:bg-transparent bg-transparent text-primary hover:text-primary/80 hover:underline"
-                    onClick={() => handleViewDetails(report)} // Trigger modal on click
                   >
                     View Details
                   </Button>
@@ -120,15 +122,13 @@ const ItineraryReportTable = () => {
         </TableBody>
       </Table>
 
-      {/* Tourist Details Modal */}
-      {selectedItinerary && (
-        <TouristDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)} // Close modal
-          tourists={selectedItinerary.tourists || []} // Pass tourists
-          itineraryName={selectedItinerary.itineraryName}
-        />
-      )}
+      {/* TouristDetailsModal will be shown when a specific itinerary is selected */}
+      <TouristDetailsModal
+        isOpen={!!selectedItinerary}
+        onClose={() => setSelectedItinerary(null)}
+        tourists={tourists}
+        itineraryName={selectedItinerary}
+      />
     </>
   );
 };

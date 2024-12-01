@@ -99,6 +99,7 @@ const Registration = () => {
       case "Tourist":
         URL += "touristRegister";
         sessionStorage.setItem("Type", "Tourist");
+        sessionStorage.setItem("curr", "USD");
 
         break;
       case "Seller":
