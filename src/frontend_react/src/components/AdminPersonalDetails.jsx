@@ -36,15 +36,9 @@ export default function AdminDetailsView() {
             </div>
             
           </div>
-          <div className="mt-6">
-            <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED]">Edit</Button>
-          </div>
+
         </TabsContent>
-        <TabsContent value="password">
-          <div className="mt-6">
-            <p>Password change functionality to be implemented.</p>
-          </div>
-        </TabsContent>
+      
       </Tabs>
     </div>
   )
