@@ -266,7 +266,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});
@@ -292,7 +292,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});
@@ -318,7 +318,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});
@@ -344,7 +344,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});
@@ -370,7 +370,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});
@@ -398,7 +398,7 @@ const deleteAccount = async (req, res) => {
       await notifications.deleteMany({userID : userID});
       await attractions.deleteMany({Creator : userID});
       await Itinerary.deleteMany({Creator : userID});
-      await Product.deleteMany({Seller : userID});
+      await Product.deleteMany({seller : userID});
       await promocode.deleteMany({assignedTo : userID});
       await sales.deleteMany({user : userID});
       await transportations.deleteMany({advertiserId : userID});

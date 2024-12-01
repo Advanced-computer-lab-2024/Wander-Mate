@@ -71,10 +71,16 @@ export default function ItineraryModel({
   };
 
   const handleBook = () => {
+    if (!selectedDate) {
+      toast.error("Please select a date before booking!");
+      return;
+    }
+  
     if (!isBooked) {
       setIsBooked(true);
     }
   };
+  
 
   const incrementCount = () => {
     if (count < maxQuantity) {

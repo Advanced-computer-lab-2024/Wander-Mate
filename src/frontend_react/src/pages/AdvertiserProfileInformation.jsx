@@ -10,13 +10,14 @@ import { Star } from "lucide-react";
 
 const API_URL = "http://localhost:8000";
 
-const TourGuideProfileManager = () => {
+const AdvertiserProfileManager = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [yearsOfExperience, setYearsOfExperience] = useState(0);
-  const [touristBadge, setTouristBadge] = useState(null);
+  const [status, setStatus] = useState("");
+  const [website, setWebsite] = useState("");
+  const [hotline, setHotline] = useState("");
+  const [companyProfile, setCompanyProfile] = useState("");
   const username = sessionStorage.getItem("username");
 
   useEffect(() => {
@@ -27,31 +28,28 @@ const TourGuideProfileManager = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(
-          `${API_URL}/readProfileInformation/${encodeURIComponent(username)}`
+        const { data } = await axios.patch(
+          `${API_URL}/readAdvertiserInfo`, 
+          { Username: username }  // Sending the Username in the request body
         );
 
-        let pictureUrl = null;
-        if (data.picture && data.picture.data) {
-          const base64String = btoa(
-            new Uint8Array(data.picture.data).reduce(
-              (acc, byte) => acc + String.fromCharCode(byte),
-              ""
-            )
-          );
-          pictureUrl = `data:image/jpeg;base64,${base64String}`;
+        // Check if the returned data is an array and access the first element
+        if (Array.isArray(data) && data.length > 0) {
+          const advertiser = data[0]; // Assuming the first element holds the correct profile data
+          setProfile(advertiser);
+          setStatus(advertiser.status || "");
+          setWebsite(advertiser.website || "");
+          setHotline(advertiser.hotline || "");
+          setCompanyProfile(advertiser.companyProfile || "");
+        } else {
+          setErrorMessage("Advertiser not found.");
         }
 
-        setProfile(data);
-        setProfilePicture(pictureUrl);
-        setYearsOfExperience(data.YearsOfExperience || 0);  // Initialize with profile data
-        setTouristBadge(data.status);
-        setErrorMessage("");
+        setErrorMessage(""); // Clear any existing error messages
       } catch (error) {
         console.error("Failed to fetch profile:", error);
         setErrorMessage(
-          error.response?.data?.message ||
-            "An error occurred while fetching the profile."
+          error.response?.data?.message || "An error occurred while fetching the profile."
         );
       }
     };
@@ -67,20 +65,15 @@ const TourGuideProfileManager = () => {
 
     try {
       const { data } = await axios.put(
-        `${API_URL}/updateProfileInformation`,
+        `${API_URL}/updateAdvertiserInfo`,
         Object.fromEntries(formData)
       );
-      setProfile(data.tourGuide);
+      setProfile(data.advertiser);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update profile:", error);
       alert("Failed to update profile. Please try again.");
     }
-  };
-
-  const handleYearsOfExperienceChange = (event) => {
-    const value = Math.max(0, parseInt(event.target.value, 10));  // Ensure non-negative value
-    setYearsOfExperience(value);
   };
 
   if (errorMessage) {
@@ -91,6 +84,7 @@ const TourGuideProfileManager = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
+         <br></br>
       <Tabs defaultValue="profile">
         <TabsList>
           <TabsTrigger value="profile">Profile Information</TabsTrigger>
@@ -100,26 +94,14 @@ const TourGuideProfileManager = () => {
           <Card>
             <CardContent>
               <form onSubmit={handleProfileSubmit} className="space-y-6">
-                {/* Profile Picture */}
-                <div>
-                  <div className="flex items-center gap-4">
-                    {profilePicture && (
-                      <img
-                        src={profilePicture || "default-profile.png"}
-                        alt="Profile"
-                        className="w-20 h-20 rounded-full object-cover"
-                      />
-                    )}
-                  </div>
-                </div>
-
+                <br></br>
                 {/* Username */}
                 <div>
                   <Label htmlFor="Username">Username</Label>
                   <Input
                     id="Username"
                     name="Username"
-                    defaultValue={profile?.Username || ""}
+                    value={profile?.Username || ""}
                     disabled={true}
                   />
                 </div>
@@ -131,55 +113,57 @@ const TourGuideProfileManager = () => {
                     id="Email"
                     name="Email"
                     type="email"
-                    defaultValue={profile?.Email || ""}
+                    value={profile?.Email || ""}
                     disabled={true}
                     required
                   />
                 </div>
 
-                {/* Mobile Number */}
+                {/* Website */}
                 <div>
-                  <Label htmlFor="MobileNumber">Mobile Number</Label>
+                  <Label htmlFor="Website">Website</Label>
                   <Input
-                    id="MobileNumber"
-                    name="MobileNumber"
-                    defaultValue={profile?.MobileNumber || ""}
+                    id="Website"
+                    name="Website"
+                    value={website}  // Use 'value' instead of 'defaultValue'
                     disabled={!isEditing}
+                    onChange={(e) => setWebsite(e.target.value)}
                     required
                   />
                 </div>
 
-                {/* Previous Work */}
+                {/* Hotline */}
                 <div>
-                  <Label htmlFor="PreviousWork">Previous Work</Label>
+                  <Label htmlFor="Hotline">Hotline</Label>
                   <Input
-                    id="PreviousWork"
-                    name="PreviousWork"
-                    defaultValue={profile?.PreviousWork || ""}
+                    id="Hotline"
+                    name="Hotline"
+                    value={hotline}  // Use 'value' instead of 'defaultValue'
                     disabled={!isEditing}
+                    onChange={(e) => setHotline(e.target.value)}
                     required
                   />
                 </div>
 
-                {/* Years of Experience */}
+                {/* Company Profile */}
                 <div>
-                  <Label htmlFor="YearsOfExperience">Years of Experience</Label>
+                  <Label htmlFor="CompanyProfile">Company Profile</Label>
                   <Input
-                    id="YearsOfExperience"
-                    name="YearsOfExperience"
-                    type="number"
-                    value={yearsOfExperience}
-                    onChange={handleYearsOfExperienceChange}
+                    id="CompanyProfile"
+                    name="CompanyProfile"
+                    value={companyProfile}  // Use 'value' instead of 'defaultValue'
                     disabled={!isEditing}
+                    onChange={(e) => setCompanyProfile(e.target.value)}
                     required
                   />
                 </div>
-                 {/* Tour Guide Status Badge */}
-                 <div className="flex items-center">
+
+                {/* Status Badge */}
+                <div className="flex items-center">
                   <Label>Status</Label>
                   <Badge className="ml-2">
                     <Star className="mr-1 h-3 w-3" />
-                    {touristBadge ? touristBadge : "Loading..."} {/* Displaying Badge */}
+                    {status ? status : "Loading..."} {/* Displaying Status */}
                   </Badge>
                 </div>
 
@@ -202,4 +186,4 @@ const TourGuideProfileManager = () => {
   );
 };
 
-export default TourGuideProfileManager;
+export default AdvertiserProfileManager;

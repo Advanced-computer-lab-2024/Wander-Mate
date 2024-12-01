@@ -31,6 +31,7 @@ import {
   Minus,
   Trash2,
   Bell,
+  FileText,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -47,7 +48,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
-import UserProfilePage from "../pages/userProfilePage";
+import ComplaintForm from "./fileComplaintComponent";
 
 const SiteLogo = () => (
   <svg
@@ -76,6 +77,7 @@ const SiteLogo = () => (
 const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isComplaintFormOpen, setIsComplaintFormOpen] = useState(false);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [touristID, setTouristId] = useState(0);
@@ -142,8 +144,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     setOpenDropdown(dropdown);
   };
 
-  const handleMouseLeave = () => {
-    setOpenDropdown(null);
+  const handleMouseLeave = () => {setOpenDropdown(null);
   };
 
   const logout = () => {
@@ -344,11 +345,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
 
   const markNotificationAsRead = async (id) => {
     try {
-      // Send a POST request to mark the notification as read
       const response = await axios.put(`http://localhost:8000/markNotificationAsRead/${touristID}/${id}`);
   
       if (response.status === 200) {
-        // Update the notification state by setting the `isRead` flag to true
         setNotifications((prevNotifications) =>
           prevNotifications.map((notification) =>
             notification._id === id ? { ...notification, isRead: true } : notification
@@ -365,33 +364,25 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     }
   };
 
-  const goToProfile = async () =>{
-    navigate("/UserProfilePage")
-  }
-  
+  const goToProfile = async () => {
+    navigate("/UserProfilePage");
+  };
 
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
-        
-  
-        // Send delete request to the backend API to remove the notification from the database
         const response = await axios.delete(`http://localhost:8000/removeNotification/${touristID}/${notificationId}`);
   
-        // Check if the delete was successful (status code 200)
         if (response.status === 200) {
-          // Remove the notification from the state (UI update)
           setNotifications((prevNotifications) =>
             prevNotifications.filter((notification) => notification._id !== notificationId)
           );
   
-          // Show success toast
           toast({
             title: "Success",
             description: "Notification deleted successfully.",
           });
         } else {
-          // If the response status is not 200, show an error toast
           toast({
             title: "Error",
             description: "Failed to delete notification. Please try again.",
@@ -401,7 +392,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
       } catch (error) {
         console.error("Error deleting notification:", error);
   
-        // Show error toast
         toast({
           title: "Error",
           description: "Failed to delete notification. Please try again.",
@@ -409,8 +399,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         });
       }
     },
-    [touristID] // Make sure this dependency is correct. If the touristID changes, the callback will be recreated.
+    [touristID]
   );
+
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -753,11 +744,20 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   <span onClick={logout}>Log out</span>
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span onClick={() => setIsComplaintFormOpen(true)}>File Complaint</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </nav>
       </div>
+      <Sheet open={isComplaintFormOpen} onOpenChange={setIsComplaintFormOpen}>
+        <SheetContent>
+          <ComplaintForm />
+        </SheetContent>
+      </Sheet>
     </header>
   );
 };
