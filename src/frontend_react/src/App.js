@@ -175,7 +175,7 @@ function App() {
 
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
         <Route path="/TouristOrders" element={<TouristOrders/>}/>
-        TouristOrders
+        
         <Route path="ChangePhoto" element={<ChangePhoto />} />
       </Routes>
     </Router>
