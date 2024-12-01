@@ -80,6 +80,8 @@ import TourGuideItinerary from "./pages/tourguideItinerary";
 import SellerProfileManager from "./pages/SellerProfileInformation";
 
 import BasicDataTable from "./components/salestable"
+import AdminSettings from "./components/AdminSettings";
+import AdminPersonalDetails from "./components/AdminPersonalDetails";
 function App() {
   return (
     <Router>
@@ -166,6 +168,8 @@ function App() {
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
         <Route path="/ItineraryReport" element={<ItineraryReport />} />
         <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
+        <Route path="/AdminSettings" element={<AdminSettings />} />
+        <Route path="/AdminPersonalDetails" element={<AdminPersonalDetails />} />
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
         <Route path="/SellerProfileInformation" element={<SellerProfileManager />} />
 

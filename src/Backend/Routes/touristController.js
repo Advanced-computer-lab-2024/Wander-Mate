@@ -820,17 +820,22 @@ const searchHotel = async (req, res) => {
       cancellationPolicy: hotel.priceDetails || "N/A",
       isSponsored: hotel.isSponsored || false,
       cardPhotos: hotel.cardPhotos
-        ? hotel.cardPhotos.map((photo) => photo.sizes.urlTemplate.replace("{width}", "400").replace("{height}", "300"))
+        ? hotel.cardPhotos.map((photo) =>
+            photo.sizes.urlTemplate
+              .replace("{width}", "400")
+              .replace("{height}", "300")
+          )
         : [], // Default to empty array if no photos
     }));
 
     res.status(200).json(hotels);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 const bookHotel = async (req, res) => {
   const { userId, hotelId, title, checkIn, checkOut, price, provider } =
@@ -980,9 +985,8 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { Body, eventId, touristID,username } = req.body;
+  const { Body, eventId, touristID, username } = req.body;
   try {
-
     const newComment = await ReviewModel.create({
       userId: touristID, // Assuming `touristID` matches your schema
       itemId: eventId,
@@ -1610,7 +1614,6 @@ const cancelBooking = async (req, res) => {
     console.log(tourist);
     console.log(booking.userId);
 
-
     // Check if the booking exists
     if (!booking) {
       return res.status(404).json({ error: "Booking not found." });
@@ -1634,27 +1637,27 @@ const cancelBooking = async (req, res) => {
     if (tourist) {
       console.log(tourist.Wallet);
       switch (itemModel) {
-  case "Attraction":
-      tourist.Wallet = (tourist.Wallet || 0) + attractionId.Price;
-    break;
-  case "Itinerary":
-      tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
-    break;
-  case "Transportation":
-      tourist.Wallet = (tourist.Wallet || 0) + transportId.Price;
+        case "Attraction":
+          tourist.Wallet = (tourist.Wallet || 0) + attractionId.Price;
           break;
-  case "HotelBooked":
-      tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
+        case "Itinerary":
+          tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
           break;
-  case "BookedFlights":
-      tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.Price;
-  default:
-    break;
-}
+        case "Transportation":
+          tourist.Wallet = (tourist.Wallet || 0) + transportId.Price;
+          break;
+        case "HotelBooked":
+          tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
+          break;
+        case "BookedFlights":
+          tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.Price;
+        default:
+          break;
+      }
 
       console.log(attractionId);
       console.log(itemModel);
-      console.log(tourist.Wallet)
+      console.log(tourist.Wallet);
       await tourist.save();
     }
     res.status(200).json({ message: "Booking cancelled successfully." });
@@ -1687,7 +1690,7 @@ const rateEvent = async (req, res) => {
 };
 
 const updateActivityRatings = async (req, res) => {
-  const{eventId} = req.params;
+  const { eventId } = req.params;
   try {
     const averageRating = await RatingModel.aggregate([
       { $match: { itemId: new mongoose.Types.ObjectId(eventId) } },
@@ -2667,7 +2670,7 @@ const cancelOrder = async (req, res) => {
 };
 
 const makeOrder = async (req, res) => {
-  const { userId, products, total, address, isPaid } = req.body;
+  const { userId, products, total, address, isPaid, quantities } = req.body;
   try {
     const order = new ordermodel({
       userId,
@@ -2675,6 +2678,7 @@ const makeOrder = async (req, res) => {
       total,
       address,
       isPaid,
+      quantities,
     });
     await order.save();
     return res
@@ -3161,7 +3165,9 @@ const viewMyNotifications = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -3170,19 +3176,28 @@ const removeNotification = async (req, res) => {
   try {
     // Validate input
     if (!touristId || !notificationId) {
-      return res.status(400).json({ message: "Tourist ID and Notification ID are required." });
+      return res
+        .status(400)
+        .json({ message: "Tourist ID and Notification ID are required." });
     }
 
     // Validate that the touristId and notificationId are valid ObjectIds
-    if (!mongoose.Types.ObjectId.isValid(touristId) || !mongoose.Types.ObjectId.isValid(notificationId)) {
-      return res.status(400).json({ message: "Invalid Tourist ID or Notification ID." });
+    if (
+      !mongoose.Types.ObjectId.isValid(touristId) ||
+      !mongoose.Types.ObjectId.isValid(notificationId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid Tourist ID or Notification ID." });
     }
 
     // Find the notification document for the given tourist ID
     const notificationDoc = await Notification.findOne({ userID: touristId });
 
     if (!notificationDoc) {
-      return res.status(404).json({ message: "No notifications found for this tourist." });
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this tourist." });
     }
 
     // Find the index of the notification to remove by notificationId
@@ -3191,7 +3206,9 @@ const removeNotification = async (req, res) => {
     );
 
     if (notificationIndex === -1) {
-      return res.status(404).json({ message: "Notification not found in the list." });
+      return res
+        .status(404)
+        .json({ message: "Notification not found in the list." });
     }
 
     // Remove the notification from the array
@@ -3206,24 +3223,30 @@ const removeNotification = async (req, res) => {
     });
   } catch (error) {
     console.error("Error removing notification:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
-const markNotificationAsRead= async (req, res) => {
+const markNotificationAsRead = async (req, res) => {
   const { userID, notificationId } = req.params;
 
   try {
     // Validate input
     if (!userID || !notificationId) {
-      return res.status(400).json({ message: "UserID and NotificationID are required." });
+      return res
+        .status(400)
+        .json({ message: "UserID and NotificationID are required." });
     }
 
     // Step 1: Find the user notification document by userID
-    const notificationDocument = await Notification.findOne({ "userID": userID });
+    const notificationDocument = await Notification.findOne({ userID: userID });
 
     if (!notificationDocument) {
-      return res.status(404).json({ message: "No notifications found for this user." });
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this user." });
     }
 
     // Step 2: Find the specific notification by notificationId
@@ -3253,20 +3276,21 @@ const markNotificationAsRead= async (req, res) => {
     });
   } catch (error) {
     console.error("Error marking notification as read:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
 const gettourist = async (req, res) => {
   const { touristID } = req.params;
-  try{
-    if(!touristID){
+  try {
+    if (!touristID) {
       return res.status(400).json({ message: "touristID is required." });
     }
-    const tourist = await userModel.findById({_id : touristID});
+    const tourist = await userModel.findById({ _id: touristID });
     res.status(200).json(tourist);
-
-  }catch(error){
+  } catch (error) {
     console.error("Error getting tourist:", error);
   }
 };
@@ -3278,45 +3302,41 @@ const getBookingDetails = async (req, res) => {
     console.log("Booking ID:", bookingID); // Debugging line
 
     const booking = await Booking.findById(bookingID).populate("itemId");
-    
+
     if (!booking) {
       return res.status(404).json({ error: "Booking not found." });
     }
 
-    
     console.log("Item Model:", booking); // Debugging line
 
-    
     res.status(200).json({
       message: "Booking details retrieved successfully.",
       booking,
     });
-
   } catch (err) {
     console.error("Error retrieving booking details:", err);
     res.status(500).json({ error: "Failed to retrieve booking details." });
   }
 };
 
-
 const getTouristLevel = async (req, res) => {
   try {
-      const { touristId } = req.params;  // Get touristId from the URL parameter
-      if (!touristId) {
-          return res.status(400).json({ message: "touristId is required" });
-      }
-      
-      // Fetch the tourist data from the database using the touristId
-      const tourist = await userModel.findById(touristId);  // Corrected variable name to match touristId
-      if (!tourist) {
-          return res.status(404).json({ message: "Tourist not found" });
-      }
+    const { touristId } = req.params; // Get touristId from the URL parameter
+    if (!touristId) {
+      return res.status(400).json({ message: "touristId is required" });
+    }
 
-      // Send the response with the level (Badge)
-      res.json({ Badge: tourist.Badge });
+    // Fetch the tourist data from the database using the touristId
+    const tourist = await userModel.findById(touristId); // Corrected variable name to match touristId
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Send the response with the level (Badge)
+    res.json({ Badge: tourist.Badge });
   } catch (error) {
-      console.error('Error fetching tourist level:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching tourist level:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -3333,12 +3353,11 @@ const getTouristWallet = async (req, res) => {
     res.status(200).json({ Wallet: tourist.Wallet });
   } catch (error) {
     console.error("Error fetching tourist wallet:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
-
-
 
 module.exports = {
   ViewOrders,
@@ -3432,5 +3451,5 @@ module.exports = {
   gettourist,
   getBookingDetails,
   getTouristLevel,
-  getTouristWallet
+  getTouristWallet,
 };

@@ -1,9 +1,9 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import PersonalDetails from "./personalDetails";
+import AdminPersonalDetails from "./AdminPersonalDetails";
 import ChangePassword from "./changePassword";
 
-const TouristSettings = () => {
+const AdminSettings = () => {
   const tabs = [
     {
       label: "Personal Details",
@@ -37,10 +37,10 @@ const TouristSettings = () => {
             ))}
           </TabsList>
           <TabsContent value="personal" className="mt-0">
-            <PersonalDetails />
+            <AdminPersonalDetails />
           </TabsContent>
           <TabsContent value="password" className="mt-0">
-            <ChangePassword URL="http://localhost:8000/changePasswordTourist"/>
+            <ChangePassword URL="http://localhost:8000/changePasswordAdmin"/>
           </TabsContent>
           
         </Tabs>
@@ -49,4 +49,4 @@ const TouristSettings = () => {
   );
 };
 
-export default TouristSettings;
+export default AdminSettings;
