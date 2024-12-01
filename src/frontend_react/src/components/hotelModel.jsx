@@ -1,36 +1,65 @@
 import React, { useState } from "react";
-import { X, Bed, Users, Wifi, Coffee, Tv, Calendar, CreditCard } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
+import {
+  X,
+  Bed,
+  Users,
+  Wifi,
+  Coffee,
+  Tv,
+  Calendar,
+  CreditCard,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Input } from "../components/ui/input";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import HotelCheckOut from "./hotelCheckout";
-
-const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDate }) => {
+import { Icon } from "@iconify/react";
+const HotelModal = ({
+  children,
+  hotel,
+  isOpen,
+  setIsOpen,
+  checkInDate,
+  checkOutDate,
+}) => {
   const [roomType, setRoomType] = useState("single");
   const [roomCount, setRoomCount] = useState(1);
   const [additionalServices, setAdditionalServices] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
+  const [isBooked, setIsBooked] = useState(false);
 
   const handleBooking = () => {
-    console.log("Booking:", { 
-      hotel, 
-      roomType, 
-      roomCount, 
-      checkInDate, 
-      checkOutDate, 
-      additionalServices, 
-      paymentMethod 
+    console.log("Booking:", {
+      hotel,
+      roomType,
+      roomCount,
+      checkInDate,
+      checkOutDate,
+      additionalServices,
+      paymentMethod,
     });
     setIsOpen(false);
   };
 
   const calculateTotalPrice = () => {
     const numericPrice = parseFloat(hotel.price.replace(/[^0-9.]/g, "")); // Extract numeric value
-  
+
     // Determine additional cost based on room type
     let roomTypeIncrement = 0;
     if (roomType === "double") {
@@ -38,32 +67,34 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDa
     } else if (roomType === "suite") {
       roomTypeIncrement = 150;
     }
-  
+
     const basePrice = (numericPrice + roomTypeIncrement) * roomCount; // Adjust base price
     const additionalCost = additionalServices.length * 10; // Additional service cost
     return basePrice + additionalCost; // Total price
   };
-  
-  
+  const handleBook = () => {
+    if (!isBooked) {
+      setIsBooked(true);
+    }
+  };
+
   return (
     <>
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]" size="full">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">{hotel.title}</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">
+              {hotel.title}
+            </DialogTitle>
             <DialogDescription>
               Book your perfect stay at {hotel.title}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
-
             <div>
               <Label htmlFor="roomType">Room Type</Label>
-              <Select
-                value={roomType}
-                onValueChange={setRoomType}
-              >
+              <Select value={roomType} onValueChange={setRoomType}>
                 <SelectTrigger id="roomType">
                   <SelectValue placeholder="Select room type" />
                 </SelectTrigger>
@@ -91,7 +122,7 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDa
             </div>
             <div>
               <Label htmlFor="roomCount">Number of Rooms</Label>
-            
+
               <Input
                 id="roomCount"
                 type="number"
@@ -104,10 +135,15 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDa
             <div>
               <Label>Additional Services</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {[{ id: "wifi", label: "Wi-Fi", icon: Wifi },
+                {[
+                  { id: "wifi", label: "Wi-Fi", icon: Wifi },
                   { id: "breakfast", label: "Breakfast", icon: Coffee },
                   { id: "tv", label: "Smart TV", icon: Tv },
-                  { id: "earlyCheckin", label: "Early Check-in", icon: Calendar },
+                  {
+                    id: "earlyCheckin",
+                    label: "Early Check-in",
+                    icon: Calendar,
+                  },
                 ].map((service) => (
                   <div key={service.id} className="flex items-center space-x-2">
                     <input
@@ -131,27 +167,37 @@ const HotelModal = ({ children, hotel, isOpen, setIsOpen, checkInDate,checkOutDa
                 ))}
               </div>
             </div>
-            
           </div>
-          <div className="mt-4">
+          <div>
             <p className="text-lg font-semibold">Total Price</p>
             <p className="text-2xl font-bold">${calculateTotalPrice()}</p>
           </div>
-          <Separator className="my-6" />
-          <div className="mt-4  flex justify-between items-center" >
-            <Button variant="outline" onClick={() => setIsOpen(false)}className = "mt-5">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              className="mt-5"
+            >
               Cancel
             </Button>
-            <div className="mt-4 py-15 flex justify-between items-center" >
-            <HotelCheckOut
-              hotel={hotel}
-              roomType={roomType}
-              roomCount={roomCount}
-              checkInDate={checkInDate}
-              checkOutDate={checkOutDate}
-              additionalServices={additionalServices}
-            />
-            </div>
+            {!isBooked ? (
+              <Button
+                className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
+                onClick={handleBook}
+              >
+                <Icon icon="heroicons:shopping-bag" className="w-4 h-4 mr-2" />
+                Book Hotel
+              </Button>
+            ) : (
+              <HotelCheckOut
+                hotel={hotel}
+                roomType={roomType}
+                roomCount={roomCount}
+                checkInDate={checkInDate}
+                checkOutDate={checkOutDate}
+                additionalServices={additionalServices}
+              />
+            )}
           </div>
         </DialogContent>
       </Dialog>

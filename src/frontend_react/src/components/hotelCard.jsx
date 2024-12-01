@@ -34,8 +34,7 @@ const HotelCard = ({
     provider,
     cardPhotos,
     cancellationPolicy,
-    sponsor, 
-
+    sponsor,
   };
 
   return (
@@ -88,7 +87,9 @@ const HotelCard = ({
             <div className="flex items-center">
               <DollarSign className="w-5 h-5 text-green-600 mr-1" />
               <span className="text-2xl font-bold">{price}</span>
-              <span className="text-sm text-muted-foreground ml-1">per night</span>
+              <span className="text-sm text-muted-foreground ml-1">
+                per night
+              </span>
             </div>
           </div>
           <div className="flex items-center mb-2">
@@ -116,13 +117,12 @@ const HotelCard = ({
         </CardContent>
       </Card>
       <HotelModal
-  hotel={hotel}
-  checkInDate={checkInDate} // Pass checkInDate
-  checkOutdate={checkOutdate} // Pass checkOutdate
-  isOpen={isModalOpen}
-  setIsOpen={setIsModalOpen}
-/>
-
+        hotel={hotel}
+        checkInDate={checkInDate} // Pass checkInDate
+        checkOutdate={checkOutdate} // Pass checkOutdate
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+      />
     </>
   );
 };

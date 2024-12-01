@@ -13,7 +13,13 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "../lib/utils";
 import axios from "axios";
@@ -23,29 +29,26 @@ import { useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../forms/PaymentForm";
-import { Bed, Users, Wifi, Coffee, Tv, Calendar } from 'lucide-react';
+import { Bed, Users, Wifi, Coffee, Tv, Calendar } from "lucide-react";
 
 const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const HotelCheckOut = ({ 
+const HotelCheckOut = ({
   hotel,
   roomType,
   roomCount,
   checkInDate,
   checkOutDate,
-  additionalServices, }) => {
+  additionalServices,
+}) => {
   const [userId, setUserId] = useState(null);
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
-
-
-  const navigate = useNavigate();
-
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -70,16 +73,54 @@ const HotelCheckOut = ({
     return basePrice + additionalCost;
   };
 
-  
-  const handlePayment = async () => {
+  const handleWallet = async () => {
+    const username = sessionStorage.getItem("username");
+    const reply = await fetch(`http://localhost:8000/getID/${username}`);
+    if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+    const { userID } = await reply.json();
+
+    try {
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID: userID,
+        amount: calculateTotalPrice(),
+      });
+      if (response.status === 200) {
+        setAlertMessage(null);
+        handlePaymentSuccess();
+        handleNextSlide();
+      } else {
+        setAlertMessage(response.data || "Payment failed.");
+      }
+    } catch (error) {
+      setAlertMessage("An error occurred during the transaction.");
+    }
+  };
+  const handleNextSlide = () => {
+    if (activeIndex === 2 && selected === "rwb_1") {
+      handlePaymentSuccess();
+    } else if (activeIndex === totalSlide - 1) {
+      handlePaymentSuccess();
+    } else {
+      setActiveIndex(activeIndex + 1);
+      setAlertMessage(null);
+    }
+  };
+  const handlePrevSlide = () => {
+    if (activeIndex > 1) {
+      setActiveIndex((prevIndex) => prevIndex - 1);
+    }
+  };
+
+  const handlePaymentSuccess = async () => {
     try {
       const username = sessionStorage.getItem("username");
-        if (!username) throw new Error("Username not found in session storage");
+      if (!username) throw new Error("Username not found in session storage");
 
-        const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get user ID");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
 
-        const { userID } = await reply.json();
+      const { userID } = await reply.json();
       const response = await axios.post("http://localhost:8000/bookHotel", {
         userId: userID,
         hotelId: hotel.id,
@@ -90,59 +131,23 @@ const HotelCheckOut = ({
         provider: hotel.provider,
       });
 
-      if (response.status === 201) {
-        toast({
-          title: "Booking Successful",
-          description: "Your hotel has been booked successfully.",
-        });
-        setActiveIndex(totalSlide);
-      }
+      // if (response.status === 201) {
+      //   toast({
+      //     title: "Booking Successful",
+      //     description: "Your hotel has been booked successfully.",
+      //   });
+      //   setActiveIndex(totalSlide);
+      // }
     } catch (error) {
       console.error("Error processing booking:", error);
-      toast({
-        title: "Booking Failed",
-        description: "There was an error processing your booking. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Booking Failed",
+      //   description:
+      //     "There was an error processing your booking. Please try again.",
+      //   variant: "destructive",
+      // });
     }
-  };
-
-  const handleNextSlide = () => {
-    if (activeIndex === 2 && selected === "rwb_1") {
-      handlePayment();
-    } else if (activeIndex === totalSlide - 1) {
-      handlePayment();
-    } else {
-      setActiveIndex(activeIndex + 1);
-      setAlertMessage(null);
-    }
-  };
-
-  const handleWallet = async () => {
-    try {
-      const response = await axios.put("http://localhost:8000/payWithWallet", {
-        userId,
-        amount: calculateTotalPrice(),
-      });
-      if (response.status !== 200) {
-        setAlertMessage(response.data || "Payment failed.");
-      } else {
-        await handlePayment();
-      }
-    } catch (error) {
-      setAlertMessage("Insufficient balance");
-    }
-  };
-
-  const handlePrevSlide = () => {
-    if (activeIndex > 1) {
-      setActiveIndex(activeIndex - 1);
-    }
-  };
-
-  const handlePaymentSuccess = () => {
     setActiveIndex(totalSlide);
-    handlePayment();
   };
 
   const handlePaymentError = (error) => {
@@ -157,17 +162,14 @@ const HotelCheckOut = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button className="w-full text-white py-2 rounded mt-1">
-          Book Now
+          Confirm Booking
         </Button>
       </DialogTrigger>
       <DialogContent size="2xl" className="p-0">
         <DialogHeader className="p-2 pb-0">
           {alertMessage && (
             <Alert color="destructive" variant="soft" className="mb-4">
-              <Icon
-                icon="heroicons:exclamation-triangle"
-                className="h-4 w-4"
-              />
+              <Icon icon="heroicons:exclamation-triangle" className="h-4 w-4" />
               <AlertDescription>{alertMessage}</AlertDescription>
             </Alert>
           )}
@@ -281,9 +283,7 @@ const HotelCheckOut = ({
           )}
           {activeIndex === totalSlide ? (
             <DialogClose asChild>
-              <Button type="button" >
-                Close
-              </Button>
+              <Button type="button">Close</Button>
             </DialogClose>
           ) : (
             <Button
@@ -300,4 +300,3 @@ const HotelCheckOut = ({
 };
 
 export default HotelCheckOut;
-
