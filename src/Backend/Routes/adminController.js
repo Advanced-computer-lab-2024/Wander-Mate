@@ -1981,6 +1981,16 @@ const getRevenue = async (req, res) => {
   }
 }
 
+const getEmail = async (req, res) => {
+  const {userID} = req.params;
+  try{
+    const response = await userModel.findOne({userID});
+    return res.status(200).json(response);
+  }catch{
+    res.status(400).json("Error");
+  }
+}
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -2047,4 +2057,5 @@ module.exports = {
   updateProductQuantity,
   emptyCart,
   getRevenue,
+  getEmail
 };

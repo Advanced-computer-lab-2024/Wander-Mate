@@ -106,6 +106,7 @@ const {
   removeNotification,
   markNotificationAsRead,
   updateActivityRatings,
+  getBookingDetails,,
   getTouristLevel,
 } = require("./Routes/touristController");
 
@@ -199,6 +200,7 @@ const {
   updateSellerSales,
   emptyCart,
   getRevenue,
+  getEmail,
 } = require("./Routes/adminController.js");
 
 const {
@@ -612,3 +614,4 @@ app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
 app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
 app.get("/getRevenue/:userID", getRevenue);
+app.get("/getBookingDetails/:bookingID", getBookingDetails);  app.get("/getEmail/:userID", getEmail);

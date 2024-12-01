@@ -14,6 +14,7 @@ import NonMovableMap from "./ui/nonMovableMap";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import CustomConfirmationDialog from "./ui/confirmationDialog";
+import emailjs from "@emailjs/browser";
 
 export default function AdminItineraryModel({ itinerary, isOpen, setIsOpen, children }) {
     const [reviews, setReviews] = useState([]);
@@ -46,6 +47,7 @@ export default function AdminItineraryModel({ itinerary, isOpen, setIsOpen, chil
     };
   
     useEffect(() => {
+      console.log(itinerary);
       const fetchReviews = async () => {
       try {
         const response = await fetch(
@@ -118,6 +120,30 @@ export default function AdminItineraryModel({ itinerary, isOpen, setIsOpen, chil
           toast.error("Failed to flag product");
         }
          setIsFlagged(!isFlagged);
+         if(!isFlagged){
+          const emailParams = {
+            service_id: "service_orznfch", // Your EmailJS service ID
+            template_id: "template_sl965nk", // Your EmailJS template ID
+            user_id: "tAg5XESCThJjHJ1YG", // Your EmailJS user ID
+            template_params: {
+              to_email: itinerary.Creator.Email, // Recipient email address
+              event_name: itinerary.name,
+              appeal_link:"http://localhost:3000/loginPage",
+              logo_url:
+                "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
+            },
+          };
+    
+          const response = await emailjs.send(
+            emailParams.service_id,
+            emailParams.template_id,
+            emailParams.template_params,
+            emailParams.user_id,
+            emailParams.to_email
+          );
+          // Send OTP email using EmailJS
+    
+         }
         setIsConfirmationOpen(false); // Close the dialog after confirmation
       };
     
