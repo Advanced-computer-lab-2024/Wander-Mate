@@ -74,6 +74,8 @@ import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
 import SimpleTable from "./components/ui/simpleTable";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
+import AdminSettings from "./components/AdminSettings";
+import AdminPersonalDetails from "./components/AdminPersonalDetails";
 function App() {
   return (
     <Router>
@@ -160,6 +162,8 @@ function App() {
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
         <Route path="/SimpleTable" element={<SimpleTable />} />
         <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
+        <Route path="/AdminSettings" element={<AdminSettings />} />
+        <Route path="/AdminPersonalDetails" element={<AdminPersonalDetails />} />
 
       </Routes>
     </Router>
