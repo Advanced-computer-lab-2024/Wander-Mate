@@ -67,7 +67,7 @@ import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
 import MyBookings from "./components/myBookings";
-import admin from "./pages/admin";
+import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
@@ -75,6 +75,7 @@ import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
 import ItineraryReport from "./components/ui/ItineraryReport";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";import TourGuideItinerary from "./pages/tourguideItinerary";
 
+import BasicDataTable from "./components/salestable"
 function App() {
   return (
     <Router>
@@ -164,6 +165,7 @@ function App() {
 
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
 
+        <Route path="/AdminProducts" element={<AdminProducts/>}/>
       </Routes>
     </Router>
   );
