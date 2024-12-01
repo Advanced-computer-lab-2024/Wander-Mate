@@ -69,6 +69,7 @@ import AboutUs from "./pages/aboutUs";
 import admin from "./pages/admin";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
+import itineraryTourGuide from "./components/itineraryTourGuide";
 function App() {
   return (
     <Router>
@@ -107,6 +108,7 @@ function App() {
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/paymentByCard" element={<PaymentPage />} />
+        <Route path="/itineraryTourGuide" element={<itineraryTourGuide />} />
         <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"

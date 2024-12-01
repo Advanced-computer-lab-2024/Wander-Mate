@@ -22,7 +22,9 @@ export default function ItineraryModel({
   isOpen,
   setIsOpen,
   children,
+  
 }) {
+  
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -31,6 +33,12 @@ export default function ItineraryModel({
   const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
   const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
+  const navigateToTourGuide = () => {
+    const creatorData = encodeURIComponent(JSON.stringify(itinerary.Creator)); // Serialize creator data
+    navigate(`/itineraryTourGuide?creator=${creatorData}`);
+  };
+
+  
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating); // Full stars (integer part of the rating)
     const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half star if the remainder is >= 0.5
@@ -50,8 +58,6 @@ export default function ItineraryModel({
   };
 
   const handleOpenChange = (open) => {
-    console.log("MMMMMAAAADDDIIIHAAAA", itinerary.Creator);
-    setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
       if (window.location.search.includes("open")) {
@@ -506,7 +512,12 @@ export default function ItineraryModel({
 
                         <div>
                           <strong>Username: </strong>
-                          <span>{itinerary.Creator.Username || "N/A"}</span>
+                          <span
+                            className="cursor-pointer text-blue-500"
+                            onClick={navigateToTourGuide}  // This will trigger navigation
+                          >
+                            {itinerary.Creator.Username || "N/A"}
+                          </span>
                         </div>
 
                         <div>
