@@ -73,7 +73,7 @@ import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton";import LevelAndBadge from "./components/levelAndBadge";
-
+import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
 function App() {
   return (
     <Router>
@@ -158,6 +158,8 @@ function App() {
         <Route path="/myBookings" element={<MyBookings />} />
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
+        <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
+        
       </Routes>
     </Router>
   );
