@@ -108,6 +108,7 @@ const PersonalDetails = () => {
       );
 
       if (response.status === 200) {
+        sessionStorage.setItem("curr",updatedData.Currency || "USD");
         setIsEditing(false);
       } else {
         console.log("Error saving data:", response.data);

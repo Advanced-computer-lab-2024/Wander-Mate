@@ -7,6 +7,7 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Star } from "lucide-react";
+import ChangePassword from "../components/changePassword";
 
 const API_URL = "http://localhost:8000"
 
@@ -133,13 +134,13 @@ const AdvertiserProfileManager = () => {
                   />
                 </div>
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Label>Status</Label>
                   <Badge className="ml-2">
                     <Star className="mr-1 h-3 w-3" />
                     {status ? status : "Loading..."}
                   </Badge>
-                </div>
+                </div> */}
 
                 <div className="flex gap-4">
                   <Button type="button" onClick={() => setIsEditing(!isEditing)}>
@@ -153,7 +154,7 @@ const AdvertiserProfileManager = () => {
         </TabsContent>
 
         <TabsContent value="campaigns">
-          {/* <CampaignsTab /> */}
+        <ChangePassword URL="http://localhost:8000/changePasswordAdvertiser"/>
         </TabsContent>
       </Tabs>
     </div>
