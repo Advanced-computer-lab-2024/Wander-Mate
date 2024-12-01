@@ -67,7 +67,7 @@ import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
 import MyBookings from "./components/myBookings";
-import admin from "./pages/admin";
+import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
@@ -158,6 +158,7 @@ function App() {
         <Route path="/myBookings" element={<MyBookings />} />
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
+        <Route path="/AdminProducts" element={<AdminProducts/>}/>
       </Routes>
     </Router>
   );
