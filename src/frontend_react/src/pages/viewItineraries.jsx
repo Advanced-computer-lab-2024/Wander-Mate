@@ -404,7 +404,7 @@ export default function ViewItineraries() {
                   price={(
                     itinerary.Price * (exchangeRates[currency] || 1)
                   ).toFixed(2)}
-                  currrn={currency}
+                  currrn={sessionStorage.getItem("curr")}
                   rating={itinerary.Ratings}
                   Activities={itinerary.Activities.map(
                     (activity) => activity.Name
