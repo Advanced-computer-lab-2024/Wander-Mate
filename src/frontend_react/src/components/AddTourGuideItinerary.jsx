@@ -199,6 +199,8 @@ const AddTourGuideItineraryModel = () => {
           DropOffLocation: formData.DropOffLocation
         })
         setIsOpen(false)
+        window.location.reload();
+
       } else {
         const errorData = await response.json()
         toast.error(errorData.message || "Error creating itinerary")
