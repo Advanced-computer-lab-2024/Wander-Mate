@@ -3256,6 +3256,20 @@ const markNotificationAsRead= async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
+const gettourist = async (req, res) => {
+  const { touristID } = req.params;
+  try{
+    if(!touristID){
+      return res.status(400).json({ message: "touristID is required." });
+    }
+    const tourist = await userModel.findById({_id : touristID});
+    res.status(200).json(tourist);
+
+  }catch(error){
+    console.error("Error getting tourist:", error);
+  }
+};
 const getBookingDetails = async (req, res) => {
   const { bookingID } = req.params; // Booking ID passed in the URL
 
@@ -3398,6 +3412,7 @@ module.exports = {
   removeNotification,
   markNotificationAsRead,
   updateActivityRatings,
+  gettourist,
   getBookingDetails,
   getTouristLevel,
 };
