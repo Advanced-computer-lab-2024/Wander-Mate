@@ -5,8 +5,9 @@ import { Star } from "lucide-react";
 
 const LevelAndBadge = () => {
     const [touristBadge, setTouristBadge] = useState(null); // State to store the tourist badge (level)
-   
-    // Fetch the tourist badge when the component mounts
+    const [touristWallet, setTouristWallet] = useState(null); // State to store the tourist wallet
+
+    // Fetch the tourist badge and wallet when the component mounts
     useEffect(() => {
         const fetchTouristBadge = async () => {
             try {
@@ -23,8 +24,15 @@ const LevelAndBadge = () => {
 
                 const { Badge } = await levelReply.json(); // Extract Badge (level) from response
                 setTouristBadge(Badge); // Set the tourist badge (level)
+
+                // Step 3: Fetch the tourist wallet using the userID
+                const walletReply = await fetch(`http://localhost:8000/getTouristWallet/${userID}`);
+                if (!walletReply.ok) throw new Error("Failed to get tourist wallet");
+
+                const { Wallet } = await walletReply.json(); // Extract Wallet from response
+                setTouristWallet(Wallet); // Set the tourist wallet
             } catch (error) {
-                console.error('Error fetching tourist badge:', error);
+                console.error('Error fetching tourist data:', error);
             }
         };
 
@@ -38,6 +46,8 @@ const LevelAndBadge = () => {
                     <Star className="mr-1 h-3 w-3" />
                     {touristBadge ? `Level: ${touristBadge}` : 'Loading...'} {/* Displaying Badge */}
                 </Badge>
+                {/* Displaying Wallet */}
+                <div>{touristWallet ? `Wallet: ${touristWallet}` : 'Loading wallet...'}</div>
             </CardContent>
         </Card>
     );

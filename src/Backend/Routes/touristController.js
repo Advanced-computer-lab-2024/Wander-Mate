@@ -3320,6 +3320,23 @@ const getTouristLevel = async (req, res) => {
   }
 };
 
+const getTouristWallet = async (req, res) => {
+  const { touristId } = req.params; // Get userID from request parameters
+
+  try {
+    const tourist = await userModel.findById(touristId); // Find the tourist by ID
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Return the wallet amount
+    res.status(200).json({ Wallet: tourist.Wallet });
+  } catch (error) {
+    console.error("Error fetching tourist wallet:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 
 
@@ -3415,4 +3432,5 @@ module.exports = {
   gettourist,
   getBookingDetails,
   getTouristLevel,
+  getTouristWallet
 };
