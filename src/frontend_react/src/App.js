@@ -82,6 +82,7 @@ import SellerProfileManager from "./pages/SellerProfileInformation";
 import BasicDataTable from "./components/salestable"
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
+import SalesReportTable from "./components/salestable";
 function App() {
   return (
     <Router>
@@ -174,6 +175,7 @@ function App() {
         <Route path="/SellerProfileInformation" element={<SellerProfileManager />} />
 
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
+        <Route path="/salestable" element={<SalesReportTable/>}/>
       </Routes>
     </Router>
   );
