@@ -12,7 +12,8 @@ import NonMovableMap from "./ui/nonMovableMap";
 import BasicMap from "./ui/basic-map";
 import { CustomPopover as Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import axios from "axios";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 export default function AdvertiserActivityModal({
   activity,
   isOpen,
@@ -50,7 +51,7 @@ export default function AdvertiserActivityModal({
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
-        alert("Could not load categories. Please try again later.");
+        toast.error("Could not load categories. Please try again later.");
       } finally {
         setLoadingCategories(false);
       }
@@ -72,7 +73,7 @@ export default function AdvertiserActivityModal({
         }
       } catch (error) {
         console.error("Error fetching tags:", error);
-        alert("Could not load tags. Please try again later.");
+        toast.error("Could not load tags. Please try again later.");
       } finally {
         setLoadingTags(false);
       }
@@ -120,12 +121,12 @@ export default function AdvertiserActivityModal({
         Discounts:updatedActivity.discounts,
         IsAvailable:updatedActivity.isAvailable
       });
-      alert(response.data.message);
+     toast.success("Activity updated successfully!");
       setIsEditing(false);
       setUpdatedActivity(response.data.activity); // Update the state with the response data
       window.location.reload();
     } catch (error) {
-      alert(error.response?.data?.error || "Error updating activity");
+      toast.error(error.response?.data?.error || "Error updating activity");
     }
   };
 

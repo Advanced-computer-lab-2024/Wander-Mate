@@ -17,7 +17,6 @@ import UploadDocs from "./pages/uploadDocsPage";
 import StartPage from "./pages/startPage";
 import "./App.css";
 import UpdateProfile from "./pages/updateTouristProfile";
-import UpdateTouristProfile from "./components/updateTouristInfo";
 import TourismGovHomePage from "./pages/TourismGovHomePage";
 import TouristHomePage from "./pages/TouristHomepage";
 import Cart from "./components/Cart";
@@ -82,6 +81,7 @@ import SellerProfileManager from "./pages/SellerProfileInformation";
 import BasicDataTable from "./components/salestable"
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
+import ChangePhoto from "./components/changePhoto";
 function App() {
   return (
     <Router>
@@ -101,7 +101,6 @@ function App() {
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
         <Route path="/updateTouristProfile" element={<UpdateProfile />} />
-        <Route path="/updateTouristInfo" element={<UpdateTouristProfile />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
         <Route path="/productsDetails" element={<ProductDetails />} />
@@ -174,6 +173,7 @@ function App() {
         <Route path="/SellerProfileInformation" element={<SellerProfileManager />} />
 
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
+        <Route path="ChangePhoto" element={<ChangePhoto />} />
       </Routes>
     </Router>
   );
