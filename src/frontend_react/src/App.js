@@ -36,7 +36,7 @@ import Transportations from "./pages/transportations";
 import CreatePlace from "./components/createPlace";
 import ShowWithDocs from "./components/showRegisteredWithDocs";
 import TourGuideProfileManager from "./pages/TourGuideProfileManager";
-import TransportationCheckout from "./components/transportationCheckout";
+import TransportationCheckout from "./components/payForTransportation";
 import AddressCard from "./components/ui/addressCard";
 import BookFlight from "./pages/bookFlight";
 import HistoricalTagsPage from "./pages/historicaltags";
@@ -72,8 +72,8 @@ import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
-import AddTourismGovButton from "./components/AddTourismGovButton";import LevelAndBadge from "./components/levelAndBadge";
-import SimpleTable from "./components/ui/simpleTable";
+import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
+import SimpleTable from "./components/ui/simpleTable";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
 function App() {
   return (
     <Router>
@@ -149,9 +149,9 @@ function App() {
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
-        <Route path="/completedItineraries" element={<CompletedItineraries/>}/>
+        <Route path="/completedItineraries" element={<CompletedItineraries />} />
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
-        <Route path="/AboutUs" element={<AboutUs />} />        
+        <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
@@ -159,6 +159,8 @@ function App() {
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
         <Route path="/SimpleTable" element={<SimpleTable />} />
+        <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
+
       </Routes>
     </Router>
   );
