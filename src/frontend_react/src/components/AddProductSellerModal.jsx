@@ -87,13 +87,14 @@ const AddProductSellerModal = () => {
         });
         setPreviewImage(null);
         setIsOpen(false);
+        toast.success("Product added successfully");
         window.location.reload();
       } else {
-        alert("Error adding product.");
+        toast.error("Error adding product.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to add product.");
+      toast.error("Failed to add product.");
     }
   };
 
