@@ -77,7 +77,7 @@ import ItineraryReport from "./components/ui/ItineraryReport";
 import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
 import TourGuideItinerary from "./pages/tourguideItinerary";
 import SellerProfileManager from "./pages/SellerProfileInformation";
-
+import TourGuidePage from "./pages/tourGuideHomePage";
 import BasicDataTable from "./components/salestable"
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
@@ -172,7 +172,7 @@ function App() {
         <Route path="/AdminPersonalDetails" element={<AdminPersonalDetails />} />
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
         <Route path="/SellerProfileInformation" element={<SellerProfileManager />} />
-
+        <Route path="/TourGuidePage" element={<TourGuidePage/>}/>
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
         <Route path="/TouristOrders" element={<TouristOrders/>}/>
         
