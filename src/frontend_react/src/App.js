@@ -74,6 +74,7 @@ import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton"; import LevelAndBadge from "./components/levelAndBadge";
 import SimpleTable from "./components/ui/simpleTable";import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
+import BasicDataTable from "./components/salestable"
 function App() {
   return (
     <Router>
