@@ -74,7 +74,6 @@ import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton";import LevelAndBadge from "./components/levelAndBadge";
 
-import itineraryTourGuide from "./components/itineraryTourGuide";
 function App() {
   return (
     <Router>
@@ -113,7 +112,6 @@ function App() {
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
         <Route path="/paymentByCard" element={<PaymentPage />} />
-        <Route path="/itineraryTourGuide" element={<itineraryTourGuide />} />
         <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"
