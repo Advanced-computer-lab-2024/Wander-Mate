@@ -76,18 +76,20 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
   };
 
   const handleWallet = async () => {
-    if (userPoints < amount) {
-      setAlertMessage("Insufficient points to complete the transaction.");
-      return;
-    }
+    const username = sessionStorage.getItem("username");
+    const reply = await fetch(`http://localhost:8000/getID/${username}`);
+    if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+    const { userID } = await reply.json();
 
     try {
       const response = await axios.put("http://localhost:8000/payWithWallet", {
-        touristID,
+        touristID: userID,
         amount,
       });
       if (response.status === 200) {
         setAlertMessage(null);
+        handlePaymentSuccess();
         handleNextSlide();
       } else {
         setAlertMessage(response.data || "Payment failed.");
@@ -125,18 +127,18 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
-  
+
       const { userID } = await reply.json();
       console.log(itinerary);
-  
+
       await axios.post(`http://localhost:8000/bookItinerary`, {
         userId: userID,
         itineraryId: itinerary.itineraryId,
         bookedDate: bookedDate,
       });
-  
+
       toast.success("Booking successful!");
-      
+
       window.location.href = "http://localhost:3000/viewItineraries";
     } catch (error) {
       console.error("Error booking itinerary:", error);
@@ -145,7 +147,6 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
     }
     setActiveIndex(totalSlide);
   };
-  
 
   const handlePaymentError = (error) => {
     setAlertMessage(error);
@@ -155,15 +156,12 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            className="py-2 px-5"
-            disabled={disabled}
-          >
+          <Button className="py-2 px-5" disabled={disabled}>
             Confirm Booking
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
-         <Toaster/>
+          <Toaster />
           <DialogHeader className="p-6 pb-2">
             {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">

@@ -74,14 +74,15 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
   };
 
   const handleWallet = async () => {
-    if (userPoints < amount) {
-      setAlertMessage("Insufficient points to complete the transaction.");
-      return;
-    }
+    const username = sessionStorage.getItem("username");
+    const reply = await fetch(`http://localhost:8000/getID/${username}`);
+    if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+    const { userID } = await reply.json();
 
     try {
       const response = await axios.put("http://localhost:8000/payWithWallet", {
-        touristID,
+        touristID: userID,
         amount,
       });
       if (response.status === 200) {
