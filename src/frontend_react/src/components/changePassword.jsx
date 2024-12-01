@@ -11,6 +11,8 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Icon } from "@iconify/react";
 import { Eye, EyeOff } from "lucide-react"; // Importing icons
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const ChangePassword = ({ URL }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -80,19 +82,19 @@ const ChangePassword = ({ URL }) => {
     const data = await response.json();
     if (data.success) {
       setError("");
-      alert("Password changed successfully.");
+      toast.success("Password changed successfully.");
     } else {
-      setError(data.message || "Error changing password.");
+      toast.success(data.message);
     }
   } catch (error) {
-    console.error(error);
-    setError(error.message || "An unexpected error occurred.");
+    toast.error(error.message || "An unexpected error occurred.");
   }
 };
 
 
   return (
     <div className="space-y-6">
+      <Toaster/>
       <Card className="rounded-lg p-6 w-full">
         <CardContent>
           <div className="grid grid-cols-12 gap-y-5">
