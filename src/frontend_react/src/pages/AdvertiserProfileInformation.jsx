@@ -34,9 +34,9 @@ const AdvertiserProfileManager = () => {
           const advertiser = data[0]
           setProfile(advertiser)
           setStatus(advertiser.status || "")
-          setWebsite(advertiser.website || "")
-          setHotline(advertiser.hotline || "")
-          setCompanyProfile(advertiser.companyProfile || "")
+          setWebsite(advertiser.Website || "")
+          setHotline(advertiser.Hotline || "")
+          setCompanyProfile(advertiser.CompanyProfile || "")
         } else {
           setErrorMessage("Advertiser not found.")
         }
