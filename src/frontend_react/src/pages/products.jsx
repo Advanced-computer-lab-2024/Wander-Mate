@@ -53,6 +53,7 @@ const Products = () => {
     let updatedProducts = allProducts
       .filter(
         (product) =>
+          !product.isArchived&&
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           product.price >= minPrice &&
           product.price <= maxPrice
