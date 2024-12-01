@@ -576,18 +576,24 @@ const viewItineraryReport = async (req, res) => {
     // Find all itineraries created by this tour guide
     const itineraries = await Itinerary.find({ Creator: guideID });
 
-    // Map through itineraries to calculate the number of tourists for each
+    // Map through itineraries to calculate the number of tourists for each and fetch their details
     const report = await Promise.all(itineraries.map(async (itinerary) => {
-      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" });
+      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" }).populate("userId");
+
+      // Extract tourist names (assuming the 'userId' object has a 'name' or 'username' field)
+      const tourists = bookings.map(booking => booking.userId.name || booking.userId.username); 
+
       return {
         itineraryName: itinerary.Name,
         totalTourists: bookings.length,
-        itineraryPrice : itinerary.Price,
-        itineraryActive : itinerary.isActive,
+        itineraryPrice: itinerary.Price,
+        itineraryActive: itinerary.isActive,
+        tourists: bookings.map((booking)=>  booking.userId) // Add tourist names here
       };
     }));
 
-    res.status(200).json({ report,itineraries });
+    // Send the response with the report and itinerary details
+    res.status(200).json({ report, itineraries });
   } catch (error) {
     console.error("Error generating itinerary usage report:", error);
     res.status(500).json({ message: "Internal server error" });
