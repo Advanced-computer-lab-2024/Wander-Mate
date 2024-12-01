@@ -58,6 +58,7 @@ export default function ItineraryModel({
   };
 
   const handleOpenChange = (open) => {
+    setIsOpen(open);
     if (!open) {
       const url = new URL(window.location.href);
       if (window.location.search.includes("open")) {
