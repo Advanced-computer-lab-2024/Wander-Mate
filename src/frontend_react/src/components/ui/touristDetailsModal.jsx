@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "./dialog";
 
+
 const TouristDetailsModal = ({ isOpen, onClose, tourists, itineraryName }) => {
   // Group tourists by username and count occurrences
   const touristCount = tourists.reduce((acc, tourist) => {
@@ -23,6 +24,7 @@ const TouristDetailsModal = ({ isOpen, onClose, tourists, itineraryName }) => {
   const groupedTourists = Object.values(touristCount);
 
   return (
+    
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6" size="full">
         <DialogHeader className="text-center pb-4">
