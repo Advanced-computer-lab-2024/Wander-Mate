@@ -27,13 +27,7 @@ const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const PayForFlight = ({
-  amount,
-  disabled,
-  flight,
-  departureSegment,
-  arrivalSegment,
-}) => {
+const PayForActivity = ({ amount, disabled, activity }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
@@ -42,6 +36,7 @@ const PayForFlight = ({
   const [userPoints, setUserPoints] = useState(0);
   const navigate = useNavigate();
   const [bookingError, setBookingError] = useState(null);
+  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -94,28 +89,70 @@ const PayForFlight = ({
   const handlePaymentSuccess = async () => {
     try {
       const username = sessionStorage.getItem("username");
+      if (!username) {
+        throw new Error("User not logged in.");
+      }
+
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      if (!reply.ok) throw new Error("Failed to get user ID");
 
-      const { userID } = await reply.json();
+      const { userID, userModel } = await reply.json();
 
-      const bookingData = {
-        userID,
-        flightID: flight.id,
-        price: flight.price.total,
-        departureDate: departureSegment?.departure?.at,
-        arrivalDate: arrivalSegment?.arrival?.at,
-      };
-
-      const response2 = await axios.post(
-        `http://localhost:8000/book-flight/${userID}`,
-        bookingData
+      const bookedDate = new Date().toISOString();
+      const bookingResponse = await fetch(
+        "http://localhost:8000/bookActivity",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            activityId: activity.activityId,
+            userId: userID,
+            bookedDate,
+          }),
+        }
       );
+
+      const bookingData = await bookingResponse.json();
+      if (!bookingResponse.ok) {
+        throw new Error(bookingData.message || "Error booking activity.");
+      }
+
+      // Activity booked successfully, now update revenue
+      const salesResponse = await fetch(
+        "http://localhost:8000/updateRevenueSales",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userID,
+            userModel,
+            amount: activity.price,
+          }),
+        }
+      );
+
+      const salesData = await salesResponse.json();
+      if (!salesResponse.ok) {
+        // If revenue update fails, we still consider the booking successful
+        console.error("Failed to update revenue:", salesData.message);
+        toast.success(
+          "Booking successful, but there was an issue updating revenue."
+        );
+      } else {
+        toast.success("Booking successful and revenue updated!");
+      }
+
+      setIsBookingConfirmed(true);
+      setActiveIndex(totalSlide);
     } catch (error) {
-      console.error("Error booking flight:", error);
-      setBookingError("Failed to book the flight. Please try again later.");
+      console.error("Error in handlePaymentSuccess:", error);
+      toast.error(error.message || "Failed to complete the booking process.");
+      setIsBookingConfirmed(false);
     }
-    setActiveIndex(totalSlide);
   };
 
   const handlePaymentError = (error) => {
@@ -277,4 +314,4 @@ const PayForFlight = ({
   );
 };
 
-export default PayForFlight;
+export default PayForActivity;
