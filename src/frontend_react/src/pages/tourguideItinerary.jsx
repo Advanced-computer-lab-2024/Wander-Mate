@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TourGuideItineraryCard from "../components/tourguideItineraryCard";
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -218,19 +219,20 @@ const TourGuideItineraries = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
+  
+
   if (loading) {
     return (
-      <div classNameclassName="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Loading Itineraries...</h1>
-        <div className="animate-pulse space-y-4">
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-gray-200 h-48 rounded-md"></div>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <ECommerceDefaultSkeleton key={index} />
           ))}
         </div>
       </div>
     );
   }
-
   return (
     <>
       <NavigationMenuBar />
