@@ -134,6 +134,7 @@ const {
   getSellerById,
   sendOutOfStockNotificationSeller,
   viewProductsOfSeller,
+  getSalesReport,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -628,3 +629,4 @@ app.get("/getBookingDetails/:bookingID", getBookingDetails);
 app.get("/getEmail/:userID", getEmail);
 app.get("/gettourist/:touristID", gettourist);
 app.get("/getTouristWallet/:touristId", getTouristWallet);
+app.get("/getSalesReport/:sellerId",getSalesReport);
