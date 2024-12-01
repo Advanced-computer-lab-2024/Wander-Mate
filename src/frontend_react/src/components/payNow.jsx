@@ -192,15 +192,16 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
         <DialogContent size="2xl" className="p-0">
           <Toaster />
           <DialogHeader className="p-6 pb-2">
-            {alertMessage && (
-              <Alert color="destructive" variant="soft" className="mb-4">
-                <Icon
-                  icon="heroicons:exclamation-triangle"
-                  className="h-4 w-4"
-                />
-                <AlertDescription>{alertMessage}</AlertDescription>
-              </Alert>
-            )}
+          {alertMessage && (
+            <Alert color="destructive" variant="soft" className="mb-4">
+              <Icon
+                icon="heroicons:exclamation-triangle"
+                className="h-4 w-4"
+              />
+              <AlertDescription>{typeof alertMessage === 'object' ? JSON.stringify(alertMessage) : alertMessage}</AlertDescription>
+            </Alert>
+          )}
+
             <DialogTitle className="text-base font-medium">
               Checkout
             </DialogTitle>
