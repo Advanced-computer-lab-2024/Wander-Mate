@@ -7,6 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { useToast } from "../components/ui/use-toast";
 import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
+import { Filter } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../components/ui/command";
+import { cn } from "../lib/utils";
+import { Badge } from "../components/ui/badge";
 
 const columns = [
   {
@@ -30,7 +35,14 @@ const columns = [
   },
   {
     accessorKey: "status",
-    header: "Order Status",
+    header: ({ column }) => {
+      return (
+        <div className="flex items-center space-x-2">
+          <span>Order Status</span>
+          <StatusFilter column={column} />
+        </div>
+      )
+    },
     cell: ({ row }) => {
       const status = row.original.status;
       let statusText;
@@ -66,6 +78,9 @@ const columns = [
         </div>
       );
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     id: "details",
@@ -80,6 +95,68 @@ const columns = [
     ),
   }
 ];
+
+const StatusFilter = ({ column }) => {
+  const [open, setOpen] = useState(false)
+  const statuses = ["pending", "shipped", "delivered", "cancelled"]
+  const selectedValues = new Set(column.getFilterValue() || [])
+
+  const handleStatusSelect = (status) => {
+    if (selectedValues.has(status)) {
+      selectedValues.delete(status)
+    } else {
+      selectedValues.add(status)
+    }
+    column.setFilterValue(Array.from(selectedValues))
+    setOpen(false)
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="sm" className="h-8 border-dashed">
+          <Filter className="mr-2 h-4 w-4" />
+          {selectedValues.size > 0 ? (
+            <>
+              <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+                {selectedValues.size}
+              </Badge>
+              <span className="sr-only">selected</span>
+            </>
+          ) : (
+            "Filter"
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Filter status..." />
+          <CommandEmpty>No status found.</CommandEmpty>
+          <CommandGroup>
+            {statuses.map((status) => (
+              <CommandItem
+                key={status}
+                onSelect={() => handleStatusSelect(status)}
+              >
+                <div
+                  className={cn(
+                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                    selectedValues.has(status)
+                      ? "bg-primary text-primary-foreground"
+                      : "opacity-50 [&_svg]:invisible"
+                  )}
+                >
+                  <Filter className="h-4 w-4" />
+                </div>
+                {status}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 const TouristOrdersTable = () => {
   const [orders, setOrders] = useState([]);
@@ -253,29 +330,24 @@ const OrderDetailsModal = ({ open, onClose, order }) => {
         </DialogHeader>
 
         <div className="mt-4 space-y-2">
-         
           <p><strong>Status:</strong> {order.status}</p>
           <p><strong>Total Amount:</strong> ${order.total.toFixed(2)}</p>
           <p><strong>Order Date:</strong> {new Date(order.date).toLocaleDateString("en-GB")}</p>
           <p><strong>Is Paid:</strong> {order.isPaid ? "Yes" : "No"}</p>
           
           <div>
-  <strong>Products:</strong>
-  <ul className="list-disc pl-5 mt-2">
-    {order.products.map((product, index) => {
-      // Set quantity to 1 if not provided
-      const quantity = order.quantities[index] || 1;
-      return (
-        <li key={product._id}>
-          {product.name} - Quantity: {quantity}
-        </li>
-      );
-    })}
-  </ul>
-</div>
-
-          
-        
+            <strong>Products:</strong>
+            <ul className="list-disc pl-5 mt-2">
+              {order.products.map((product, index) => {
+                const quantity = order.quantities[index] || 1;
+                return (
+                  <li key={product._id}>
+                    {product.name} - Quantity: {quantity}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
 
         <div className="mt-6 text-right">
