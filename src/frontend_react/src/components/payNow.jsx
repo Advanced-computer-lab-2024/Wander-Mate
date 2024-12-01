@@ -19,7 +19,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription } from "./ui/alert";
 import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
-
+import emailjs from "@emailjs/browser";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../forms/PaymentForm";
@@ -145,6 +145,35 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
       toast.error("Failed to book itinerary");
       setIsBooked(false);
     }
+    const tourist = await axios.get(`http://localhost:8000/gettourist/${touristID}`);
+        const emailParams = {
+          service_id: "service_orznfch", // Your EmailJS service ID
+          template_id: "template_sl965nk", // Your EmailJS template ID
+          user_id: "tAg5XESCThJjHJ1YG", // Your EmailJS user ID
+          template_params: {
+            to_email: tourist.Email, // Recipient's email address
+            customer_name: tourist.FullName || tourist.Username, // Customer name (full name or username)
+            receipt_date: new Date().toLocaleDateString(), // Date of the receipt (formatted)
+            event_name: itinerary.Name, // Name of the event or itinerary
+            booking_date: bookedDate, // Date when the booking was made
+            event_date: bookedDate, // Scheduled date for the event
+            event_location: itinerary.PickUpLocation, // Location of the event or itinerary
+            payment_description: `Payment for ${itinerary.Name}`, // Payment description
+            payment_amount: amount, // Payment amount (formatted as currency)
+            logo_url:
+              "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo", // Logo URL
+            support_email: "Wandermate4@outlook.com" // Support email
+          },
+        };
+  
+        const response = await emailjs.send(
+          emailParams.service_id,
+          emailParams.template_id,
+          emailParams.template_params,
+          emailParams.user_id,
+          emailParams.to_email
+        );
+
     setActiveIndex(totalSlide);
   };
 
