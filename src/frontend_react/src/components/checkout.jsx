@@ -110,6 +110,7 @@ const CheckOut = ({
       const orderData = {
         userId: touristID, // Assuming the tourist ID is the user ID
         products: cartItems.map((item) => item.productId),
+        quantities: cartItems.map((item) => item.quantity),
         total: amount, // Total amount after any discounts
         address: address, // Address from the form
         isPaid: true, // Assuming the payment was successful
@@ -140,6 +141,7 @@ const CheckOut = ({
   };
 
   const handleNextSlide = () => {
+    console.log(cartItems);
     if (activeIndex === 2 && selected === "rwb_1") {
       if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
         handlePayment();
