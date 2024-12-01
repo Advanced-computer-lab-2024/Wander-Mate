@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ import {
   CloudUploadIcon,
   LockKeyholeIcon,
   Ticket,
+  ShoppingBasket,
 } from "lucide-react";
 
 const SiteLogo = () => (
@@ -48,6 +50,7 @@ const SiteLogo = () => (
 
 const AdminNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -55,6 +58,9 @@ const AdminNavBar = () => {
 
   const handleMouseLeave = () => {
     setOpenDropdown(null);
+  };
+  const goToProfile = async () => {
+    navigate("/UserProfilePage");
   };
 
   return (
@@ -89,6 +95,33 @@ const AdminNavBar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+
+          <DropdownMenu open={openDropdown === "products"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnter("products")}
+                onMouseLeave={handleMouseLeave}
+              >
+                Products
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnter("products")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/AdminProducts" className="flex items-center">
+                  <ShoppingBasket className="mr-2 h-4 w-4" />
+                  <span>View Products</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+
           <DropdownMenu open={openDropdown === "orders"}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -198,7 +231,7 @@ const AdminNavBar = () => {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span onClick={goToProfile}>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

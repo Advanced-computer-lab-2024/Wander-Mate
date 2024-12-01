@@ -1,5 +1,6 @@
 const sellerModel = require("../Models/seller.js");
 const ProductModel = require("../Models/products.js");
+const OrderModel = require("../Models/order.js");
 const userModel = require("../Models/users.js");
 const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -286,12 +287,10 @@ const getSellerById = async (req, res) => {
     }
     res.status(200).json({ seller });
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        message: "Error fetching seller information",
-        error: error.message,
-      });
+    res.status(400).json({
+      message: "Error fetching seller information",
+      error: error.message,
+    });
   }
 };
 
@@ -609,12 +608,105 @@ const sendOutOfStockNotificationSeller = async (req, res) => {
       notification,
     });
 
-
-
     console.log("Notification added for seller:", notification);
   } catch (error) {
     console.error("Error adding notification for seller:", error);
     res.status(500).json({ error: "Failed to add notification for seller." });
+  }
+};
+
+const getSalesReport = async (req, res) => {
+  const { sellerId } = req.params;
+  try {
+    // Step 1: Get all products by the seller
+    const sellerProducts = await ProductModel.find({ seller: sellerId }).select(
+      "_id name"
+    );
+    const productIds = sellerProducts.map((product) => product._id);
+
+    if (sellerProducts.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found for this seller." });
+    }
+
+    // Step 2: Aggregate orders containing the seller's products
+    const salesData = await OrderModel.aggregate([
+      {
+        $match: {
+          products: { $in: productIds }, // Orders containing seller's products
+          status: { $in: ["shipped", "delivered", "pending", "cancelled"] }, // Include relevant statuses
+        },
+      },
+      {
+        $unwind: { path: "$products", preserveNullAndEmptyArrays: true }, // Unwind products
+      },
+      {
+        $unwind: { path: "$quantities", preserveNullAndEmptyArrays: true }, // Unwind quantities to align with products
+      },
+      {
+        $lookup: {
+          from: "products", // Join with Product collection
+          localField: "products",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails", // Unwind product details
+      },
+      {
+        $match: {
+          products: { $in: productIds }, // Ensure seller's products are included
+        },
+      },
+      {
+        $group: {
+          _id: "$products", // Group by product ID
+          totalQuantity: { $sum: { $ifNull: ["$quantities", 1] } }, // Sum quantities, default to 1 if missing
+          totalRevenue: {
+            $sum: { $multiply: ["$quantities", "$productDetails.price"] },
+          }, // Calculate revenue
+        },
+      },
+      {
+        $lookup: {
+          from: "products", // Join for product details
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails", // Unwind product details
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          productName: "$productDetails.name",
+          totalQuantity: 1,
+          totalRevenue: 1,
+        },
+      },
+    ]);
+
+    if (salesData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No sales data found for this seller." });
+    }
+
+    // Step 3: Send response
+    res.status(200).json({
+      message: "Sales report generated successfully.",
+      salesReport: salesData,
+    });
+  } catch (error) {
+    console.error("Error generating sales report:", error);
+    res
+      .status(500)
+      .json({ message: "Server error while generating sales report." });
   }
 };
 
@@ -640,4 +732,5 @@ module.exports = {
   getSellerById,
   sendOutOfStockNotificationSeller,
   viewProductsOfSeller,
+  getSalesReport,
 };
