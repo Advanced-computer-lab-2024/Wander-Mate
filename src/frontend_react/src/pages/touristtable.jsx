@@ -14,6 +14,8 @@ import { Icon } from "@iconify/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const TouristTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
@@ -41,6 +43,45 @@ const TouristTable = () => {
       setCollapsedRows(collapsedRows.filter((rowId) => rowId !== id));
     } else {
       setCollapsedRows([...collapsedRows, id]);
+    }
+  };
+
+  const deleteTourist = async (tourist) => {
+    
+      const deletetourist =  axios.delete("http://localhost:8000/deleteaccount", {
+        data: { Username: tourist.Username,
+          userID: tourist._id,
+         },
+      });
+      toast.promise(
+        deletetourist,
+        {
+          loading: "Deleting Tourist...",
+          success: "Tourist account deleted successfully!",
+          error: "Error deleting the account.",
+        },
+        {
+          // Optional settings for the toast (you can customize these)
+          success: {
+            duration: 4000, // The toast will disappear after 4 seconds
+            icon: "✅",
+          },
+          error: {
+            duration: 4000,
+            icon: "❌",
+          },
+        }
+      );
+      try {
+        const response = await deletetourist;
+      if (response.status === 200) {
+        // Remove the tourist from the state if the deletion is successful
+        setTourists(tourists.filter(tourist1 => tourist1.Username !== tourist.Username));
+        //alert("Tourist account deleted successfully!");
+      }
+    } catch (err) {
+      setError("An error occurred while deleting the account");
+      //alert("Error deleting account");
     }
   };
 
@@ -83,8 +124,10 @@ const TouristTable = () => {
   };
 
   return (
+    <>
+    <Toaster/>
     <Table>
-        <TableHeader className="text-left">
+      <TableHeader className="text-left">
         <TableRow>
           {columns.map((column) => (
             <TableHead key={column.key}>{column.label}</TableHead>
@@ -135,6 +178,7 @@ const TouristTable = () => {
                   variant="outline"
                   color="destructive"
                   className="h-7 w-7 border-none"
+                  onClick={() => deleteTourist(tourist)} // Call deleteTourist with the username
                 >
                   <Icon icon="heroicons:trash" className="h-5 w-5" />
                 </Button>
@@ -160,6 +204,7 @@ const TouristTable = () => {
         ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 

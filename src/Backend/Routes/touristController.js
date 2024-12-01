@@ -980,12 +980,14 @@ const makeComplaint = async (req, res) => {
 };
 
 const addCommentONEvent = async (req, res) => {
-  const { Body, eventId, touristID } = req.body;
+  const { Body, eventId, touristID,username } = req.body;
   try {
-    const newComment = await CommentModel.create({
-      touristID,
-      Body,
-      aboutId: eventId,
+
+    const newComment = await ReviewModel.create({
+      userId: touristID, // Assuming `touristID` matches your schema
+      itemId: eventId,
+      username,
+      review: Body, // Assuming `text` is a field in your comment schema
     });
     res
       .status(200)
@@ -1672,15 +1674,52 @@ const rateEvent = async (req, res) => {
       userId, // Refers to the user rating the event
       rating,
     });
-    await axios.put(`http://localhost:8000/updateEventRatings/${eventId}`);
+    await axios.put(`http://localhost:8000/updateActivityRating/${eventId}`);
     res
       .status(200)
       .json({ message: "Rating posted successfully", rating: newRating });
   } catch (error) {
-    console.error("Error posting rating:", error.message);
+    console.error("Error posting rating:", error);
     res
       .status(400)
       .json({ message: "Error posting rating", error: error.message });
+  }
+};
+
+const updateActivityRatings = async (req, res) => {
+  const{eventId} = req.params;
+  try {
+    const averageRating = await RatingModel.aggregate([
+      { $match: { itemId: new mongoose.Types.ObjectId(eventId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (averageRating.length > 0) {
+      const updatedEvent = await attractionModel.findByIdAndUpdate(
+        { _id: eventId },
+        {
+          Ratings: averageRating[0].averageRating.toFixed(2), // Format to 2 decimal places
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        event: updatedEvent, // Return the updated event data
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No ratings found for this event." });
+    }
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -3218,6 +3257,72 @@ const markNotificationAsRead= async (req, res) => {
   }
 };
 
+const gettourist = async (req, res) => {
+  const { touristID } = req.params;
+  try{
+    if(!touristID){
+      return res.status(400).json({ message: "touristID is required." });
+    }
+    const tourist = await userModel.findById({_id : touristID});
+    res.status(200).json(tourist);
+
+  }catch(error){
+    console.error("Error getting tourist:", error);
+  }
+};
+const getBookingDetails = async (req, res) => {
+  const { bookingID } = req.params; // Booking ID passed in the URL
+
+  try {
+    // Step 1: Find the booking by its ID
+    console.log("Booking ID:", bookingID); // Debugging line
+
+    const booking = await Booking.findById(bookingID).populate("itemId");
+    
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+
+    
+    console.log("Item Model:", booking); // Debugging line
+
+    
+    res.status(200).json({
+      message: "Booking details retrieved successfully.",
+      booking,
+    });
+
+  } catch (err) {
+    console.error("Error retrieving booking details:", err);
+    res.status(500).json({ error: "Failed to retrieve booking details." });
+  }
+};
+
+
+const getTouristLevel = async (req, res) => {
+  try {
+      const { touristId } = req.params;  // Get touristId from the URL parameter
+      if (!touristId) {
+          return res.status(400).json({ message: "touristId is required" });
+      }
+      
+      // Fetch the tourist data from the database using the touristId
+      const tourist = await userModel.findById(touristId);  // Corrected variable name to match touristId
+      if (!tourist) {
+          return res.status(404).json({ message: "Tourist not found" });
+      }
+
+      // Send the response with the level (Badge)
+      res.json({ Badge: tourist.Badge });
+  } catch (error) {
+      console.error('Error fetching tourist level:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3305,5 +3410,9 @@ module.exports = {
   removePreference,
   viewMyNotifications,
   removeNotification,
-  markNotificationAsRead
+  markNotificationAsRead,
+  updateActivityRatings,
+  gettourist,
+  getBookingDetails,
+  getTouristLevel,
 };

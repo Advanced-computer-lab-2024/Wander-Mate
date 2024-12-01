@@ -30,6 +30,7 @@ const AdminItineraryCard = ({
   Language,
   currrn,
   flag,
+  Creator,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -59,6 +60,7 @@ const AdminItineraryCard = ({
     Language,
     currrn,
     isFlagged : flag,
+    Creator,
   };
 
   return (

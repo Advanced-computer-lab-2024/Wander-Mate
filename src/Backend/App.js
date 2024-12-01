@@ -104,7 +104,11 @@ const {
   removePreference,
   viewMyNotifications,
   removeNotification,
-  markNotificationAsRead
+  markNotificationAsRead,
+  updateActivityRatings,
+  gettourist,
+  getBookingDetails,,
+  getTouristLevel,
 } = require("./Routes/touristController");
 
 const {
@@ -196,6 +200,8 @@ const {
   updateProductQuantity,
   updateSellerSales,
   emptyCart,
+  getRevenue,
+  getEmail,
 } = require("./Routes/adminController.js");
 
 const {
@@ -441,6 +447,7 @@ app.post("/rateItinerary", rateItinerary);
 app.post("/rateProduct", rateProduct);
 app.post("/reviewProduct", reviewProduct);
 app.put("/updateProductRatings/:productId", updateProductRatings);
+app.get("/getTouristLevel/:touristId",getTouristLevel);
 // app.put("/updateProductReviews/:productId",updateProductReviews);
 app.put(
   "/uploadProductImage/:productId",
@@ -529,6 +536,7 @@ app.post("/bookItinerary", bookItinerary);
 app.post("/bookActivity", bookActivity);
 app.post("/rateEvent", rateEvent);
 app.put("/updateEventRatings/:eventId", updateEventRatings);
+app.put("/updateActivityRating/:eventId", updateActivityRatings);
 app.put("/currencyConverter", currencyConverter);
 app.get("/viewAllTransportations", viewAllTransportations);
 app.get("/getAllUsernames", getAllUsernames);
@@ -606,3 +614,6 @@ app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
 app.put("/markNotificationAsRead/:userID/:notificationId",markNotificationAsRead);
+app.get("/getRevenue/:userID", getRevenue);
+app.get("/getBookingDetails/:bookingID", getBookingDetails);  app.get("/getEmail/:userID", getEmail);
+app.get("/gettourist/:touristID",gettourist);
