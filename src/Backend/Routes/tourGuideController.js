@@ -575,26 +575,31 @@ const uploadPicturetourguide = async (req, res) => {
 };
 const gettourGuideImage = async (req, res) => {
   try {
-    const { guideID } = req.params; // Get the product ID from the request parameters
+    const { guideID } = req.params; // Get the guide ID from the request parameters
 
-    // Find the product by ID
+    // Find the guide by ID
     const GUIDE = await tourGuideModel.findById(guideID);
 
-    // Check if product exists
-    if (!GUIDE || !GUIDE.picture || !GUIDE.picture.data) {
+    // Check if guide exists
+    if (!GUIDE || !GUIDE.picture || !GUIDE.picture.data || !GUIDE.picture.data.buffer) {
       return res.status(404).json({ error: "Image not found." });
     }
+
+    // Extract the buffer from the Binary object
+    const imageBuffer = GUIDE.picture.data.buffer;
 
     // Set the content type for the image
     res.set("Content-Type", GUIDE.picture.contentType);
 
-    // Send the image data
-    res.send(GUIDE.picture.data);
+    // Send the image data as a buffer
+    res.send(imageBuffer);
   } catch (err) {
     console.error("Error retrieving image:", err);
     res.status(500).json({ error: "Failed to retrieve image." });
   }
 };
+
+
 
 const viewItineraryReport = async (req, res) => {
   try {
@@ -652,7 +657,120 @@ const notifyTourGuide = async (tourGuideId, itineraryId) => {
     console.error("Error adding notification for tour guide:", error);
   }
 };
+const viewMyNotificationsTG = async (req, res) => {
+  const { guideID } = req.params; // Assuming the tourist ID is passed as a URL parameter
 
+  try {
+    // Find the notifications for the given tourist ID
+    const notifications = await Notification.findOne({ userID: guideID });
+
+    if (!notifications || notifications.notifications.length === 0) {
+      return res.status(201).json({
+        message: "No notifications found for this Tour Guide.",
+      });
+    }
+
+    res.status(200).json({
+      message: "Notifications retrieved successfully.",
+      notifications: notifications.notifications, // Return all the notifications array for the tourist
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const removeNotificationTG = async (req, res) => {
+  const { guideID, notificationId } = req.params; // Get touristId and notificationId from the request body
+  try {
+    // Validate input
+    if (!guideID || !notificationId) {
+      return res.status(400).json({ message: "Tour Guide ID and Notification ID are required." });
+    }
+
+    // Validate that the touristId and notificationId are valid ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(guideID) || !mongoose.Types.ObjectId.isValid(notificationId)) {
+      return res.status(400).json({ message: "Invalid Tourist ID or Notification ID." });
+    }
+
+    // Find the notification document for the given tourist ID
+    const notificationDoc = await Notification.findOne({ userID: guideID });
+
+    if (!notificationDoc) {
+      return res.status(404).json({ message: "No notifications found for this tourist." });
+    }
+
+    // Find the index of the notification to remove by notificationId
+    const notificationIndex = notificationDoc.notifications.findIndex(
+      (notification) => notification._id.toString() === notificationId
+    );
+
+    if (notificationIndex === -1) {
+      return res.status(404).json({ message: "Notification not found in the list." });
+    }
+
+    // Remove the notification from the array
+    notificationDoc.notifications.splice(notificationIndex, 1);
+
+    // Save the updated notification document
+    await notificationDoc.save();
+
+    res.status(200).json({
+      message: "Notification removed successfully.",
+      notifications: notificationDoc.notifications, // Return the updated notifications array
+    });
+  } catch (error) {
+    console.error("Error removing notification:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const markNotificationAsReadTG= async (req, res) => {
+  const { userID, notificationId } = req.params;
+
+  try {
+    // Validate input
+    if (!userID || !notificationId) {
+      return res.status(400).json({ message: "UserID and NotificationID are required." });
+    }
+
+    // Step 1: Find the user notification document by userID
+    const notificationDocument = await Notification.findOne({ "userID": userID });
+
+    if (!notificationDocument) {
+      return res.status(404).json({ message: "No notifications found for this user." });
+    }
+
+    // Step 2: Find the specific notification by notificationId
+    const notification = notificationDocument.notifications.find(
+      (notif) => notif._id.toString() === notificationId
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found." });
+    }
+
+    // Step 3: Check if isRead is not defined, set it to false if undefined
+    if (notification.isRead === undefined) {
+      notification.isRead = false;
+    }
+
+    // Step 4: Mark the notification as read (set isRead to true)
+    notification.isRead = true;
+
+    // Step 5: Save the updated notifications array in the user document
+    await notificationDocument.save();
+
+    // Step 6: Respond with a success message
+    res.status(200).json({
+      message: "Notification marked as read successfully.",
+      notification: notification,
+    });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -673,5 +791,8 @@ module.exports = {
   gettourGuideImage,
   viewItineraryReport,
   notifyTourGuide,
+  viewMyNotificationsTG,
+  removeNotificationTG,
+  markNotificationAsReadTG,
   deleteMyItinerary,
 };

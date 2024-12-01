@@ -49,8 +49,9 @@ export default function ViewItineraries() {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const response = await fetch(
-          "https://api.exchangerate-api.com/v4/latest/USD"
+        const c=sessionStorage.getItem("curr");
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
+          
         );
         const data = await response.json();
         setExchangeRates(data.rates);
@@ -143,9 +144,8 @@ export default function ViewItineraries() {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice = itinerary.Price * (exchangeRates[currency] || 1);
-      const matchesBudget =
-        convertedPrice >= budget[0] && convertedPrice <= budget[1];
+      const convertedPrice =   itinerary.Price / (exchangeRates[currency] || 1) ;
+      const matchesBudget =convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
       const filterEndDate = endDate ? new Date(endDate) : null;
       const matchesDate = itinerary.AvailableDates.some((date) => {
@@ -314,22 +314,7 @@ export default function ViewItineraries() {
                   </div>
 
                   {/* Currency Dropdown */}
-                  <div>
-                    <Label htmlFor="currency">Currency</Label>
-                    <select
-                      id="currency"
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      className="border border-gray-300 rounded p-2"
-                    >
-                      {exchangeRates &&
-                        Object.keys(exchangeRates).map((cur) => (
-                          <option key={cur} value={cur}>
-                            {cur}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
+                  
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -402,7 +387,7 @@ export default function ViewItineraries() {
                     ),
                   ].map((tagId) => tagMap[tagId])}
                   price={(
-                    itinerary.Price * (exchangeRates[currency] || 1)
+                    itinerary.Price / (exchangeRates[currency] || 1)
                   ).toFixed(2)}
                   currrn={sessionStorage.getItem("curr")}
                   rating={itinerary.Ratings}

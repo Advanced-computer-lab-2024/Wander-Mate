@@ -7,6 +7,7 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Star } from "lucide-react";
+import ChangePassword from "../components/changePassword";
 
 const API_URL = "http://localhost:8000";
 
@@ -175,14 +176,14 @@ const TourGuideProfileManager = () => {
                     required
                   />
                 </div>
-                 {/* Tour Guide Status Badge */}
-                 <div className="flex items-center">
+              
+                 {/* <div className="flex items-center">
                   <Label>Status</Label>
                   <Badge className="ml-2">
                     <Star className="mr-1 h-3 w-3" />
-                    {touristBadge ? touristBadge : "Loading..."} {/* Displaying Badge */}
+                    {touristBadge ? touristBadge : "Loading..."}
                   </Badge>
-                </div>
+                </div> */}
 
                 {/* Toggle Edit Mode */}
                 <div className="flex gap-4">
@@ -197,6 +198,9 @@ const TourGuideProfileManager = () => {
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="changePassword">
+        <ChangePassword URL="http://localhost:8000/changePasswordTourGuide"/>
         </TabsContent>
       </Tabs>
     </div>
