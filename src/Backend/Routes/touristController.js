@@ -3358,6 +3358,29 @@ const getTouristWallet = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+const getMyOrders = async (req, res) => {
+  const { userId } = req.params; // Get userId (touristId) from the route parameter
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing required parameter: userId" });
+  }
+
+  try {
+    // Find orders by userId (touristId)
+    const orders = await ordermodel.find({ userId }).populate("products address");
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    return res.status(200).json({ message: "Orders fetched successfully", orders });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching orders", error: error.message });
+  }
+};
+
 
 module.exports = {
   ViewOrders,
@@ -3452,4 +3475,5 @@ module.exports = {
   getBookingDetails,
   getTouristLevel,
   getTouristWallet,
+  getMyOrders,
 };

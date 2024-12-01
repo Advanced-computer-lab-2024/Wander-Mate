@@ -110,6 +110,7 @@ const {
   getBookingDetails,
   getTouristLevel,
   getTouristWallet,
+  getMyOrders,
 } = require("./Routes/touristController");
 
 const {
@@ -630,3 +631,4 @@ app.get("/getEmail/:userID", getEmail);
 app.get("/gettourist/:touristID", gettourist);
 app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId",getSalesReport);
+app.get("/getMyOrders/:userId", getMyOrders);
