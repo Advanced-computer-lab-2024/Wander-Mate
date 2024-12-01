@@ -153,8 +153,8 @@ export default function ActivityModal({
                   {activity.category || "Not specified"}
                 </p>
                 <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-semibold">Price:</span> $
-                  {activity.price}
+                  <span className="font-semibold">Price: </span> 
+                  {activity.currency} {activity.price}
                 </p>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {activity.tags.map((tag, index) => (
