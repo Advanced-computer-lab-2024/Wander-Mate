@@ -78,6 +78,7 @@ import ItineraryReport from "./components/ui/ItineraryReport";import AdvertiserP
 import BasicDataTable from "./components/salestable"
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
+import ChangePhoto from "./components/changePhoto";
 function App() {
   return (
     <Router>
@@ -170,6 +171,7 @@ function App() {
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
 
         <Route path="/AdminProducts" element={<AdminProducts/>}/>
+        <Route path="ChangePhoto" element={<ChangePhoto />} />
       </Routes>
     </Router>
   );
