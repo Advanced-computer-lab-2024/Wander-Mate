@@ -131,37 +131,27 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
       const { userID } = await reply.json();
       console.log(itinerary);
 
-      await axios.post(`http://localhost:8000/bookItinerary`, {
+      const repl = await axios.post(`http://localhost:8000/bookItinerary`, {
         userId: userID,
         itineraryId: itinerary.itineraryId,
         bookedDate: bookedDate,
       });
 
-      toast.success("Booking successful!");
-
-      window.location.href = "http://localhost:3000/viewItineraries";
-    } catch (error) {
-      console.error("Error booking itinerary:", error);
-      toast.error("Failed to book itinerary");
-      setIsBooked(false);
-    }
-    const tourist = await axios.get(`http://localhost:8000/gettourist/${touristID}`);
+      const tourist = await axios.get(`http://localhost:8000/gettourist/${userID}`);
         const emailParams = {
-          service_id: "service_orznfch", // Your EmailJS service ID
-          template_id: "template_sl965nk", // Your EmailJS template ID
-          user_id: "tAg5XESCThJjHJ1YG", // Your EmailJS user ID
+          service_id: "service_phn5uyk", // Your EmailJS service ID
+          template_id: "template_nckkmu7", // Your EmailJS template ID
+          user_id: "PnYRvwMBy2-3PJ0JY", // Your EmailJS user ID
           template_params: {
-            to_email: tourist.Email, // Recipient's email address
-            customer_name: tourist.FullName || tourist.Username, // Customer name (full name or username)
+            to_email: tourist.data.Email, // Recipient's email address
+            customer_name: tourist.data.FullName || tourist.data.Username, // Customer name (full name or username)
             receipt_date: new Date().toLocaleDateString(), // Date of the receipt (formatted)
-            event_name: itinerary.Name, // Name of the event or itinerary
+            event_name: itinerary.name, // Name of the event or itinerary
             booking_date: bookedDate, // Date when the booking was made
             event_date: bookedDate, // Scheduled date for the event
             event_location: itinerary.PickUpLocation, // Location of the event or itinerary
             payment_description: `Payment for ${itinerary.Name}`, // Payment description
             payment_amount: amount, // Payment amount (formatted as currency)
-            logo_url:
-              "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo", // Logo URL
             support_email: "Wandermate4@outlook.com" // Support email
           },
         };
@@ -173,8 +163,20 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
           emailParams.user_id,
           emailParams.to_email
         );
+        console.log(response);
+        toast.success("Booking successful!");
+        setActiveIndex(totalSlide);
 
-    setActiveIndex(totalSlide);
+
+      // window.location.href = "http://localhost:3000/viewItineraries";
+    } catch (error) {
+      console.error("Error booking itinerary:", error);
+      toast.error("Failed to book itinerary");
+      setIsBooked(false);
+    }
+
+        
+
   };
 
   const handlePaymentError = (error) => {
