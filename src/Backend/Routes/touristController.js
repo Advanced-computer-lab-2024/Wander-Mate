@@ -3257,6 +3257,20 @@ const markNotificationAsRead= async (req, res) => {
   }
 };
 
+const gettourist = async (req, res) => {
+  const { touristID } = req.params;
+  try{
+    if(!touristID){
+      return res.status(400).json({ message: "touristID is required." });
+    }
+    const tourist = await userModel.findById({_id : touristID});
+    res.status(200).json(tourist);
+
+  }catch(error){
+    console.error("Error getting tourist:", error);
+  }
+};
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3346,4 +3360,5 @@ module.exports = {
   removeNotification,
   markNotificationAsRead,
   updateActivityRatings,
+  gettourist,
 };
