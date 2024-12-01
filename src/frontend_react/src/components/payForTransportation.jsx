@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react";
 import { Button } from "./ui/button";
-import { toast } from "./ui/use-toast";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -10,35 +11,30 @@ import {
   DialogTrigger,
   DialogClose,
 } from "./ui/dialog";
-import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { useState, useEffect } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription } from "./ui/alert";
-import CreditCard from "../public/images/CreditCard.png";
 import axios from "axios";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../forms/PaymentForm";
+import { useNavigate } from "react-router-dom";
 
 const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const TransportCheckOut = ({ touristID, amount, disabled }) => {
+const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
-  const [cardHolderName, setCardHolderName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expirationDate, setExpirationDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [errors, setErrors] = useState({});
-  const [userPoints, setUserPoints] = useState(0);
+  const [isBooked, setIsBooked] = useState(false);
+  const navigate = useNavigate();
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -49,55 +45,34 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
     setTotalSlide(paymentMethod === "wallet" ? 2 : 3);
   }, [paymentMethod]);
 
-  const validateFields = () => {
-    const newErrors = {};
-    if (!cardHolderName.trim())
-      newErrors.cardHolderName = "Card Holder Name is required.";
-    if (!cardNumber.trim()) {
-      newErrors.cardNumber = "Card Number is required.";
-    } else if (!/^\d{16}$/.test(cardNumber)) {
-      newErrors.cardNumber = "Card Number must be 16 digits.";
-    }
-    if (!expirationDate.trim()) {
-      newErrors.expirationDate = "Expiration Date is required.";
-    } else if (!/^\d{2}\/\d{2}$/.test(expirationDate)) {
-      newErrors.expirationDate = "Expiration Date must be in MM/YY format.";
-    }
-    if (!cvv.trim()) {
-      newErrors.cvv = "CVV is required.";
-    } else if (!/^\d{3}$/.test(cvv)) {
-      newErrors.cvv = "CVV must be 3 digits.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleWallet = async () => {
-    const username = sessionStorage.getItem("username");
-    const reply = await fetch(`http://localhost:8000/getID/${username}`);
-    if (!reply.ok) throw new Error("Failed to get tourist ID");
-
-    const { userID } = await reply.json();
-
     try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+
       const response = await axios.put("http://localhost:8000/payWithWallet", {
         touristID: userID,
         amount,
       });
+
       if (response.status === 200) {
         setAlertMessage(null);
+        await handlePaymentSuccess();
         handleNextSlide();
       } else {
         setAlertMessage(response.data || "Payment failed.");
       }
     } catch (error) {
+      console.error("Wallet payment error:", error);
       setAlertMessage("An error occurred during the transaction.");
     }
   };
 
   const handleNextSlide = () => {
-    if (activeIndex === 2 && selected === "rwb_1" && !validateFields()) {
+    if (activeIndex === 2 && selected === "rwb_1") {
       setAlertMessage("Please fill in all required credit card details.");
       return;
     }
@@ -111,16 +86,34 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateFields()) {
-      console.log("Payment Successful");
-    } else {
-      console.log("Validation Failed");
+  const handlePaymentSuccess = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(
+        `http://localhost:8000/bookTransportation`,
+        {
+          userId: userID,
+          itemId: transportationId,
+          bookedDate: date,
+        }
+      );
+
+      if (response.status === 200) {
+        setIsBooked(true);
+        toast.success("Booking successful!");
+      } else {
+        throw new Error("Booking failed");
+      }
+    } catch (error) {
+      console.error("Error booking transportation:", error);
+      toast.error("Failed to book transportation");
+      setIsBooked(false);
+      throw error; // Re-throw the error to be caught in the calling function
     }
-  };
-  const handlePaymentSuccess = () => {
-    setActiveIndex(totalSlide);
   };
 
   const handlePaymentError = (error) => {
@@ -131,14 +124,12 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            className="w-full text-white py-2 rounded mt-4"
-            disabled={disabled}
-          >
-            Checkout
+          <Button className="py-2 px-5" disabled={disabled}>
+            Confirm Booking
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
+          <Toaster />
           <DialogHeader className="p-6 pb-2">
             {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">
@@ -222,81 +213,6 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
 
               {/* Step 2: Credit Card Details */}
               {activeIndex === 2 && selected === "rwb_1" && (
-                // <form onSubmit={handleSubmit} className="space-y-4">
-                //   <h3 className="text-lg font-medium">Credit Card Details</h3>
-                //   <div className="flex items-center gap-4">
-                //     {/* Credit Card Image */}
-                //     <div className="w-1/2">
-                //       <img
-                //         src={CreditCard}
-                //         alt="Credit Card"
-                //         className="w-full h-auto"
-                //       />
-                //     </div>
-                //     {/* Credit Card Information */}
-                //     <div className="flex flex-col gap-2 w-3/4">
-                //       <div className="flex flex-col gap-2">
-                //         <Label>Card Holder Name</Label>
-                //         <Input
-                //           type="text"
-                //           placeholder="Card Holder Name"
-                //           value={cardHolderName}
-                //           onChange={(e) => setCardHolderName(e.target.value)}
-                //         />
-                //         {errors.cardHolderName && (
-                //           <p className="text-red-500 text-sm">
-                //             {errors.cardHolderName}
-                //           </p>
-                //         )}
-                //       </div>
-                //       <div className="flex flex-col gap-2">
-                //         <Label>Card Number</Label>
-                //         <Input
-                //           type="text"
-                //           placeholder="Card Number"
-                //           value={cardNumber}
-                //           onChange={(e) => setCardNumber(e.target.value)}
-                //         />
-                //         {errors.cardNumber && (
-                //           <p className="text-red-500 text-sm">
-                //             {errors.cardNumber}
-                //           </p>
-                //         )}
-                //       </div>
-                //       <div className="flex gap-4">
-                //         <div className="flex flex-col gap-2 w-1/2">
-                //           <Label>Expiration Date</Label>
-                //           <Input
-                //             type="text"
-                //             placeholder="MM/YY"
-                //             value={expirationDate}
-                //             onChange={(e) => setExpirationDate(e.target.value)}
-                //           />
-                //           {errors.expirationDate && (
-                //             <p className="text-red-500 text-sm">
-                //               {errors.expirationDate}
-                //             </p>
-                //           )}
-                //         </div>
-                //         <div className="flex flex-col gap-2 w-1/2">
-                //           <Label>CVV</Label>
-                //           <Input
-                //             type="text"
-                //             placeholder="CVV"
-                //             value={cvv}
-                //             onChange={(e) => setCvv(e.target.value)}
-                //           />
-                //           {errors.cvv && (
-                //             <p className="text-red-500 text-sm">{errors.cvv}</p>
-                //           )}
-                //         </div>
-                //       </div>
-                //     </div>
-                //   </div>
-                //   <button type="submit" className="btn btn-primary">
-                //     Submit
-                //   </button>
-                // </form>
                 <Elements stripe={stripePromise}>
                   <PaymentForm
                     amount={amount}
@@ -359,4 +275,4 @@ const TransportCheckOut = ({ touristID, amount, disabled }) => {
   );
 };
 
-export default TransportCheckOut;
+export default PayForTransportation;
