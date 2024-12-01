@@ -27,7 +27,8 @@ export default function PlaceCard({
   location,
   bestTimeToVisit,
   nearbyAttractions,
-  TicketPrices
+  TicketPrices,
+  currency
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -53,6 +54,7 @@ export default function PlaceCard({
     nearbyAttractions,
     latitude,
     longitude,
+    currency
   };
 
   return (

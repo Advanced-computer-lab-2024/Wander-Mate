@@ -27,7 +27,8 @@ const Products = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [likedItemsCount, setLikedItemsCount] = useState(0);
-
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
   const fetchProducts = async () => {
     try {
       const response = await fetch("http://localhost:8000/viewSellerProducts");
@@ -73,6 +74,20 @@ const Products = () => {
   };
 
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c=sessionStorage.getItem("curr");
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
+          
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     fetchProducts();
   }, []);
 
@@ -200,7 +215,8 @@ const Products = () => {
                 productId={product._id}
                 name={product.name}
                 description={product.description}
-                price={product.price}
+                price={(product.price/ (exchangeRates[currency] || 1)
+                ).toFixed(2)}
                 seller={product.seller || "Unknown"}
                 ratings={product.ratings}
                 reviews={product.reviews}

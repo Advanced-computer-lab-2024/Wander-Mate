@@ -662,7 +662,7 @@ const getSalesReport = async (req, res) => {
       },
       {
         $group: {
-          _id: "$products", // Group by product ID
+          _id: { productId: "$products", purchaseDate: "$date" }, // Group by product ID and date
           totalQuantity: { $sum: { $ifNull: ["$quantities", 1] } }, // Sum quantities, default to 1 if missing
           totalRevenue: {
             $sum: { $multiply: ["$quantities", "$productDetails.price"] },
@@ -672,7 +672,7 @@ const getSalesReport = async (req, res) => {
       {
         $lookup: {
           from: "products", // Join for product details
-          localField: "_id",
+          localField: "_id.productId",
           foreignField: "_id",
           as: "productDetails",
         },
@@ -683,10 +683,13 @@ const getSalesReport = async (req, res) => {
       {
         $project: {
           _id: 0,
-          productId: "$_id",
+          productId: "$_id.productId",
           productName: "$productDetails.name",
+          purchaseDate: "$_id.purchaseDate", // Include purchase date
           totalQuantity: 1,
-          totalRevenue: 1,
+          totalRevenue: {
+            $multiply: ["$totalQuantity", "$productDetails.price"],
+          },
         },
       },
     ]);
@@ -709,6 +712,9 @@ const getSalesReport = async (req, res) => {
       .json({ message: "Server error while generating sales report." });
   }
 };
+
+
+
 
 module.exports = {
   createSeller,

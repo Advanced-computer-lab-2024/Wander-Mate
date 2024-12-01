@@ -36,6 +36,9 @@ export default function Activities() {
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
+  const combo=sessionStorage.getItem("curr");
 
   const fetchCategories = async () => {
     try {
@@ -85,6 +88,20 @@ export default function Activities() {
   };
 
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c=sessionStorage.getItem("curr");
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
+          
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     const fetchData = async () => {
       setLoading(true);
       await Promise.all([fetchCategories(), fetchTags(), fetchActivities()]);
@@ -211,6 +228,7 @@ export default function Activities() {
           ) : filteredActivities.length > 0 ? (
             filteredActivities.map((activity) => (
               <ActivityCard
+                currency={combo}
                 key={activity._id}
                 activityId={activity._id}
                 name={activity.Name}
@@ -220,7 +238,7 @@ export default function Activities() {
                   "Unknown Category"
                 }
                 tags={activity.Tags.map((tagId) => tagMap[tagId])}
-                price={activity.Price}
+                price={(activity.Price/ (exchangeRates[currency] || 1)).toFixed(2)}
                 date={activity.Date}
                 time={activity.Time}
                 category={activity.Category}

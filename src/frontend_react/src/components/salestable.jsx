@@ -1,6 +1,5 @@
-import * as React from "react";
-
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import {
   flexRender,
   getCoreRowModel,
@@ -31,11 +30,10 @@ import {
   TableRow,
 } from "../components/ui/table";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
-//import { data } from "./data";
 import { Icon } from "@iconify/react";
 import { cn } from "../lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 
 const columns = [
   {
@@ -61,78 +59,64 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "user",
-    header: "User",
-    cell: ({ row }) => (
-      <div className="  font-medium  text-card-foreground/80">
-        <div className="flex space-x-3  rtl:space-x-reverse items-center">
-          <Avatar className=" rounded-full">
-            <AvatarImage src={row?.original?.user.avatar} />
-            <AvatarFallback>AB</AvatarFallback>
-          </Avatar>
-          <span className=" text-sm   text-card-foreground whitespace-nowrap">
-            {row?.original?.user.name}
-          </span>
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "productName",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Product Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase whitespace-nowrap">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("productName")}</div>,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "totalQuantity",
+    header: "Total Quantity",
     cell: ({ row }) => (
-      <Badge
-        variant="soft"
-        color={
-          (row.getValue("status") === "failed" && "destructive") ||
-          (row.getValue("status") === "success" && "success") ||
-          (row.getValue("status") === "processing" && "info")
-        }
-        className=" capitalize"
-      >
-        {row.getValue("status")}
-      </Badge>
+      <div className="text-center">{row.getValue("totalQuantity")}</div>
     ),
   },
-
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "totalRevenue",
+    header: () => <div className="text-right">Total Revenue</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
+      const amount = parseFloat(row.getValue("totalRevenue"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
       }).format(amount);
-
       return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "purchaseDate",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Purchase Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("purchaseDate"));
+      return <div className="text-center">{date.toLocaleDateString()}</div>;
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
+      const product = row.original;
       return (
-        <div className=" text-end">
+        <div className="text-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -143,13 +127,12 @@ const columns = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
+                onClick={() => navigator.clipboard.writeText(product.productId)}
               >
-                Copy payment ID
+                Copy product ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuItem>View product details</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -158,14 +141,43 @@ const columns = [
   },
 ];
 
-export function BasicDataTable() {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({});
-  const [rowSelection, setRowSelection] = React.useState({});
+export function SalesReportTable() {
+  const [data, setData] = useState([]);
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
+  useEffect(() => {
+    const fetchSalesReport = async () => {
+      const username = sessionStorage.getItem("username");
+      try {
+        const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!idResponse.ok) throw new Error("Failed to get tourist ID");
+        const { userID } = await idResponse.json();
+
+        const response = await fetch(`http://localhost:8000/getSalesReport/${userID}`);
+        const result = await response.json();
+        if (response.ok) {
+          setData(result.salesReport.map(item => ({
+            ...item,
+            purchaseDate: new Date(item.purchaseDate).toISOString() // Ensure date is in ISO format
+          })));
+        } else {
+          console.error("Failed to fetch sales report:", result.message);
+        }
+      } catch (error) {
+        console.error("Error fetching sales report:", error);
+      }
+    };
+
+    fetchSalesReport();
+  }, []);
 
   const table = useReactTable({
-    //data,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -183,17 +195,83 @@ export function BasicDataTable() {
     },
   });
 
+  const handleMonthChange = (value) => {
+    setSelectedMonth(value);
+    table.getColumn("purchaseDate")?.setFilterValue((old) => ({
+      ...old,
+      month: value === "all" ? "" : value,
+    }));
+  };
+
+  const handleYearChange = (value) => {
+    setSelectedYear(value);
+    table.getColumn("purchaseDate")?.setFilterValue((old) => ({
+      ...old,
+      year: value === "all" ? "" : value,
+    }));
+  };
+
+  // Generate options for month and year selects
+  const months = [
+    { value: "all", label: "All Months" },
+    { value: "0", label: "January" },
+    { value: "1", label: "February" },
+    { value: "2", label: "March" },
+    { value: "3", label: "April" },
+    { value: "4", label: "May" },
+    { value: "5", label: "June" },
+    { value: "6", label: "July" },
+    { value: "7", label: "August" },
+    { value: "8", label: "September" },
+    { value: "9", label: "October" },
+    { value: "10", label: "November" },
+    { value: "11", label: "December" },
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = [
+    { value: "all", label: "All Years" },
+    ...Array.from({ length: 5 }, (_, i) => ({
+      value: (currentYear - i).toString(),
+      label: (currentYear - i).toString(),
+    })),
+  ];
+
   return (
     <>
-      <div className="flex items-center flex-wrap gap-2  px-4">
+      <div className="flex items-center flex-wrap gap-2 px-4">
         <Input
-          placeholder="Filter emails..."
-          value={table.getColumn("email")?.getFilterValue() || ""}
+          placeholder="Filter product names..."
+          value={table.getColumn("productName")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("productName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm min-w-[200px] h-10"
         />
+        <Select value={selectedMonth} onValueChange={handleMonthChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Month" />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((month) => (
+              <SelectItem key={month.value} value={month.value}>
+                {month.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={selectedYear} onValueChange={handleYearChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Year" />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((year) => (
+              <SelectItem key={year.value} value={year.value}>
+                {year.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -222,7 +300,7 @@ export function BasicDataTable() {
         </DropdownMenu>
       </div>
       <div>
-        <Table >
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -232,9 +310,9 @@ export function BasicDataTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -278,7 +356,7 @@ export function BasicDataTable() {
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
 
-        <div className="flex gap-2  items-center">
+        <div className="flex gap-2 items-center">
           <Button
             variant="outline"
             size="icon"
@@ -291,16 +369,14 @@ export function BasicDataTable() {
 
           {table.getPageOptions().map((page, pageIdx) => (
             <Button
-              key={`basic-data-table-${pageIdx}`}
+              key={`sales-report-table-${pageIdx}`}
               onClick={() => table.setPageIndex(pageIdx)}
-              variant={`${pageIdx === table.getState().pagination.pageIndex ? "" : "outline"}`}
+              variant={pageIdx === table.getState().pagination.pageIndex ? "" : "outline"}
               className={cn("w-8 h-8")}
             >
               {page + 1}
             </Button>
-
           ))}
-
 
           <Button
             onClick={() => table.nextPage()}
@@ -317,4 +393,5 @@ export function BasicDataTable() {
   );
 }
 
-export default BasicDataTable;
+export default SalesReportTable;
+
