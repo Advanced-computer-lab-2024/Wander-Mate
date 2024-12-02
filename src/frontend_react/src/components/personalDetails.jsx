@@ -8,7 +8,8 @@ import Select from "react-select";
 import { format, parseISO } from "date-fns";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 const PersonalDetails = () => {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -113,14 +114,14 @@ const PersonalDetails = () => {
       if (response.status === 200) {
         sessionStorage.setItem("curr", updatedData.Currency || "USD");
         setIsEditing(false);
-        alert("Profile updated successfully");
+        toast.success("Profile updated successfully");
       } else {
         console.log("Error saving data:", response.data);
-        alert("Failed to update profile. Please try again.");
+        toast.error("Failed to update profile. Please try again.");
       }
     } catch (error) {
       console.error("Error saving user data:", error);
-      alert("An unexpected error occurred. Please try again later.");
+      toast.error("An unexpected error occurred. Please try again later.");
     }
   };
 
@@ -145,16 +146,16 @@ const PersonalDetails = () => {
       console.log(userData);
       const response = await axios.delete(`http://localhost:8000/requestTouristAccountDeletion/${userData._id}`);
       if (response.status === 200) {
-        alert("Your account deletion has been requested successfully. Your profile and associated data will no longer be visible.");
+        toast.success("Your account deletion has been requested successfully. Your profile and associated data will no longer be visible.");
         navigate("/registerPage");
         // You might want to redirect the user or perform some other action here
         // For example: window.location.href = '/logout';
       } else {
-        alert("Failed to request account deletion. Please try again later.");
+        toast.error("Failed to request account deletion. Please try again later.");
       }
     } catch (error) {
       console.error("Error requesting account deletion:", error);
-      alert(error.response?.data?.message || "An unexpected error occurred. Please try again later.");
+      toast.error(error.response?.data?.message || "An unexpected error occurred. Please try again later.");
     } finally {
       setIsDeletingAccount(false);
     }
@@ -182,6 +183,7 @@ const PersonalDetails = () => {
   return (
     <Card className="rounded-t-none pt-6">
       <CardContent>
+        <Toaster/>
         <div className="grid grid-cols-12 md:gap-x-12 gap-y-5">
           {/* Full Name */}
           <div className="col-span-12 md:col-span-6">
