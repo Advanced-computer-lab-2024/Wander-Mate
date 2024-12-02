@@ -80,6 +80,9 @@ const TourGuideNavBar = () => {
     sessionStorage.removeItem("username");
     navigate("/loginPage");
   };
+  const goToProfile = async () => {
+    navigate("/TourGuidePage");
+  };
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -299,15 +302,7 @@ const [profilePicture, setProfilePicture] = useState("");
               <DropdownMenuContent className="w-56" align="end">
                 <DropdownMenuItem>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <History className="mr-2 h-4 w-4" />
-                  <span>History</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span onClick={goToProfile}>Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />

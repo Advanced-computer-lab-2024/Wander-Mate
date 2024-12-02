@@ -12,7 +12,7 @@ export default function AboutUsTG() {
     const navigate = useNavigate();
     
       const handleRegClick = () => {
-        navigate("/TourGuidePage");
+        navigate("/TourGuideItinerary");
       };
     
   return (
@@ -25,7 +25,7 @@ export default function AboutUsTG() {
         <h1 className="title">QUALITY & PASSION</h1>
         <div className="buttonR">
           <span className="buttonR-text" onClick={handleRegClick}>
-            Home Page
+            Itineraries
           </span>
         </div>
       </div>

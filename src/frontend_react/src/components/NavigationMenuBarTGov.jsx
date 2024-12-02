@@ -63,7 +63,7 @@ const NavigationMenuBarTGov = () => {
         <nav className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <SiteLogo />
-            <span className="text-xl font-bold">Wandermate</span>
+            <span className="text-xl font-bold">WanderMate</span>
           </Link>
 
           <div className="hidden md:flex space-x-6">
