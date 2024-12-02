@@ -2364,17 +2364,43 @@ const ViewBookmarkedAttractions = async (req, res) => {
   }
 
   try {
-    const user = await userModel
-      .findById(userId)
-      .populate("bookmarkedAttractions");
+    // Find the user and their bookmarked attraction IDs
+    const user = await userModel.findById(userId).select("bookmarkedAttractions");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (user && user.bookmarkedAttractions) {
+      // Fetch and manually populate attractions based on eventModel
+      const attractions = await Promise.all(
+        user.bookmarkedAttractions.map(async (attraction) => {
+          // Ensure attraction.event is a valid ObjectId
+       
+
+          const bookmark = await bookmarked.findOne({ event: attraction});
+          if (!bookmark) return null;
+
+          let eventDetails;
+          switch (bookmark.eventModel) {
+            case "Attraction":
+              eventDetails = await attractionModel.findById(bookmark.event);
+              break;
+            case "Itinerary":
+              eventDetails = await itineraryModel.findById(bookmark.event);
+              break;
+            default:
+              console.warn(`Unknown eventModel type: ${bookmark.eventModel}`);
+              return null;
+          }
+
+          return { ...bookmark.toObject(), event: eventDetails };
+        })
+      );
+
+      // Filter out null results
+      const validAttractions = attractions.filter(attraction => attraction !== null);
+
+      return res.status(200).json({ bookmarkedAttractions: validAttractions });
+    } else {
+      return res.status(404).json({ message: "No bookmarked attractions found for this user." });
     }
-
-    return res
-      .status(200)
-      .json({ bookmarkedAttractions: user.bookmarkedAttractions });
   } catch (error) {
     console.error("Error retrieving bookmarked attractions:", error);
     return res.status(500).json({
@@ -2383,6 +2409,9 @@ const ViewBookmarkedAttractions = async (req, res) => {
     });
   }
 };
+
+
+
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
