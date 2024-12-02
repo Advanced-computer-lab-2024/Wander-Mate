@@ -77,9 +77,6 @@ const AdvertiserProfileManager = () => {
   const handleDelete = () => {
     setIsConfirmationOpen(true);
   };
-
-
-
   const handleCancelDelete = () => {
     setIsConfirmationOpen(false);
   };
