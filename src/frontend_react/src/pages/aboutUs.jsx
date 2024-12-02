@@ -12,7 +12,7 @@ export default function AboutUs() {
     const navigate = useNavigate();
     
       const handleRegClick = () => {
-        navigate("/TouristHomePage");
+        navigate("/products");
       };
     
   return (
@@ -25,7 +25,7 @@ export default function AboutUs() {
         <h1 className="title">QUALITY & PASSION</h1>
         <div className="buttonR">
           <span className="buttonR-text" onClick={handleRegClick}>
-            Home Page
+            Products
           </span>
         </div>
       </div>

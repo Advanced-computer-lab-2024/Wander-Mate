@@ -65,25 +65,25 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "productName",
+    accessorKey: "itineraryName",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Product Name
+          Itinerary Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("productName")}</div>
+      <div className="font-medium">{row.getValue("itineraryName")}</div>
     ),
   },
   {
     accessorKey: "totalQuantity",
-    header: "Total Quantity",
+    header: "Total Bookings",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("totalQuantity")}</div>
     ),
@@ -123,7 +123,7 @@ const columns = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const product = row.original;
+      const itinerary = row.original;
       return (
         <div className="text-end">
           <DropdownMenu>
@@ -136,12 +136,12 @@ const columns = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(product.productId)}
+                onClick={() => navigator.clipboard.writeText(itinerary.itineraryId)}
               >
-                Copy product ID
+                Copy Itinerary ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View product details</DropdownMenuItem>
+              <DropdownMenuItem>View itinerary details</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -188,29 +188,29 @@ export function SalesReportTabletourguide() {
   
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
-      const existingItem = acc.find((i) => i.productId === item.productId); // Group by productId
+      const existingItem = acc.find((i) => i.itineraryId === item.itineraryId); // Group by productId
       if (existingItem) {
         // Add to existing product's data
-        existingItem.products.push({
-          quantity: item.totalQuantity,
+        existingItem.itineraries.push({
+          totalBookings: item.totalBookings,
           revenue: item.totalRevenue,
-          purchaseDate: new Date(item.purchaseDate).toISOString(),
+          bookedDate: new Date(item.bookedDate).toISOString(),
         });
-        existingItem.totalQuantity += item.totalQuantity;
+        existingItem.totalBookings += item.totalBookings;
         existingItem.totalRevenue += item.totalRevenue;
       } else {
         // Create a new entry for the product
         acc.push({
-          productId: item.productId,
-          productName: item.productName,
-          totalQuantity: item.totalQuantity,
-          totalRevenue: item.totalRevenue,
-          products: [
-            {
-              quantity: item.totalQuantity,
-              revenue: item.totalRevenue,
-              purchaseDate: new Date(item.purchaseDate).toISOString(),
-            },
+            itineraryId: item.itineraryId,
+            itineraryName: item.itineraryName,
+            totalBookings: item.totalBookings,
+            totalRevenue: item.totalRevenue,
+            itineraries: [
+              {
+                totalBookings: item.totalBookings,
+                revenue: item.totalRevenue,
+                bookedDate: new Date(item.bookedDate).toISOString(),
+              },
           ],
         });
       }
@@ -222,8 +222,8 @@ export function SalesReportTabletourguide() {
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
       .map((item) => {
-        const filteredProducts = item.products.filter((product) => {
-          const date = new Date(product.purchaseDate);
+        const filteredItineraries = item.itineraries.filter((itinerary) => {
+          const date = new Date(itinerary.purchaseDate);
           const monthMatch =
             month === "all" || date.getMonth().toString() === month;
           const yearMatch =
@@ -231,14 +231,14 @@ export function SalesReportTabletourguide() {
           return monthMatch && yearMatch;
         });
 
-        if (filteredProducts.length === 0) return null;
+        if (filteredItineraries.length === 0) return null;
 
-        const totalQuantity = filteredProducts.reduce(
-          (sum, product) => sum + product.quantity,
+        const totalQuantity = filteredItineraries.reduce(
+          (sum, itinerary) => sum + itinerary.quantity,
           0
         );
-        const totalRevenue = filteredProducts.reduce(
-          (sum, product) => sum + product.revenue,
+        const totalRevenue = filteredItineraries.reduce(
+          (sum, itinerary) => sum + itinerary.revenue,
           0
         );
 
@@ -246,7 +246,7 @@ export function SalesReportTabletourguide() {
           ...item,
           totalQuantity,
           totalRevenue,
-          products: filteredProducts,
+          itineraries: filteredItineraries,
         };
       })
       .filter(Boolean);
