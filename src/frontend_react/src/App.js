@@ -90,6 +90,7 @@ import OrdersTable from "./components/allOrdersTable";
 import ViewBookmarks from "./pages/ViewBookmarks";
 import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
+import PlacesGuest from "./pages/placesGuest";
 function App() {
   return (
     <Router>
@@ -203,6 +204,8 @@ function App() {
         <Route path="/TouristHistory" element={<TouristHistory />} />
         <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
         <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
+        <Route path="/placesGuest" element={<PlacesGuest />} />
+
 
       </Routes>
     </Router>
