@@ -1385,7 +1385,7 @@ const requestTouristAccountDeletion = async (req, res) => {
 
     // Verify the tourist exists and isn't already deleted
     const tourist = await userModel.findById(touristID);
-    if (!tourist || tourist.isDeleted) {
+    if (!tourist) {
       return res
         .status(404)
         .json({ message: "Tourist not found or already deleted" });
@@ -1412,8 +1412,8 @@ const requestTouristAccountDeletion = async (req, res) => {
       });
     }
 
-    await userModel.findOneAndDelete(touristID);
-    await Usernames.findByIdAndDelete({ userID: touristID });
+    await userModel.findByIdAndDelete(touristID);
+    await Usernames.findOneAndDelete({ userID: touristID });
 
     // Proceed to delete if no future bookings found
     // await userModel.findByIdAndUpdate(
@@ -1422,11 +1422,7 @@ const requestTouristAccountDeletion = async (req, res) => {
     //   { new: true }
     // );
 
-    // Hide associated attractions and itineraries
-    await Promise.all([
-      attractionModel.updateMany({ Creator: touristID }, { isVisible: false }),
-      itineraryModel.updateMany({ Creator: touristID }, { isVisible: false }),
-    ]);
+
 
     res.status(200).json({
       message:
