@@ -1314,11 +1314,10 @@ const bookTransportation = async (req, res) => {
      // Call the calculateLoyaltyPoints function
      const fakeReq = { body: { amountPaid: transportation.price, touristID: userId } };
      const fakeRes = {
-       status: (code) => ({
          json: (response) => {
            console.log("Loyalty points response:", response);
          },
-       }),
+       
      };
      await calculateLoyaltyPoints(fakeReq, fakeRes);
     res.status(200).json({
