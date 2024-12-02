@@ -1149,6 +1149,45 @@ const viewAttendedActivities = async (req, res) => {
   }
 };
 
+const viewBoughtProducts = async (req, res) => {
+  const touristId = req.params.touristId; // Get the touristId from params
+  try {
+    // Step 1: Fetch the orders
+    const orders = await ordermodel
+      .find({ userId: touristId })
+      .populate("products");
+
+    // Step 2: Filter out only the 'delivered' orders
+    const deliveredOrders = orders.filter(
+      (order) => order.status === "delivered"
+    );
+
+    // Step 3: Get all products from the delivered orders
+    const products = deliveredOrders.flatMap((order) => order.products);
+
+    // Step 4: Manually populate the seller for each product
+    const populatedProducts = await Promise.all(
+      products.map(async (product) => {
+        const seller = await Usernames.findOne({ userID: product.seller }); // Query User by userID
+        return { ...product.toObject(), seller }; // Attach the seller to the product
+      })
+    );
+
+    // Step 5: Ensure products are unique (in case of duplicates)
+    const uniqueProducts = Array.from(
+      new Map(
+        populatedProducts.map((product) => [product._id.toString(), product])
+      ).values()
+    );
+
+    // Step 6: Send the response with populated products
+    res.status(200).json(uniqueProducts);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Error fetching products" });
+  }
+};
+
 const viewAttendedItineraries = async (req, res) => {
   const touristId = req.params.touristId; // Get the touristId from params
   const model = "Itinerary";
@@ -1346,7 +1385,7 @@ const requestTouristAccountDeletion = async (req, res) => {
 
     // Verify the tourist exists and isn't already deleted
     const tourist = await userModel.findById(touristID);
-    if (!tourist || tourist.isDeleted) {
+    if (!tourist) {
       return res
         .status(404)
         .json({ message: "Tourist not found or already deleted" });
@@ -1373,8 +1412,11 @@ const requestTouristAccountDeletion = async (req, res) => {
       });
     }
 
-    await userModel.findOneAndDelete(touristID);
-    await Usernames.findByIdAndDelete({ userID: touristID });
+    await userModel.findByIdAndDelete(touristID);
+    await Usernames.findOneAndDelete({ userID: touristID });
+    await ordermodel.deleteMany({userId: touristID});
+    await bookingSchema.deleteMany({userId: touristID});
+    await Notification.deleteMany({userID: touristID});
 
     // Proceed to delete if no future bookings found
     // await userModel.findByIdAndUpdate(
@@ -1383,11 +1425,7 @@ const requestTouristAccountDeletion = async (req, res) => {
     //   { new: true }
     // );
 
-    // Hide associated attractions and itineraries
-    await Promise.all([
-      attractionModel.updateMany({ Creator: touristID }, { isVisible: false }),
-      itineraryModel.updateMany({ Creator: touristID }, { isVisible: false }),
-    ]);
+
 
     res.status(200).json({
       message:
@@ -1903,9 +1941,7 @@ const getProductReviews = async (req, res) => {
   const { productId } = req.params; // Get productId from the request parameters
   try {
     // Find reviews related to the specific productId, and select only the 'review' field
-    const reviews = await ReviewModel.find({ itemId: productId }).select(
-      "review"
-    );
+    const reviews = await ReviewModel.find({ itemId: productId });
 
     // If no reviews found, send a message indicating that
     if (!reviews || reviews.length === 0) {
@@ -1917,7 +1953,7 @@ const getProductReviews = async (req, res) => {
     // Return the reviews in the response (only the 'review' field)
     res.status(200).json({
       message: "Reviews fetched successfully",
-      reviews: reviews.map((review) => review.review), // Send only the review text
+      reviews, // Send only the review text
     });
   } catch (error) {
     console.error("Error fetching reviews:", error.message);
@@ -2328,17 +2364,43 @@ const ViewBookmarkedAttractions = async (req, res) => {
   }
 
   try {
-    const user = await userModel
-      .findById(userId)
-      .populate("bookmarkedAttractions");
+    // Find the user and their bookmarked attraction IDs
+    const user = await userModel.findById(userId).select("bookmarkedAttractions");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (user && user.bookmarkedAttractions) {
+      // Fetch and manually populate attractions based on eventModel
+      const attractions = await Promise.all(
+        user.bookmarkedAttractions.map(async (attraction) => {
+          // Ensure attraction.event is a valid ObjectId
+       
+
+          const bookmark = await bookmarked.findOne({ event: attraction});
+          if (!bookmark) return null;
+
+          let eventDetails;
+          switch (bookmark.eventModel) {
+            case "Attraction":
+              eventDetails = await attractionModel.findById(bookmark.event);
+              break;
+            case "Itinerary":
+              eventDetails = await itineraryModel.findById(bookmark.event);
+              break;
+            default:
+              console.warn(`Unknown eventModel type: ${bookmark.eventModel}`);
+              return null;
+          }
+
+          return { ...bookmark.toObject(), event: eventDetails };
+        })
+      );
+
+      // Filter out null results
+      const validAttractions = attractions.filter(attraction => attraction !== null);
+
+      return res.status(200).json({ bookmarkedAttractions: validAttractions });
+    } else {
+      return res.status(404).json({ message: "No bookmarked attractions found for this user." });
     }
-
-    return res
-      .status(200)
-      .json({ bookmarkedAttractions: user.bookmarkedAttractions });
   } catch (error) {
     console.error("Error retrieving bookmarked attractions:", error);
     return res.status(500).json({
@@ -2347,6 +2409,9 @@ const ViewBookmarkedAttractions = async (req, res) => {
     });
   }
 };
+
+
+
 
 const addItemToCart = async (req, res) => {
   const { touristID, productId, name, price, picture } = req.body;
@@ -2651,13 +2716,16 @@ const cancelOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if the order status is not already cancelled (if needed)
+    // Check if the order status is already cancelled
     if (order.status === "cancelled") {
       return res.status(400).json({ message: "Order is already cancelled" });
     }
 
-    // Delete the order
-    await order.remove();
+    // Change the order status to cancelled
+    order.status = "cancelled";
+
+    // Save the updated order
+    await order.save();
 
     return res
       .status(200)
@@ -2668,6 +2736,7 @@ const cancelOrder = async (req, res) => {
       .json({ message: "Error cancelling the order", error: error.message });
   }
 };
+
 
 const makeOrder = async (req, res) => {
   const { userId, products, total, address, isPaid, quantities } = req.body;
@@ -3362,25 +3431,30 @@ const getMyOrders = async (req, res) => {
   const { userId } = req.params; // Get userId (touristId) from the route parameter
 
   if (!userId) {
-    return res.status(400).json({ message: "Missing required parameter: userId" });
+    return res
+      .status(400)
+      .json({ message: "Missing required parameter: userId" });
   }
 
   try {
     // Find orders by userId (touristId)
-    const orders = await ordermodel.find({ userId }).populate("products address");
+    const orders = await ordermodel
+      .find({ userId })
+      .populate("products address");
 
     if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user" });
     }
 
-    return res.status(200).json({ message: "Orders fetched successfully", orders });
+    return res
+      .status(200)
+      .json({ message: "Orders fetched successfully", orders });
   } catch (error) {
     return res
       .status(500)
       .json({ message: "Error fetching orders", error: error.message });
   }
 };
-
 
 module.exports = {
   ViewOrders,
@@ -3476,4 +3550,5 @@ module.exports = {
   getTouristLevel,
   getTouristWallet,
   getMyOrders,
+  viewBoughtProducts,
 };

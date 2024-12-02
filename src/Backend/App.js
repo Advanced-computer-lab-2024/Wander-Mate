@@ -111,6 +111,7 @@ const {
   getTouristLevel,
   getTouristWallet,
   getMyOrders,
+  viewBoughtProducts,
 } = require("./Routes/touristController");
 
 const {
@@ -490,6 +491,7 @@ app.put(
 //get attended activities, itenaries, and with whom
 app.get("/viewAttendedActivities/:touristId", viewAttendedActivities);
 app.get("/viewAttendedItineraries/:touristId", viewAttendedItineraries);
+app.get("/viewBoughtProducts/:touristId", viewBoughtProducts);
 ///////////////////////////////////////////////////////////////////////////
 app.put("/updateItineraryRatings/:itineraryId", updateItineraryRatings);
 app.post("/rateItinerary", rateItinerary);

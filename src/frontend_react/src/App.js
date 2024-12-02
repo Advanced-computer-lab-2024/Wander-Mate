@@ -72,19 +72,25 @@ import Admin from "./pages/admin";
 import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
-import AddTourismGovButton from "./components/AddTourismGovButton"; 
+import AddTourismGovButton from "./components/AddTourismGovButton";
 import LevelAndBadge from "./components/levelAndBadge";
 import ItineraryReport from "./components/ui/ItineraryReport";
 import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
 import TourGuideItinerary from "./pages/tourguideItinerary";
 import SellerProfileManager from "./pages/SellerProfileInformation";
 import TourGuidePage from "./pages/tourGuideHomePage";
-import BasicDataTable from "./components/salestable"
+import BasicDataTable from "./components/salestable";
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
 import SalesReportTable from "./components/salestable";
 import TouristOrders from "./components/touristOrders";
 import ChangePhoto from "./components/changePhoto";
+import BoughtProducts from "./components/boughtProducts";
+import TouristHistory from "./components/touristHistory";
+import OrdersTable from "./components/allOrdersTable";
+import ViewBookmarks from "./pages/ViewBookmarks";
+import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
+import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
 function App() {
   return (
@@ -143,7 +149,7 @@ function App() {
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
-        <Route path="pop" element={<TouristPrefrenceTags />} />
+        <Route path="pop" element={<OrdersTable />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />
@@ -154,13 +160,19 @@ function App() {
         <Route path="/adminItineray" element={<AdminItineraries />} />
         <Route path="/hotelcard" element={<HotelCard />} />
         <Route path="/hotelcheckout" element={<HotelCheckout />} />
-        <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
+        <Route
+          path="/advertiserActivities"
+          element={<AdvertiserActivities />}
+        />
         <Route path="/payForFlight" element={<PayForFlight />} />
         <Route path="/adminNavBar" element={<AdminNavBar />} />
         <Route path="/adminOrders" element={<Orders />} />
         <Route path="/sellerProduct" element={<SellerPage />} />
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
-        <Route path="/completedItineraries" element={<CompletedItineraries />} />
+        <Route
+          path="/completedItineraries"
+          element={<CompletedItineraries />}
+        />
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
@@ -171,17 +183,30 @@ function App() {
         <Route path="/AddAdminButton" element={<AddAdminButton />} />
         <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
         <Route path="/ItineraryReport" element={<ItineraryReport />} />
-        <Route path="/AdvertiserProfileInformation" element={<AdvertiserProfileManager />} />
+        <Route
+          path="/AdvertiserProfileInformation"
+          element={<AdvertiserProfileManager />}
+        />
         <Route path="/AdminSettings" element={<AdminSettings />} />
-        <Route path="/AdminPersonalDetails" element={<AdminPersonalDetails />} />
+        <Route
+          path="/AdminPersonalDetails"
+          element={<AdminPersonalDetails />}
+        />
         <Route path="/TourGuideItinerary" element={<TourGuideItinerary />} />
-        <Route path="/SellerProfileInformation" element={<SellerProfileManager />} />
-        <Route path="/TourGuidePage" element={<TourGuidePage/>}/>
-        <Route path="/AdminProducts" element={<AdminProducts/>}/>
-        <Route path="/salestable" element={<SalesReportTable/>}/>
-        <Route path="/TouristOrders" element={<TouristOrders/>}/>
-        
+        <Route
+          path="/SellerProfileInformation"
+          element={<SellerProfileManager />}
+        />
+        <Route path="/TourGuidePage" element={<TourGuidePage />} />
+        <Route path="/AdminProducts" element={<AdminProducts />} />
+        <Route path="/salestable" element={<SalesReportTable />} />
+        <Route path="/TouristOrders" element={<TouristOrders />} />
+
         <Route path="ChangePhoto" element={<ChangePhoto />} />
+        <Route path="/TouristHistory" element={<TouristHistory />} />
+        <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
+        <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
+
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
       </Routes>
     </Router>

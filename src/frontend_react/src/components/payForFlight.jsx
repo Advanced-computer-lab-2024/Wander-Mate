@@ -42,6 +42,9 @@ const PayForFlight = ({
   const [userPoints, setUserPoints] = useState(0);
   const navigate = useNavigate();
   const [bookingError, setBookingError] = useState(null);
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
+  const combo=sessionStorage.getItem("curr");
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -91,6 +94,21 @@ const PayForFlight = ({
     }
   };
 
+  const fetchExchangeRates = async () => {
+    try {
+      const c = sessionStorage.getItem("curr");
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${c}`
+      );
+      const data = await response.json();
+      setExchangeRates(data.rates);
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+  flight.price.currency=[combo];
+  fetchExchangeRates();
+
   const handlePaymentSuccess = async () => {
     try {
       const username = sessionStorage.getItem("username");
@@ -102,7 +120,7 @@ const PayForFlight = ({
       const bookingData = {
         userID,
         flightID: flight.id,
-        price: flight.price.total,
+        price: flight.price.total/ (exchangeRates[currency]) ,
         departureDate: departureSegment?.departure?.at,
         arrivalDate: arrivalSegment?.arrival?.at,
       };

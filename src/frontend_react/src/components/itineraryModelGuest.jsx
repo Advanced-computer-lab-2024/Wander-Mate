@@ -13,7 +13,7 @@ import axios from "axios";
 import NonMovableMap from "./ui/nonMovableMap";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PayNow from "./payNow";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import the star icons
 import {
@@ -24,7 +24,7 @@ import {
   CarouselContent,
 } from "./ui/carousel";
 
-export default function ItineraryModel({
+export default function ItineraryModelGuest({
   itinerary,
   isOpen,
   setIsOpen,
@@ -35,7 +35,6 @@ export default function ItineraryModel({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
   const [count, setCount] = useState(1);
-  const [userAge, setUserAge] = useState(null);
   const maxQuantity = itinerary.maxQuantity || 10000000000000000; // Assuming a max quantity limit
   const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
@@ -77,13 +76,9 @@ export default function ItineraryModel({
   };
 
   const handleBook = () => {
+    navigate("/loginPage");
     if (!selectedDate) {
       toast.error("Please select a date before booking!");
-      return;
-    }
-
-    if (userAge < 18) {
-      toast.error("You must be 18 or older to book this itinerary.");
       return;
     }
 
@@ -172,25 +167,7 @@ export default function ItineraryModel({
       console.error("Error toggling favorite itinerary:", error);
     }
   };
-  const fetchUserAge = async () => {
-    try {
-      const username = sessionStorage.getItem("username");
-      const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get user ID");
-      const { userID } = await reply.json();
-      const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
-      if (!userResponse.ok) throw new Error("Failed to get user details");
 
-      const userData = await userResponse.json();
-      const birthDate = new Date(userData.DOB);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      setUserAge(age);
-    } catch (error) {
-      console.error("Error fetching user age:", error);
-    }
-  };
-  fetchUserAge();
   const handleShare = (method) => {
     // Get the current URL without query parameters
     const currentUrl = window.location.href.split("?")[0];
@@ -345,124 +322,118 @@ export default function ItineraryModel({
 
                   {/* Favorite and Share Buttons */}
                   <div className="space-y-4">
-  <div className="flex space-x-4">
-    <Button
-      className={`flex-1 ${isFavorite ? "bg-red-500 hover:bg-red-600" : ""}`}
-      onClick={handleToggleFavorite}
-    >
-      <Icon
-        icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-        className="w-4 h-4 mr-2"
-      />
-      {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-    </Button>
-    <Popover
-      open={isShareOpen}
-      onOpenChange={setIsShareOpen}
-      onClose={() => setIsShareOpen(false)}
-      trigger={
-        <Button
-          variant="outline"
-          onClick={() => setIsShareOpen(true)}
-        >
-          <Icon
-            icon="heroicons:share"
-            className="w-4 h-4 mr-2"
-          />
-          Share
-        </Button>
-      }
-    >
-      <div className="w-48 p-2">
-        <div className="flex flex-col space-y-2">
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("link")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:link"
-              className="w-4 h-4 mr-2"
-            />
-            Copy Link
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("email")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:envelope"
-              className="w-4 h-4 mr-2"
-            />
-            Email
-          </Button>
-        </div>
-      </div>
-    </Popover>
-  </div>
+                    <div className="flex space-x-4">
+                      <Button
+                        className={`flex-1 ${
+                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                        }`}
+                        onClick={handleToggleFavorite}
+                      >
+                        <Icon
+                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                          className="w-4 h-4 mr-2"
+                        />
+                        {isFavorite
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </Button>
+                      <Popover
+                        open={isShareOpen}
+                        onOpenChange={setIsShareOpen}
+                        onClose={() => setIsShareOpen(false)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsShareOpen(true)}
+                          >
+                            <Icon
+                              icon="heroicons:share"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Share
+                          </Button>
+                        }
+                      >
+                        <div className="w-48 p-2">
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("link")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:link"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Copy Link
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("email")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:envelope"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Email
+                            </Button>
+                          </div>
+                        </div>
+                      </Popover>
+                    </div>
+                    {/* Add spacing below the buttons */}
+                    {!isBooked ? (
+                      <Button
+                        className="text-white w-full"
+                        onClick={handleBook}
+                      >
+                        <Icon
+                          icon="heroicons:shopping-bag"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Book
+                      </Button>
+                    ) : (
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-2 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={decrementCount}
+                          >
+                            <Icon icon="eva:minus-fill" />
+                          </button>
+                          <span className="px-4 py-2 text-gray-600">
+                            {count}
+                          </span>
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={incrementCount}
+                            disabled={count >= maxQuantity}
+                          >
+                            <Icon icon="eva:plus-fill" />
+                          </button>
+                        </div>
 
-  {/* Add spacing below the buttons */}
-  {!isBooked ? (
-    <div className="flex flex-col items-center">
-      <Button
-        className="text-white w-full"
-        onClick={handleBook}
-        disabled={userAge < 18}
-      >
-        <Icon
-          icon="heroicons:shopping-bag"
-          className="w-4 h-4 mr-2"
-        />
-        Book
-      </Button>
-      {userAge < 18 && (
-        <p className="text-red-500 text-sm mt-2">
-          You must be at least 18 years old to book.
-        </p>
-      )}
-    </div>
-  ) : (
-    <div className="flex items-center space-x-4">
-      <div className="flex-2 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
-        <button
-          type="button"
-          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={decrementCount}
-        >
-          <Icon icon="eva:minus-fill" />
-        </button>
-        <span className="px-4 py-2 text-gray-600">
-          {count}
-        </span>
-        <button
-          type="button"
-          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={incrementCount}
-          disabled={count >= maxQuantity}
-        >
-          <Icon icon="eva:plus-fill" />
-        </button>
-      </div>
-
-      {/* <Button
-        variant="outline"
-        onClick={finishBooking}
-        className="py-2 px-5"
-      >
-        <Icon icon="heroicons:check-circle" className="w-4 h-4" />
-        Confirm Booking
-      </Button> */}
-      <PayNow
-        amount={count * itinerary.price}
-        itinerary={itinerary}
-        count={count}
-        bookedDate={selectedDate}
-      />
-    </div>
-  )}
-</div>
-
+                        {/* <Button
+                        variant="outline"
+                        onClick={finishBooking}
+                        className="py-2 px-5"
+                      >
+                        <Icon icon="heroicons:check-circle" className="w-4 h-4" />
+                        Confirm Booking
+                      </Button> */}
+                        <PayNow
+                          amount={count * itinerary.price}
+                          itinerary={itinerary}
+                          count={count}
+                          bookedDate={selectedDate}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

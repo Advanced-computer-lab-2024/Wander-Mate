@@ -97,24 +97,11 @@ const TourGuideProfileManager = () => {
           <TabsTrigger value="profile">Profile Information</TabsTrigger>
           <TabsTrigger value="changePassword">Change Password</TabsTrigger>
         </TabsList>
-
         <TabsContent value="profile">
           <Card>
             <CardContent>
               <form onSubmit={handleProfileSubmit} className="space-y-6">
-                {/* Profile Picture */}
-                <div>
-                  <div className="flex items-center gap-4">
-                    {profilePicture && (
-                      <img
-                        src={profilePicture || "default-profile.png"}
-                        alt="Profile"
-                        className="w-20 h-20 rounded-full object-cover"
-                      />
-                    )}
-                  </div>
-                </div>
-
+                <br></br>
                 {/* Username */}
                 <div>
                   <Label htmlFor="Username">Username</Label>

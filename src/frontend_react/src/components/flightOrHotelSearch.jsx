@@ -7,7 +7,10 @@ import Select from "react-select";
 import HotelCard from "./hotelCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 
+
 const FlightOrHotelSearch = () => {
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
   const [selected, setSelected] = useState(0);
   const [buttonText, setButtonText] = useState("Search Hotels");
   const [flightData, setFlightData] = useState({
@@ -28,10 +31,24 @@ const FlightOrHotelSearch = () => {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutdate, setCheckOutDate] = useState("");
   const [hotels, setHotels] = useState([]);
-
+  const combo = sessionStorage.getItem("curr");
 
   // Fetch countries on component mount
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     fetchCountries();
   }, []);
 
@@ -297,12 +314,13 @@ const FlightOrHotelSearch = () => {
           ) : hotels.length > 0 ? (
             hotels.map((hotel) => (
               <HotelCard
+                currency={combo}
                 key={hotel.id}
                 id={hotel.id}
                 title={hotel.title.replace(/^\d+\.\s*/, '')}
                 checkInDate={checkInDate}
                 checkOutdate={checkOutdate}
-                price={hotel.price}
+                price={parseFloat(hotel.price.replace(/[^0-9.]/g, ""))/ (exchangeRates[currency] || 1)}
                 rating={hotel.rating}
                 provider={hotel.provider}
                 cardPhotos={hotel.cardPhotos}

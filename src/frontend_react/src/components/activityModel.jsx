@@ -27,7 +27,7 @@ export default function ActivityModal({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState(null);
-
+  const [userAge, setUserAge] = useState(null);
   const handleOpenChange = (open) => {
     setIsOpen(open);
     if (!open) {
@@ -35,7 +35,16 @@ export default function ActivityModal({
     }
   };
   const handleBook = () => {
-    setIsBooking(true);
+    
+
+    if (userAge < 18) {
+      toast.error("You must be 18 or older to book this itinerary.");
+      return;
+    }
+
+    if (!isBooking) {
+      setIsBooking(true);
+    }
   };
   const handlePaymentSuccess = () => {
     // setIsBooking(false);
@@ -49,6 +58,25 @@ export default function ActivityModal({
     setIsBooking(false);
   };
 
+  const fetchUserAge = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+      const { userID } = await reply.json();
+      const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+      if (!userResponse.ok) throw new Error("Failed to get user details");
+
+      const userData = await userResponse.json();
+      const birthDate = new Date(userData.DOB);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      setUserAge(age);
+    } catch (error) {
+      console.error("Error fetching user age:", error);
+    }
+  };
+  fetchUserAge();
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
     const shareUrl = `${currentUrl}?open=true&activity=${activity.activityId}`;
@@ -183,17 +211,25 @@ export default function ActivityModal({
                     </Button>
                   )} */}
                   {!isBooking ? (
-                    <Button
-                      className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
-                      onClick={handleBook}
-                    >
-                      <Icon
-                        icon="heroicons:shopping-bag"
-                        className="w-4 h-4 mr-2"
-                      />
-                      Book Activity
-                    </Button>
-                  ) : (
+    <div className="flex flex-col items-center">
+      <Button
+        className="text-white w-full"
+        onClick={handleBook}
+        disabled={userAge < 18}
+      >
+        <Icon
+          icon="heroicons:shopping-bag"
+          className="w-4 h-4 mr-2"
+        />
+        Book
+      </Button>
+      {userAge < 18 && (
+        <p className="text-red-500 text-sm mt-2">
+          You must be at least 18 years old to book.
+        </p>
+      )}
+    </div>
+  ) :  (
                     <PayForActivity
                       activity={activity}
                       amount={activity.price}
