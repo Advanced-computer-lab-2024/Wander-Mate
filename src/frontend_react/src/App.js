@@ -94,6 +94,9 @@ import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
 import PlacesGuest from "./pages/placesGuest";
 import ProductsGuest from "./pages/productsGuest";
+import MeetPage from "./pages/meetPage";
+import MeetPageTG from "./pages/meetPageTG";
+import MeetPageTGov from "./pages/meetPageTGov";
 function App() {
   return (
     <Router>
@@ -212,7 +215,9 @@ function App() {
         <Route path="/placesGuest" element={<PlacesGuest />} />
         <Route path="/productsGuest" element={<ProductsGuest />} />
 
-
+        <Route path ="/MeetPageTG" element={<MeetPageTG/>}/>
+        <Route path ="/MeetPage" element={<MeetPage/>}/>
+        <Route path ="/MeetPageTGov" element={<MeetPageTGov/>}/>
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
       </Routes>
     </Router>
