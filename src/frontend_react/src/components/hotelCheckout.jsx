@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../forms/PaymentForm";
-import { Bed, Users, Wifi, Coffee, Tv, Calendar } from "lucide-react";
+import { Bed, Users, Wifi, Coffee, Tv, Calendar } from 'lucide-react';
 
 const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
@@ -49,6 +49,7 @@ const HotelCheckOut = ({
   const [totalSlide, setTotalSlide] = useState(3);
   const [alertMessage, setAlertMessage] = useState(null);
   const [selected, setSelected] = useState("rwb_1");
+  const [userAge, setUserAge] = useState(null);
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -58,6 +59,28 @@ const HotelCheckOut = ({
   useEffect(() => {
     setTotalSlide(paymentMethod === "cash" ? 2 : 3);
   }, [paymentMethod]);
+
+  useEffect(() => {
+    const fetchUserAge = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get user ID");
+        const { userID } = await reply.json();
+        const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+        if (!userResponse.ok) throw new Error("Failed to get user details");
+
+        const userData = await userResponse.json();
+        const birthDate = new Date(userData.DOB);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        setUserAge(age);
+      } catch (error) {
+        console.error("Error fetching user age:", error);
+      }
+    };
+    fetchUserAge();
+  }, []);
 
   const calculateTotalPrice = () => {
     if (!hotel || !hotel.price) return 0;
@@ -96,6 +119,7 @@ const HotelCheckOut = ({
       setAlertMessage("An error occurred during the transaction.");
     }
   };
+
   const handleNextSlide = () => {
     if (activeIndex === 2 && selected === "rwb_1") {
       handlePaymentSuccess();
@@ -106,6 +130,7 @@ const HotelCheckOut = ({
       setAlertMessage(null);
     }
   };
+
   const handlePrevSlide = () => {
     if (activeIndex > 1) {
       setActiveIndex((prevIndex) => prevIndex - 1);
@@ -131,23 +156,9 @@ const HotelCheckOut = ({
         provider: hotel.provider,
       });
 
-      // if (response.status === 201) {
-      //   toast({
-      //     title: "Booking Successful",
-      //     description: "Your hotel has been booked successfully.",
-      //   });
-      //   setActiveIndex(totalSlide);
-      // }
-
       setActiveIndex(totalSlide);
     } catch (error) {
       console.error("Error processing booking:", error);
-      // toast({
-      //   title: "Booking Failed",
-      //   description:
-      //     "There was an error processing your booking. Please try again.",
-      //   variant: "destructive",
-      // });
     }
   };
 
@@ -162,8 +173,11 @@ const HotelCheckOut = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full text-white py-2 rounded mt-1">
-          Confirm Booking
+        <Button 
+          className="w-full text-white py-2 rounded mt-1" 
+          disabled={userAge < 18}
+        >
+          {userAge < 18 ? "Must be 18+ to Book" : "Confirm Booking"}
         </Button>
       </DialogTrigger>
       <DialogContent size="2xl" className="p-0">
@@ -180,90 +194,98 @@ const HotelCheckOut = ({
         </DialogHeader>
         <div className="max-h-[60vh]">
           <ScrollArea className="h-full px-6">
-            {activeIndex === 1 && (
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <Label>Payment Method</Label>
-                  <RadioGroup
-                    defaultValue="rwb_1"
-                    onValueChange={handleValueChange}
-                  >
-                    <Label
-                      htmlFor="rwb_1"
-                      className={cn(
-                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                        { "bg-primary": selected === "rwb_1" }
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon
-                          icon="mdi:credit-card-outline"
-                          className="text-lg"
-                        />
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_1",
-                          })}
-                        >
-                          Credit/Debit Card
-                        </span>
-                      </span>
-                      <RadioGroupItem
-                        value="rwb_1"
-                        id="rwb_1"
-                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                      />
-                    </Label>
-                    <Label
-                      htmlFor="rwb_3"
-                      className={cn(
-                        "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
-                        { "bg-primary": selected === "rwb_3" }
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon icon="mdi:wallet" className="text-lg" />
-                        <span
-                          className={cn("font-base text-default-800", {
-                            "text-primary-foreground": selected === "rwb_3",
-                          })}
-                        >
-                          Using Wallet
-                        </span>
-                      </span>
-                      <RadioGroupItem
-                        value="rwb_3"
-                        id="rwb_3"
-                        className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
-                      />
-                    </Label>
-                  </RadioGroup>
-                </div>
+            {userAge < 18 ? (
+              <div className="text-center text-red-500 font-bold">
+                You must be 18 or older to book a hotel.
               </div>
-            )}
+            ) : (
+              <>
+                {activeIndex === 1 && (
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-2">
+                      <Label>Payment Method</Label>
+                      <RadioGroup
+                        defaultValue="rwb_1"
+                        onValueChange={handleValueChange}
+                      >
+                        <Label
+                          htmlFor="rwb_1"
+                          className={cn(
+                            "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                            { "bg-primary": selected === "rwb_1" }
+                          )}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icon
+                              icon="mdi:credit-card-outline"
+                              className="text-lg"
+                            />
+                            <span
+                              className={cn("font-base text-default-800", {
+                                "text-primary-foreground": selected === "rwb_1",
+                              })}
+                            >
+                              Credit/Debit Card
+                            </span>
+                          </span>
+                          <RadioGroupItem
+                            value="rwb_1"
+                            id="rwb_1"
+                            className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                          />
+                        </Label>
+                        <Label
+                          htmlFor="rwb_3"
+                          className={cn(
+                            "flex justify-between items-center gap-2 bg-default-100 px-3 py-2.5 w-full rounded-md cursor-pointer",
+                            { "bg-primary": selected === "rwb_3" }
+                          )}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icon icon="mdi:wallet" className="text-lg" />
+                            <span
+                              className={cn("font-base text-default-800", {
+                                "text-primary-foreground": selected === "rwb_3",
+                              })}
+                            >
+                              Using Wallet
+                            </span>
+                          </span>
+                          <RadioGroupItem
+                            value="rwb_3"
+                            id="rwb_3"
+                            className="data-[state=checked]:text-primary-foreground data-[state=checked]:border-white"
+                          />
+                        </Label>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                )}
 
-            {activeIndex === 2 && selected === "rwb_1" && (
-              <Elements stripe={stripePromise}>
-                <PaymentForm
-                  amount={calculateTotalPrice()}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                />
-              </Elements>
-            )}
+                {activeIndex === 2 && selected === "rwb_1" && (
+                  <Elements stripe={stripePromise}>
+                    <PaymentForm
+                      amount={calculateTotalPrice()}
+                      onPaymentSuccess={handlePaymentSuccess}
+                      onPaymentError={handlePaymentError}
+                    />
+                  </Elements>
+                )}
 
-            {activeIndex === totalSlide && (
-              <div className="flex flex-col items-center">
-                <span className="text-7xl text-success">
-                  <Icon icon="material-symbols:check-circle-outline" />
-                </span>
-                <h3 className="mt-3 text-success text-2xl font-semibold">
-                  Booking Successful
-                </h3>
-                <p className="mt-4 text-lg font-semibold text-default-600">
-                  Thank you for your reservation!
-                </p>
-              </div>
+                {activeIndex === totalSlide && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-7xl text-success">
+                      <Icon icon="material-symbols:check-circle-outline" />
+                    </span>
+                    <h3 className="mt-3 text-success text-2xl font-semibold">
+                      Booking Successful
+                    </h3>
+                    <p className="mt-4 text-lg font-semibold text-default-600">
+                      Thank you for your reservation!
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </ScrollArea>
         </div>
@@ -290,6 +312,7 @@ const HotelCheckOut = ({
             <Button
               type="button"
               onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
+              disabled={userAge < 18}
             >
               Next
             </Button>
@@ -301,3 +324,4 @@ const HotelCheckOut = ({
 };
 
 export default HotelCheckOut;
+
