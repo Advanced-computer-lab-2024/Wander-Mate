@@ -235,6 +235,7 @@ const {
   viewMyNotificationsTG,
   removeNotificationTG,
   markNotificationAsReadTG,
+  getItinerarySalesReport,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -258,6 +259,7 @@ const {
   viewActivityReport,
   notifyAdvertiser,
   getAdvertiserById,
+  getAttractionSalesReport,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -652,3 +654,6 @@ app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
 app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
 app.get("/getTouristPoints/:touristID",getTouristPoints);
+
+app.get("/getItinerarySalesReport/:guideId",getItinerarySalesReport);
+app.get("/getAttractionSalesReport/:advertiserId",getAttractionSalesReport);
