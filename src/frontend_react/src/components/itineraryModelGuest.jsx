@@ -152,6 +152,7 @@ export default function ItineraryModelGuest({
   const doNothing = () => {};
 
   const handleToggleFavorite = async () => {
+    navigate("/loginPage");
     setIsFavorite(!isFavorite);
     try {
       const username = sessionStorage.getItem("username");

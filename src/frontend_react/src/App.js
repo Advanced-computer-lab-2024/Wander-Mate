@@ -65,6 +65,7 @@ import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
+import AboutUsTG from "./pages/aboutUsTG";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -90,6 +91,9 @@ import OrdersTable from "./components/allOrdersTable";
 import ViewBookmarks from "./pages/ViewBookmarks";
 import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
+import TourGuideDocs from "./pages/docsTG";
+import PlacesGuest from "./pages/placesGuest";
+import ProductsGuest from "./pages/productsGuest";
 function App() {
   return (
     <Router>
@@ -173,6 +177,7 @@ function App() {
         />
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/AboutUsTG" element={<AboutUsTG />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
@@ -198,12 +203,17 @@ function App() {
         <Route path="/AdminProducts" element={<AdminProducts />} />
         <Route path="/salestable" element={<SalesReportTable />} />
         <Route path="/TouristOrders" element={<TouristOrders />} />
+        <Route path="/viewBookmarks" element={<ViewBookmarks />} />
 
         <Route path="ChangePhoto" element={<ChangePhoto />} />
         <Route path="/TouristHistory" element={<TouristHistory />} />
         <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
         <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
+        <Route path="/placesGuest" element={<PlacesGuest />} />
+        <Route path="/productsGuest" element={<ProductsGuest />} />
 
+
+        <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
       </Routes>
     </Router>
   );
