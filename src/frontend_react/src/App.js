@@ -79,10 +79,9 @@ import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
 import TourGuideItinerary from "./pages/tourguideItinerary";
 import SellerProfileManager from "./pages/SellerProfileInformation";
 import TourGuidePage from "./pages/tourGuideHomePage";
-import BasicDataTable from "./components/salestable";
 import AdminSettings from "./components/AdminSettings";
 import AdminPersonalDetails from "./components/AdminPersonalDetails";
-import SalesReportTable from "./components/salestable";
+import SalesReportTable from "./components/salestableseller";
 import TouristOrders from "./components/touristOrders";
 import ChangePhoto from "./components/changePhoto";
 import BoughtProducts from "./components/boughtProducts";
@@ -94,6 +93,7 @@ import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
 import PlacesGuest from "./pages/placesGuest";
 import ProductsGuest from "./pages/productsGuest";
+import SalesReportTabletourguide from "./components/salestabletourguide";
 function App() {
   return (
     <Router>
@@ -214,6 +214,7 @@ function App() {
 
 
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
+        <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
       </Routes>
     </Router>
   );
