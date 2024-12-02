@@ -44,6 +44,9 @@ const HeaderTG = () => {
             }}
           >
             <div className="absolute inset-0 bg-black bg-opacity-50" /> {/* Background overlay */}
+            
+            {/* Content container */}
+
             {/* Avatar and username container */}
             <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
               <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
@@ -60,7 +63,7 @@ const HeaderTG = () => {
             {/* Navigation links */}
             <div className="absolute bottom-4 right-6 flex gap-6 z-10">
               {[
-                { title: "Documents", link: "/user-profile/documents" },
+                { title: "Documents", link: "/TourGuideDocs" },
                 { title: "Settings", link: "/user-profile/settings" },
               ].map((item, index) => (
                 <Link

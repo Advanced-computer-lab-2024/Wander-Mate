@@ -379,6 +379,28 @@ const uploadTourGuideDocuments = async (req, res) => {
     res.status(400).json({ message: "Error to upload documents" });
   }
 };
+const getTourGuideDocuments = async (req, res) => {
+  try {
+    const ownerId = req.params.ownerId; // Get the ownerId from the request parameters
+
+    // Fetch the documents from the database where the owner is the TourGuide and the model is "TourGuide"
+    const documents = await PdfDetails.find({
+      Owner: ownerId,
+      ownerModel: "TourGuide",
+    });
+
+
+
+    // Return the fetched documents
+    return res.status(200).json({
+      message: "Documents fetched successfully!",
+      documents: documents,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error fetching documents" });
+  }
+};
 
 const updateGuideRatings = async (req, res) => {
   const { guideID } = req.params;
@@ -826,4 +848,5 @@ module.exports = {
   removeNotificationTG,
   markNotificationAsReadTG,
   deleteMyItinerary,
+  getTourGuideDocuments,
 };

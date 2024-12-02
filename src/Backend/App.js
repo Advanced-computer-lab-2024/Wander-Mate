@@ -220,6 +220,7 @@ const {
   readItinerary,
   getTourguides,
   uploadTourGuideDocuments,
+  getTourGuideDocuments,
   updateGuideRatings,
   changePasswordTourGuide,
   deactivateItinerary,
@@ -646,3 +647,4 @@ app.get("/gettourist/:touristID", gettourist);
 app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
+app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);

@@ -20,7 +20,7 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
-import NavigationMenuBar from "../components/NavigationMenuBar";
+import TourGuideNavBar from '../components/tourGuideNavBar';
 import AddTourGuideItineraryModel from "../components/AddTourGuideItinerary";
 
 const TourGuideItineraries = () => {
@@ -232,7 +232,7 @@ const TourGuideItineraries = () => {
   }
   return (
     <>
-      <NavigationMenuBar />
+      <TourGuideNavBar />
       <div className="container mx-auto p-4" id="container">
         <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
 
