@@ -860,7 +860,7 @@ const getItinerarySalesReport = async (req, res) => {
       },
       {
         $lookup: {
-          from: "itineraries", // Join with itineraries to get details
+          from: "itineraries", // Join with itineraries to get the price
           localField: "_id.itineraryId",
           foreignField: "_id",
           as: "itineraryDetails",
@@ -876,7 +876,7 @@ const getItinerarySalesReport = async (req, res) => {
           itineraryName: "$itineraryDetails.Name",
           bookedDate: "$_id.bookedDate",
           totalBookings: 1,
-          totalRevenue: 1,
+          totalRevenue: { $multiply: ["$totalBookings", "$itineraryDetails.Price"] }, // Calculate revenue
         },
       },
     ]);

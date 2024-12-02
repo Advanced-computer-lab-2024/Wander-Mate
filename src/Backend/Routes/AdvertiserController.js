@@ -668,7 +668,7 @@ const getAttractionSalesReport = async (req, res) => {
       },
       {
         $lookup: {
-          from: "attractions", // Join with attractions to get details
+          from: "attractions", // Join with attractions to get the price
           localField: "_id.attractionId",
           foreignField: "_id",
           as: "attractionDetails",
@@ -684,7 +684,7 @@ const getAttractionSalesReport = async (req, res) => {
           attractionName: "$attractionDetails.Name",
           bookedDate: "$_id.bookedDate",
           totalBookings: 1,
-          totalRevenue: 1,
+          totalRevenue: { $multiply: ["$totalBookings", "$attractionDetails.Price"] }, // Calculate revenue
         },
       },
     ]);
