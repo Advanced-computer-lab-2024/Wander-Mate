@@ -7,7 +7,11 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ChangePassword from "../components/changePassword";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import CustomConfirmationDialog from "../components/ui/confirmationDialog";
 
 const API_URL = "http://localhost:8000"
 
@@ -19,7 +23,10 @@ const AdvertiserProfileManager = () => {
   const [website, setWebsite] = useState("")
   const [hotline, setHotline] = useState("")
   const [companyProfile, setCompanyProfile] = useState("")
-  const username = sessionStorage.getItem("username")
+  const username = sessionStorage.getItem("username");
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!username) {
@@ -64,10 +71,33 @@ const AdvertiserProfileManager = () => {
       setIsEditing(false)
     } catch (error) {
       console.error("Failed to update profile:", error)
-      alert("Failed to update profile. Please try again.")
+      toast.error("Failed to update profile. Please try again.")
     }
   }
+  const handleDelete = () => {
+    setIsConfirmationOpen(true);
+  };
 
+
+
+  const handleCancelDelete = () => {
+    setIsConfirmationOpen(false);
+  };
+  const handleDeleteAccount = async () => {
+    
+  
+    try {
+      const { data } = await axios.delete(`${API_URL}/requestAdvertiserAccountDeletion/${profile._id}`);
+      toast.success(data.message);
+      // Optionally clear session and redirect
+      sessionStorage.clear();
+      navigate("/LoginPage");
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      toast.error(error.response?.data?.message || "An error occurred while deleting the account.");
+    }
+  };
+  
   if (errorMessage) {
     return <div style={{ color: "red" }}>{errorMessage}</div>
   }
@@ -147,6 +177,15 @@ const AdvertiserProfileManager = () => {
                     {isEditing ? "Cancel" : "Edit"}
                   </Button>
                   {isEditing && <Button type="submit">Save Changes</Button>}
+                  <Button type="button" color="destructive" onClick={handleDelete}>
+                  Delete Account
+                  </Button>
+                  <CustomConfirmationDialog
+                        isOpen={isConfirmationOpen}
+                        onConfirm={handleDeleteAccount}
+                        onCancel={handleCancelDelete}
+                        message="Are you sure you want to delete this itinerary?"
+                      />
                 </div>
               </form>
             </CardContent>
