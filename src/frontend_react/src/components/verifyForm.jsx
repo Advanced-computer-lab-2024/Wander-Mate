@@ -67,9 +67,9 @@ const VerfiyForm = () => {
     const enteredOtp = otp.join("");
     setOtp(otpArray);
     toast.promise(validateOTP(enteredOtp), {
-        loading: "Checking...", // Loading state
-        success: "OTP is Correct!", // Success message
-        error: "Please check the OTP!", // Error message
+      loading: "Checking...", // Loading state
+      success: "OTP is Correct!", // Success message
+      error: "Please check the OTP!", // Error message
     });
     inputRefs.current[0].focus();
   };
@@ -87,14 +87,14 @@ const VerfiyForm = () => {
         navigate("/newPassword");
       }, 1000);
     } catch {
-      console.log("Error");
+      throw new Error("Please try again later");
     }
   };
   const isOtpComplete = otp.every((digit) => digit !== "");
 
   return (
     <div className="w-full md:w-[480px] py-5">
-        <Toaster/>
+      <Toaster />
       <a href="/" className="inline-block">
         <SiteLogo className="h-10 w-10 2xl:h-14 2xl:w-14 text-primary" />
       </a>

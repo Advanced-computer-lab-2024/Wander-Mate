@@ -96,7 +96,7 @@ const ForgotForm = () => {
           name: "WanderMate", // Recipient's name
           otp: otp, // OTP value
           logo_url:
-            "https://drive.google.com/uc?id=1XRUvHmFG98cHMtw8ZlSf61uAwtKlkQJo",
+            "https://drive.google.com/file/d/1-1WVLfVabnYy6ybNU1YitfER2LQ4qJzN/view?usp=sharing",
         },
       };
 
