@@ -1414,6 +1414,9 @@ const requestTouristAccountDeletion = async (req, res) => {
 
     await userModel.findByIdAndDelete(touristID);
     await Usernames.findOneAndDelete({ userID: touristID });
+    await ordermodel.deleteMany({userId: touristID});
+    await bookingSchema.deleteMany({userId: touristID});
+    await Notification.deleteMany({userID: touristID});
 
     // Proceed to delete if no future bookings found
     // await userModel.findByIdAndUpdate(

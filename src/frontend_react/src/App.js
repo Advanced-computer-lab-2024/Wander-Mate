@@ -85,6 +85,7 @@ import SalesReportTable from "./components/salestable";
 import TouristOrders from "./components/touristOrders";
 import ChangePhoto from "./components/changePhoto";
 import BoughtProducts from "./components/boughtProducts";
+import OrdersTable from "./components/allOrdersTable";
 function App() {
   return (
     <Router>
@@ -142,7 +143,7 @@ function App() {
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
-        <Route path="pop" element={<BoughtProducts />} />
+        <Route path="pop" element={<OrdersTable />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />
