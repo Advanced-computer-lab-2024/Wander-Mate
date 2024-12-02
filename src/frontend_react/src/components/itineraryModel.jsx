@@ -151,21 +151,44 @@ export default function ItineraryModel({
   const doNothing = () => {};
 
   const handleToggleFavorite = async () => {
-    setIsFavorite(!isFavorite);
+    setIsFavorite(!isFavorite);  // Toggle favorite state
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
-
+  
       const { userID } = await reply.json();
-      await axios.post("http://localhost:8000/toggleFavoriteItinerary", {
-        userID,
-        itineraryId: itinerary._id,
-      });
+  
+      console.log({ userID, eventId: itinerary.itineraryId, type: "Itinerary" }); // Add this line to log the data
+  
+      // Toggle bookmark based on the current state of `isFavorite`
+      if (isFavorite) {
+        // Call unbookmark endpoint
+        await axios.delete("http://localhost:8000/unbookmarkEvent", {
+          data: {
+            userId: userID,
+            eventId: itinerary.itineraryId,
+            type: "Itinerary",
+          },
+        });
+        toast.success("Removed from Favorites");
+      } else {
+        // Call bookmark endpoint
+        await axios.post("http://localhost:8000/Bookmarkevent", {
+          userId: userID,
+          eventId: itinerary.itineraryId,
+          type: "Itinerary",
+        });
+        toast.success("Added to Favorites");
+      }
     } catch (error) {
       console.error("Error toggling favorite itinerary:", error);
+      toast.error("Failed to update favorite status: " + error.message);  // Display detailed error message
     }
   };
+  
+  
+  
 
   const handleShare = (method) => {
     // Get the current URL without query parameters
