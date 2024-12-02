@@ -7,11 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { useToast } from "../components/ui/use-toast";
 import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
-import { Filter } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../components/ui/command";
-import { cn } from "../lib/utils";
 import { Badge } from "../components/ui/badge";
+import { DataTableFacetedFilter } from "../components/table/data-table-faceted-filter";
 
 const columns = [
   {
@@ -35,14 +32,7 @@ const columns = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <div className="flex items-center space-x-2">
-          <span>Order Status</span>
-          <StatusFilter column={column} />
-        </div>
-      )
-    },
+    header: "Order Status",
     cell: ({ row }) => {
       const status = row.original.status;
       let statusText;
@@ -59,7 +49,7 @@ const columns = [
           break;
         case "cancelled":
           statusText = "Cancelled";
-          statusClass = "bg-danger/10 text-danger";
+          statusClass = "bg-red-100 text-red-600";
           break;
         case "pending":
         default:
@@ -79,7 +69,7 @@ const columns = [
       );
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -93,79 +83,30 @@ const columns = [
         View Details
       </Button>
     ),
+  },
+  {
+    id: "cancel",
+    header: "",
+    cell: ({ row }) => {
+      if (row.original.status === "pending") {
+        return (
+          <Button
+            onClick={() => row.original.cancelOrder(row.original._id)}
+            className="w-full text-xs text-red-600 bg-red-100 hover:bg-red-200"
+          >
+            Cancel Order
+          </Button>
+        );
+      }
+      return null;
+    },
   }
 ];
-
-const StatusFilter = ({ column }) => {
-  const [open, setOpen] = useState(false)
-  const statuses = ["pending", "shipped", "delivered", "cancelled"]
-  const selectedValues = new Set(column.getFilterValue() || [])
-
-  const handleStatusSelect = (status) => {
-    if (selectedValues.has(status)) {
-      selectedValues.delete(status)
-    } else {
-      selectedValues.add(status)
-    }
-    column.setFilterValue(Array.from(selectedValues))
-    setOpen(false)
-  }
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 border-dashed">
-          <Filter className="mr-2 h-4 w-4" />
-          {selectedValues.size > 0 ? (
-            <>
-              <Badge variant="secondary" className="rounded-sm px-1 font-normal">
-                {selectedValues.size}
-              </Badge>
-              <span className="sr-only">selected</span>
-            </>
-          ) : (
-            "Filter"
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Filter status..." />
-          <CommandEmpty>No status found.</CommandEmpty>
-          <CommandGroup>
-            {statuses.map((status) => (
-              <CommandItem
-                key={status}
-                onSelect={() => handleStatusSelect(status)}
-              >
-                <div
-                  className={cn(
-                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                    selectedValues.has(status)
-                      ? "bg-primary text-primary-foreground"
-                      : "opacity-50 [&_svg]:invisible"
-                  )}
-                >
-                  <Filter className="h-4 w-4" />
-                </div>
-                {status}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
-}
 
 const TouristOrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
   const { toast } = useToast();
 
   const fetchOrders = async (userID) => {
@@ -173,7 +114,8 @@ const TouristOrdersTable = () => {
       const response = await axios.get(`http://localhost:8000/getMyOrders/${userID}`);
       const ordersWithOpenDetails = response.data.orders.map(order => ({
         ...order,
-        openOrderDetails: () => setSelectedOrder(order)
+        openOrderDetails: () => setSelectedOrder(order),
+        cancelOrder: (orderId) => handleCancelOrder(orderId)
       }));
       setOrders(ordersWithOpenDetails);
     } catch (error) {
@@ -216,6 +158,31 @@ const TouristOrdersTable = () => {
     }
   };
 
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/cancel-order/${orderId}`);
+      if (response.status === 200) {
+        // Update the order status to "cancelled"
+        setOrders(prevOrders => prevOrders.map(order => 
+          order._id === orderId ? { ...order, status: "cancelled" } : order
+        ));
+        
+        // Show success popup
+        toast({
+          title: "Success",
+          description: "Order cancelled successfully.",
+        });
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      toast({
+        title: "Error",
+        description: "Could not cancel the order.",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchTouristID();
   }, []);
@@ -227,20 +194,10 @@ const TouristOrdersTable = () => {
   const table = useReactTable({
     data: orders,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
 
   if (loading) {
@@ -249,6 +206,18 @@ const TouristOrdersTable = () => {
 
   return (
     <>
+      <div className="mb-4">
+        <DataTableFacetedFilter
+          column={table.getColumn("status")}
+          title="Order Status"
+          options={[
+            { label: "Pending", value: "pending" },
+            { label: "Shipped", value: "shipped" },
+            { label: "Delivered", value: "delivered" },
+            { label: "Cancelled", value: "cancelled" },
+          ]}
+        />
+      </div>
       <div className="overflow-x-auto">
         <Table className="table-fixed w-full">
           <TableHeader className="bg-default-300">

@@ -2651,13 +2651,16 @@ const cancelOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if the order status is not already cancelled (if needed)
+    // Check if the order status is already cancelled
     if (order.status === "cancelled") {
       return res.status(400).json({ message: "Order is already cancelled" });
     }
 
-    // Delete the order
-    await order.remove();
+    // Change the order status to cancelled
+    order.status = "cancelled";
+
+    // Save the updated order
+    await order.save();
 
     return res
       .status(200)
@@ -2668,6 +2671,7 @@ const cancelOrder = async (req, res) => {
       .json({ message: "Error cancelling the order", error: error.message });
   }
 };
+
 
 const makeOrder = async (req, res) => {
   const { userId, products, total, address, isPaid, quantities } = req.body;
