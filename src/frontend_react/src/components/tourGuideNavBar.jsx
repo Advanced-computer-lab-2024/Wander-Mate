@@ -214,7 +214,7 @@ const [profilePicture, setProfilePicture] = useState("");
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/about/team" className="flex items-center">
+                  <Link to="/MeetPageTG" className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Meet the Team</span>
                   </Link>
