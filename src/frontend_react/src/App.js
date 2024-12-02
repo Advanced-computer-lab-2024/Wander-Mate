@@ -93,6 +93,7 @@ import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
 import PlacesGuest from "./pages/placesGuest";
+import ProductsGuest from "./pages/productsGuest";
 function App() {
   return (
     <Router>
@@ -208,6 +209,7 @@ function App() {
         <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
         <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
         <Route path="/placesGuest" element={<PlacesGuest />} />
+        <Route path="/productsGuest" element={<ProductsGuest />} />
 
 
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />

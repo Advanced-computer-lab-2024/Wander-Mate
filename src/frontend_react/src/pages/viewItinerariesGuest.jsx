@@ -23,7 +23,6 @@ import {
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
-import NavigationMenuBar from "../components/NavigationMenuBar";
 
 export default function ViewItinerariesGuest() {
   const [itineraries, setItineraries] = useState([]);
@@ -223,7 +222,6 @@ export default function ViewItinerariesGuest() {
 
   return (
     <>
-      <NavigationMenuBar />
       <ViewItinerariesTour>
         <div className="container mx-auto p-4" id="container">
           <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
