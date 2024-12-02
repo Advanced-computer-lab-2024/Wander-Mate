@@ -10,6 +10,26 @@ import coverImage from "../public/images/files/userprofile.jpg"; // Background i
 const HeaderTG = () => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null);
+
+  useEffect(() => {
+    // Get the profile picture URL from sessionStorage
+    const fetchPicture = async () => { 
+    try{
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+  
+      const { userID } = await reply.json();
+      const response = await fetch(`http://localhost:8000/GUIDE/${userID}/image`);
+      setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
+    }catch{
+      console.log("error");
+    }
+  }
+
+   fetchPicture();
+  }, []); 
+
   return (
     <Fragment>
       <Card className="mt-6 rounded-t-2xl overflow-hidden">
@@ -26,21 +46,11 @@ const HeaderTG = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50" /> {/* Background overlay */}
             
             {/* Content container */}
-            <div className="relative z-10 flex justify-end pt-6 pr-6 gap-8 transform translate-y-[-10px]"> {/* Move content up */}
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">24.5K</div>
-                <div className="text-sm text-gray-300">Followers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">22.5K</div>
-                <div className="text-sm text-gray-300">Following</div>
-              </div>
-            </div>
 
             {/* Avatar and username container */}
             <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
               <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                <AvatarImage src={sessionStorage.getItem("profilePicture")} />
+                <AvatarImage src={profilePicture} />
                 <AvatarFallback className="text-3xl font-bold">TG</AvatarFallback>
               </Avatar>
               <div className="text-white">
@@ -53,7 +63,7 @@ const HeaderTG = () => {
             {/* Navigation links */}
             <div className="absolute bottom-4 right-6 flex gap-6 z-10">
               {[
-                { title: "Documents", link: "/user-profile/documents" },
+                { title: "Documents", link: "/TourGuideDocs" },
                 { title: "Settings", link: "/user-profile/settings" },
               ].map((item, index) => (
                 <Link

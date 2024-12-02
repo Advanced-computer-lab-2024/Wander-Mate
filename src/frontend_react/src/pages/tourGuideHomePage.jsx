@@ -1,15 +1,20 @@
 import React from 'react';
 import TourGuideNavBar from '../components/tourGuideNavBar';
 import HeaderTG from '../components/headdertourguide';
+import TourGuideProfileManager from './TourGuideProfileManager';
 
 const TourGuidePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <TourGuideNavBar />
-      <main className="flex-grow relative">
-        {/* Adjust width of HeaderTG wrapper */}
-        <div className="absolute top-[-30px] left-[0.5%] w-[99%]">
-          <HeaderTG />
+      <main className="flex-grow">
+        <div className="flex flex-col">
+          <div className="relative -top-6"> {/* Negative margin to move the header up */}
+            <HeaderTG />
+          </div>
+          <div className=" relative -top-0"> {/* h-full makes it cover remaining space */}
+            <TourGuideProfileManager />
+          </div>
         </div>
       </main>
     </div>
@@ -17,4 +22,3 @@ const TourGuidePage = () => {
 };
 
 export default TourGuidePage;
-

@@ -205,7 +205,7 @@ const [profilePicture, setProfilePicture] = useState("");
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/aboutUs" className="flex items-center">
+                  <Link to="/AboutUsTG" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>
@@ -228,7 +228,7 @@ const [profilePicture, setProfilePicture] = useState("");
               variant="ghost"
               asChild
             >
-              <Link to="/itineraries" className="flex items-center">
+              <Link to="/TourGuideItinerary" className="flex items-center">
                 <Link className="hidden md:flex space-x-6" />
                 <span>Itineraries</span>
               </Link>
