@@ -15,16 +15,21 @@ import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import { Navigate, useNavigate } from "react-router-dom";
 import PayNow from "./payNow";
-import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'; // Import the star icons
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import the star icons
+import {
+  Carousel,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselContent,
+} from "./ui/carousel";
 
 export default function ItineraryModel({
   itinerary,
   isOpen,
   setIsOpen,
   children,
-  
 }) {
-  
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -37,13 +42,13 @@ export default function ItineraryModel({
     const creatorData = encodeURIComponent(JSON.stringify(itinerary.Creator)); // Serialize creator data
     navigate(`/itineraryTourGuide?creator=${creatorData}`);
   };
+  const images = itinerary.images;
 
-  
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating); // Full stars (integer part of the rating)
     const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half star if the remainder is >= 0.5
     const emptyStars = 5 - fullStars - halfStars; // Remaining empty stars
-    
+
     // Create an array of JSX elements for the stars
     return [
       ...Array(fullStars).fill(<FaStar className="text-yellow-500" />), // Full stars
@@ -75,12 +80,11 @@ export default function ItineraryModel({
       toast.error("Please select a date before booking!");
       return;
     }
-  
+
     if (!isBooked) {
       setIsBooked(true);
     }
   };
-  
 
   const incrementCount = () => {
     if (count < maxQuantity) {
@@ -202,7 +206,7 @@ export default function ItineraryModel({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      
+
       <DialogContent
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
@@ -219,12 +223,44 @@ export default function ItineraryModel({
           <div className="space-y-8 p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Itinerary Images */}
-              <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={itinerary.image || "/placeholder.svg"}
-                  alt={itinerary.Name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-square overflow-hidden rounded-lg ">
+                <Carousel>
+                  <CarouselContent>
+                    {images.length > 0 ? (
+                      images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
+                            <img
+                              className="w-full h-full "
+                              src={
+                                image.data
+                                  ? `data:${image.contentType};base64,${image.data}`
+                                  : image
+                              }
+                              alt={`${itinerary.name} image ${index + 1}`}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))
+                    ) : (
+                      <CarouselItem>
+                        <div className="flex items-center justify-center h-full">
+                          <img
+                            src="/placeholder.svg?height=191&width=191"
+                            alt="Placeholder"
+                            className="max-h-[191px] w-auto"
+                          />
+                        </div>
+                      </CarouselItem>
+                    )}
+                  </CarouselContent>
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                    </>
+                  )}
+                </Carousel>
               </div>
 
               {/* Itinerary Details */}
@@ -234,29 +270,34 @@ export default function ItineraryModel({
                     {itinerary.name}
                   </h1>
                   <div className="space-y-2 mb-6">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Timeline:</span> {itinerary.TimeLine}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Price:</span> {itinerary.currrn} {itinerary.price || "N/A"}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Ratings:</span> {itinerary.rating}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Available Dates:</span>
-                      </p>
-                      <div className="flex space-x-4">
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Timeline:</span>{" "}
+                      {itinerary.TimeLine}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Price:</span>{" "}
+                      {itinerary.currrn} {itinerary.price || "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Ratings:</span>{" "}
+                      {itinerary.rating}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Available Dates:</span>
+                    </p>
+                    <div className="flex space-x-4">
                       {itinerary.AvailableDates ? (
                         itinerary.AvailableDates.map((date, index) => {
-                          const formattedDate = new Date(date.$date || date).toLocaleDateString();
+                          const formattedDate = new Date(
+                            date.$date || date
+                          ).toLocaleDateString();
                           return (
                             <button
                               key={index}
                               className={`px-4 py-2 rounded transition-colors duration-200 ${
                                 selectedDate === formattedDate
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-gray-200 text-gray-700 hover:bg-blue-300 hover:text-white'
+                                  ? "bg-blue-500 text-white"
+                                  : "bg-gray-200 text-gray-700 hover:bg-blue-300 hover:text-white"
                               }`}
                               onClick={() => handleDateSelect(formattedDate)}
                             >
@@ -269,14 +310,14 @@ export default function ItineraryModel({
                       )}
                     </div>
 
-                      {/* Display selected date */}
-                      {selectedDate && (
-                        <p className="text-sm text-gray-600 mt-4">
-                          <span className="font-semibold">Selected Date:</span> {selectedDate}
-                        </p>
-                      )}
-                    </div>
-
+                    {/* Display selected date */}
+                    {selectedDate && (
+                      <p className="text-sm text-gray-600 mt-4">
+                        <span className="font-semibold">Selected Date:</span>{" "}
+                        {selectedDate}
+                      </p>
+                    )}
+                  </div>
 
                   {/* Favorite and Share Buttons */}
                   <div className="space-y-4">
@@ -343,7 +384,7 @@ export default function ItineraryModel({
                     {/* Add spacing below the buttons */}
                     {!isBooked ? (
                       <Button
-                        className="bg-blue-500 hover:bg-blue-600 text-white w-full"
+                        className="text-white w-full"
                         onClick={handleBook}
                       >
                         <Icon
@@ -354,9 +395,10 @@ export default function ItineraryModel({
                       </Button>
                     ) : (
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center border border-gray-300 rounded">
+                        <div className="flex-2 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
                           <button
-                            className="px-4 py-3 bg-blue-500 text-white rounded-l hover:bg-blue-600"
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={decrementCount}
                           >
                             <Icon icon="eva:minus-fill" />
@@ -365,7 +407,8 @@ export default function ItineraryModel({
                             {count}
                           </span>
                           <button
-                            className="px-4 py-3 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={incrementCount}
                             disabled={count >= maxQuantity}
                           >
@@ -396,10 +439,11 @@ export default function ItineraryModel({
 
             {/* Itinerary Description Tabs */}
             <Tabs defaultValue="info">
-            
               <TabsList>
                 <TabsTrigger value="info">Itinerary Information</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
+                <TabsTrigger value="reviews">
+                  Reviews ({reviews.length})
+                </TabsTrigger>
                 <TabsTrigger value="map">Pickup Location</TabsTrigger>
                 <TabsTrigger value="map1">Dropoff Location</TabsTrigger>
                 <TabsTrigger value="tourGuide">Tour Guide Details:</TabsTrigger>
@@ -521,7 +565,7 @@ export default function ItineraryModel({
                           <strong>Username: </strong>
                           <span
                             className="cursor-pointer text-blue-500"
-                            onClick={navigateToTourGuide}  // This will trigger navigation
+                            onClick={navigateToTourGuide} // This will trigger navigation
                           >
                             {itinerary.Creator.Username || "N/A"}
                           </span>
@@ -531,19 +575,19 @@ export default function ItineraryModel({
                           <strong>Average Rating: </strong>
                           <div className="flex items-center">
                             {itinerary.Creator.averageRating
-                              ? renderStars(itinerary.Creator.averageRating).map((star, index) => (
+                              ? renderStars(
+                                  itinerary.Creator.averageRating
+                                ).map((star, index) => (
                                   <span key={index}>{star}</span>
                                 ))
                               : "N/A"}
-                              </div>
-                            </div>
                           </div>
                         </div>
-                    </CardContent>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
               </TabsContent>
-
-
             </Tabs>
           </div>
         </div>

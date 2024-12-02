@@ -18,7 +18,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CustomConfirmationDialog from "./ui/confirmationDialog";
 import NonMovableMap from "./ui/nonMovableMap";
-
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 export default function ItineraryModel({
   itinerary,
   isOpen,
@@ -31,7 +31,7 @@ export default function ItineraryModel({
   const [isEditing, setIsEditing] = useState(false);
   const [editedItinerary, setEditedItinerary] = useState({
     name: itinerary.name,
-    description: itinerary.description,
+    Language: itinerary.Language || "",
     price: itinerary.price,
     TimeLine: itinerary.TimeLine,
     Activities: itinerary.Activities,
@@ -39,7 +39,9 @@ export default function ItineraryModel({
   });
   const [allActivities, setAllActivities] = useState([]);
   const [allLocations, setAllLocations] = useState([]);
+  const [isActive, setIsActive] = useState(itinerary.isActive);
   const navigate = useNavigate();
+   const images = itinerary.images;
 
   const handleCreatorClick = (e) => {
     e.preventDefault();
@@ -50,16 +52,7 @@ export default function ItineraryModel({
   };
 
   useEffect(() => {
-    const fetchCreatorInfo = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/getCreatorById/${itinerary.Creator._id}`
-        );
-        setCreator(response.data);
-      } catch (error) {
-        console.error("Error fetching creator information:", error);
-      }
-    };
+    console.log(editedItinerary);
 
     const fetchActivitiesAndLocations = async () => {
       try {
@@ -77,9 +70,6 @@ export default function ItineraryModel({
       }
     };
 
-    if (itinerary.Creator) {
-      fetchCreatorInfo();
-    }
     fetchActivitiesAndLocations();
   }, [itinerary.Creator]);
 
@@ -148,9 +138,21 @@ export default function ItineraryModel({
 
   const handleSave = async () => {
     try {
+      const updatedItinerary = {
+        ...editedItinerary,
+        Activities: Array.isArray(editedItinerary.Activities)
+          ? editedItinerary.Activities.map((activity) => activity._id)
+          : [], // Fallback to empty array if not an array
+        LocationsToVisit: Array.isArray(editedItinerary.LocationsToVisit)
+          ? editedItinerary.LocationsToVisit.map((location) => location._id)
+          : [], // Fallback to empty array if not an array
+      };
+
+      console.log(editedItinerary.LocationsToVisit);
+
       const response = await axios.put(
         `http://localhost:8000/updateItinerary/${itinerary.itineraryId}`,
-        editedItinerary
+        updatedItinerary
       );
 
       if (response.status === 200) {
@@ -200,38 +202,48 @@ export default function ItineraryModel({
 
   const handleCheckboxChange = (name, item) => {
     setEditedItinerary((prev) => {
-      const currentItems = prev[name];
-      if (currentItems.includes(item)) {
-        return { ...prev, [name]: currentItems.filter((i) => i !== item) };
+      const currentItems = Array.isArray(prev[name]) ? prev[name] : [];
+      console.log("Current items:", currentItems);
+
+      // Check if the item's _id exists in the current items
+      const itemExists = currentItems.some(
+        (oneItem) => oneItem._id === item._id
+      );
+
+      if (itemExists) {
+        // Remove the item by filtering out its _id
+        return {
+          ...prev,
+          [name]: currentItems.filter((i) => i._id !== item._id),
+        };
       } else {
-        return { ...prev, [name]: [...currentItems, item] };
+        // Add the new item to the array
+        return {
+          ...prev,
+          [name]: [...currentItems, item],
+        };
       }
     });
   };
 
-  const handleShare = (method) => {
-    const currentUrl = window.location.href.split("?")[0];
-    const shareUrl = `${currentUrl}?open=true&itinerary=${itinerary.itineraryId}`;
-    const shareText = `Check out this amazing itinerary: ${editedItinerary.name}`;
-
-    if (method === "link") {
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        toast("Link copied to Clipboard!", {
-          icon: "👏",
-          style: {
-            borderRadius: "10px",
-            background: "#826AF9",
-            color: "#fff",
-          },
-        });
-        setIsShareOpen(false);
-      });
-    } else if (method === "email") {
-      const mailtoLink = `mailto:?subject=${encodeURIComponent(
-        shareText
-      )}&body=${encodeURIComponent(shareUrl)}`;
-      window.location.href = mailtoLink;
-      setIsShareOpen(false);
+  const handleActivation = async () => {
+    try {
+      console.log(itinerary.itineraryId);
+      const response = await axios.put(
+        `http://localhost:8000/deactivateItinerary/${itinerary.itineraryId}`
+      );
+      if (response.status === 200) {
+        toast.success("Activation changed successfully!");
+        setIsActive(!isActive);
+      } else {
+        toast.error(
+          "Itinerary cannot be deactivated as there are no bookings, You can delete it"
+        );
+      }
+    } catch {
+      toast.error(
+        "Itinerary cannot be deactivated as there are no bookings, You can delete it"
+      );
     }
   };
 
@@ -259,12 +271,44 @@ export default function ItineraryModel({
           <div className="space-y-8 p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Itinerary Image */}
-              <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={itinerary.image || "/placeholder.svg"}
-                  alt={editedItinerary.name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-square overflow-hidden rounded-lg ">
+                <Carousel>
+                  <CarouselContent>
+                    {images.length > 0 ? (
+                      images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
+                            <img
+                              className="w-full h-full "
+                              src={
+                                image.data
+                                  ? `data:${image.contentType};base64,${image.data}`
+                                  : image
+                              }
+                              alt={`${itinerary.name} image ${index + 1}`}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))
+                    ) : (
+                      <CarouselItem>
+                        <div className="flex items-center justify-center h-full">
+                          <img
+                            src="/placeholder.svg?height=191&width=191"
+                            alt="Placeholder"
+                            className="max-h-[191px] w-auto"
+                          />
+                        </div>
+                      </CarouselItem>
+                    )}
+                  </CarouselContent>
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                    </>
+                  )}
+                </Carousel>
               </div>
 
               {/* Itinerary Info */}
@@ -282,13 +326,13 @@ export default function ItineraryModel({
                       />
                     </div>
                     <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        name="description"
-                        value={editedItinerary.description}
+                      <Label htmlFor="Language">Language</Label>
+                      <Input
+                        id="Language"
+                        name="Language"
+                        value={editedItinerary.Language}
                         onChange={handleInputChange}
-                        placeholder="Itinerary Description"
+                        placeholder="Itinerary Language"
                       />
                     </div>
                     <div>
@@ -323,14 +367,11 @@ export default function ItineraryModel({
                             <input
                               type="checkbox"
                               id={`activity-${activity._id}`}
-                              checked={editedItinerary.Activities.includes(
-                                activity.Name
-                              )}
+                              checked={editedItinerary.Activities.map(
+                                (Activity) => Activity._id
+                              ).includes(activity._id)}
                               onChange={() =>
-                                handleCheckboxChange(
-                                  "Activities",
-                                  activity.Name
-                                )
+                                handleCheckboxChange("Activities", activity)
                               }
                             />
                             <label htmlFor={`activity-${activity._id}`}>
@@ -351,13 +392,13 @@ export default function ItineraryModel({
                             <input
                               type="checkbox"
                               id={`location-${location._id}`}
-                              checked={editedItinerary.LocationsToVisit.includes(
-                                location.Name
-                              )}
+                              checked={editedItinerary.LocationsToVisit.map(
+                                (Location) => Location._id
+                              ).includes(location._id)}
                               onChange={() =>
                                 handleCheckboxChange(
                                   "LocationsToVisit",
-                                  location.Name
+                                  location
                                 )
                               }
                             />
@@ -382,7 +423,11 @@ export default function ItineraryModel({
                       >
                         Cancel
                       </Button>
-                      <Button onClick={handleDelete} variant="destructive">
+                      <Button
+                        onClick={handleDelete}
+                        color="destructive"
+                        className="ml-8"
+                      >
                         Delete Itinerary
                       </Button>
 
@@ -432,20 +477,28 @@ export default function ItineraryModel({
                         {editedItinerary.TimeLine}
                       </p>
                       <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Language:</span>{" "}
+                        {editedItinerary.Language}
+                      </p>
+                      <p className="text-sm text-gray-600">
                         <span className="font-semibold">Activities:</span>{" "}
-                        {editedItinerary.Activities.join(", ")}
+                        {editedItinerary.Activities.map((activity) =>
+                          typeof activity === "string"
+                            ? activity
+                            : activity.Name
+                        ).join(", ")}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-semibold">
                           Locations to Visit:
                         </span>{" "}
-                        {editedItinerary.LocationsToVisit.join(", ")}
+                        {editedItinerary.LocationsToVisit.map((location) =>
+                          typeof location === "string"
+                            ? location
+                            : location.Name
+                        ).join(", ")}
                       </p>
                     </div>
-
-                    <p className="text-gray-600 mb-6">
-                      {editedItinerary.description}
-                    </p>
 
                     {/* Edit and Share Buttons */}
                     <div className="flex space-x-4 mb-6">
@@ -456,50 +509,13 @@ export default function ItineraryModel({
                         />
                         Edit Itinerary
                       </Button>
-                      <Popover
-                        open={isShareOpen}
-                        onOpenChange={setIsShareOpen}
-                        onClose={() => setIsShareOpen(false)}
-                        trigger={
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsShareOpen(true)}
-                          >
-                            <Icon
-                              icon="heroicons:share"
-                              className="w-4 h-4 mr-2"
-                            />
-                            Share
-                          </Button>
-                        }
+                      <Button
+                        variant="outline"
+                        color="warning"
+                        onClick={handleActivation}
                       >
-                        <div className="w-48 p-2">
-                          <div className="flex flex-col space-y-2">
-                            <Button
-                              variant="ghost"
-                              onClick={() => handleShare("link")}
-                              className="w-full justify-start"
-                            >
-                              <Icon
-                                icon="heroicons:link"
-                                className="w-4 h-4 mr-2"
-                              />
-                              Copy Link
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              onClick={() => handleShare("email")}
-                              className="w-full justify-start"
-                            >
-                              <Icon
-                                icon="heroicons:envelope"
-                                className="w-4 h-4 mr-2"
-                              />
-                              Email
-                            </Button>
-                          </div>
-                        </div>
-                      </Popover>
+                        {isActive ? "Deactivate" : "Activate"}
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -509,36 +525,13 @@ export default function ItineraryModel({
             {/* Itinerary Description Tabs */}
             <Tabs defaultValue="info" className="w-full">
               <TabsList className="w-full justify-start">
-                <TabsTrigger value="info">Itinerary Information</TabsTrigger>
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
                 <TabsTrigger value="map">Pickup Location</TabsTrigger>
                 <TabsTrigger value="map1">Dropoff Location</TabsTrigger>
-                <TabsTrigger value="tourGuide">Tour Guide Details</TabsTrigger>
               </TabsList>
-              <TabsContent value="info" className="mt-4">
-                <Card>
-                  <CardContent className="p-6">
-                    <p className="text-gray-600">
-                      Activities:{" "}
-                      {itinerary.Activities
-                        ? itinerary.Activities.map(
-                            (activity) => activity.$oid || activity
-                          ).join(",  ")
-                        : "N/A"}
-                    </p>
-                    <p className="text-gray-600">
-                      Locations to Visit:{" "}
-                      {itinerary.LocationsToVisit
-                        ? itinerary.LocationsToVisit.map(
-                            (location) => location.$oid || location
-                          ).join(", ")
-                        : "N/A"}
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+
               <TabsContent value="reviews" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
@@ -616,47 +609,6 @@ export default function ItineraryModel({
                         initialLocation={itinerary.DropOffLocation?.coordinates}
                         onLocationSelect={() => {}}
                       />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="tourGuide" className="mt-4">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="w-full h-64 rounded-lg overflow-hidden">
-                      <div className="space-y-4 mt-4">
-                        <div>
-                          <strong>Email: </strong>
-                          <span>{creator?.Email || "N/A"}</span>
-                        </div>
-                        <div>
-                          <strong>Username: </strong>
-                          <span
-                            className="cursor-pointer text-blue-500"
-                            onClick={handleCreatorClick}
-                          >
-                            {creator?.Username || "N/A"}
-                          </span>
-                        </div>
-                        <div>
-                          <strong>Average Rating: </strong>
-                          <div className="flex items-center">
-                            {creator?.averageRating
-                              ? [...Array(5)].map((_, i) => (
-                                  <Icon
-                                    key={i}
-                                    icon="ph:star-fill"
-                                    className={`w-5 h-5 ${
-                                      i < Math.floor(creator.averageRating)
-                                        ? "text-yellow-400"
-                                        : "text-gray-300"
-                                    }`}
-                                  />
-                                ))
-                              : "N/A"}
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

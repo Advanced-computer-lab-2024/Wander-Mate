@@ -137,36 +137,37 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
         bookedDate: bookedDate,
       });
 
-      const tourist = await axios.get(`http://localhost:8000/gettourist/${userID}`);
-        const emailParams = {
-          service_id: "service_phn5uyk", // Your EmailJS service ID
-          template_id: "template_nckkmu7", // Your EmailJS template ID
-          user_id: "PnYRvwMBy2-3PJ0JY", // Your EmailJS user ID
-          template_params: {
-            to_email: tourist.data.Email, // Recipient's email address
-            customer_name: tourist.data.FullName || tourist.data.Username, // Customer name (full name or username)
-            receipt_date: new Date().toLocaleDateString(), // Date of the receipt (formatted)
-            event_name: itinerary.name, // Name of the event or itinerary
-            booking_date: bookedDate, // Date when the booking was made
-            event_date: bookedDate, // Scheduled date for the event
-            event_location: itinerary.PickUpLocation, // Location of the event or itinerary
-            payment_description: `Payment for ${itinerary.Name}`, // Payment description
-            payment_amount: amount, // Payment amount (formatted as currency)
-            support_email: "Wandermate4@outlook.com" // Support email
-          },
-        };
-  
-        const response = await emailjs.send(
-          emailParams.service_id,
-          emailParams.template_id,
-          emailParams.template_params,
-          emailParams.user_id,
-          emailParams.to_email
-        );
-        console.log(response);
-        toast.success("Booking successful!");
-        setActiveIndex(totalSlide);
+      const tourist = await axios.get(
+        `http://localhost:8000/gettourist/${userID}`
+      );
+      const emailParams = {
+        service_id: "service_phn5uyk", // Your EmailJS service ID
+        template_id: "template_nckkmu7", // Your EmailJS template ID
+        user_id: "PnYRvwMBy2-3PJ0JY", // Your EmailJS user ID
+        template_params: {
+          to_email: tourist.data.Email, // Recipient's email address
+          customer_name: tourist.data.FullName || tourist.data.Username, // Customer name (full name or username)
+          receipt_date: new Date().toLocaleDateString(), // Date of the receipt (formatted)
+          event_name: itinerary.name, // Name of the event or itinerary
+          booking_date: bookedDate, // Date when the booking was made
+          event_date: bookedDate, // Scheduled date for the event
+          event_location: itinerary.PickUpLocation, // Location of the event or itinerary
+          payment_description: `Payment for ${itinerary.Name}`, // Payment description
+          payment_amount: amount, // Payment amount (formatted as currency)
+          support_email: "Wandermate4@outlook.com", // Support email
+        },
+      };
 
+      const response = await emailjs.send(
+        emailParams.service_id,
+        emailParams.template_id,
+        emailParams.template_params,
+        emailParams.user_id,
+        emailParams.to_email
+      );
+      console.log(response);
+      toast.success("Booking successful!");
+      setActiveIndex(totalSlide);
 
       // window.location.href = "http://localhost:3000/viewItineraries";
     } catch (error) {
@@ -174,9 +175,6 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
       toast.error("Failed to book itinerary");
       setIsBooked(false);
     }
-
-        
-
   };
 
   const handlePaymentError = (error) => {
@@ -192,17 +190,20 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
-          <Toaster />
           <DialogHeader className="p-6 pb-2">
-          {alertMessage && (
-            <Alert color="destructive" variant="soft" className="mb-4">
-              <Icon
-                icon="heroicons:exclamation-triangle"
-                className="h-4 w-4"
-              />
-              <AlertDescription>{typeof alertMessage === 'object' ? JSON.stringify(alertMessage) : alertMessage}</AlertDescription>
-            </Alert>
-          )}
+            {alertMessage && (
+              <Alert color="destructive" variant="soft" className="mb-4">
+                <Icon
+                  icon="heroicons:exclamation-triangle"
+                  className="h-4 w-4"
+                />
+                <AlertDescription>
+                  {typeof alertMessage === "object"
+                    ? JSON.stringify(alertMessage)
+                    : alertMessage}
+                </AlertDescription>
+              </Alert>
+            )}
 
             <DialogTitle className="text-base font-medium">
               Checkout
@@ -212,7 +213,7 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
             <ScrollArea className="h-full px-6">
               {/* Step 1: Payment Method */}
               {activeIndex === 1 && (
-                <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
+                <div className="sm:grid sm:grid-cols-1 sm:gap-5 space-y-4 sm:space-y-0">
                   <div className="flex flex-col gap-2">
                     <Label>Payment Method</Label>
                     <RadioGroup
@@ -398,7 +399,7 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
               <DialogClose asChild>
                 <Button type="button">Close</Button>
               </DialogClose>
-            ) : (
+            ) : selected === "rwb_1" && activeIndex !== 2 ? (
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
@@ -406,7 +407,7 @@ const PayNow = ({ touristID, amount, disabled, itinerary, bookedDate }) => {
               >
                 Next
               </Button>
-            )}
+            ) : null}
           </div>
         </DialogContent>
       </Dialog>

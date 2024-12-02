@@ -49,9 +49,9 @@ export default function ViewItineraries() {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const c=sessionStorage.getItem("curr");
-        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
-          
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
         );
         const data = await response.json();
         setExchangeRates(data.rates);
@@ -140,12 +140,13 @@ export default function ViewItineraries() {
 
   const filterAndSortItineraries = () => {
     let filtered = itineraries.filter((itinerary) => {
-      if (itinerary.isFlagged) return false;
+      if (itinerary.isFlagged || !itinerary.isActive) return false;
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice =   itinerary.Price / (exchangeRates[currency] || 1) ;
-      const matchesBudget =convertedPrice >= budget[0] && convertedPrice <= budget[1];
+      const convertedPrice = itinerary.Price / (exchangeRates[currency] || 1);
+      const matchesBudget =
+        convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
       const filterEndDate = endDate ? new Date(endDate) : null;
       const matchesDate = itinerary.AvailableDates.some((date) => {
@@ -314,7 +315,6 @@ export default function ViewItineraries() {
                   </div>
 
                   {/* Currency Dropdown */}
-                  
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -402,7 +402,7 @@ export default function ViewItineraries() {
                   PickUpLocation={itinerary.PickUpLocation}
                   DropOffLocation={itinerary.DropOffLocation}
                   Language={itinerary.Language}
-                  Creator = {itinerary.Creator}
+                  Creator={itinerary.Creator}
                 />
               ))
             ) : (

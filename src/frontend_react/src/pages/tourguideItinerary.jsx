@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import { Filter, ArrowUpDown } from 'lucide-react';
+import { Filter, ArrowUpDown } from "lucide-react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import AddTourGuideItineraryModel from "../components/AddTourGuideItinerary";
 
@@ -71,15 +71,14 @@ const TourGuideItineraries = () => {
           return;
         }
         const response = await fetch("http://localhost:8000/viewItineraries");
-        
+
         const itineraries = await response.json();
         const TourguideItineraries = itineraries.filter(
           (itinerary) => itinerary.Creator._id === CreatorId
         );
         setItineraries(TourguideItineraries);
         setFilteredItineraries(TourguideItineraries);
-      } 
-      catch (error) {
+      } catch (error) {
         console.error("Error fetching itineraries:", error);
       } finally {
         setLoading(false);
@@ -219,8 +218,6 @@ const TourGuideItineraries = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  
-
   if (loading) {
     return (
       <div className="container mx-auto p-4">
@@ -247,7 +244,7 @@ const TourGuideItineraries = () => {
             onChange={handleSearch}
             className="flex-grow"
           />
-          <AddTourGuideItineraryModel/>
+          <AddTourGuideItineraryModel />
           <Label
             htmlFor="sort-criteria"
             className="text-sm font-medium mb-2 block"
@@ -275,9 +272,7 @@ const TourGuideItineraries = () => {
               onClick={handleSortOrderToggle}
             >
               <ArrowUpDown
-                className={`h-4 w-4 ${
-                  sortOrder === "asc" ? "rotate-180" : ""
-                }`}
+                className={`h-4 w-4 ${sortOrder === "asc" ? "rotate-180" : ""}`}
               />
             </Button>
           </div>
@@ -418,18 +413,15 @@ const TourGuideItineraries = () => {
                 ).toFixed(2)}
                 currrn={currency}
                 rating={itinerary.Ratings}
-                Activities={itinerary.Activities.map(
-                  (activity) => activity.Name
-                )}
-                LocationsToVisit={itinerary.LocationsToVisit.map(
-                  (location) => location.Name
-                )}
+                Activities={itinerary.Activities}
+                LocationsToVisit={itinerary.LocationsToVisit}
                 TimeLine={itinerary.TimeLine}
                 AvailableDates={itinerary.AvailableDates}
                 PickUpLocation={itinerary.PickUpLocation}
                 DropOffLocation={itinerary.DropOffLocation}
                 Language={itinerary.Language}
                 Creator={itinerary.Creator}
+                isActive={itinerary.isActive}
               />
             ))
           ) : (
@@ -444,4 +436,3 @@ const TourGuideItineraries = () => {
 };
 
 export default TourGuideItineraries;
-

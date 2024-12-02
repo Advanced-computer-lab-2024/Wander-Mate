@@ -451,7 +451,7 @@ const changePasswordTourGuide = async (req, res) => {
 };
 const deactivateItinerary = async (req, res) => {
   try {
-    const { itineraryId } = req.body; // Get the itinerary ID from the request body
+    const { itineraryId } = req.params; // Get the itinerary ID from the request body
 
     const itinerary = await Itinerary.findById(itineraryId);
     if (!itinerary) {
@@ -459,7 +459,7 @@ const deactivateItinerary = async (req, res) => {
     }
 
     if (itinerary.Bookings.length > 0) {
-      itinerary.isActive = false; // Deactivate the itinerary
+      itinerary.isActive = !itinerary.isActive; // Deactivate the itinerary
       await itinerary.save();
 
       return res.status(200).json({
@@ -581,7 +581,12 @@ const gettourGuideImage = async (req, res) => {
     const GUIDE = await tourGuideModel.findById(guideID);
 
     // Check if guide exists
-    if (!GUIDE || !GUIDE.picture || !GUIDE.picture.data || !GUIDE.picture.data.buffer) {
+    if (
+      !GUIDE ||
+      !GUIDE.picture ||
+      !GUIDE.picture.data ||
+      !GUIDE.picture.data.buffer
+    ) {
       return res.status(404).json({ error: "Image not found." });
     }
 
@@ -599,8 +604,6 @@ const gettourGuideImage = async (req, res) => {
   }
 };
 
-
-
 const viewItineraryReport = async (req, res) => {
   try {
     const { guideID } = req.params; // Assuming guideID is passed as a parameter
@@ -609,21 +612,27 @@ const viewItineraryReport = async (req, res) => {
     const itineraries = await Itinerary.find({ Creator: guideID });
 
     // Map through itineraries to calculate the number of tourists for each and fetch their details
-    const report = await Promise.all(itineraries.map(async (itinerary) => {
-      const bookings = await bookingSchema.find({ itemId: itinerary._id, itemModel: "Itinerary" }).populate("userId");
+    const report = await Promise.all(
+      itineraries.map(async (itinerary) => {
+        const bookings = await bookingSchema
+          .find({ itemId: itinerary._id, itemModel: "Itinerary" })
+          .populate("userId");
 
-      // Extract tourist names (assuming the 'userId' object has a 'name' or 'username' field)
-      const tourists = bookings.map(booking => booking.userId.name || booking.userId.username); 
+        // Extract tourist names (assuming the 'userId' object has a 'name' or 'username' field)
+        const tourists = bookings.map(
+          (booking) => booking.userId.name || booking.userId.username
+        );
 
-      return {
-        itineraryName: itinerary.Name,
-        totalTourists: bookings.length,
-        itineraryPrice: itinerary.Price,
-        itineraryActive: itinerary.isActive,
-        tourists: bookings.map((booking)=>  booking.userId), // Add tourist names here
-        bookedDates: bookings.map((booking) => booking.bookedDate)
-      };
-    }));
+        return {
+          itineraryName: itinerary.Name,
+          totalTourists: bookings.length,
+          itineraryPrice: itinerary.Price,
+          itineraryActive: itinerary.isActive,
+          tourists: bookings.map((booking) => booking.userId), // Add tourist names here
+          bookedDates: bookings.map((booking) => booking.bookedDate),
+        };
+      })
+    );
 
     // Send the response with the report and itinerary details
     res.status(200).json({ report, itineraries });
@@ -677,7 +686,9 @@ const viewMyNotificationsTG = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -686,19 +697,28 @@ const removeNotificationTG = async (req, res) => {
   try {
     // Validate input
     if (!guideID || !notificationId) {
-      return res.status(400).json({ message: "Tour Guide ID and Notification ID are required." });
+      return res
+        .status(400)
+        .json({ message: "Tour Guide ID and Notification ID are required." });
     }
 
     // Validate that the touristId and notificationId are valid ObjectIds
-    if (!mongoose.Types.ObjectId.isValid(guideID) || !mongoose.Types.ObjectId.isValid(notificationId)) {
-      return res.status(400).json({ message: "Invalid Tourist ID or Notification ID." });
+    if (
+      !mongoose.Types.ObjectId.isValid(guideID) ||
+      !mongoose.Types.ObjectId.isValid(notificationId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid Tourist ID or Notification ID." });
     }
 
     // Find the notification document for the given tourist ID
     const notificationDoc = await Notification.findOne({ userID: guideID });
 
     if (!notificationDoc) {
-      return res.status(404).json({ message: "No notifications found for this tourist." });
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this tourist." });
     }
 
     // Find the index of the notification to remove by notificationId
@@ -707,7 +727,9 @@ const removeNotificationTG = async (req, res) => {
     );
 
     if (notificationIndex === -1) {
-      return res.status(404).json({ message: "Notification not found in the list." });
+      return res
+        .status(404)
+        .json({ message: "Notification not found in the list." });
     }
 
     // Remove the notification from the array
@@ -722,24 +744,30 @@ const removeNotificationTG = async (req, res) => {
     });
   } catch (error) {
     console.error("Error removing notification:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
-const markNotificationAsReadTG= async (req, res) => {
+const markNotificationAsReadTG = async (req, res) => {
   const { userID, notificationId } = req.params;
 
   try {
     // Validate input
     if (!userID || !notificationId) {
-      return res.status(400).json({ message: "UserID and NotificationID are required." });
+      return res
+        .status(400)
+        .json({ message: "UserID and NotificationID are required." });
     }
 
     // Step 1: Find the user notification document by userID
-    const notificationDocument = await Notification.findOne({ "userID": userID });
+    const notificationDocument = await Notification.findOne({ userID: userID });
 
     if (!notificationDocument) {
-      return res.status(404).json({ message: "No notifications found for this user." });
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this user." });
     }
 
     // Step 2: Find the specific notification by notificationId
@@ -769,7 +797,9 @@ const markNotificationAsReadTG= async (req, res) => {
     });
   } catch (error) {
     console.error("Error marking notification as read:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 module.exports = {

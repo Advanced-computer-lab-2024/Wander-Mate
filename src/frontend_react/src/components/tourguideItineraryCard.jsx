@@ -42,6 +42,7 @@ const TourGuideItineraryCard = ({
   currrn,
   rating,
   Creator,
+  isActive,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -72,6 +73,7 @@ const TourGuideItineraryCard = ({
     currrn,
     rating,
     Creator,
+    isActive,
   };
 
   return (

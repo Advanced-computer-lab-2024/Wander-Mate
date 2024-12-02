@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import {
   flexRender,
   getCoreRowModel,
@@ -33,7 +33,13 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Icon } from "@iconify/react";
 import { cn } from "../lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 
 const columns = [
   {
@@ -71,7 +77,9 @@ const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("productName")}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("productName")}</div>
+    ),
   },
   {
     accessorKey: "totalQuantity",
@@ -144,6 +152,7 @@ const columns = [
 
 export function SalesReportTable() {
   const [data, setData] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -155,33 +164,20 @@ export function SalesReportTable() {
     const fetchSalesReport = async () => {
       const username = sessionStorage.getItem("username");
       try {
-        const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+        const idResponse = await fetch(
+          `http://localhost:8000/getID/${username}`
+        );
         if (!idResponse.ok) throw new Error("Failed to get tourist ID");
         const { userID } = await idResponse.json();
 
-        const response = await fetch(`http://localhost:8000/getSalesReport/${userID}`);
+        const response = await fetch(
+          `http://localhost:8000/getSalesReport/${userID}`
+        );
         const result = await response.json();
         if (response.ok) {
-          // Combine products with similar _id and add their revenues
-          const combinedData = result.salesReport.reduce((acc, item) => {
-            const existingItem = acc.find(i => i._id === item._id);
-            if (existingItem) {
-              existingItem.totalQuantity += item.totalQuantity;
-              existingItem.totalRevenue += item.totalRevenue;
-              // Keep the latest purchase date
-              if (new Date(item.purchaseDate) > new Date(existingItem.purchaseDate)) {
-                existingItem.purchaseDate = item.purchaseDate;
-              }
-            } else {
-              acc.push({...item});
-            }
-            return acc;
-          }, []);
-
-          setData(combinedData.map(item => ({
-            ...item,
-            purchaseDate: new Date(item.purchaseDate).toISOString() // Ensure date is in ISO format
-          })));
+          const processedData = processData(result.salesReport);
+          setData(processedData);
+          setOriginalData(processedData);
         } else {
           console.error("Failed to fetch sales report:", result.message);
         }
@@ -192,6 +188,106 @@ export function SalesReportTable() {
 
     fetchSalesReport();
   }, []);
+
+  const processData = (salesReport) => {
+    return salesReport.reduce((acc, item) => {
+      const existingItem = acc.find((i) => i._id === item._id);
+      if (existingItem) {
+        existingItem.products.push({
+          quantity: item.totalQuantity,
+          revenue: item.totalRevenue,
+          purchaseDate: new Date(item.purchaseDate).toISOString(),
+        });
+        existingItem.totalQuantity += item.totalQuantity;
+        existingItem.totalRevenue += item.totalRevenue;
+      } else {
+        acc.push({
+          ...item,
+          products: [
+            {
+              quantity: item.totalQuantity,
+              revenue: item.totalRevenue,
+              purchaseDate: new Date(item.purchaseDate).toISOString(),
+            },
+          ],
+          purchaseDate: new Date(item.purchaseDate).toISOString(),
+        });
+      }
+      return acc;
+    }, []);
+  };
+
+  const applyDateFilter = (month, year) => {
+    const filteredData = originalData
+      .map((item) => {
+        const filteredProducts = item.products.filter((product) => {
+          const date = new Date(product.purchaseDate);
+          const monthMatch =
+            month === "all" || date.getMonth().toString() === month;
+          const yearMatch =
+            year === "all" || date.getFullYear().toString() === year;
+          return monthMatch && yearMatch;
+        });
+
+        if (filteredProducts.length === 0) return null;
+
+        const totalQuantity = filteredProducts.reduce(
+          (sum, product) => sum + product.quantity,
+          0
+        );
+        const totalRevenue = filteredProducts.reduce(
+          (sum, product) => sum + product.revenue,
+          0
+        );
+
+        return {
+          ...item,
+          totalQuantity,
+          totalRevenue,
+          products: filteredProducts,
+        };
+      })
+      .filter(Boolean);
+
+    setData(filteredData);
+  };
+
+  const handleMonthChange = (value) => {
+    setSelectedMonth(value);
+    applyDateFilter(value, selectedYear);
+  };
+
+  const handleYearChange = (value) => {
+    setSelectedYear(value);
+    applyDateFilter(selectedMonth, value);
+  };
+
+  const columns = [
+    {
+      accessorKey: "productName",
+      header: "Product Name",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("productName")}</div>
+      ),
+    },
+    {
+      accessorKey: "totalQuantity",
+      header: "Quantity",
+      cell: ({ row }) => <div>{row.getValue("totalQuantity")}</div>,
+    },
+    {
+      accessorKey: "totalRevenue",
+      header: "Revenue",
+      cell: ({ row }) => <div>${row.getValue("totalRevenue").toFixed(2)}</div>,
+    },
+    {
+      accessorKey: "purchaseDate",
+      header: "Purchase Date",
+      cell: ({ row }) => (
+        <div>{new Date(row.getValue("purchaseDate")).toLocaleDateString()}</div>
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data,
@@ -210,41 +306,8 @@ export function SalesReportTable() {
       columnVisibility,
       rowSelection,
     },
-    filterFns: {
-      dateFilter: (row, columnId, filterValue) => {
-        if (typeof filterValue === 'function') {
-          return filterValue(row.getValue(columnId));
-        }
-        return true;
-      },
-    },
   });
 
-  const handleMonthChange = (value) => {
-    setSelectedMonth(value);
-    applyDateFilter(value, selectedYear);
-  };
-
-  const handleYearChange = (value) => {
-    setSelectedYear(value);
-    applyDateFilter(selectedMonth, value);
-  };
-
-  const applyDateFilter = (month, year) => {
-    table.getColumn("purchaseDate")?.setFilterValue((old) => {
-      if (month === "all" && year === "all") {
-        return undefined; // Clear the filter
-      }
-      return (value) => {
-        const date = new Date(value);
-        const monthMatch = month === "all" || date.getMonth().toString() === month;
-        const yearMatch = year === "all" || date.getFullYear().toString() === year;
-        return monthMatch && yearMatch;
-      };
-    });
-  };
-
-  // Generate options for month and year selects
   const months = [
     { value: "all", label: "All Months" },
     { value: "0", label: "January" },
@@ -397,14 +460,21 @@ export function SalesReportTable() {
             disabled={!table.getCanPreviousPage()}
             className="h-8 w-8"
           >
-            <Icon icon="heroicons:chevron-left" className="w-5 h-5 rtl:rotate-180" />
+            <Icon
+              icon="heroicons:chevron-left"
+              className="w-5 h-5 rtl:rotate-180"
+            />
           </Button>
 
           {table.getPageOptions().map((page, pageIdx) => (
             <Button
               key={`sales-report-table-${pageIdx}`}
               onClick={() => table.setPageIndex(pageIdx)}
-              variant={pageIdx === table.getState().pagination.pageIndex ? "" : "outline"}
+              variant={
+                pageIdx === table.getState().pagination.pageIndex
+                  ? ""
+                  : "outline"
+              }
               className={cn("w-8 h-8")}
             >
               {page + 1}
@@ -418,7 +488,10 @@ export function SalesReportTable() {
             size="icon"
             className="h-8 w-8"
           >
-            <Icon icon="heroicons:chevron-right" className="w-5 h-5 rtl:rotate-180" />
+            <Icon
+              icon="heroicons:chevron-right"
+              className="w-5 h-5 rtl:rotate-180"
+            />
           </Button>
         </div>
       </div>
@@ -427,4 +500,3 @@ export function SalesReportTable() {
 }
 
 export default SalesReportTable;
-
