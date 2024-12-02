@@ -85,6 +85,7 @@ import SalesReportTable from "./components/salestable";
 import TouristOrders from "./components/touristOrders";
 import ChangePhoto from "./components/changePhoto";
 import BoughtProducts from "./components/boughtProducts";
+import TouristHistory from "./components/touristHistory";
 function App() {
   return (
     <Router>
@@ -195,6 +196,9 @@ function App() {
         <Route path="/TouristOrders" element={<TouristOrders />} />
 
         <Route path="ChangePhoto" element={<ChangePhoto />} />
+        <Route path="/TouristHistory" element={<TouristHistory />} />
+
+
       </Routes>
     </Router>
   );
