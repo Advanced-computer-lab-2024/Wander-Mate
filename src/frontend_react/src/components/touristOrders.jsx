@@ -61,7 +61,7 @@ const columns = [
       return (
         <div className="whitespace-nowrap">
           <span
-            className={`inline-block px-3 py-[2px] rounded-2xl ${statusClass} text-xs`}
+            className={`inline-block px-3 py-[2px] rounded-2xl ${statusClass} text-xs ml-10px`}
           >
             {statusText}
           </span>
@@ -206,7 +206,7 @@ const TouristOrdersTable = () => {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 flex justify-end">
         <DataTableFacetedFilter
           column={table.getColumn("status")}
           title="Order Status"
