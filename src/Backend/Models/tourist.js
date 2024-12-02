@@ -61,6 +61,7 @@ const touristSchema = new Schema(
     bookmarkedAttractions: {
       type: [ObjectId],
       default: [],
+      ref: "BookMark"
     },
     Currency: {
       type: String,

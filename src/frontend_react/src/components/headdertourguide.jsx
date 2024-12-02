@@ -10,6 +10,26 @@ import coverImage from "../public/images/files/userprofile.jpg"; // Background i
 const HeaderTG = () => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null);
+
+  useEffect(() => {
+    // Get the profile picture URL from sessionStorage
+    const fetchPicture = async () => { 
+    try{
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+  
+      const { userID } = await reply.json();
+      const response = await fetch(`http://localhost:8000/GUIDE/${userID}/image`);
+      setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
+    }catch{
+      console.log("error");
+    }
+  }
+
+   fetchPicture();
+  }, []); 
+
   return (
     <Fragment>
       <Card className="mt-6 rounded-t-2xl overflow-hidden">
@@ -40,7 +60,7 @@ const HeaderTG = () => {
             {/* Avatar and username container */}
             <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
               <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                <AvatarImage src={sessionStorage.getItem("profilePicture")} />
+                <AvatarImage src={profilePicture} />
                 <AvatarFallback className="text-3xl font-bold">TG</AvatarFallback>
               </Avatar>
               <div className="text-white">
