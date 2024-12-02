@@ -400,6 +400,7 @@ const CheckOut = ({
                     amount={amount}
                     onPaymentSuccess={handlePayment}
                     onPaymentError={handlePaymentError}
+                    promo={true}
                   />
                 </Elements>
               )}
@@ -436,18 +437,17 @@ const CheckOut = ({
             )}
             {activeIndex === totalSlide ? (
               <DialogClose asChild>
-                <Button type="button" onClick={() => navigate("/products")}>
-                  Close
-                </Button>
+                <Button type="button">Close</Button>
               </DialogClose>
-            ) : (
+            ) : selected === "rwb_1" && activeIndex !== 2 ? (
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
+                disabled={activeIndex === 2 && selected !== "rwb_1"}
               >
                 Next
               </Button>
-            )}
+            ) : null}
           </div>
         </DialogContent>
       </Dialog>
