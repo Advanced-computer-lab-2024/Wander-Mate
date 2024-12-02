@@ -62,7 +62,7 @@ const Flight = ({ flight }) => {
         To: {arrivalSegment?.arrival?.iataCode || "N/A"}
       </p>
       <p className="mb-4">
-        Price: {flight.price?.total/ (exchangeRates[currency] || 1).toFixed(2)}
+        Price: {flight.price?.total/ (exchangeRates[currency] || 1).toFixed(2)}{" "}
         {flight.price?.currency || ""}
       </p>
       {!isBooking ? (
