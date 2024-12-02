@@ -43,11 +43,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import ComplaintForm from "./fileComplaintComponent";
 
 const SiteLogo = () => (
@@ -125,7 +121,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         const { userID } = await reply.json();
         setTouristId(userID);
 
-        const response = await axios.get(`http://localhost:8000/viewMyNotifications/${userID}`);
+        const response = await axios.get(
+          `http://localhost:8000/viewMyNotifications/${userID}`
+        );
         setNotifications(response.data.notifications || []);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -144,7 +142,8 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
     setOpenDropdown(dropdown);
   };
 
-  const handleMouseLeave = () => {setOpenDropdown(null);
+  const handleMouseLeave = () => {
+    setOpenDropdown(null);
   };
 
   const logout = () => {
@@ -345,12 +344,16 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
 
   const markNotificationAsRead = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:8000/markNotificationAsRead/${touristID}/${id}`);
-  
+      const response = await axios.put(
+        `http://localhost:8000/markNotificationAsRead/${touristID}/${id}`
+      );
+
       if (response.status === 200) {
         setNotifications((prevNotifications) =>
           prevNotifications.map((notification) =>
-            notification._id === id ? { ...notification, isRead: true } : notification
+            notification._id === id
+              ? { ...notification, isRead: true }
+              : notification
           )
         );
       }
@@ -371,13 +374,17 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
-        const response = await axios.delete(`http://localhost:8000/removeNotification/${touristID}/${notificationId}`);
-  
+        const response = await axios.delete(
+          `http://localhost:8000/removeNotification/${touristID}/${notificationId}`
+        );
+
         if (response.status === 200) {
           setNotifications((prevNotifications) =>
-            prevNotifications.filter((notification) => notification._id !== notificationId)
+            prevNotifications.filter(
+              (notification) => notification._id !== notificationId
+            )
           );
-  
+
           toast({
             title: "Success",
             description: "Notification deleted successfully.",
@@ -391,7 +398,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
         }
       } catch (error) {
         console.error("Error deleting notification:", error);
-  
+
         toast({
           title: "Error",
           description: "Failed to delete notification. Please try again.",
@@ -637,13 +644,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={moveAllToCart}
-                  >
-                    Move All to Cart
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
                     onClick={() => setIsWishlistOpen(false)}
                   >
                     Close
@@ -661,8 +661,8 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Notifications">
                   <Bell className="h-5 w-5" />
-                  {notifications.some(n => !n.isRead) && (
-                     <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                  {notifications.some((n) => !n.isRead) && (
+                    <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
                   )}
                 </Button>
               </PopoverTrigger>
@@ -670,19 +670,23 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <div className="space-y-4">
                   <h3 className="font-medium text-lg">Notifications</h3>
                   {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">No new notifications</p>
+                    <p className="text-sm text-gray-500">
+                      No new notifications
+                    </p>
                   ) : (
                     <ScrollArea className="h-[300px]">
                       {notifications.map((notification) => (
                         <div
                           key={notification._id}
                           className={`p-4 ${
-                            notification.isRead ? 'bg-gray-50' : 'bg-blue-50'
+                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
                           } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
                         >
-                          <p 
+                          <p
                             className="text-sm"
-                            onClick={() => markNotificationAsRead(notification._id)}
+                            onClick={() =>
+                              markNotificationAsRead(notification._id)
+                            }
                           >
                             {notification.message}
                           </p>
@@ -746,7 +750,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <FileText className="mr-2 h-4 w-4" />
-                  <span onClick={() => setIsComplaintFormOpen(true)}>File Complaint</span>
+                  <span onClick={() => setIsComplaintFormOpen(true)}>
+                    File Complaint
+                  </span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
