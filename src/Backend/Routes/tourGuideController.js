@@ -620,7 +620,8 @@ const viewItineraryReport = async (req, res) => {
         totalTourists: bookings.length,
         itineraryPrice: itinerary.Price,
         itineraryActive: itinerary.isActive,
-        tourists: bookings.map((booking)=>  booking.userId) // Add tourist names here
+        tourists: bookings.map((booking)=>  booking.userId), // Add tourist names here
+        bookedDates: bookings.map((booking) => booking.bookedDate)
       };
     }));
 
