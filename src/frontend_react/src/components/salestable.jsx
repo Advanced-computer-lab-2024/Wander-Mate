@@ -164,16 +164,13 @@ export function SalesReportTable() {
     const fetchSalesReport = async () => {
       const username = sessionStorage.getItem("username");
       try {
-        const idResponse = await fetch(
-          `http://localhost:8000/getID/${username}`
-        );
+        const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
         if (!idResponse.ok) throw new Error("Failed to get tourist ID");
+  
         const { userID } = await idResponse.json();
-
-        const response = await fetch(
-          `http://localhost:8000/getSalesReport/${userID}`
-        );
+        const response = await fetch(`http://localhost:8000/getSalesReport/${userID}`);
         const result = await response.json();
+  
         if (response.ok) {
           const processedData = processData(result.salesReport);
           setData(processedData);
@@ -185,14 +182,15 @@ export function SalesReportTable() {
         console.error("Error fetching sales report:", error);
       }
     };
-
+  
     fetchSalesReport();
   }, []);
-
+  
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
-      const existingItem = acc.find((i) => i._id === item._id);
+      const existingItem = acc.find((i) => i.productId === item.productId); // Group by productId
       if (existingItem) {
+        // Add to existing product's data
         existingItem.products.push({
           quantity: item.totalQuantity,
           revenue: item.totalRevenue,
@@ -201,8 +199,12 @@ export function SalesReportTable() {
         existingItem.totalQuantity += item.totalQuantity;
         existingItem.totalRevenue += item.totalRevenue;
       } else {
+        // Create a new entry for the product
         acc.push({
-          ...item,
+          productId: item.productId,
+          productName: item.productName,
+          totalQuantity: item.totalQuantity,
+          totalRevenue: item.totalRevenue,
           products: [
             {
               quantity: item.totalQuantity,
@@ -210,12 +212,12 @@ export function SalesReportTable() {
               purchaseDate: new Date(item.purchaseDate).toISOString(),
             },
           ],
-          purchaseDate: new Date(item.purchaseDate).toISOString(),
         });
       }
       return acc;
     }, []);
   };
+  
 
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
@@ -266,6 +268,7 @@ export function SalesReportTable() {
     {
       accessorKey: "productName",
       header: "Product Name",
+      size: 200,
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("productName")}</div>
       ),
@@ -273,20 +276,16 @@ export function SalesReportTable() {
     {
       accessorKey: "totalQuantity",
       header: "Quantity",
+      size: 100,
       cell: ({ row }) => <div>{row.getValue("totalQuantity")}</div>,
     },
     {
       accessorKey: "totalRevenue",
       header: "Revenue",
+      size: 150,
       cell: ({ row }) => <div>${row.getValue("totalRevenue").toFixed(2)}</div>,
     },
-    {
-      accessorKey: "purchaseDate",
-      header: "Purchase Date",
-      cell: ({ row }) => (
-        <div>{new Date(row.getValue("purchaseDate")).toLocaleDateString()}</div>
-      ),
-    },
+    
   ];
 
   const table = useReactTable({
@@ -370,9 +369,7 @@ export function SalesReportTable() {
         </Select>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
+            
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {table
@@ -396,8 +393,8 @@ export function SalesReportTable() {
         </DropdownMenu>
       </div>
       <div>
-        <Table>
-          <TableHeader>
+        <Table className="table-fixed w-full">
+          <TableHeader >
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -415,19 +412,21 @@ export function SalesReportTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody >
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
+                <TableRow 
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="text-center" >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
+                      
                     </TableCell>
                   ))}
                 </TableRow>
@@ -437,6 +436,7 @@ export function SalesReportTable() {
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
+                  
                 >
                   No results.
                 </TableCell>
@@ -447,11 +447,6 @@ export function SalesReportTable() {
       </div>
 
       <div className="flex items-center flex-wrap gap-4 px-4 py-4">
-        <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-
         <div className="flex gap-2 items-center">
           <Button
             variant="outline"

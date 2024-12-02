@@ -8,6 +8,8 @@ import { Star, Gem, Crown, Wallet } from 'lucide-react'
 const LevelAndBadge = () => {
     const [touristBadge, setTouristBadge] = useState(null)
     const [touristWallet, setTouristWallet] = useState(null)
+    const [touristPoints, setPoints] = useState(null)
+    
 
     useEffect(() => {
         const fetchTouristBadge = async () => {
@@ -29,6 +31,12 @@ const LevelAndBadge = () => {
 
                 const { Wallet } = await walletReply.json()
                 setTouristWallet(Wallet)
+
+                const pointsReply = await fetch(`http://localhost:8000/getTouristPoints/${userID}`)
+                if (!pointsReply.ok) throw new Error("Failed to get tourist points")
+                const { Points } = await pointsReply.json()
+                setPoints(Points)
+
             } catch (error) {
                 console.error('Error fetching tourist data:', error)
             }
@@ -79,6 +87,9 @@ const LevelAndBadge = () => {
                 <div className="flex items-center">
                     <Wallet className="mr-2 h-4 w-4" />
                     <span>{touristWallet !== null ? `Wallet: ${touristWallet}` : 'Wallet: 0'}</span>
+                </div>
+                <div>
+                <span>{touristPoints !== null ? `Points: ${touristPoints}` : 'Points: 0'}</span>
                 </div>
             </CardContent>
         </Card>
