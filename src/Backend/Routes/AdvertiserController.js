@@ -632,6 +632,83 @@ const getAdvertiserById = async (req, res) => {
   }
 };
 
+
+const getAttractionSalesReport = async (req, res) => {
+  const { advertiserId } = req.params; // Assuming the advertiser's ID is passed in the URL
+  try {
+    // Step 1: Fetch all attractions created by the advertiser
+    const attractions = await Attraction.find({ Creator: advertiserId }).select(
+      "_id Name Price"
+    );
+    const attractionIds = attractions.map((attraction) => attraction._id);
+
+    if (attractions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No attractions found for this advertiser." });
+    }
+
+    // Step 2: Aggregate bookings for the advertiser's attractions
+    const salesData = await bookingSchema.aggregate([
+      {
+        $match: {
+          itemId: { $in: attractionIds }, // Only include bookings for the advertiser's attractions
+          itemModel: "Attraction", // Ensure we're looking at attractions
+        },
+      },
+      {
+        $group: {
+          _id: {
+            attractionId: "$itemId",
+            bookedDate: "$bookedDate", // Group by attraction and booking date
+          },
+          totalBookings: { $sum: 1 }, // Count bookings
+          totalRevenue: { $sum: "$price" }, // Sum up revenue from prices
+        },
+      },
+      {
+        $lookup: {
+          from: "attractions", // Join with attractions to get details
+          localField: "_id.attractionId",
+          foreignField: "_id",
+          as: "attractionDetails",
+        },
+      },
+      {
+        $unwind: "$attractionDetails", // Unwind to flatten attraction details
+      },
+      {
+        $project: {
+          _id: 0,
+          attractionId: "$_id.attractionId",
+          attractionName: "$attractionDetails.Name",
+          bookedDate: "$_id.bookedDate",
+          totalBookings: 1,
+          totalRevenue: 1,
+        },
+      },
+    ]);
+
+    if (salesData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this advertiser's attractions." });
+    }
+
+    // Step 3: Send response
+    res.status(200).json({
+      message: "Sales report generated successfully.",
+      salesReport: salesData,
+    });
+  } catch (error) {
+    console.error("Error generating attraction sales report:", error);
+    res
+      .status(500)
+      .json({ message: "Server error while generating sales report." });
+  }
+};
+
+
 module.exports = {
   createActivity,
   readActivity,
@@ -654,4 +731,5 @@ module.exports = {
   viewActivityReport,
   notifyAdvertiser,
   getAdvertiserById,
+  getAttractionSalesReport,
 };

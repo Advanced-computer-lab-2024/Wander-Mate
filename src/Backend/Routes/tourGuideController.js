@@ -824,6 +824,83 @@ const markNotificationAsReadTG = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+const getItinerarySalesReport = async (req, res) => {
+  const { guideId } = req.params; // Assuming the guide's ID is passed in the URL
+  try {
+    // Step 1: Fetch all itineraries created by the guide
+    const itineraries = await Itinerary.find({ Creator: guideId }).select(
+      "_id Name Price"
+    );
+    const itineraryIds = itineraries.map((itinerary) => itinerary._id);
+
+    if (itineraries.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No itineraries found for this tour guide." });
+    }
+
+    // Step 2: Aggregate bookings for the guide's itineraries
+    const salesData = await bookingSchema.aggregate([
+      {
+        $match: {
+          itemId: { $in: itineraryIds }, // Only include bookings for the guide's itineraries
+          itemModel: "Itinerary", // Ensure we're looking at itineraries
+        },
+      },
+      {
+        $group: {
+          _id: {
+            itineraryId: "$itemId",
+            bookedDate: "$bookedDate", // Group by itinerary and booking date
+          },
+          totalBookings: { $sum: 1 }, // Count bookings
+          totalRevenue: { $sum: "$price" }, // Sum up revenue from prices
+        },
+      },
+      {
+        $lookup: {
+          from: "itineraries", // Join with itineraries to get details
+          localField: "_id.itineraryId",
+          foreignField: "_id",
+          as: "itineraryDetails",
+        },
+      },
+      {
+        $unwind: "$itineraryDetails", // Unwind to flatten itinerary details
+      },
+      {
+        $project: {
+          _id: 0,
+          itineraryId: "$_id.itineraryId",
+          itineraryName: "$itineraryDetails.Name",
+          bookedDate: "$_id.bookedDate",
+          totalBookings: 1,
+          totalRevenue: 1,
+        },
+      },
+    ]);
+
+    if (salesData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this tour guide's itineraries." });
+    }
+
+    // Step 3: Send response
+    res.status(200).json({
+      message: "Sales report generated successfully.",
+      salesReport: salesData,
+    });
+  } catch (error) {
+    console.error("Error generating itinerary sales report:", error);
+    res
+      .status(500)
+      .json({ message: "Server error while generating sales report." });
+  }
+};
+
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -849,4 +926,5 @@ module.exports = {
   markNotificationAsReadTG,
   deleteMyItinerary,
   getTourGuideDocuments,
+  getItinerarySalesReport,
 };
