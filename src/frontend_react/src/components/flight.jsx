@@ -6,6 +6,9 @@ import PayForFlight from "./payForFlight";
 const Flight = ({ flight }) => {
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState(null);
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
+  const combo = sessionStorage.getItem("curr");
 
   if (!flight) {
     return <div>No flight data available</div>;
@@ -17,6 +20,20 @@ const Flight = ({ flight }) => {
   const handleBook = () => {
     setIsBooking(true);
   };
+  const fetchExchangeRates = async () => {
+    try {
+      const c = sessionStorage.getItem("curr");
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${c}`
+      );
+      const data = await response.json();
+      setExchangeRates(data.rates);
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+  flight.price.currency=[combo];
+  fetchExchangeRates();
 
   const handlePaymentSuccess = () => {
     setIsBooking(false);
@@ -45,7 +62,7 @@ const Flight = ({ flight }) => {
         To: {arrivalSegment?.arrival?.iataCode || "N/A"}
       </p>
       <p className="mb-4">
-        Price: {flight.price?.total || "N/A"}
+        Price: {flight.price?.total/ (exchangeRates[currency] || 1).toFixed(2)}
         {flight.price?.currency || ""}
       </p>
       {!isBooking ? (
