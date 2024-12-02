@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "./ui/button";
@@ -14,7 +12,7 @@ export default function CompletedActivities() {
     align: "start",
     slidesToScroll: 2,
   });
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState([]); // Ensure it's an array
   const [loading, setLoading] = useState(true);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -37,7 +35,12 @@ export default function CompletedActivities() {
         );
         const data = await response.json();
 
-        setActivities(data);
+        // Ensure the response is an array
+        if (Array.isArray(data)) {
+          setActivities(data);
+        } else {
+          throw new Error("Data is not an array");
+        }
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {
@@ -49,16 +52,14 @@ export default function CompletedActivities() {
   }, []);
 
   useEffect(() => {
-    console.log(activities);
     // Fetch all ratings when activities are fetched
     activities.forEach((activity) => {
       getMyRating(activity.itemId._id);
       getMyRating(activity.itemId.Creator._id);
     });
-  }, [activities, userid]); // Runs when activities or userId change
+  }, [activities, userid]);
 
   useEffect(() => {
-    console.log(activities);
     if (emblaApi) {
       const onSelect = () => {
         setCanScrollPrev(emblaApi.canScrollPrev());
@@ -83,10 +84,10 @@ export default function CompletedActivities() {
         `http://localhost:8000/getMyRating/${userid}/${activityId}`
       );
       if (!reply.ok) throw new Error("Failed to get rating");
-      const data = await reply.json(); // Get the rating from the response
+      const data = await reply.json();
       setRatings((prevRatings) => ({
         ...prevRatings,
-        [activityId]: data.rating, // Store the rating by activityId
+        [activityId]: data.rating,
       }));
     } catch (error) {
       console.error(error);
@@ -133,31 +134,29 @@ export default function CompletedActivities() {
       </div>
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex -mx-2">
-          {activities.map((activity) => (
-            <div
-              key={activity._id}
-              className="flex-shrink-0 w-full md:w-1/2 px-2"
-            >
-              <CompletedActivityCard
-                activityId={activity.itemId._id}
-                name={activity.itemId.Name}
-                // images={activity.itemId.LocationsToVisit.flatMap(
-                //   (location) => location.Pictures || []
-                // )}
-                price={activity.itemId.Price}
-                currrn={activity.itemId.Currency || "USD"}
-                rating={activity.itemId.Ratings}
-                TimeLine={activity.itemId.TimeLine}
-                BookedDate={activity.bookedDate}
-                Language={activity.itemId.Language}
-                totalRatings={activity.itemId.Ratings}
-                myItRating={ratings[activity.itemId._id]}
-                myTourRating={ratings[activity.itemId.Creator._id]}
-                Creator={activity.itemId.Creator}
-                reFetchratings={getMyRating}
-              />
-            </div>
-          ))}
+          {Array.isArray(activities) &&
+            activities.map((activity) => (
+              <div
+                key={activity._id}
+                className="flex-shrink-0 w-full md:w-1/2 px-2"
+              >
+                <CompletedActivityCard
+                  activityId={activity.itemId._id}
+                  name={activity.itemId.Name}
+                  price={activity.itemId.Price}
+                  currrn={activity.itemId.Currency || "USD"}
+                  rating={activity.itemId.Ratings}
+                  TimeLine={activity.itemId.TimeLine}
+                  BookedDate={activity.bookedDate}
+                  Language={activity.itemId.Language}
+                  totalRatings={activity.itemId.Ratings}
+                  myItRating={ratings[activity.itemId._id]}
+                  myTourRating={ratings[activity.itemId.Creator._id]}
+                  Creator={activity.itemId.Creator}
+                  reFetchratings={getMyRating}
+                />
+              </div>
+            ))}
         </div>
       </div>
     </div>
