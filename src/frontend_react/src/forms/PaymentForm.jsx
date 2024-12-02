@@ -42,6 +42,7 @@ const PaymentFormInner = ({ amount, onSuccess, onError, promo }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [promoCode, setPromoCode] = useState(false);
+  const combo= sessionStorage.getItem("curr");
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -110,7 +111,7 @@ const PaymentFormInner = ({ amount, onSuccess, onError, promo }) => {
         <CardDescription>
           Enter your card details to make a payment.
         </CardDescription>
-        <CardDescription>Amount: ${amount}</CardDescription>
+        <CardDescription>Amount: {combo}{" "}{amount}</CardDescription>
       </CardHeader>
       <CardContent>
         <Label htmlFor="card-details">Card Details</Label>
