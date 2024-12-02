@@ -3456,6 +3456,26 @@ const getMyOrders = async (req, res) => {
   }
 };
 
+const getTouristPoints = async (req, res) => {
+     const { touristID } = req.params; // Get tourist ID from request parameters
+  
+     try {
+       const tourist = await userModel.findById(touristID).select("Points"); // Fetch only Points field
+  
+      if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found" });
+      }
+   
+    return res.status(200).json({ Points: tourist.Points }); // Return the Points|   } catch (error) {
+     console.error("Error retrieving tourist points:", error);
+     res.status(500).json({ message: "Internal server error", error: error.message });
+   }
+   catch(error){
+    console.error("Error retrieving tourist points:", error);
+   }
+
+   };
+
 module.exports = {
   ViewOrders,
   touristRegister,
@@ -3551,4 +3571,5 @@ module.exports = {
   getTouristWallet,
   getMyOrders,
   viewBoughtProducts,
+  getTouristPoints,
 };

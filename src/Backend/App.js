@@ -112,6 +112,7 @@ const {
   getTouristWallet,
   getMyOrders,
   viewBoughtProducts,
+  getTouristPoints,
 } = require("./Routes/touristController");
 
 const {
@@ -648,3 +649,4 @@ app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
 app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
+app.get("/getTouristPoints/:touristID",getTouristPoints);
