@@ -61,7 +61,7 @@ const HotelCheckOut = ({
 
   const calculateTotalPrice = () => {
     if (!hotel || !hotel.price) return 0;
-    const numericPrice = parseFloat(hotel.price.replace(/[^0-9.]/g, ""));
+    const numericPrice = parseFloat(hotel.price.toFixed(2));
     let roomTypeIncrement = 0;
     if (roomType === "double") {
       roomTypeIncrement = 50;

@@ -23,6 +23,7 @@ const HotelCard = ({
   sponsor,
   checkInDate, // Destructure this prop
   checkOutdate, // Destructure this prop
+  currency,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,6 +36,7 @@ const HotelCard = ({
     cardPhotos,
     cancellationPolicy,
     sponsor,
+    currency,
   };
 
   return (
@@ -85,8 +87,8 @@ const HotelCard = ({
           <h3 className="text-lg font-bold mb-2">{title}</h3>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
-              <DollarSign className="w-5 h-5 text-green-600 mr-1" />
-              <span className="text-2xl font-bold">{price}</span>
+              {/* <DollarSign className="w-5 h-5 text-green-600 mr-1" /> */}
+              <span className="text-2xl font-bold">{currency}{" "}{price.toFixed(2)}</span>
               <span className="text-sm text-muted-foreground ml-1">
                 per night
               </span>

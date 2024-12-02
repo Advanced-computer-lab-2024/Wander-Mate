@@ -43,6 +43,7 @@ const HotelModal = ({
   const [additionalServices, setAdditionalServices] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
   const [isBooked, setIsBooked] = useState(false);
+  const combo=sessionStorage.getItem("curr");
 
   const handleBooking = () => {
     console.log("Booking:", {
@@ -58,7 +59,7 @@ const HotelModal = ({
   };
 
   const calculateTotalPrice = () => {
-    const numericPrice = parseFloat(hotel.price.replace(/[^0-9.]/g, "")); // Extract numeric value
+    const numericPrice = parseFloat(hotel.price.toFixed(2)); // Extract numeric value
 
     // Determine additional cost based on room type
     let roomTypeIncrement = 0;
@@ -170,7 +171,7 @@ const HotelModal = ({
           </div>
           <div>
             <p className="text-lg font-semibold">Total Price</p>
-            <p className="text-2xl font-bold">${calculateTotalPrice()}</p>
+            <p className="text-2xl font-bold">{combo}{" "}{calculateTotalPrice()}</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
