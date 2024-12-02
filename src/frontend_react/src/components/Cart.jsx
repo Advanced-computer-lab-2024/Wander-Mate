@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { toast } from "./ui/use-toast";
 import NavigationMenuBar from "./NavigationMenuBar";
 import { Icon } from "@iconify/react";
+import { Separator } from "./ui/separator";
 
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -375,6 +376,7 @@ export default function ShoppingCart() {
                   cartItems={cartItems}
                   CheckOutDone={CheckOutDone}
                 /> */}
+                <Separator />
                 {!isBooking ? (
                   <Button
                     className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
