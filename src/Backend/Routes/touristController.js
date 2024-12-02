@@ -747,6 +747,15 @@ const BookFlight = async (req, res) => {
     await newBooking.save();
     console.log("newBooking saved successfully.");
 
+    const fakeReq = { body: { amountPaid: price, touristID } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
+
     res.status(201).json({
       message: "Flight booked successfully",
       bookingDetails: { confirmationNumber: bookedFlight._id }, // Add confirmation number
@@ -864,6 +873,15 @@ const bookHotel = async (req, res) => {
     });
 
     await newBooking.save();
+
+    const fakeReq = { body: { amountPaid: price, touristID: userId } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
 
     res
       .status(201)
@@ -1801,6 +1819,15 @@ const bookItinerary = async (req, res) => {
     // Attempt to save the updated itinerary document
     await itinerary.save();
 
+    const fakeReq = { body: { amountPaid: itinerary.Price, touristID: userId } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
+
     // Respond back with success message and booking details
     res.status(200).json({
       message: "Itinerary booked successfully!",
@@ -1838,6 +1865,15 @@ const bookActivity = async (req, res) => {
     // Attempt to save the updated itinerary document
     await activity.save();
     await newBooking.save();
+
+    const fakeReq = { body: { amountPaid: activity.Price, touristID: userId } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -2831,6 +2867,15 @@ const makeOrder = async (req, res) => {
       quantities,
     });
     await order.save();
+
+    const fakeReq = { body: { amountPaid: total, touristID: userId } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
     return res
       .status(200)
       .json({ message: "Order created successfully", order });
