@@ -109,6 +109,7 @@ const columns = [
       const date = new Date(row.getValue("purchaseDate"));
       return <div className="text-center">{date.toLocaleDateString()}</div>;
     },
+    filterFn: "dateFilter",
   },
   {
     id: "actions",
@@ -147,8 +148,8 @@ export function SalesReportTable() {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("all");
+  const [selectedYear, setSelectedYear] = useState("all");
 
   useEffect(() => {
     const fetchSalesReport = async () => {
@@ -161,7 +162,23 @@ export function SalesReportTable() {
         const response = await fetch(`http://localhost:8000/getSalesReport/${userID}`);
         const result = await response.json();
         if (response.ok) {
-          setData(result.salesReport.map(item => ({
+          // Combine products with similar _id and add their revenues
+          const combinedData = result.salesReport.reduce((acc, item) => {
+            const existingItem = acc.find(i => i._id === item._id);
+            if (existingItem) {
+              existingItem.totalQuantity += item.totalQuantity;
+              existingItem.totalRevenue += item.totalRevenue;
+              // Keep the latest purchase date
+              if (new Date(item.purchaseDate) > new Date(existingItem.purchaseDate)) {
+                existingItem.purchaseDate = item.purchaseDate;
+              }
+            } else {
+              acc.push({...item});
+            }
+            return acc;
+          }, []);
+
+          setData(combinedData.map(item => ({
             ...item,
             purchaseDate: new Date(item.purchaseDate).toISOString() // Ensure date is in ISO format
           })));
@@ -193,22 +210,38 @@ export function SalesReportTable() {
       columnVisibility,
       rowSelection,
     },
+    filterFns: {
+      dateFilter: (row, columnId, filterValue) => {
+        if (typeof filterValue === 'function') {
+          return filterValue(row.getValue(columnId));
+        }
+        return true;
+      },
+    },
   });
 
   const handleMonthChange = (value) => {
     setSelectedMonth(value);
-    table.getColumn("purchaseDate")?.setFilterValue((old) => ({
-      ...old,
-      month: value === "all" ? "" : value,
-    }));
+    applyDateFilter(value, selectedYear);
   };
 
   const handleYearChange = (value) => {
     setSelectedYear(value);
-    table.getColumn("purchaseDate")?.setFilterValue((old) => ({
-      ...old,
-      year: value === "all" ? "" : value,
-    }));
+    applyDateFilter(selectedMonth, value);
+  };
+
+  const applyDateFilter = (month, year) => {
+    table.getColumn("purchaseDate")?.setFilterValue((old) => {
+      if (month === "all" && year === "all") {
+        return undefined; // Clear the filter
+      }
+      return (value) => {
+        const date = new Date(value);
+        const monthMatch = month === "all" || date.getMonth().toString() === month;
+        const yearMatch = year === "all" || date.getFullYear().toString() === year;
+        return monthMatch && yearMatch;
+      };
+    });
   };
 
   // Generate options for month and year selects
