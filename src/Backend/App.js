@@ -112,6 +112,8 @@ const {
   getTouristWallet,
   getMyOrders,
   viewBoughtProducts,
+  getTouristPoints,
+  unbookmarkEvent,
 } = require("./Routes/touristController");
 
 const {
@@ -608,6 +610,7 @@ app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
+app.delete('/unbookmarkEvent', unbookmarkEvent);
 app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
@@ -648,3 +651,4 @@ app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
 app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
+app.get("/getTouristPoints/:touristID",getTouristPoints);

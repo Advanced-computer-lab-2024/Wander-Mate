@@ -167,14 +167,14 @@ const CheckOut = ({
         "http://localhost:8000/makeOrder",
         orderData
       );
-      // if (response.status === 200) {
-      //   toast({
-      //     title: "Order Created",
-      //     description: "Your order has been successfully created.",
-      //   });
-      //   setActiveIndex(totalSlide); // Move to the final step
-      //   CheckOutDone();
-      // }
+       if (response.status === 200) {
+         toast({
+           title: "Order Created",
+           description: "Your order has been successfully created.",
+         });
+         setActiveIndex(totalSlide);  //Move to the final step
+         CheckOutDone();
+       }
 
       setActiveIndex(totalSlide);
     } catch (error) {
@@ -432,22 +432,22 @@ const CheckOut = ({
               </Button>
             ) : (
               <DialogClose asChild variant="outline">
-                <Button type="button">Close</Button>
+                <Button type="button" onClick={() => navigate("/products")}>Close</Button>
               </DialogClose>
             )}
             {activeIndex === totalSlide ? (
               <DialogClose asChild>
-                <Button type="button">Close</Button>
+                <Button type="button" onClick={() => navigate("/products")}>Close</Button>
               </DialogClose>
-            ) : selected === "rwb_1" && activeIndex !== 2 ? (
-              <Button
-                type="button"
-                onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
-                disabled={activeIndex === 2 && selected !== "rwb_1"}
-              >
-                Next
-              </Button>
-            ) : null}
+            ) : selected === "rwb_1" && activeIndex === 2 ? (
+              null
+            ) : <Button
+            type="button"
+            onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
+            disabled={activeIndex === 2 && selected !== "rwb_1"}
+          >
+            Next
+          </Button>}
           </div>
         </DialogContent>
       </Dialog>

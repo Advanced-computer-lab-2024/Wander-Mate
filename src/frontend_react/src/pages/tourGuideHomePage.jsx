@@ -12,7 +12,7 @@ const TourGuidePage = () => {
           <div className="relative -top-6"> {/* Negative margin to move the header up */}
             <HeaderTG />
           </div>
-          <div className="mt-8 ml-0 px-4 h-full"> {/* h-full makes it cover remaining space */}
+          <div className=" relative -top-0"> {/* h-full makes it cover remaining space */}
             <TourGuideProfileManager />
           </div>
         </div>
