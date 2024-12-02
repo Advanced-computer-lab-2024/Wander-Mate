@@ -5,6 +5,7 @@ import CheckOut from "./checkout";
 import { Button } from "./ui/button";
 import { toast } from "./ui/use-toast";
 import NavigationMenuBar from "./NavigationMenuBar";
+import { Icon } from "@iconify/react";
 
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -16,6 +17,8 @@ export default function ShoppingCart() {
   const [isLoading, setIsLoading] = useState(false);
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [Cart, setCart] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -237,6 +240,9 @@ export default function ShoppingCart() {
       });
     }
   };
+  const handleBook = () => {
+    setIsBooking(true);
+  };
 
   return (
     <>
@@ -361,14 +367,35 @@ export default function ShoppingCart() {
                     </span>
                   </div>
                 </div>
-                <CheckOut
+                {/* <CheckOut
                   touristID={ID}
                   amount={subtotal + 20 - discount}
                   disabled={cartItems.length === 0}
                   voucherCode={appliedPromo}
                   cartItems={cartItems}
                   CheckOutDone={CheckOutDone}
-                />
+                /> */}
+                {!isBooking ? (
+                  <Button
+                    className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
+                    onClick={handleBook}
+                  >
+                    <Icon
+                      icon="heroicons:shopping-bag"
+                      className="w-4 h-4 mr-2"
+                    />
+                    Checkout
+                  </Button>
+                ) : (
+                  <CheckOut
+                    touristID={ID}
+                    amount={subtotal + 20 - discount}
+                    disabled={cartItems.length === 0}
+                    voucherCode={appliedPromo}
+                    cartItems={cartItems}
+                    CheckOutDone={CheckOutDone}
+                  />
+                )}
               </div>
             </div>
           </div>

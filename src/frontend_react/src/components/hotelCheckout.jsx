@@ -138,6 +138,8 @@ const HotelCheckOut = ({
       //   });
       //   setActiveIndex(totalSlide);
       // }
+
+      setActiveIndex(totalSlide);
     } catch (error) {
       console.error("Error processing booking:", error);
       // toast({
@@ -147,7 +149,6 @@ const HotelCheckOut = ({
       //   variant: "destructive",
       // });
     }
-    setActiveIndex(totalSlide);
   };
 
   const handlePaymentError = (error) => {

@@ -94,6 +94,52 @@ const CheckOut = ({
       }
     }
   };
+  const handleWallet = async () => {
+    try {
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID,
+        amount,
+      });
+      if (response.status === 200) {
+        setAlertMessage(null);
+        handlePayment();
+        handleNextSlide();
+      } else {
+        setAlertMessage(response.data || "Payment failed.");
+      }
+    } catch (error) {
+      setAlertMessage("An error occurred during the transaction.");
+    }
+  };
+
+  const handleNextSlide = () => {
+    if (activeIndex === 1) {
+      // Check if address is selected
+      if (!address || address === 0) {
+        setAlertMessage("Please select an address before proceeding.");
+        return; // Exit the function early if no address is selected
+      }
+    }
+
+    if (activeIndex === 2 && selected === "rwb_1") {
+      if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
+        handlePayment();
+      } else {
+        setAlertMessage("Please fill in all credit card details.");
+      }
+    } else if (activeIndex === totalSlide - 1) {
+      handlePayment();
+    } else {
+      setActiveIndex(activeIndex + 1);
+      setAlertMessage(null);
+    }
+  };
+
+  const handlePrevSlide = () => {
+    if (activeIndex > 1) {
+      setActiveIndex(activeIndex - 1);
+    }
+  };
 
   const handlePayment = async () => {
     try {
@@ -121,14 +167,16 @@ const CheckOut = ({
         "http://localhost:8000/makeOrder",
         orderData
       );
-      if (response.status === 200) {
-        toast({
-          title: "Order Created",
-          description: "Your order has been successfully created.",
-        });
-        setActiveIndex(totalSlide); // Move to the final step
-        CheckOutDone();
-      }
+      // if (response.status === 200) {
+      //   toast({
+      //     title: "Order Created",
+      //     description: "Your order has been successfully created.",
+      //   });
+      //   setActiveIndex(totalSlide); // Move to the final step
+      //   CheckOutDone();
+      // }
+
+      setActiveIndex(totalSlide);
     } catch (error) {
       console.error("Error processing payment:", error);
       toast({
@@ -140,51 +188,10 @@ const CheckOut = ({
     }
   };
 
-  const handleNextSlide = () => {
-    console.log(cartItems);
-    if (activeIndex === 2 && selected === "rwb_1") {
-      if (Object.values(cardDetails).every((field) => field.trim() !== "")) {
-        handlePayment();
-      } else {
-        setAlertMessage("Please fill in all credit card details.");
-      }
-    } else if (activeIndex === totalSlide - 1) {
-      handlePayment();
-    } else {
-      setActiveIndex(activeIndex + 1);
-      setAlertMessage(null);
-    }
-  };
-
-  const handleWallet = async () => {
-    try {
-      const response = await axios.put("http://localhost:8000/payWithWallet", {
-        touristID,
-        amount,
-      });
-      if (response.status !== 200) {
-        setAlertMessage(response.data || "Payment failed.");
-      } else {
-        await handlePayment();
-      }
-    } catch (error) {
-      setAlertMessage("Insufficient balance");
-    }
-  };
-
-  const handlePrevSlide = () => {
-    if (activeIndex > 1) {
-      setActiveIndex(activeIndex - 1);
-    }
-  };
-
-  const handleCardInputChange = (e) => {
-    const { name, value } = e.target;
-    setCardDetails((prev) => ({ ...prev, [name]: value }));
-  };
-  const handlePaymentSuccess = () => {
-    setActiveIndex(totalSlide);
-  };
+  // const handleCardInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setCardDetails((prev) => ({ ...prev, [name]: value }));
+  // };
 
   const handlePaymentError = (error) => {
     setAlertMessage(error);
@@ -198,7 +205,7 @@ const CheckOut = ({
             className="w-full text-white py-2 rounded mt-1"
             disabled={disabled}
           >
-            Checkout
+            Confirm Checkout
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
@@ -391,7 +398,7 @@ const CheckOut = ({
                 <Elements stripe={stripePromise}>
                   <PaymentForm
                     amount={amount}
-                    onPaymentSuccess={handlePaymentSuccess}
+                    onPaymentSuccess={handlePayment}
                     onPaymentError={handlePaymentError}
                   />
                 </Elements>
