@@ -65,6 +65,7 @@ import TouristPrefrenceTags from "./components/TouristPrefrenceTags";
 import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
+import AboutUsTG from "./pages/aboutUsTG";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -84,6 +85,7 @@ import AdminPersonalDetails from "./components/AdminPersonalDetails";
 import SalesReportTable from "./components/salestable";
 import TouristOrders from "./components/touristOrders";
 import ChangePhoto from "./components/changePhoto";
+import TourGuideDocs from "./pages/docsTG";
 function App() {
   return (
     <Router>
@@ -161,6 +163,7 @@ function App() {
         <Route path="/completedItineraries" element={<CompletedItineraries />} />
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/AboutUsTG" element={<AboutUsTG />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
@@ -179,6 +182,7 @@ function App() {
         <Route path="/TouristOrders" element={<TouristOrders/>}/>
         
         <Route path="ChangePhoto" element={<ChangePhoto />} />
+        <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
       </Routes>
     </Router>
   );
