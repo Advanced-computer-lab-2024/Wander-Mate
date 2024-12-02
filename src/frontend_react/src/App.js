@@ -203,6 +203,7 @@ function App() {
         <Route path="/AdminProducts" element={<AdminProducts />} />
         <Route path="/salestable" element={<SalesReportTable />} />
         <Route path="/TouristOrders" element={<TouristOrders />} />
+        <Route path="/viewBookmarks" element={<ViewBookmarks />} />
 
         <Route path="ChangePhoto" element={<ChangePhoto />} />
         <Route path="/TouristHistory" element={<TouristHistory />} />
