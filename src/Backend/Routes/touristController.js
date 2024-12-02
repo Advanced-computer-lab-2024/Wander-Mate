@@ -1149,6 +1149,45 @@ const viewAttendedActivities = async (req, res) => {
   }
 };
 
+const viewBoughtProducts = async (req, res) => {
+  const touristId = req.params.touristId; // Get the touristId from params
+  try {
+    // Step 1: Fetch the orders
+    const orders = await ordermodel
+      .find({ userId: touristId })
+      .populate("products");
+
+    // Step 2: Filter out only the 'delivered' orders
+    const deliveredOrders = orders.filter(
+      (order) => order.status === "delivered"
+    );
+
+    // Step 3: Get all products from the delivered orders
+    const products = deliveredOrders.flatMap((order) => order.products);
+
+    // Step 4: Manually populate the seller for each product
+    const populatedProducts = await Promise.all(
+      products.map(async (product) => {
+        const seller = await Usernames.findOne({ userID: product.seller }); // Query User by userID
+        return { ...product.toObject(), seller }; // Attach the seller to the product
+      })
+    );
+
+    // Step 5: Ensure products are unique (in case of duplicates)
+    const uniqueProducts = Array.from(
+      new Map(
+        populatedProducts.map((product) => [product._id.toString(), product])
+      ).values()
+    );
+
+    // Step 6: Send the response with populated products
+    res.status(200).json(uniqueProducts);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Error fetching products" });
+  }
+};
+
 const viewAttendedItineraries = async (req, res) => {
   const touristId = req.params.touristId; // Get the touristId from params
   const model = "Itinerary";
@@ -1903,9 +1942,7 @@ const getProductReviews = async (req, res) => {
   const { productId } = req.params; // Get productId from the request parameters
   try {
     // Find reviews related to the specific productId, and select only the 'review' field
-    const reviews = await ReviewModel.find({ itemId: productId }).select(
-      "review"
-    );
+    const reviews = await ReviewModel.find({ itemId: productId });
 
     // If no reviews found, send a message indicating that
     if (!reviews || reviews.length === 0) {
@@ -1917,7 +1954,7 @@ const getProductReviews = async (req, res) => {
     // Return the reviews in the response (only the 'review' field)
     res.status(200).json({
       message: "Reviews fetched successfully",
-      reviews: reviews.map((review) => review.review), // Send only the review text
+      reviews, // Send only the review text
     });
   } catch (error) {
     console.error("Error fetching reviews:", error.message);
@@ -3362,25 +3399,30 @@ const getMyOrders = async (req, res) => {
   const { userId } = req.params; // Get userId (touristId) from the route parameter
 
   if (!userId) {
-    return res.status(400).json({ message: "Missing required parameter: userId" });
+    return res
+      .status(400)
+      .json({ message: "Missing required parameter: userId" });
   }
 
   try {
     // Find orders by userId (touristId)
-    const orders = await ordermodel.find({ userId }).populate("products address");
+    const orders = await ordermodel
+      .find({ userId })
+      .populate("products address");
 
     if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user" });
     }
 
-    return res.status(200).json({ message: "Orders fetched successfully", orders });
+    return res
+      .status(200)
+      .json({ message: "Orders fetched successfully", orders });
   } catch (error) {
     return res
       .status(500)
       .json({ message: "Error fetching orders", error: error.message });
   }
 };
-
 
 module.exports = {
   ViewOrders,
@@ -3476,4 +3518,5 @@ module.exports = {
   getTouristLevel,
   getTouristWallet,
   getMyOrders,
+  viewBoughtProducts,
 };

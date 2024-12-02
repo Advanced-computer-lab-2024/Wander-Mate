@@ -22,19 +22,20 @@ const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
 );
 
-const PaymentForm = (props) => {
+const PaymentForm = (props, { promo = false }) => {
   return (
     <Elements stripe={stripePromise}>
       <PaymentFormInner
         amount={props.amount}
         onSuccess={props.onPaymentSuccess}
         onError={props.onPaymentError}
+        promo={promo}
       />
     </Elements>
   );
 };
 
-const PaymentFormInner = ({ amount, onSuccess, onError }) => {
+const PaymentFormInner = ({ amount, onSuccess, onError, promo }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -124,7 +125,11 @@ const PaymentFormInner = ({ amount, onSuccess, onError }) => {
 
       <CardFooter className="flex flex-col space-y-4">
         <div className="flex justify-between w-full">
-          <Button onClick={handlePromoCode}>Promo Code</Button>
+          {promo ? (
+            <Button onClick={handlePromoCode}>Promo Code</Button>
+          ) : (
+            <h1 />
+          )}
           <Button
             onClick={handlePayment}
             disabled={loading || !stripe || !elements}
