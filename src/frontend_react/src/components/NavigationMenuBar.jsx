@@ -370,7 +370,10 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToProfile = async () => {
     navigate("/UserProfilePage");
   };
-
+ 
+  const goToHistory = async () => {
+    navigate("/touristHistory");
+  };
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
@@ -733,7 +736,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <History className="mr-2 h-4 w-4" />
-                    <span>History</span>
+                    <span onClick={goToHistory}>History</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
