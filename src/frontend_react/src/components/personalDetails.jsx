@@ -1,19 +1,22 @@
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
-import { Skeleton } from "./ui/skeleton"; // Importing Skeleton component
-import { useState, useEffect } from "react";
+import { Skeleton } from "./ui/skeleton";
 import Select from "react-select";
 import { format, parseISO } from "date-fns";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const PersonalDetails = () => {
-  const [userData, setUserData] = useState(null); // User data from backend
-  const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
-  const [loading, setLoading] = useState(true); // Loading state
-  const [currencies, setCurrencies] = useState([]); // Currency options
-  const [nations, setNations] = useState([]); // Nationality options
+  const [userData, setUserData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currencies, setCurrencies] = useState([]);
+  const [nations, setNations] = useState([]);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const navigate = useNavigate();
 
   const [jobs] = useState([
     { value: "developer", label: "Developer" },
@@ -108,13 +111,16 @@ const PersonalDetails = () => {
       );
 
       if (response.status === 200) {
-        sessionStorage.setItem("curr",updatedData.Currency || "USD");
+        sessionStorage.setItem("curr", updatedData.Currency || "USD");
         setIsEditing(false);
+        alert("Profile updated successfully");
       } else {
         console.log("Error saving data:", response.data);
+        alert("Failed to update profile. Please try again.");
       }
     } catch (error) {
       console.error("Error saving user data:", error);
+      alert("An unexpected error occurred. Please try again later.");
     }
   };
 
@@ -124,6 +130,35 @@ const PersonalDetails = () => {
       [key]: value,
     }));
   };
+
+  const handleDeleteAccount = useCallback(async () => {
+    if (!userData?._id) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeletingAccount(true);
+    try {
+      console.log(userData);
+      const response = await axios.delete(`http://localhost:8000/requestTouristAccountDeletion/${userData._id}`);
+      if (response.status === 200) {
+        alert("Your account deletion has been requested successfully. Your profile and associated data will no longer be visible.");
+        navigate("/registerPage");
+        // You might want to redirect the user or perform some other action here
+        // For example: window.location.href = '/logout';
+      } else {
+        alert("Failed to request account deletion. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error requesting account deletion:", error);
+      alert(error.response?.data?.message || "An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  }, [userData?._id]);
 
   if (loading || !userData) {
     return (
@@ -273,6 +308,13 @@ const PersonalDetails = () => {
             ) : (
               <Button onClick={handleEdit}>Edit</Button>
             )}
+            <Button
+              color="destructive"
+              onClick={handleDeleteAccount}
+              disabled={isDeletingAccount}
+            >
+              {isDeletingAccount ? "Requesting Deletion..." : "Delete Account"}
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -281,3 +323,4 @@ const PersonalDetails = () => {
 };
 
 export default PersonalDetails;
+
