@@ -64,7 +64,7 @@ const HeaderTG = () => {
             <div className="absolute bottom-4 right-6 flex gap-6 z-10">
               {[
                 { title: "Documents", link: "/TourGuideDocs" },
-                { title: "Settings", link: "/user-profile/settings" },
+                { title: "Settings", link: "/TourGuidePage" },
               ].map((item, index) => (
                 <Link
                   key={`user-profile-link-${index}`}
