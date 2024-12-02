@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -13,16 +13,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  ShoppingCart,
-  User,
-  AlertTriangle,
-  Backpack,
-  CloudUploadIcon,
-  LockKeyholeIcon,
-  Ticket,
-  ShoppingBasket,
-} from "lucide-react";
+import { ShoppingCart, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
 
 const SiteLogo = () => (
   <svg
@@ -53,12 +44,15 @@ const AdminNavBar = () => {
   const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
-    setOpenDropdown(dropdown);
+    if (dropdown === "products") {
+      setOpenDropdown(dropdown);
+    }
   };
 
   const handleMouseLeave = () => {
     setOpenDropdown(null);
   };
+
   const goToProfile = async () => {
     navigate("/UserProfilePage");
   };
@@ -67,35 +61,17 @@ const AdminNavBar = () => {
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
+
           <Link to="/" className="flex items-center space-x-2">
-            <SiteLogo />
+        <SiteLogo/>
             <span className="text-xl font-bold">Wandermate</span>
           </Link>
-
-          <DropdownMenu open={openDropdown === "adminItinerary"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("adminItinerary")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Itineraries
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("adminItinerary")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/adminItinerary" className="flex items-center">
-                  <Ticket className="mr-2 h-4 w-4" />
-                  <span>View Itineraries</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
+          <Link to="/adminItinerary">
+            <Button variant="ghost">
+              <Ticket className="mr-2 h-4 w-4" />
+              Itineraries
+            </Button>
+          </Link>
 
           <DropdownMenu open={openDropdown === "products"}>
             <DropdownMenuTrigger asChild>
@@ -104,6 +80,7 @@ const AdminNavBar = () => {
                 onMouseEnter={() => handleMouseEnter("products")}
                 onMouseLeave={handleMouseLeave}
               >
+                <ShoppingBasket className="mr-2 h-4 w-4" />
                 Products
               </Button>
             </DropdownMenuTrigger>
@@ -115,108 +92,46 @@ const AdminNavBar = () => {
               <DropdownMenuItem>
                 <Link to="/AdminProducts" className="flex items-center">
                   <ShoppingBasket className="mr-2 h-4 w-4" />
-                  <span>View Products</span>
+                  <span>All Products</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/SellerProducts" className="flex items-center">
+                  <ShoppingBasket className="mr-2 h-4 w-4" />
+                  <span>My Products</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <Link to="/adminOrders">
+            <Button variant="ghost">
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Orders
+            </Button>
+          </Link>
 
-          <DropdownMenu open={openDropdown === "orders"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("orders")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Orders
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("orders")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/adminOrders" className="flex items-center">
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  <span>View Orders</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Link to="/viewAllComplaints">
+            <Button variant="ghost">
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Complaints
+            </Button>
+          </Link>
 
-          <DropdownMenu open={openDropdown === "complaints"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("complaints")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Complaints
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("complaints")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/viewAllComplaints" className="flex items-center">
-                  <AlertTriangle className="mr-2 h-4 w-4" />
-                  <span>View Complaints</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Link to="/createActivity">
+            <Button variant="ghost">
+              <Backpack className="mr-2 h-4 w-4" />
+              Activity
+            </Button>
+          </Link>
 
-          <DropdownMenu open={openDropdown === "createActivity"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("createActivity")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Activity
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("createActivity")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/createActivity" className="flex items-center">
-                  <Backpack className="mr-2 h-4 w-4" />
-                  <span>Create Activity</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu open={openDropdown === "uploadDocs"}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                onMouseEnter={() => handleMouseEnter("uploadDocs")}
-                onMouseLeave={handleMouseLeave}
-              >
-                Documents
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              onMouseEnter={() => handleMouseEnter("uploadDocs")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <DropdownMenuItem>
-                <Link to="/uploadDocs" className="flex items-center">
-                  <CloudUploadIcon className="mr-2 h-4 w-4" />
-                  <span>Upload Documents</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
+          <Link to="/uploadDocs">
+            <Button variant="ghost">
+              <CloudUploadIcon className="mr-2 h-4 w-4" />
+              Documents
+            </Button>
+          </Link>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -244,3 +159,4 @@ const AdminNavBar = () => {
 };
 
 export default AdminNavBar;
+

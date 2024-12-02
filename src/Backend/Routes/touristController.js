@@ -1310,6 +1310,16 @@ const bookTransportation = async (req, res) => {
     await transportation.save();
 
     // Respond back with success message and booking details
+
+     // Call the calculateLoyaltyPoints function
+     const fakeReq = { body: { amountPaid: transportation.price, touristID: userId } };
+     const fakeRes = {
+         json: (response) => {
+           console.log("Loyalty points response:", response);
+         },
+       
+     };
+     await calculateLoyaltyPoints(fakeReq, fakeRes);
     res.status(200).json({
       message: "Transportation booked successfully!",
       booking: newBooking,
@@ -2317,12 +2327,13 @@ const Bookmarkevent = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if event is already bookmarked
-    if (user.bookmarkedAttractions.includes(eventId)) {
-      return res.status(400).json({ message: "Event already bookmarked" });
-    }
+    // Check if event is already bookmarked by checking all bookmarks
+    const isEventBookmarked = await user.bookmarkedAttractions.some(async (bookmarkId) => {
+      const bookmark = await bookmarked.findById(bookmarkId);
+      return bookmark && bookmark.event.includes(eventId);
+    });
 
-    // Add or update bookmark in BookMark collection
+    // Find or create a bookmark document in the Bookmarked collection
     let bookmark = await bookmarked.findOne({ userId, eventModel: type });
 
     if (!bookmark) {
@@ -2333,7 +2344,7 @@ const Bookmarkevent = async (req, res) => {
         eventModel: type,
       });
     } else {
-      // If the document exists, add the event to the `event` array
+      // If the document exists, add the event to the `event` array (if not already added)
       if (!bookmark.event.includes(eventId)) {
         bookmark.event.push(eventId);
       }
@@ -2342,11 +2353,23 @@ const Bookmarkevent = async (req, res) => {
     // Save bookmark
     await bookmark.save();
 
-    // Update user's `bookmarkedAttractions`
-    user.bookmarkedAttractions.push(eventId);
-    await user.save();
+    // Toggle bookmark in `user.bookmarkedAttractions`
+    if (isEventBookmarked) {
+      // Remove the bookmark ID if the event is already bookmarked (unbookmarking)
+      user.bookmarkedAttractions = user.bookmarkedAttractions.filter(
+        (id) => id.toString() !== bookmark._id.toString()
+      );
+      await user.save();
+      return res.status(200).json({ message: "Event unbookmarked successfully" });
+    } else {
+      // Push the bookmark ID if it's not already bookmarked
+      if (!user.bookmarkedAttractions.includes(bookmark._id.toString())) {
+        user.bookmarkedAttractions.push(bookmark._id);
+        await user.save();
+      }
+      return res.status(200).json({ message: "Event bookmarked successfully" });
+    }
 
-    return res.status(200).json({ message: "Event bookmarked successfully" });
   } catch (error) {
     console.error("Error bookmarking event:", error);
     return res.status(500).json({
@@ -2355,6 +2378,64 @@ const Bookmarkevent = async (req, res) => {
     });
   }
 };
+
+
+const unbookmarkEvent = async (req, res) => {
+  const { userId, eventId, type } = req.body;
+
+  // Ensure required fields are present
+  if (!userId || !eventId || !type) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Find the user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      console.error("User not found:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the bookmark for the user and event type
+    let bookmark = await bookmarked.findOne({ userId, eventModel: type });
+    if (!bookmark) {
+      console.error("Bookmark not found for user:", userId, "and event:", eventId);
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+
+    // Check if the eventId is in the bookmark's event array
+    if (!bookmark.event.includes(eventId)) {
+      console.error("Event ID not found in bookmark:", eventId);
+      return res.status(404).json({ message: "Event not found in bookmark" });
+    }
+
+    // Remove the eventId from the bookmark's event list
+    bookmark.event = bookmark.event.filter(id => id.toString() !== eventId);
+
+    // If no more events are left, delete the bookmark
+    if (bookmark.event.length === 0) {
+      await bookmark.deleteOne();
+    } else {
+      await bookmark.save();
+    }
+
+    // Remove the bookmark ID from the user's `bookmarkedAttractions`
+    user.bookmarkedAttractions = user.bookmarkedAttractions.filter(
+      (id) => id.toString() !== bookmark._id.toString()
+    );
+    await user.save();
+
+    return res.status(200).json({ message: "Event unbookmarked successfully" });
+  } catch (error) {
+    console.error("Error unbookmarking event:", error);
+    return res.status(500).json({
+      message: "Error unbookmarking event",
+      error: error.message,
+    });
+  }
+};
+
+
 
 const ViewBookmarkedAttractions = async (req, res) => {
   const { userId } = req.params;
@@ -3572,4 +3653,5 @@ module.exports = {
   getMyOrders,
   viewBoughtProducts,
   getTouristPoints,
+  unbookmarkEvent,
 };
