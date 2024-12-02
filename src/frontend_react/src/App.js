@@ -72,6 +72,7 @@ import RevinueChart from "./components/RevinueChart";
 import CompletedActivities from "./components/completedActivities";
 import AddAdminButton from "./components/AddAdminButton";
 import AddTourismGovButton from "./components/AddTourismGovButton";
+import AddTourismGovButton from "./components/AddTourismGovButton";
 import LevelAndBadge from "./components/levelAndBadge";
 import ItineraryReport from "./components/ui/ItineraryReport";
 import AdvertiserProfileManager from "./pages/AdvertiserProfileInformation";
@@ -87,6 +88,7 @@ import ChangePhoto from "./components/changePhoto";
 import BoughtProducts from "./components/boughtProducts";
 import TouristHistory from "./components/touristHistory";
 import OrdersTable from "./components/allOrdersTable";
+import ViewBookmarks from "./pages/ViewBookmarks";
 function App() {
   return (
     <Router>
