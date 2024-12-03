@@ -23,6 +23,7 @@ import {
   Ticket,
   ShoppingBasket,
 } from "lucide-react";
+import  AddAdminButton  from "../components/AddAdminButton";
 
 const SiteLogo = () => (
   <svg
@@ -73,7 +74,7 @@ const AdminNavBar = () => {
   };
 
   const goToProfile = async () => {
-    navigate("/UserProfilePage");
+    navigate("/AdminProfile");
   };
   const logout = () => {
     sessionStorage.removeItem("username");
@@ -173,6 +174,11 @@ const AdminNavBar = () => {
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span onClick={logout}>Add admin</span>
                   <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
