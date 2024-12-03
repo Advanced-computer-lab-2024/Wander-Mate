@@ -163,8 +163,9 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
 ```
 ---
 ## Testing
-
-![Screenshot](Screenshot%202024-12-03%20at%2010.12.10%20PM.png)
+- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view
+                             the desired outcome here is an example
+![Screenshot](src/frontend_react/src/Screenshot-2024-12-03-at-10.12.10 PM.svg)
 
 
 ---
@@ -172,3 +173,41 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
 - **Vs Code link:** https://code.visualstudio.com/download
 - **MongoDB link:** https://www.mongodb.com/try/download/community
 - **Postman link:** https://www.postman.com/downloads/
+---
+## License
+
+This project is licensed under the following licenses:
+
+- **BSD-3-Clause**: This project includes dependencies licensed under the BSD-3-Clause License.
+- **Apache-2.0**: This project includes dependencies licensed under the Apache License 2.0.
+- **ISC**: This project includes dependencies licensed under the ISC License.
+- **0BSD**: This project includes dependencies licensed under the 0BSD License.
+- **BSD-2-Clause**: This project includes dependencies licensed under the BSD-2-Clause License.
+- **AGPL-3.0**: This project includes dependencies licensed under the Affero General Public License v3.0.
+
+### Third-Party Licenses:
+- **Stripe**: This project uses Stripe for payment processing. Stripe is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
+---
+## Credits
+
+We would like to acknowledge the following resources and tools used during the development of this project:
+
+1. **ChatGPT**: Used for assistance with coding, problem-solving and error handling .
+2. **V0 by Vercel**: A useful resource for frontend development and deployment.
+3. **CMS GUC**: The content management system used for learning skills needed for achieving the goals of the project more efficiently  - [cms.guc.edu.eg](https://cms.guc.edu.eg).
+4. **Lucide Logos**: Icon set used for various UI components.
+5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
+
+
+## Contribute
+
+We welcome contributions from the open-source community! Whether you have an idea for a new feature, a bug fix, or even an improvement to the documentation, we encourage you to get involved.
+
+Please follow the guidelines below to ensure that your contributions are easy to review and integrate:
+
+### How to Contribute:
+1. **Fork the Repository**: Fork the repository to your GitHub account.
+2. **Clone the Forked Repository**: Clone your fork locally to make changes.
+   ```bash
+   git clone https://github.com/your-username/Wander-Mate.git
+
