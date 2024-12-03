@@ -105,6 +105,7 @@ import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
 import SalesReportTableadvertiser from "./components/salestableadvertiser";
 import SellerHomePage from "./pages/SellerHomePage";
+import ViewMyComplaints from "./components/mycomplaints";
 import LegendEvents from "./components/QuantityChart";
 import AdminDocumentsPage from "./pages/viewDocsAsAdmin";
 function App() {
@@ -247,6 +248,7 @@ function App() {
           element={<SalesReportTableadvertiser />}
         />
         <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
+        <Route path="/viewmycomplaints" element={<ViewMyComplaints/>}/>
         <Route path="/quantity" element={<LegendEvents/>}/>
         <Route path="/AdminDocumentsPage" element={<AdminDocumentsPage/>}/>
 
