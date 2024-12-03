@@ -242,75 +242,71 @@ const SellerNavBar = () => {
             </DropdownMenu>
             <Button variant="ghost" asChild>
               <Link to="/SellerProducts" className="flex items-center">
-                <Link className="hidden md:flex space-x-6" />
                 <span>Products</span>
               </Link>
             </Button>
-
             <Button variant="ghost" asChild>
               <Link to="/salestableseller" className="flex items-center">
-                <Link className="hidden md:flex space-x-6" />
                 <span>Sales Report</span>
               </Link>
             </Button>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Notifications">
-                <Bell className="h-5 w-5" />
-                {notifications.some((n) => !n.isRead) && (
-                  <span className="relative right-1 bottom-2 h-2 w-2 rounded-full bg-red-500" />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <h3 className="font-medium text-lg">Notifications</h3>
-                {notifications.length === 0 ? (
-                  <p className="text-sm text-gray-500">No new notifications</p>
-                ) : (
-                  <ScrollArea className="h-[300px]">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification._id}
-                        className={`p-4 ${
-                          notification.isRead ? "bg-gray-50" : "bg-blue-50"
-                        } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
-                      >
-                        <p
-                          className="text-sm"
-                          onClick={() =>
-                            markNotificationAsRead(notification._id)
-                          }
-                        >
-                          {notification.message}
-                        </p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteNotification(notification._id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete notification</span>
-                        </Button>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+
           <div className="flex items-center space-x-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Notifications">
+                  <Bell className="h-5 w-5" />
+                  {notifications.some((n) => !n.isRead) && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-lg">Notifications</h3>
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-gray-500">No new notifications</p>
+                  ) : (
+                    <ScrollArea className="h-[300px]">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          className={`p-4 ${
+                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                        >
+                          <p
+                            className="text-sm"
+                            onClick={() => markNotificationAsRead(notification._id)}
+                          >
+                            {notification.message}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification._id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete notification</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarImage src={profilePicture} alt={"sorry"} />
+                    <AvatarImage src={profilePicture} alt="User avatar" />
                     <AvatarFallback>
-                      {sessionStorage
+                      {typeof window !== 'undefined' && sessionStorage
                         .getItem("username")
                         ?.slice(0, 2)
                         .toUpperCase() || "SE"}
@@ -319,13 +315,13 @@ const SellerNavBar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={goToProfile}>
                   <User className="mr-2 h-4 w-4" />
-                  <span onClick={goToProfile}>Profile</span>
+                  <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span onClick={logout}>Log out</span>
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
