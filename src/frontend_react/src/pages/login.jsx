@@ -147,7 +147,7 @@ const LogInForm = () => {
 
             setTimeout(() => {
               if (response.data.status === "accepted") {
-                navigate("/advertiser");
+                navigate("/AboutUsAD");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");

@@ -11,7 +11,7 @@ import pic6 from "../public/images/files/donny.jpg";
 import pic7 from "../public/images/files/peter.jpg"
 import pic8 from "../public/images/files/youssefm.jpg";
 import pic9 from "../public/images/files/Nadeem.jpg"
-import pic10 from "../public/images/files/wideview.jpg";
+import pic10 from "../public/images/files/youssefashraf.jpg";
 const MeetPage = () => {
   // Predefined user data
   const users = [
