@@ -254,6 +254,7 @@ export default function Places() {
                 <PlaceCard
                   currency={combo}
                   key={place._id}
+                  placeId={place._id}
                   name={place.Name}
                   images={place.Pictures}
                   latitude={place.Location.coordinates[1]}
