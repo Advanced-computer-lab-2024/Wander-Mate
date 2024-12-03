@@ -1,7 +1,4 @@
-"use client";
 import React, { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
 import { toast } from "./ui/use-toast";
 import axios from "axios";
 import UserPhoto from "./userPhoto";
@@ -16,7 +13,6 @@ const ChangePhoto = () => {
 
   useEffect(() => {
     const username = sessionStorage.getItem("username");
-    console.log("Username from session storage:", username); // Debugging line
     if (username) {
       fetchUserID(username);
     } else {
@@ -26,6 +22,22 @@ const ChangePhoto = () => {
         variant: "destructive",
       });
     }
+
+    const fetchPicture = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get seller ID");
+
+        const { userID } = await reply.json();
+        const imageUrl = `http://localhost:8000/seller/${userID}/image`;
+        setProfileImage(imageUrl);
+      } catch (error) {
+        console.log("Error fetching profile picture:", error);
+      }
+    };
+
+    fetchPicture();
   }, []);
 
   const fetchUserID = async (username) => {
@@ -33,11 +45,8 @@ const ChangePhoto = () => {
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
       const data = await reply.json();
-      const {userID} = data;
-      
-      console.log("Fetched user data:", userID); // Debugging line
-      setUserID(userID); // Assuming the response contains the user ID in the 'id' field
-      setUserType(sessionStorage.getItem("Type")); // Assuming the response contains the user type in the 'type' field
+      setUserID(data.userID);
+      setUserType(sessionStorage.getItem("Type"));
     } catch (error) {
       console.error("Error fetching user ID:", error);
       toast({
@@ -49,14 +58,17 @@ const ChangePhoto = () => {
   };
 
   const handleImageSelect = (file) => {
-    console.log("Selected file:", file);
-    setProfileImage(file);
+    setProfileImage(URL.createObjectURL(file));
+    if (userID) {
+      sendProfileImage(userID, file);
+    } else {
+      console.error("User ID is not set.");
+    }
   };
 
-  const sendProfileImage = async (userId) => {
+  const sendProfileImage = async (userId, file) => {
     let URL = "";
-    console.log(userType)
-  
+
     switch (userType) {
       case "Advertiser":
         URL = `http://localhost:8000/uploadPictureadvertiser/${userId}`;
@@ -75,10 +87,8 @@ const ChangePhoto = () => {
         });
         return;
     }
-  
-    console.log("Upload URL:", URL);  // Debugging URL
-  
-    if (!profileImage) {
+
+    if (!file) {
       toast({
         title: "No image selected",
         description: "Please select an image to upload.",
@@ -86,18 +96,18 @@ const ChangePhoto = () => {
       });
       return;
     }
-  
+
     try {
       setIsUploading(true);
       const formData = new FormData();
-      formData.append("image", profileImage);
-  
+      formData.append("image", file);
+
       const response = await axios.put(URL, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.status === 200) {
         toast({
           title: "Image uploaded successfully",
@@ -107,7 +117,6 @@ const ChangePhoto = () => {
         throw new Error("Unexpected response status: " + response.status);
       }
     } catch (error) {
-      console.error("Upload error:", error.response ? error.response.data : error.message);
       toast({
         title: "Upload failed",
         description: error.response?.data?.error || "Couldn't upload image. Please try again.",
@@ -117,24 +126,14 @@ const ChangePhoto = () => {
       setIsUploading(false);
     }
   };
-  
+
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <Label className="text-center">Change your profile photo</Label>
-      <UserPhoto onImageSelect={handleImageSelect} />
-      <Button 
-        onClick={() => {
-          console.log("User ID before upload:", userID); // Debugging line
-          if (userID) {
-            sendProfileImage(userID); // Call sendProfileImage with userID
-          } else {
-            console.error("User ID is not set.");
-          }
-        }} 
-        disabled={!profileImage || isUploading}
-      >
-        {isUploading ? "Uploading..." : "Upload New Photo"}
-      </Button>
+    <div className="flex flex-col items-center space-y-4 mt-[-40px]">
+      <UserPhoto 
+        onImageSelect={handleImageSelect} 
+        isUploading={isUploading} 
+        initialImage={profileImage}
+      />
     </div>
   );
 };

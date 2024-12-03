@@ -6,7 +6,7 @@ import { cn } from "../lib/utils";
 import { Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import coverImage from "../public/images/files/userprofile.jpg"; // Background image import
-
+import ChangePhoto from "./changePhoto";
 const HeaderSE = () => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null);
@@ -48,11 +48,13 @@ const HeaderSE = () => {
             {/* Content container */}
 
             {/* Avatar and username container */}
-            <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
-              <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+            <div className="absolute left-10 bottom-0 transform translate-y-[15px] flex items-center gap-6 z-10"> {/* Move avatar up */}
+              {/* <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                 <AvatarImage src={profilePicture} />
                 <AvatarFallback className="text-3xl font-bold">SE</AvatarFallback>
-              </Avatar>
+              </Avatar> */}
+              <ChangePhoto/>
+              
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-1">
                   {sessionStorage.getItem("username") || "Seller"}
