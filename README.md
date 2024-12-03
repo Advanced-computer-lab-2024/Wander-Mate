@@ -163,7 +163,9 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
 ```
 ---
 ## Testing
-![Screenshot](https://github.com/Advanced-computer-lab-2024/Wander-Mate/blob/main/src/screenshots/Screenshot%202024-12-03%20at%209.25.20%20PM.png?raw=true)
+
+![Screenshot](Screenshot%202024-12-03%20at%2010.12.10%20PM.png)
+
 
 ---
 ## Installations 
