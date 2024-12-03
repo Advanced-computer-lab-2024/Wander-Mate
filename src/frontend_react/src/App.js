@@ -68,6 +68,7 @@ import AboutUs from "./pages/aboutUs";
 import AboutUsTG from "./pages/aboutUsTG";
 import AboutUsTGov from "./pages/aboutUsTGov";
 import AboutUsAD from "./pages/aboutUsAD";
+import AboutUsSeller from "./pages/aboutUsSeller";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -93,6 +94,7 @@ import ViewBookmarks from "./pages/ViewBookmarks";
 import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
+import SellerDocs from "./pages/docsSeller";
 import AdDocs from "./pages/docsAD";
 import PlacesGuest from "./pages/placesGuest";
 import ProductsGuest from "./pages/productsGuest";
@@ -189,6 +191,7 @@ function App() {
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
         <Route path="/AboutUsTGov" element={<AboutUsTGov />} />
         <Route path="/AboutUsAD" element={<AboutUsAD />} />
+        <Route path="/AboutUsSeller" element={<AboutUsSeller />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
@@ -232,6 +235,7 @@ function App() {
         <Route path="/MeetPageAd" element={<MeetPageAd />} />
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/AdDocs" element={<AdDocs />} />
+        <Route path="/SellerDocs" element={<SellerDocs />} />
         <Route
           path="/salestabletourguide"
           element={<SalesReportTabletourguide />}

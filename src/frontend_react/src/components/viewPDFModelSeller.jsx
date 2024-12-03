@@ -42,7 +42,7 @@ const ViewPDFModelSeller = () => {
         if (!response.ok) {throw new Error("Failed to fetch Seller ID");}
         const { userID } = await response.json();
         setGuideID(userID);
-        const reply = await fetch(`http://localhost:8000/getTourGuideDocuments/${userID}`);
+        const reply = await fetch(`http://localhost:8000/getSellerDocuments/${userID}`);
         const data = await reply.json();
         if (reply.ok) {
           setDocuments(data.documents);
