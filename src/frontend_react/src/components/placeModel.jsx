@@ -13,6 +13,8 @@ import { Badge } from "./ui/badge";
 import axios from "axios";
 // import BasicMap from "./ui/basic-map";
 import NonMovableMap from "./ui/nonMovableMap";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import {
   Carousel,
   CarouselContent,
@@ -21,10 +23,11 @@ import {
   CarouselNext,
 } from "./ui/carousel";
 
-export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
+export default function PlaceModal({ place, isOpen, setIsOpen, children, favorite, setFavorite }) {
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+ 
 
   const handleOpenChange = (open) => {
     console.log(place);
@@ -47,6 +50,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
   const images = place.images;
 
   useEffect(() => {
+    setIsFavorite(favorite)
     const fetchReviews = async () => {
       if (place.reviews && place.reviews.length > 0) {
         try {
@@ -71,24 +75,49 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
     if (urlParams.get("open") === "true"  && urlParams.get("place") === place.placeId) {
       setIsOpen(true);
     }
-  }, [isOpen, place.reviews]);
+  }, [isOpen, place.reviews, favorite]);
 
   const handleToggleFavorite = async () => {
-    setIsFavorite(!isFavorite);
+    setIsFavorite(!isFavorite); 
+    setFavorite(!favorite);
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
-
+      if (!reply.ok) throw new Error("Failed to get user ID");
+  
       const { userID } = await reply.json();
-      const response = await axios.post(`http://localhost:8000/toggleFavoritePlace`, {
-        touristID: userID,
-        placeId: place.placeId,
-      });
+  
+      // Log the data before sending the request
+      const requestData = {
+        userId: userID,
+        eventId: place.placeId,
+        type: "Attraction",
+      };
+      console.log("Request Data:", requestData);  // <-- Added this log
+  
+      // Call the correct endpoint based on the current state of `isFavorite`
+      if (isFavorite) {
+        await axios.delete("http://localhost:8000/unbookmarkEvent", { data: requestData });
+        toast.success("Removed from Favorites");
+      } else {
+        await axios.post("http://localhost:8000/Bookmarkevent", requestData);
+        toast.success("Added to Favorites");
+      }
+  
+      // Update the favorite status only after the backend operation succeeds
+      // setIsFavorite((prevState) => !prevState);
     } catch (error) {
-      console.error("Error toggling favorite place:", error);
+      console.error("Error toggling favorite Place:", error);
+      if (error.response) {
+        console.error("Server Error:", error.response.data);
+      }
+      toast.error("Failed to update favorite status: " + (error.response?.data?.message || error.message));
     }
   };
+  
+  
+  
+  
 
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
@@ -116,6 +145,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
       >
+        <Toaster/>
         <div className="relative">
           <Button
             variant="ghost"
@@ -208,19 +238,15 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
                   </div>
                   {/* Favorite Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
-                    <Button
-                      className={`flex-1 ${
-                        isFavorite ? "bg-red-500 hover:bg-red-600" : ""
-                      }`}
+                  <Button
+                      className={`flex-1 ${isFavorite ? "bg-red-500 hover:bg-red-600" : ""}`}
                       onClick={handleToggleFavorite}
                     >
                       <Icon
                         icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
                         className="w-4 h-4 mr-2"
                       />
-                      {isFavorite
-                        ? "Remove from Favorites"
-                        : "Add to Favorites"}
+                      {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                     </Button>
                     <Popover
                       open={isShareOpen}

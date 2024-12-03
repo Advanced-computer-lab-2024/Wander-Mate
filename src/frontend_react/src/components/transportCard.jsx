@@ -29,6 +29,7 @@ const TransportationCard = ({
   date,
   advertiserId,
   quantity = 3,
+  currrn,
 }) => {
   const [isBooked, setIsBooked] = useState(false);
   const [count, setCount] = useState(1);
@@ -41,6 +42,8 @@ const TransportationCard = ({
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState(null);
   const [userAge, setUserAge] = useState(null);
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
   const isAvailable = () => {
     if (availability) {
       return true;
@@ -57,6 +60,20 @@ const TransportationCard = ({
     const searchParams = new URLSearchParams(location.search);
     const openParam = searchParams.get("open");
     const transportationParam = searchParams.get("transportation");
+    const fetchExchangeRates = async () => {
+      try {
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
 
     if (openParam === "true" && transportationParam === transportationId) {
       setIsModalOpen(true);
@@ -293,7 +310,7 @@ const TransportationCard = ({
               <div className="flex items-center justify-between mb-4">
                 <p className="space-x-4">
                   <span className="text-secondary-foreground text-base font-medium">
-                    {discount > 0 ? price - (price * discount) / 100 : price}
+                    {currrn} {discount > 0 ? price - (price * discount) / 100 : (price/ (exchangeRates[currency] || 1)).toFixed(2)}
                   </span>
                   {discount > 0 && (
                     <del className="text-default-500 dark:text-default-500 font-normal text-base">
@@ -393,12 +410,12 @@ const TransportationCard = ({
 
                     <div className="mb-6">
                       <span className="text-3xl font-bold text-primary">
-                        ${price}
+                        {currrn}{" "}{(price/ (exchangeRates[currency] || 1)).toFixed(2)}
                       </span>
                       {discount > 0 && (
                         <>
                           <span className="ml-2 text-lg line-through text-gray-500">
-                            ${(price + (price * discount) / 100).toFixed(2)}
+                            {((price/ (exchangeRates[currency] || 1)) + ((price/ (exchangeRates[currency] || 1)) * discount) / 100).toFixed(2)}
                           </span>
                           <span className="ml-2 text-lg font-semibold text-green-600">
                             {discount}% Off
@@ -520,7 +537,7 @@ const TransportationCard = ({
     </div>
   ) : (
                         <PayForTransportation
-                          amount={price}
+                          amount={(price/ (exchangeRates[currency] || 1))}
                           transportationId={transportationId}
                           date={date}
                           onPaymentSuccess={handlePaymentSuccess}

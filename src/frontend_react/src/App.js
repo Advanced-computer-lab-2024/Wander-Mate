@@ -68,6 +68,7 @@ import AboutUs from "./pages/aboutUs";
 import AboutUsTG from "./pages/aboutUsTG";
 import AboutUsTGov from "./pages/aboutUsTGov";
 import AboutUsAD from "./pages/aboutUsAD";
+import AboutUsSeller from "./pages/aboutUsSeller";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -93,6 +94,7 @@ import ViewBookmarks from "./pages/ViewBookmarks";
 import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
+import SellerDocs from "./pages/docsSeller";
 import AdDocs from "./pages/docsAD";
 import PlacesGuest from "./pages/placesGuest";
 import ProductsGuest from "./pages/productsGuest";
@@ -101,6 +103,8 @@ import MeetPage from "./pages/meetPage";
 import MeetPageTG from "./pages/meetPageTG";
 import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
+import SalesReportTableadvertiser from "./components/salestableadvertiser";
+import SellerHomePage from "./pages/SellerHomePage";
 import LegendEvents from "./components/QuantityChart";
 function App() {
   return (
@@ -125,7 +129,7 @@ function App() {
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
-        <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/flights" element={<FlightOrHotelSearch />} />
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
@@ -186,8 +190,9 @@ function App() {
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
-        <Route path="/AboutUsTGov" element={<AboutUsTGov/>}/>
+        <Route path="/AboutUsTGov" element={<AboutUsTGov />} />
         <Route path="/AboutUsAD" element={<AboutUsAD />} />
+        <Route path="/AboutUsSeller" element={<AboutUsSeller />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
@@ -211,24 +216,36 @@ function App() {
         />
         <Route path="/TourGuidePage" element={<TourGuidePage />} />
         <Route path="/AdminProducts" element={<AdminProducts />} />
-        <Route path="/salestable" element={<SalesReportTable />} />
+        <Route path="/salestableseller" element={<SalesReportTable />} />
         <Route path="/TouristOrders" element={<TouristOrders />} />
         <Route path="/viewBookmarks" element={<ViewBookmarks />} />
 
         <Route path="ChangePhoto" element={<ChangePhoto />} />
         <Route path="/TouristHistory" element={<TouristHistory />} />
-        <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
+        <Route
+          path="/viewItinerariesGuest"
+          element={<ViewItinerariesGuest />}
+        />
         <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
         <Route path="/placesGuest" element={<PlacesGuest />} />
         <Route path="/productsGuest" element={<ProductsGuest />} />
 
-        <Route path ="/MeetPageTG" element={<MeetPageTG/>}/>
-        <Route path ="/MeetPage" element={<MeetPage/>}/>
-        <Route path ="/MeetPageTGov" element={<MeetPageTGov/>}/>
-        <Route path ="/MeetPageAd" element={<MeetPageAd/>}/>
+        <Route path="/MeetPageTG" element={<MeetPageTG />} />
+        <Route path="/MeetPage" element={<MeetPage />} />
+        <Route path="/MeetPageTGov" element={<MeetPageTGov />} />
+        <Route path="/MeetPageAd" element={<MeetPageAd />} />
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/AdDocs" element={<AdDocs />} />
-        <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
+        <Route path="/SellerDocs" element={<SellerDocs />} />
+        <Route
+          path="/salestabletourguide"
+          element={<SalesReportTabletourguide />}
+        />
+        <Route
+          path="/salestableadvertiser"
+          element={<SalesReportTableadvertiser />}
+        />
+        <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
         <Route path="/quantity" element={<LegendEvents/>}/>
 
       </Routes>

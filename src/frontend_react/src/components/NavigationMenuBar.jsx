@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, Ava } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -32,6 +32,7 @@ import {
   Trash2,
   Bell,
   FileText,
+  ListOrdered
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -384,6 +385,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToHistory = async () => {
     navigate("/touristHistory");
   };
+  const goToOrders = async () => {
+    navigate("/touristOrders");
+  };
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
@@ -459,12 +463,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <span>Meet the Team</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -481,41 +479,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
               </DropdownMenuTrigger>
             </DropdownMenu>
 
-            <DropdownMenu open={openDropdown === "bookings"}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onMouseEnter={() => handleMouseEnter("bookings")}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  Travel Bookings
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-56"
-                onMouseEnter={() => handleMouseEnter("bookings")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownMenuItem>
-                  <Link to="/bookings/flights" className="flex items-center">
-                    <Plane className="mr-2 h-4 w-4" />
-                    <span>Flights</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/bookings/hotels" className="flex items-center">
-                    <Hotel className="mr-2 h-4 w-4" />
-                    <span>Hotels</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/bookings/packages" className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <span>Vacation Packages</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/flights")}
+            >
+              Flights & Hotels
+            </Button>
 
             <DropdownMenu open={openDropdown === "activities"}>
               <DropdownMenuTrigger asChild>
@@ -747,16 +716,16 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                    <ListOrdered className="mr-2 h-4 w-4" />
+                    <span onClick={goToOrders}>Orders</span>
+                    <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>
-                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <FileText className="mr-2 h-4 w-4" />

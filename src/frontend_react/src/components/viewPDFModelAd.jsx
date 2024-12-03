@@ -18,11 +18,11 @@ import ViewPDFComp from "./viewPDFComponent";
 import { Label } from "../components/ui/label";
 import { useToast } from "./ui/use-toast";
 
-const ViewPDFModel = () => {
+const ViewPDFModelAd = () => {
   const [fileView, setFileView] = useState("grid");
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [GuideID, setGuideID] = useState(null);
+  const [advertiserId, setGuideID] = useState(null);
   const [error, setError] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,10 +39,10 @@ const ViewPDFModel = () => {
           return;
         }
         const response = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!response.ok) {throw new Error("Failed to fetch Tour Guide ID");}
+        if (!response.ok) {throw new Error("Failed to fetch Advertiser ID");}
         const { userID } = await response.json();
         setGuideID(userID);
-        const reply = await fetch(`http://localhost:8000/getTourGuideDocuments/${userID}`);
+        const reply = await fetch(`http://localhost:8000/getAdvertiserDocuments/${userID}`);
         const data = await reply.json();
         if (reply.ok) {
           setDocuments(data.documents);
@@ -73,14 +73,14 @@ const ViewPDFModel = () => {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append('ownerId', GuideID);
+    formData.append('ownerId', advertiserId);
     formData.append('ID', files[0]);
     if (files[1]) {
       formData.append('docs', files[1]);
     }
 
     try {
-      const response = await fetch('http://localhost:8000/uploadTourGuideDocuments', {
+      const response = await fetch('http://localhost:8000/uploadAdvertiserDocuments', {
         method: 'POST',
         body: formData,
       });
@@ -96,7 +96,7 @@ const ViewPDFModel = () => {
       });
 
       // Refresh the documents list
-      const refreshResponse = await fetch(`http://localhost:8000/getTourGuideDocuments/${GuideID}`);
+      const refreshResponse = await fetch(`http://localhost:8000/getAdvertiserDocuments/${advertiserId}`);
       const refreshData = await refreshResponse.json();
       if (refreshResponse.ok) {
         setDocuments(refreshData.documents);
@@ -208,5 +208,5 @@ const ViewPDFModel = () => {
   );
 };
 
-export default ViewPDFModel;
+export default ViewPDFModelAd;
 

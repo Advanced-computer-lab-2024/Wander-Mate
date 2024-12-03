@@ -57,7 +57,7 @@ const SiteLogo = () => (
   </svg>
 );
 
-const TourGuideNavBar = () => {
+const SellerNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [guideID, setGuideId] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -86,7 +86,7 @@ const TourGuideNavBar = () => {
     navigate("/loginPage");
   };
   const goToProfile = async () => {
-    navigate("/TourGuidePage");
+    navigate("/SellerHomePage");
   };
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -225,7 +225,7 @@ const TourGuideNavBar = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/AboutUsTG" className="flex items-center">
+                  <Link to="/AboutUsSeller" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>
@@ -239,9 +239,16 @@ const TourGuideNavBar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button variant="ghost" asChild>
-              <Link to="/TourGuideItinerary" className="flex items-center">
+              <Link to="/SellerProducts" className="flex items-center">
                 <Link className="hidden md:flex space-x-6" />
-                <span>Itineraries</span>
+                <span>Products</span>
+              </Link>
+            </Button>
+
+            <Button variant="ghost" asChild>
+              <Link to="/salestableseller" className="flex items-center">
+                <Link className="hidden md:flex space-x-6" />
+                <span>Sales Report</span>
               </Link>
             </Button>
           </div>
@@ -327,4 +334,4 @@ const TourGuideNavBar = () => {
   );
 };
 
-export default TourGuideNavBar;
+export default SellerNavBar;
