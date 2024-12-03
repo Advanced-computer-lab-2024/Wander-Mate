@@ -105,6 +105,7 @@ import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
 import SalesReportTableadvertiser from "./components/salestableadvertiser";
 import SellerHomePage from "./pages/SellerHomePage";
+import ViewMyComplaints from "./components/mycomplaints";
 function App() {
   return (
     <Router>
@@ -245,6 +246,7 @@ function App() {
           element={<SalesReportTableadvertiser />}
         />
         <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
+        <Route path="/viewmycomplaints" element={<ViewMyComplaints/>}/>
       </Routes>
     </Router>
   );
