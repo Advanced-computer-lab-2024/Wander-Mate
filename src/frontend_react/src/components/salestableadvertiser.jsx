@@ -65,20 +65,20 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "itineraryName",
+    accessorKey: "attractionName",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Itinerary Name
+          attraction Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("itineraryName")}</div>
+      <div className="font-medium">{row.getValue("attractionName")}</div>
     ),
   },
   {
@@ -152,7 +152,7 @@ const columns = [
   },
 ];
 
-export function SalesReportTabletourguide() {
+export function SalesReportTableadvertiser() {
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -173,7 +173,7 @@ export function SalesReportTabletourguide() {
 
         const { userID } = await idResponse.json();
         const response = await fetch(
-          `http://localhost:8000/getItinerarySalesReport/${userID}`
+          `http://localhost:8000/getAttractionSalesReport/${userID}`
         );
         const result = await response.json();
 
@@ -195,10 +195,10 @@ export function SalesReportTabletourguide() {
 
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
-      const existingItem = acc.find((i) => i.itineraryId === item.itineraryId); // Group by productId
+      const existingItem = acc.find((i) => i.attractionId === item.attractionId); // Group by productId
       if (existingItem) {
         // Add to existing product's data
-        existingItem.itineraries.push({
+        existingItem.attractions.push({
           totalBookings: item.totalBookings,
           revenue: item.totalRevenue,
           bookedDate: new Date(item.bookedDate).toISOString(),
@@ -208,11 +208,11 @@ export function SalesReportTabletourguide() {
       } else {
         // Create a new entry for the product
         acc.push({
-          itineraryId: item.itineraryId,
-          itineraryName: item.itineraryName,
+          attractionId: item.attractionId,
+          attractionName: item.attractionName,
           totalBookings: item.totalBookings,
           totalRevenue: item.totalRevenue,
-          itineraries: [
+          attractions: [
             {
               totalBookings: item.totalBookings,
               revenue: item.totalRevenue,
@@ -228,8 +228,8 @@ export function SalesReportTabletourguide() {
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
       .map((item) => {
-        const filteredItineraries = item.itineraries.filter((itinerary) => {
-          const date = new Date(itinerary.bookedDate);
+        const filteredAttractions = (item.attractions|| []).filter((attraction) => {
+          const date = new Date(attraction.bookedDate);
           const monthMatch =
             month === "all" || date.getMonth().toString() === month;
           const yearMatch =
@@ -237,14 +237,14 @@ export function SalesReportTabletourguide() {
           return monthMatch && yearMatch;
         });
 
-        if (filteredItineraries.length === 0) return null;
+        if (filteredAttractions.length === 0) return null;
 
-        const totalBookings = filteredItineraries.reduce(
-          (sum, itinerary) => sum + itinerary.totalBookings,
+        const totalBookings = filteredAttractions.reduce(
+          (sum, attraction) => sum + attraction.totalBookings,
           0
         );
-        const totalRevenue = filteredItineraries.reduce(
-          (sum, itinerary) => sum + itinerary.revenue,
+        const totalRevenue = filteredAttractions.reduce(
+          (sum, attraction) => sum + attraction.revenue,
           0
         );
 
@@ -252,7 +252,7 @@ export function SalesReportTabletourguide() {
           ...item,
           totalBookings,
           totalRevenue,
-          itineraries: filteredItineraries,
+          attractions: filteredAttractions,
         };
       })
       .filter(Boolean);
@@ -272,11 +272,11 @@ export function SalesReportTabletourguide() {
 
   const columns = [
     {
-      accessorKey: "itineraryName",
-      header: "Itinerary Name",
+      accessorKey: "attractionName",
+      header: "attraction Name",
       size: 200,
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("itineraryName")}</div>
+        <div className="capitalize">{row.getValue("attractionName")}</div>
       ),
     },
     {
@@ -341,10 +341,10 @@ export function SalesReportTabletourguide() {
     <>
       <div className="flex items-center flex-wrap gap-2 px-4">
         <Input
-          placeholder="Filter itinerary names..."
-          value={table.getColumn("itineraryName")?.getFilterValue() ?? ""}
+          placeholder="Search attraction names..."
+          value={table.getColumn("attractionName")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("itineraryName")?.setFilterValue(event.target.value)
+            table.getColumn("attractionName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm min-w-[200px] h-10"
         />
@@ -497,4 +497,4 @@ export function SalesReportTabletourguide() {
   );
 }
 
-export default SalesReportTabletourguide;
+export default SalesReportTableadvertiser;
