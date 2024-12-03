@@ -208,7 +208,12 @@ const TourGuideProfileManager = () => {
                     onClick={() => setIsEditing(!isEditing)}
                   >
                     {isEditing ? "Cancel" : "Edit"}
-                    <Button type="button" color="destructive" onClick={handleDelete}>
+                    
+                  
+                  </Button>
+                  
+                  {isEditing && <Button type="submit">Save Changes</Button>}
+                  <Button type="button" color="destructive" onClick={handleDelete}>
                   Delete Account
                   </Button>
                   <CustomConfirmationDialog
@@ -217,8 +222,6 @@ const TourGuideProfileManager = () => {
                         onCancel={handleCancelDelete}
                         message="Are you sure you want to delete this Account?"
                       />
-                  </Button>
-                  {isEditing && <Button type="submit">Save Changes</Button>}
                 </div>
               </form>
             </CardContent>

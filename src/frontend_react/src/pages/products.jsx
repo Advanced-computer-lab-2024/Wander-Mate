@@ -18,9 +18,9 @@ import NavigationMenuBar from "../components/NavigationMenuBar";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const [sortCriteria, setSortCriteria] = useState("rating");
   const [sortOrder, setSortOrder] = useState("desc");
   const [allProducts, setAllProducts] = useState([]);
@@ -144,7 +144,7 @@ const Products = () => {
                   <Slider
                     id="price-range"
                     value={priceRange}
-                    max={1000}
+                    max={10000}
                     step={1}
                     onValueChange={handlePriceRangeChange}
                     className="mb-2"

@@ -164,13 +164,17 @@ export function SalesReportTable() {
     const fetchSalesReport = async () => {
       const username = sessionStorage.getItem("username");
       try {
-        const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+        const idResponse = await fetch(
+          `http://localhost:8000/getID/${username}`
+        );
         if (!idResponse.ok) throw new Error("Failed to get tourist ID");
-  
+
         const { userID } = await idResponse.json();
-        const response = await fetch(`http://localhost:8000/getSalesReport/${userID}`);
+        const response = await fetch(
+          `http://localhost:8000/getSalesReport/${userID}`
+        );
         const result = await response.json();
-  
+
         if (response.ok) {
           const processedData = processData(result.salesReport);
           setData(processedData);
@@ -182,10 +186,10 @@ export function SalesReportTable() {
         console.error("Error fetching sales report:", error);
       }
     };
-  
+
     fetchSalesReport();
   }, []);
-  
+
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
       const existingItem = acc.find((i) => i.productId === item.productId); // Group by productId
@@ -217,7 +221,6 @@ export function SalesReportTable() {
       return acc;
     }, []);
   };
-  
 
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
@@ -285,7 +288,6 @@ export function SalesReportTable() {
       size: 150,
       cell: ({ row }) => <div>${row.getValue("totalRevenue").toFixed(2)}</div>,
     },
-    
   ];
 
   const table = useReactTable({
@@ -368,9 +370,7 @@ export function SalesReportTable() {
           </SelectContent>
         </Select>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
@@ -394,7 +394,7 @@ export function SalesReportTable() {
       </div>
       <div>
         <Table className="table-fixed w-full">
-          <TableHeader >
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -412,21 +412,22 @@ export function SalesReportTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody >
+          <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow 
+                <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center" >
+                    <TableCell
+                      key={cell.id}
+                      className="text-center last:text-center"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                      
                     </TableCell>
                   ))}
                 </TableRow>
@@ -436,7 +437,6 @@ export function SalesReportTable() {
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
-                  
                 >
                   No results.
                 </TableCell>
