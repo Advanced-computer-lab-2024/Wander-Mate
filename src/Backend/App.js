@@ -141,6 +141,9 @@ const {
   viewProductsOfSeller,
   getSalesReport,
   getSellerDocuments,
+  viewMyNotificationsSeller,
+  removeNotificationSeller,
+  markNotificationAsReadSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -603,6 +606,7 @@ app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.get("/viewMyNotifications/:touristId", viewMyNotifications);
 app.get("/viewMyNotificationsTG/:guideID", viewMyNotificationsTG);
 app.get("/viewMyNotificationsAd/:advertiserId", viewMyNotificationsAd);
+app.get("/viewMyNotificationsSeller/:sellerId", viewMyNotificationsSeller);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
@@ -619,6 +623,7 @@ app.delete(
   "/removeNotificationAd/:advertiserId/:notificationId",
   removeNotificationAd
 );
+app.delete("/removeNotificationSeller/:sellerId/:notificationId",removeNotificationSeller);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
@@ -660,6 +665,10 @@ app.put(
 app.put(
   "/markNotificationAsReadAd/:userID/:notificationId",
   markNotificationAsReadAd
+);
+app.put(
+  "/markNotificationAsReadSeller/:userID/:notificationId",
+  markNotificationAsReadSeller
 );
 app.get("/getRevenue/:userID", getRevenue);
 app.get("/getBookingDetails/:bookingID", getBookingDetails);
