@@ -71,28 +71,100 @@ This structured approach ensures that the codebase remains clean, efficient, and
 
 ## Tech/Framework Used
 
-- **Frontend**: React, Tailwind CSS
-- **Backend**: (Add the backend technology you're using, e.g., Node.js, Express)
-- **Database**: (Add the database you're using, e.g., MongoDB, MySQL)
-- **APIs**: (Any third-party APIs used, such as Google Maps API, etc.)
+- **Frontend**: React
+- **Backend**: JavaScript ,Node.js
+- **Database**: MongoDB
+- **APIs**:  Google Maps and MapBox API ,Rapid API Trip Advisor for hotels ,Amadeues API for flights ,EmailJs API for emails 
 
 ---
 
 ## Features
+**Tourist could:**
+- **Hotel & Flight Booking**: Tourists can book hotels and flights directly through the platform.
+- **Activity and Itinerary Booking**: Browse and book a wide range of activities for a complete travel experience.
+- **Place Discovery**: View and explore recommended places to visit at your destination.
+- **Souvenir Shopping**: Tourists can buy souvenir products from the website.
+- **Real-time Notifications**: Receive notifications and emails about new activities or upcoming itinerary starts.
+- **Ratings & Reviews**: Tourists can rate and write reviews for activities, Itineraries and Products.
+- **Wishlist & Cart**: Add products to your wishlist, then move them to the cart for easy checkout.
+- **Multiple Payment Options**: Pay for products using your wallet in the app, credit card, or cash on delivery.
+- **Delivery Address Selection**: Choose a preferred delivery address for your purchased products.
+- **Discount Vouchers**: Receive vouchers for discounts, which can be redeemed at any time.
+- **Loyalty Points & Badges**: Earn loyalty points with every booking or payment, and watch your badge level increase as you accumulate points.
+  
+**Tour Guide could:**
+- **View Itinerary Report**: Tour guides can view reports of their itineraries, including the number of bookings and the names of tourists who booked them.
+- **Add New Itinerary**: Tour guides can add new itineraries to the website, making them available for tourists to book.
 
-- **Itinerary Creation**: Easily create and manage custom itineraries for any trip.
-- **Real-time Updates**: Modify your itinerary in real-time and see the changes instantly.
-- **Interactive Maps**: Use interactive maps to visualize your destinations and routes.
-- **(Other features as you see fit)**
+**Seller could:**
+- **View Order Report**: Sellers can view a report of all orders made by tourists who purchase their products.
+- **Add New Product**: Sellers can add new products to the website and publish them for tourists to purchase.
 
+**Tourism Governor could:**
+- **Add Historical Tags**: Tourism governors can add historical tags to various destinations and attractions.
+- **Add New Places**: Tourism governors can add new places to the website that tourists can visit.
+
+**Advertiser could:**
+- **Add Activities**: Advertisers can add activities to the platform, making them available for tourists to book.
+- **View Booked Activity Report**: Advertisers can view a report of activities that have been booked by tourists.
+
+**Admin could:**
+- **View All Orders**: Admins can view all orders made by tourists.
+- **View All Products**: Admins can view all products listed on the website.
+- **View All Itineraries**: Admins can view all itineraries available for booking.
+- **View All Complaints**: Admins can view all complaints submitted by tourists.
+- **View All Activities**: Admins can view all activities listed on the platform.
+- **View All Documents**: Admins can view all documents uploaded by stakeholders.
+- **Track Revenues and Sales**: Admins can view total revenues and sales data.
+- **Track Order Status**: Admins can check the status of all orders.
+- **Add New Product**: Admins can add new products to the website.
 ---
+## How to Run the Code in the Terminal
+
+### Running the Backend
+
+1. Navigate to the backend directory:
+   ```bash
+   cd src
+   cd backend
+   node app.js OR nodemon app.js
+### Running the Backend
+2. Navigate to the frontend directory:
+   ```bash
+   cd src
+   cd frontend_react
+   npm start
 
 ## Code Examples
 
-(Provide some code snippets that showcase how key features of the project work. For example, API calls, important functions, etc.)
+Code Example for API call for the emails
 
 ```javascript
-// Example of creating a new itinerary
-const createItinerary = (user, locations) => {
-  return api.post('/create-itinerary', { user, locations });
+// Example of calling the emailjs api
+const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${process.env.EMAILJS_PRIVATE_KEY_2}`,
+      },
+      body: JSON.stringify(data),
+    });
+    console.log(reply);
+
+    res.status(200).json({
+      message: "Notification added successfully for admin.",
+      notification,
+    });
+  } catch (error) {
+    console.error("Error adding notification for admin:", error);
+    res.status(500).json({ error: "Failed to add notification for admin." });
+  }
 };
+```
+---
+## Testing
+---
+## Installations 
+- **Vs Code link:** https://code.visualstudio.com/download
+- **MongoDB link:** https://www.mongodb.com/try/download/community
+- **Postman link:** https://www.postman.com/downloads/

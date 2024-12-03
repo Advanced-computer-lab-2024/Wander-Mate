@@ -102,6 +102,7 @@ import MeetPageTG from "./pages/meetPageTG";
 import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
 import SalesReportTableadvertiser from "./components/salestableadvertiser";
+import SellerHomePage from "./pages/SellerHomePage";
 function App() {
   return (
     <Router>
@@ -125,7 +126,7 @@ function App() {
         <Route path="/TourismGovHomePage" element={<TourismGovHomePage />} />
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
-        <Route path="/flight" element={<FlightOrHotelSearch />} />
+        <Route path="/flights" element={<FlightOrHotelSearch />} />
         <Route path="/bookFlight" element={<BookFlight />} />
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
@@ -186,7 +187,7 @@ function App() {
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
-        <Route path="/AboutUsTGov" element={<AboutUsTGov/>}/>
+        <Route path="/AboutUsTGov" element={<AboutUsTGov />} />
         <Route path="/AboutUsAD" element={<AboutUsAD />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
@@ -217,19 +218,29 @@ function App() {
 
         <Route path="ChangePhoto" element={<ChangePhoto />} />
         <Route path="/TouristHistory" element={<TouristHistory />} />
-        <Route path="/viewItinerariesGuest" element={<ViewItinerariesGuest />} />
+        <Route
+          path="/viewItinerariesGuest"
+          element={<ViewItinerariesGuest />}
+        />
         <Route path="/activitiesGuest" element={<ActivitiesGuest />} />
         <Route path="/placesGuest" element={<PlacesGuest />} />
         <Route path="/productsGuest" element={<ProductsGuest />} />
 
-        <Route path ="/MeetPageTG" element={<MeetPageTG/>}/>
-        <Route path ="/MeetPage" element={<MeetPage/>}/>
-        <Route path ="/MeetPageTGov" element={<MeetPageTGov/>}/>
-        <Route path ="/MeetPageAd" element={<MeetPageAd/>}/>
+        <Route path="/MeetPageTG" element={<MeetPageTG />} />
+        <Route path="/MeetPage" element={<MeetPage />} />
+        <Route path="/MeetPageTGov" element={<MeetPageTGov />} />
+        <Route path="/MeetPageAd" element={<MeetPageAd />} />
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/AdDocs" element={<AdDocs />} />
-        <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
-        <Route path="/salestableadvertiser" element={<SalesReportTableadvertiser/>}/>
+        <Route
+          path="/salestabletourguide"
+          element={<SalesReportTabletourguide />}
+        />
+        <Route
+          path="/salestableadvertiser"
+          element={<SalesReportTableadvertiser />}
+        />
+        <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
       </Routes>
     </Router>
   );

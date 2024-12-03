@@ -538,21 +538,29 @@ const uploadPictureadvertiser = async (req, res) => {
 };
 const getadvertiserImage = async (req, res) => {
   try {
-    const { advertiserID } = req.params; // Get the product ID from the request parameters
+    const { advertiserID } = req.params; // Get the guide ID from the request parameters
 
-    // Find the product by ID
+    // Find the guide by ID
     const ADvertiser = await advertiserModel.findById(advertiserID);
 
-    // Check if product exists
-    if (!ADvertiser || !ADvertiser.picture || !ADvertiser.picture.data) {
+    // Check if guide exists
+    if (
+      !ADvertiser ||
+      !ADvertiser.picture ||
+      !ADvertiser.picture.data ||
+      !ADvertiser.picture.data.buffer
+    ) {
       return res.status(404).json({ error: "Image not found." });
     }
+
+    // Extract the buffer from the Binary object
+    const imageBuffer = ADvertiser.picture.data.buffer;
 
     // Set the content type for the image
     res.set("Content-Type", ADvertiser.picture.contentType);
 
-    // Send the image data
-    res.send(ADvertiser.picture.data);
+    // Send the image data as a buffer
+    res.send(imageBuffer);
   } catch (err) {
     console.error("Error retrieving image:", err);
     res.status(500).json({ error: "Failed to retrieve image." });
@@ -709,11 +717,11 @@ const getAttractionSalesReport = async (req, res) => {
 };
 
 const viewMyNotificationsAd = async (req, res) => {
-  const { advertiserId } = req.params; // Assuming the tourist ID is passed as a URL parameter
+  const { advertiserID } = req.params; // Assuming the tourist ID is passed as a URL parameter
 
   try {
     // Find the notifications for the given tourist ID
-    const notifications = await Notification.findOne({ userID: advertiserId });
+    const notifications = await Notification.findOne({ userID: advertiserID });
 
     if (!notifications || notifications.notifications.length === 0) {
       return res.status(201).json({
@@ -734,10 +742,10 @@ const viewMyNotificationsAd = async (req, res) => {
 };
 
 const removeNotificationAd = async (req, res) => {
-  const { advertiserId, notificationId } = req.params; // Get touristId and notificationId from the request body
+  const { advertiserID, notificationId } = req.params; // Get touristId and notificationId from the request body
   try {
     // Validate input
-    if (!advertiserId || !notificationId) {
+    if (!advertiserID || !notificationId) {
       return res
         .status(400)
         .json({ message: "Tour Guide ID and Notification ID are required." });
@@ -745,7 +753,7 @@ const removeNotificationAd = async (req, res) => {
 
     // Validate that the touristId and notificationId are valid ObjectIds
     if (
-      !mongoose.Types.ObjectId.isValid(advertiserId) ||
+      !mongoose.Types.ObjectId.isValid(advertiserID) ||
       !mongoose.Types.ObjectId.isValid(notificationId)
     ) {
       return res
@@ -754,7 +762,7 @@ const removeNotificationAd = async (req, res) => {
     }
 
     // Find the notification document for the given tourist ID
-    const notificationDoc = await Notification.findOne({ userID: advertiserId });
+    const notificationDoc = await Notification.findOne({ userID: advertiserID });
 
     if (!notificationDoc) {
       return res
@@ -843,6 +851,28 @@ const markNotificationAsReadAd = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+const getAdvertiserDocuments = async (req, res) => {
+  try {
+    const ownerId = req.params.ownerId; // Get the ownerId from the request parameters
+
+    // Fetch the documents from the database where the owner is the TourGuide and the model is "TourGuide"
+    const documents = await PdfDetails.find({
+      Owner: ownerId,
+      ownerModel: "Advertiser",
+    });
+
+
+
+    // Return the fetched documents
+    return res.status(200).json({
+      message: "Documents fetched successfully!",
+      documents: documents,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error fetching documents" });
+  }
+};
 
 
 module.exports = {
@@ -871,4 +901,5 @@ module.exports = {
   viewMyNotificationsAd,
   markNotificationAsReadAd,
   removeNotificationAd,
+  getAdvertiserDocuments,
 };
