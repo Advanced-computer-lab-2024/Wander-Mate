@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
@@ -37,8 +37,52 @@ export default function ActivityCard({
     currency,
   };
 
+  const [favorite,setFavorite]=useState(false);
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          console.log("No username found in session storage");
+          setFavorite(false);  // Set to false if no user is logged in
+          return;
+        }
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+    
+        const { userID } = await reply.json();
+        const response = await fetch(`http://localhost:8000/checkIfEventBookmarked`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            eventId: activityId,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+  
+        const data = await response.json();
+        setFavorite(data);
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+        setFavorite(false);  
+      }
+    };
+    
+    if (activityId !== null) { 
+      fetchFavorite();
+    }
+  }, [activityId]);
+
   return (
-    <ActivityModal activity={activity} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+    <ActivityModal activity={activity} isOpen={isModalOpen} setIsOpen={setIsModalOpen} favorite={favorite === null ? false : favorite}
+    setFavorite={setFavorite} >
       <Card
         className="p-4 rounded-md cursor-pointer"
         onClick={() => setIsModalOpen(true)}
