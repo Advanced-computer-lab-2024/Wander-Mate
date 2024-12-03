@@ -17,7 +17,7 @@ const HeaderAD = () => {
     try{
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
+      if (!reply.ok) throw new Error("Failed to get advertiser ID");
   
       const { userID } = await reply.json();
       const response = await fetch(`http://localhost:8000/ADvertiser/${userID}/image`);
@@ -55,7 +55,7 @@ const HeaderAD = () => {
               </Avatar>
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-1">
-                  {sessionStorage.getItem("username") || "Tour Guide"}
+                  {sessionStorage.getItem("username") || "Advertiser"}
                 </h2>
               </div>
             </div>
