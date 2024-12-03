@@ -22,7 +22,7 @@ import {
 } from "../components/ui/sheet";
 import { Filter, Loader } from "lucide-react";
 import AddAdvertiserActivityModel from "../components/AddAdvertsierActivityModel";
-
+import NavigationMenuBarAd from "../components/navBarAdvertiser";
 export default function AdvertiserActivities() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -156,6 +156,7 @@ export default function AdvertiserActivities() {
 
   return (
     <>
+        <NavigationMenuBarAd />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4"> My Activities</h1>
 

@@ -99,6 +99,7 @@ import SalesReportTabletourguide from "./components/salestabletourguide";
 import MeetPage from "./pages/meetPage";
 import MeetPageTG from "./pages/meetPageTG";
 import MeetPageTGov from "./pages/meetPageTGov";
+import MeetPageAd from "./pages/meetPageAD";
 function App() {
   return (
     <Router>
@@ -222,6 +223,7 @@ function App() {
         <Route path ="/MeetPageTG" element={<MeetPageTG/>}/>
         <Route path ="/MeetPage" element={<MeetPage/>}/>
         <Route path ="/MeetPageTGov" element={<MeetPageTGov/>}/>
+        <Route path ="/MeetPageAd" element={<MeetPageAd/>}/>
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
       </Routes>

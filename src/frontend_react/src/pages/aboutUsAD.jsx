@@ -10,7 +10,7 @@ export default function AboutUsAD() {
     const navigate = useNavigate();
     
       const handleRegClick = () => {
-        navigate("/activities");
+        navigate("/advertiseractivities");
       };
     
   return (

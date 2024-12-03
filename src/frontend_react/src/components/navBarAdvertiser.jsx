@@ -164,7 +164,7 @@ const NavigationMenuBarAd = () => {
   );
 
   const goToProfile = () => {
-    navigate("/UserProfilePage");
+    navigate("/AdvertiserProfileInformation");
   };
 
 
@@ -201,7 +201,7 @@ const NavigationMenuBarAd = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/MeetPage" className="flex items-center">
+                  <Link to="/MeetPageAd" className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Meet the Team</span>
                   </Link>
@@ -217,46 +217,17 @@ const NavigationMenuBarAd = () => {
 
             <Button
               variant="ghost"
-              onClick={() => navigate("/transportation")}
+              onClick={() => navigate("/advertiserTransportations")}
             >
               Transportation
             </Button>
-
-            <DropdownMenu open={openDropdown === "activities"}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onMouseEnter={() => handleMouseEnter("activities")}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  Activities & Tickets
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-56"
-                onMouseEnter={() => handleMouseEnter("activities")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownMenuItem>
-                  <Link to="/viewItineraries" className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <span>Tours</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/places" className="flex items-center">
-                    <Ticket className="mr-2 h-4 w-4" />
-                    <span>Attractions</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/activities" className="flex items-center">
-                    <Ticket className="mr-2 h-4 w-4" />
-                    <span>Events</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/advertiseractivities")}
+            >
+              Activities
+            </Button>
+            
           </div>
 
 
