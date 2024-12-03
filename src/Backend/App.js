@@ -398,7 +398,7 @@ app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
-app.get("/seller/:sellerId/image", getSellerImage);
+app.get("/seller/:sellerID/image", getSellerImage);
 app.get("/ADvertiser/:advertiserID/image", getadvertiserImage);
 app.get("/GUIDE/:guideID/image", gettourGuideImage);
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
