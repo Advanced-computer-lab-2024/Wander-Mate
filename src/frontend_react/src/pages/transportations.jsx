@@ -28,6 +28,9 @@ const Transportation = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("All");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
+
 
   const fetchTransportations = async () => {
     try {
@@ -83,6 +86,20 @@ const Transportation = () => {
   };
 
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     fetchTransportations();
   }, []);
 
@@ -258,7 +275,9 @@ const Transportation = () => {
               transportationId={transportation._id}
               destination={transportation.destination}
               startPlace={transportation.startPlace}
-              price={transportation.price}
+              currrn={sessionStorage.getItem("curr")}
+              price={(transportation.price/ (exchangeRates[currency] || 1)
+              ).toFixed(2)}
               vehicleType={transportation.vehicleType}
               availability={transportation.availability}
               discount={transportation.discount}
