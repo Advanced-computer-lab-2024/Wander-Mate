@@ -1,5 +1,5 @@
 import React from 'react'
-import TourGuideNavBar from '../components/tourGuideNavBar';
+import SellerNavBar from '../components/sellerNavBar'
 import OurAcheivementsBlock from "../components/OurAcheivementsBlock"
 import OurService from "../components/OurServiceBlock"
 import WhatPeopleSay from "../components/whatpeoplesay" // Import the WhatPeopleSay component
@@ -16,7 +16,7 @@ export default function AboutUsSeller() {
   return (
    
     <div className="min-h-screen bg-gray-50">
-      <TourGuideNavBar />
+      <SellerNavBar />
       <div className="full">
     <div className="frame">
       <div className="inner-container">

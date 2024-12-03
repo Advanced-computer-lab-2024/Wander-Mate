@@ -40,7 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-
+import SellerNavBar from "./sellerNavBar";
 const columns = [
   {
     id: "select",
@@ -336,9 +336,11 @@ export function SalesReportTable() {
 
   return (
     <>
+      <SellerNavBar/>
+      <br></br>
       <div className="flex items-center flex-wrap gap-2 px-4">
         <Input
-          placeholder="Filter product names..."
+          placeholder="Search product names..."
           value={table.getColumn("productName")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("productName")?.setFilterValue(event.target.value)
