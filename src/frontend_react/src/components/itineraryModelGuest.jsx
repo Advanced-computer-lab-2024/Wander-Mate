@@ -278,7 +278,7 @@ export default function ItineraryModelGuest({
                     </p>
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Price:</span>{" "}
-                      {itinerary.currrn} {itinerary.price || "N/A"}
+                      USD {itinerary.price || "N/A"}
                     </p>
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Ratings:</span>{" "}
