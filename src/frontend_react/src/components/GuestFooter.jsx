@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
-const TouristFooter = () => {
+const GuestFooter = () => {
   return (
     <footer className="bg-gray-800 text-white py-8 mt-10">
       <div className="container mx-auto px-4">
@@ -55,4 +55,4 @@ const TouristFooter = () => {
   );
 };
 
-export default TouristFooter;
+export default GuestFooter;

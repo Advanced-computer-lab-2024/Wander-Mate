@@ -9,6 +9,7 @@ import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, getS
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { DataTableFacetedFilter } from "../components/table/data-table-faceted-filter";
 import NavigationMenuBar from "./NavigationMenuBar";
+import HeaderT from "./headerT";
 
 const columns = [
   {
@@ -126,10 +127,11 @@ const ViewMyComplaints = () => {
   return (
     <>
       <NavigationMenuBar />
-      <br />
-      <br />
-      <h1 className="text-3xl font-bold text-center mb-8">Your Complaints</h1>
-      <div className="mb-4 flex justify-end mr-[5vw]">
+      <div className="mt-[-23px]">
+          <HeaderT />
+        </div>
+        <br/>
+      <div className="mb-3 flex justify-end mr-[5vw]">
         <DataTableFacetedFilter 
           column={table.getColumn("Status")}
           title="Status"

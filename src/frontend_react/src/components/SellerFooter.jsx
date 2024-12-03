@@ -9,7 +9,7 @@ const SellerFooter = () => {
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-2">About WanderMate</h3>
             <p className="text-gray-400">
-              Promoting and supporting tourism across the nation.
+            Your Traveling Best Mate
             </p>
           </div>
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
