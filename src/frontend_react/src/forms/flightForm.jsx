@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../components/ui/dropdown-menu";
-import { Button } from "../components/ui/button";
-import { Icon } from "@iconify/react";
-import Select from "react-select";
-import { Calendar } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import Select from "react-select";
+
 const FlightForm = (props) => {
   const [airports, setAirports] = useState([]);
 
@@ -21,10 +13,9 @@ const FlightForm = (props) => {
           throw new Error("Network response was not ok");
         }
         const airportsData = await response.json();
-        console.log(airportsData); // Log the fetched data
         const formattedAirports = airportsData.map((airport) => ({
-          value: airport.airport_code, // Ensure `airport_code` exists in your data
-          label: `${airport.city} (${airport.airport_code})`, // Combine properties appropriately
+          value: airport.airport_code,
+          label: `${airport.city} (${airport.airport_code})`,
         }));
         setAirports(formattedAirports);
       } catch (error) {
@@ -47,85 +38,108 @@ const FlightForm = (props) => {
 
   return (
     <React.Fragment>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-[#EAF0F0] rounded-b-3xl rounded-tr-3xl p-7"
+      <div
+        className="absolute mt-[52vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
+        style={{ backgroundColor: "rgba(234, 240, 240, 0.8)" }}
       >
-        <div className="row g-3">
-          <div className="col">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-wrap justify-between items-end gap-6"
+        >
+          {/* Origin Field */}
+          <div className="flex-1 min-w-[280px]">
+            <div className="mb-2">
+              <span className="font-bold text-base tracking-wider text-[#283841]">
+                Origin
+              </span>
+            </div>
             <Select
-              placeholder="Select Origin"
+              options={airports}
               value={
                 airports.find(
                   (airport) => airport.value === props.flightData.origin
                 ) || null
               }
-              options={airports} // Pass the list of airports
               onChange={(selectedOption) =>
                 handleChange("origin", selectedOption.value)
-              } // Update the origin when selected
-              getOptionLabel={(option) => `${option.label}`} // Define how to display labels
-              getOptionValue={(option) => option.value} // Define the unique value for each option
+              }
+              placeholder="Select Origin"
+              className="text-base text-[#283841]"
             />
           </div>
-          <div className="col mt-3">
+
+          {/* Destination Field */}
+          <div className="flex-1 min-w-[280px]">
+            <div className="mb-2">
+              <span className="font-bold text-base tracking-wider text-[#283841]">
+                Destination
+              </span>
+            </div>
             <Select
-              placeholder="Select Destination"
+              options={airports}
               value={
                 airports.find(
                   (airport) => airport.value === props.flightData.destination
                 ) || null
               }
-              options={airports} // Pass the list of airports
               onChange={(selectedOption) =>
                 handleChange("destination", selectedOption.value)
-              } // Update the origin when selected
-              getOptionLabel={(option) => `${option.label}`} // Define how to display labels
-              getOptionValue={(option) => option.value} // Define the unique value for each option
+              }
+              placeholder="Select Destination"
+              className="text-base text-[#283841]"
             />
-          </div>
-          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
-            <span className="font-bold text-base tracking-wider text-[#283841]">
-              Departure:
-            </span>
-            <input
-              onChange={(e) => handleChange("departureDate", e.target.value)}
-              type="date"
-              id="departureDate"
-              name="departureDate"
-              value={props.flightData.departureDate}
-              className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
-              required
-            />
-            {/* <Calendar className="w-6 h-6 text-[#826AF9]" /> */}
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md mt-3">
-            <span className="font-bold text-base tracking-wider text-[#283841]">
-              Arrival:
-            </span>
-            <input
-              onChange={(e) => handleChange("arrivalDate", e.target.value)}
-              type="date"
-              id="arrivalDate"
-              name="arrivalDate"
-              value={props.flightData.arrivalDate}
-              className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
-              required
-            />
-            {/* <Calendar className="w-6 h-6 text-[#826AF9]" /> */}
+          {/* Departure Date Field */}
+          <div className="flex-1 min-w-[280px]">
+            <div className="mb-2">
+              <span className="font-bold text-base tracking-wider text-[#283841]">
+                Departure
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+              <input
+                onChange={(e) => handleChange("departureDate", e.target.value)}
+                type="date"
+                id="departureDate"
+                name="departureDate"
+                value={props.flightData.departureDate}
+                className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
+              />
+            </div>
           </div>
-        </div>
-        <button
-          type="submit"
-          className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px] mt-3"
-        >
-          <span className="font-semibold text-base tracking-wider">
-            Search Flights
-          </span>
-          <ArrowRight className="w-6 h-6" />
-        </button>
-      </form>
+
+          {/* Arrival Date Field */}
+          <div className="flex-1 min-w-[280px]">
+            <div className="mb-2">
+              <span className="font-bold text-base tracking-wider text-[#283841]">
+                Arrival
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+              <input
+                onChange={(e) => handleChange("arrivalDate", e.target.value)}
+                type="date"
+                id="arrivalDate"
+                name="arrivalDate"
+                value={props.flightData.arrivalDate}
+                className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px]"
+          >
+            <span className="font-semibold text-base tracking-wider">
+              Search Flights
+            </span>
+            <ArrowRight className="w-6 h-6" />
+          </button>
+        </form>
+      </div>
     </React.Fragment>
   );
 };

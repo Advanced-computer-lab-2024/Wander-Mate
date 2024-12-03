@@ -46,6 +46,7 @@ const promocode = require("../Models/promoCode.js");
 const sales = require("../Models/sales.js");
 const transportations = require("../Models/transportation.js");
 const { default: axios } = require("axios");
+const HotelBooked = require("../Models/bookedHotel.js");
 
 // Creating an admin
 const createAdmin = async (req, res) => {
@@ -1735,10 +1736,13 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
         .status(400)
         .json({ error: "Message, adminId, and productId are required." });
     }
-
+    const user = await userModel.findOne({ userID: adminId });
+    const type = await user.Type;
     // Find or update the notification for the specified admin
     const notification = await Notification.findOneAndUpdate(
-      { userID: adminId },
+      { userID: adminId,
+        userModel: type,
+       },
       {
         $push: {
           notifications: {
@@ -1750,7 +1754,6 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
       },
       { upsert: true, new: true } // Create a new document if it doesn't exist
     );
-    const user = await userModel.findOne({ userID: adminId });
     console.log(process.env.EMAILJS_SERVICE_ID_2);
     let data = {
       service_id: process.env.EMAILJS_SERVICE_ID_2,
@@ -1995,6 +1998,177 @@ const getEmail = async (req, res) => {
   }
 };
 
+
+
+
+
+const getTotalQuantities = async (req, res) => {
+  try {
+    const result = await orderModel.aggregate([
+      // Match only documents that have both `products` and `quantities` arrays
+      {
+        $match: {
+          products: { $exists: true, $ne: [] },
+          quantities: { $exists: true, $ne: [] },
+        },
+      },
+      // Combine `products` and `quantities` into a single array of objects
+      {
+        $project: {
+          productQuantities: {
+            $zip: { inputs: ["$products", "$quantities"] }, // Pair each product with its corresponding quantity
+          },
+        },
+      },
+      // Unwind the `productQuantities` array to process each pair
+      {
+        $unwind: "$productQuantities",
+      },
+      // Decompose the `productQuantities` pairs into separate fields
+      {
+        $project: {
+          productId: { $arrayElemAt: ["$productQuantities", 0] }, // Extract product ID
+          quantity: { $arrayElemAt: ["$productQuantities", 1] }, // Extract quantity
+        },
+      },
+      // Group by `productId` and calculate the total quantity
+      {
+        $group: {
+          _id: "$productId",
+          totalQuantity: { $sum: "$quantity" },
+        },
+      },
+      // Rename `_id` to `productId` for output
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          totalQuantity: 1,
+        },
+      },
+      // Lookup to populate product details from `Product` collection
+      {
+        $lookup: {
+          from: "products", // Name of the referenced collection
+          localField: "productId", // Field in this collection
+          foreignField: "_id", // Field in the `products` collection
+          as: "productDetails", // Alias for the joined data
+        },
+      },
+      // Optionally, reshape the populated data
+      {
+        $unwind: { path: "$productDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          productId: 1,
+          totalQuantity: 1,
+          productDetails: {
+            name: 1, // Example field to include from the Product collection
+            price: 1, // Example field to include from the Product collection
+          },
+        },
+      },
+    ]);
+
+    // Handle cases where no data is found
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No products found in orders." });
+    }
+
+    // Send the aggregated results as a response
+    res.status(200).json({
+      message: "Total quantities calculated and populated successfully.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error calculating total quantities:", error);
+    res
+      .status(500)
+      .json({ message: "Server error while calculating total quantities." });
+  }
+};
+const getTotalBookings = async (req, res) => {
+  try {
+    // Step 1: Aggregate the bookings data to get total bookings by itemId and itemModel
+    const result = await bookings.aggregate([
+      {
+        $match: {
+          itemId: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$itemId",
+          totalBookings: { $sum: 1 },
+          itemModel: { $first: "$itemModel" },  // Get the itemModel for each grouped item
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          itemId: "$_id",
+          totalBookings: 1,
+          itemModel: 1,
+        },
+      },
+    ]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No items found in bookings." });
+    }
+
+    // Step 2: Query the relevant models based on itemModel using switch case
+    const populatedResults = [];
+
+    for (const booking of result) {
+      let itemDetails = null;
+
+      // Query based on itemModel
+      switch (booking.itemModel) {
+        case "Attraction":
+          itemDetails = await attractions.findById(booking.itemId).exec();
+          break;
+        case "Itinerary":
+          itemDetails = await Itinerary.findById(booking.itemId).exec();
+          break;
+        case "Transportation":
+          itemDetails = await transportations.findById(booking.itemId).exec();
+          break;
+        case "HotelBooked":
+          itemDetails = await HotelBooked.findById(booking.itemId).exec();
+          break;
+        case "BookedFlights":
+          itemDetails = await BookedFlights.findById(booking.itemId).exec();
+          break;
+        default:
+          itemDetails = null;  // In case the itemModel is unknown
+      }
+
+      // Push result with the populated item details
+      populatedResults.push({
+        itemId: booking.itemId,
+        totalBookings: booking.totalBookings,
+        itemDetails: itemDetails,
+      });
+    }
+
+    // Step 3: Send the aggregated results as a response
+    res.status(200).json({
+      message: "Total bookings calculated and populated successfully.",
+      data: populatedResults,
+    });
+  } catch (error) {
+    console.error("Error calculating total bookings:", error);
+    res.status(500).json({
+      message: "Server error while calculating total bookings.",
+    });
+  }
+};
+
+
+
+
 module.exports = {
   createAdmin,
   createCategory,
@@ -2062,4 +2236,6 @@ module.exports = {
   emptyCart,
   getRevenue,
   getEmail,
+  getTotalQuantities,
+  getTotalBookings
 };

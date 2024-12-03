@@ -6,8 +6,8 @@ import axios from "axios";
 import Select from "react-select";
 import HotelCard from "./hotelCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
-
-
+import beach from "../public/images/onTheBeach.jpeg";
+import NavigationMenuBar from "./NavigationMenuBar";
 const FlightOrHotelSearch = () => {
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
@@ -157,183 +157,211 @@ const FlightOrHotelSearch = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
-      <div
-        className="bg-[#EAF0F0] rounded-t-3xl"
-        style={{ width: "fit-content" }}
-      >
-        <div className="flex items-center p-7 gap-5">
-          <button
-            className={
-              selected === 0
-                ? "flex items-center px-8 py-3 gap-4 bg-[#826AF9] rounded-lg text-white"
-                : "flex items-center px-8 py-3 gap-4 text-[#283841]"
-            }
-            onClick={() => {
-              setSelected(0);
-              setButtonText("Search Hotels");
+    <>
+      <NavigationMenuBar />
+      <div className="w-full mx-auto relative">
+        <div
+          className="w-full h-[500px] bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${beach})`,
+            backgroundSize: "cover", // or "contain"
+            backgroundPosition: "center",
+            height: "100%", // Adjust height as necessary
+          }}
+        >
+          <div
+            className="absolute mt-[37.9vh] ml-[2vw] rounded-t-3xl"
+            style={{
+              width: "fit-content",
+              backgroundColor: "rgba(234, 240, 240, 0.8)",
             }}
           >
-            <span className="font-bold text-base tracking-wider">Hotels</span>
-          </button>
-          <button
-            className={
-              selected === 1
-                ? "flex items-center px-8 py-3 gap-4 bg-[#826AF9] rounded-lg text-white"
-                : "flex items-center px-8 py-3 gap-4 text-[#283841]"
-            }
-            onClick={() => {
-              setSelected(1);
-              setButtonText("Search Flights");
-            }}
-          >
-            <span className="font-bold text-base tracking-wider">Flights</span>
-          </button>
-        </div>
-      </div>
-      {selected === 0 ? (
-        <div className="bg-[#EAF0F0] rounded-b-3xl rounded-tr-3xl p-7">
-          <div className="flex flex-wrap justify-between items-end gap-6">
-            {/* Country Selection */}
-            <div className="flex-1 min-w-[280px]">
-              <div className="mb-2">
-                <span className="font-bold text-base tracking-wider text-[#283841]">
-                  Country
+            <div className="flex items-center p-7 gap-5 ">
+              <button
+                className={
+                  selected === 0
+                    ? "flex items-center px-8 py-3 gap-4 bg-[#826AF9] rounded-lg text-white"
+                    : "flex items-center px-8 py-3 gap-4 text-[#283841]"
+                }
+                onClick={() => {
+                  setSelected(0);
+                  setButtonText("Search Hotels");
+                }}
+              >
+                <span className="font-bold text-base tracking-wider">
+                  Hotels
                 </span>
-              </div>
-              <Select
-                options={countries}
-                value={selectedCountry}
-                onChange={handleCountryChange}
-                placeholder="Select Country"
-                className="text-base text-[#283841]"
-              />
-            </div>
-
-            {/* State Selection */}
-            {selectedCountry && (
-              <div className="flex-1 min-w-[280px]">
-                <div className="mb-2">
-                  <span className="font-bold text-base tracking-wider text-[#283841]">
-                    State
-                  </span>
-                </div>
-                <Select
-                  options={states}
-                  value={selectedState}
-                  onChange={(selectedOption) => {
-                    // Remove "Governorate" and trim spaces
-                    const cleanedLabel = selectedOption.label
-                      .replace(/Governorate/gi, "")
-                      .trim();
-                    setSelectedState({
-                      ...selectedOption,
-                      label: cleanedLabel,
-                      value: cleanedLabel,
-                    });
-                  }}
-                  placeholder="Select State"
-                  className="text-base text-[#283841]"
-                />
-              </div>
-            )}
-
-            {/* Check-In Field */}
-            <div className="flex-1 min-w-[280px]">
-              <div className="mb-2">
-                <span className="font-bold text-base tracking-wider text-[#283841]">
-                  Check-In
+              </button>
+              <button
+                className={
+                  selected === 1
+                    ? "flex items-center px-8 py-3 gap-4 bg-[#826AF9] rounded-lg text-white"
+                    : "flex items-center px-8 py-3 gap-4 text-[#283841]"
+                }
+                onClick={() => {
+                  setSelected(1);
+                  setButtonText("Search Flights");
+                }}
+              >
+                <span className="font-bold text-base tracking-wider">
+                  Flights
                 </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
-                <input
-                  type="date"
-                  value={checkInDate}
-                  onChange={(e) => setCheckInDate(e.target.value)}
-                  className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
-                />
-              </div>
+              </button>
             </div>
-
-            {/* Check-Out Field */}
-            <div className="flex-1 min-w-[280px]">
-              <div className="mb-2">
-                <span className="font-bold text-base tracking-wider text-[#283841]">
-                  Check-Out
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
-                <input
-                  type="date"
-                  value={checkOutdate}
-                  onChange={(e) => setCheckOutDate(e.target.value)}
-                  className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px]"
-            >
-              <span className="font-semibold text-base tracking-wider">
-                {buttonText}
-              </span>
-              <ArrowRight className="w-6 h-6" />
-            </button>
           </div>
-        </div>
-      ) : (
-        <React.Fragment>
-          <FlightForm
-            flightData={flightData}
-            onFlightDataChange={handleFlightDataChange}
-            onSubmit={handleSubmit}
-          />
-          {loading && <p className="text-center mt-4">Loading flights...</p>}
-          {error && <p className="text-center mt-4 text-danger">{error}</p>}
-          {!loading && !error && flights.length > 0 && (
-            <div className="mt-4">
-              <ul>
-                {flights.map((f, index) => (
-                  <li key={index}>
-                    <Flight flight={f} />
-                  </li>
-                ))}
-              </ul>
+          {selected === 0 ? (
+            <div
+              className="absolute mt-[52vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
+              style={{ backgroundColor: "rgba(234, 240, 240, 0.8)" }} // 0.5 is 50% transparency
+            >
+              <div className="flex flex-wrap justify-between items-end gap-6">
+                {/* Country Selection */}
+                <div className="flex-1 min-w-[280px]">
+                  <div className="mb-2">
+                    <span className="font-bold text-base tracking-wider text-[#283841]">
+                      Country
+                    </span>
+                  </div>
+                  <Select
+                    options={countries}
+                    value={selectedCountry}
+                    onChange={handleCountryChange}
+                    placeholder="Select Country"
+                    className="text-base text-[#283841]"
+                  />
+                </div>
+
+                {/* State Selection */}
+                {selectedCountry && (
+                  <div className="flex-1 min-w-[280px]">
+                    <div className="mb-2">
+                      <span className="font-bold text-base tracking-wider text-[#283841]">
+                        State
+                      </span>
+                    </div>
+                    <Select
+                      options={states}
+                      value={selectedState}
+                      onChange={(selectedOption) => {
+                        // Remove "Governorate" and trim spaces
+                        const cleanedLabel = selectedOption.label
+                          .replace(/Governorate/gi, "")
+                          .trim();
+                        setSelectedState({
+                          ...selectedOption,
+                          label: cleanedLabel,
+                          value: cleanedLabel,
+                        });
+                      }}
+                      placeholder="Select State"
+                      className="text-base text-[#283841]"
+                    />
+                  </div>
+                )}
+
+                {/* Check-In Field */}
+                <div className="flex-1 min-w-[280px]">
+                  <div className="mb-2">
+                    <span className="font-bold text-base tracking-wider text-[#283841]">
+                      Check-In
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+                    <input
+                      type="date"
+                      value={checkInDate}
+                      onChange={(e) => setCheckInDate(e.target.value)}
+                      className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Check-Out Field */}
+                <div className="flex-1 min-w-[280px]">
+                  <div className="mb-2">
+                    <span className="font-bold text-base tracking-wider text-[#283841]">
+                      Check-Out
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-[#28384110] rounded-md">
+                    <input
+                      type="date"
+                      value={checkOutdate}
+                      onChange={(e) => setCheckOutDate(e.target.value)}
+                      className="bg-transparent w-full text-base text-[#283841] placeholder-[#28384180] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSubmit}
+                  className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white min-w-[186px]"
+                >
+                  <span className="font-semibold text-base tracking-wider">
+                    {buttonText}
+                  </span>
+                  <ArrowRight className="w-6 h-6" />
+                </button>
+              </div>
             </div>
-          )}
-        </React.Fragment>
-      )}
-     {selected === 0 && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <ECommerceDefaultSkeleton key={index} />
-            ))
-          ) : hotels.length > 0 ? (
-            hotels.map((hotel) => (
-              <HotelCard
-                currency={combo}
-                key={hotel.id}
-                id={hotel.id}
-                title={hotel.title.replace(/^\d+\.\s*/, '')}
-                checkInDate={checkInDate}
-                checkOutdate={checkOutdate}
-                price={parseFloat(hotel.price.replace(/[^0-9.]/g, ""))/ (exchangeRates[currency] || 1)}
-                rating={hotel.rating}
-                provider={hotel.provider}
-                cardPhotos={hotel.cardPhotos}
-                cancellationPolicy={hotel.cancellationPolicy}
-                sponsor={hotel.sponsor}
-              />
-            ))
           ) : (
-            <p className="col-span-full text-center">No hotels found</p>
-          )}
-    </div>
-      )}
-    </div>
+            <React.Fragment>
+              <FlightForm
+                flightData={flightData}
+                onFlightDataChange={handleFlightDataChange}
+                onSubmit={handleSubmit}
+              />
+              {loading && (
+                <p className="text-center mt-4">Loading flights...</p>
+              )}
+              {error && <p className="text-center mt-4 text-danger">{error}</p>}
+              {!loading && !error && flights.length > 0 && (
+                <div className="mt-4">
+                  <ul>
+                    {flights.map((f, index) => (
+                      <li key={index}>
+                        <Flight flight={f} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </React.Fragment>
+          )}{" "}
+        </div>
+        {selected === 0 && (
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <ECommerceDefaultSkeleton key={index} />
+              ))
+            ) : hotels.length > 0 ? (
+              hotels.map((hotel) => (
+                <HotelCard
+                  currency={combo}
+                  key={hotel.id}
+                  id={hotel.id}
+                  title={hotel.title.replace(/^\d+\.\s*/, "")}
+                  checkInDate={checkInDate}
+                  checkOutdate={checkOutdate}
+                  price={
+                    parseFloat(hotel.price.replace(/[^0-9.]/g, "")) /
+                    (exchangeRates[currency] || 1)
+                  }
+                  rating={hotel.rating}
+                  provider={hotel.provider}
+                  cardPhotos={hotel.cardPhotos}
+                  cancellationPolicy={hotel.cancellationPolicy}
+                  sponsor={hotel.sponsor}
+                />
+              ))
+            ) : (
+              <p className="col-span-full text-center">No hotels found</p>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
