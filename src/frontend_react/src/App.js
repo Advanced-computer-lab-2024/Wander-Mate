@@ -106,6 +106,7 @@ import MeetPageAd from "./pages/meetPageAD";
 import SalesReportTableadvertiser from "./components/salestableadvertiser";
 import SellerHomePage from "./pages/SellerHomePage";
 import LegendEvents from "./components/QuantityChart";
+import AdminDocumentsPage from "./pages/viewDocsAsAdmin";
 function App() {
   return (
     <Router>
@@ -247,6 +248,7 @@ function App() {
         />
         <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
         <Route path="/quantity" element={<LegendEvents/>}/>
+        <Route path="/AdminDocumentsPage" element={<AdminDocumentsPage/>}/>
 
       </Routes>
     </Router>
