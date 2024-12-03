@@ -32,6 +32,7 @@ import {
   Trash2,
   Bell,
   FileText,
+  ListOrdered
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -384,6 +385,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToHistory = async () => {
     navigate("/touristHistory");
   };
+  const goToOrders = async () => {
+    navigate("/touristOrders");
+  };
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
@@ -732,6 +736,11 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   <DropdownMenuItem>
                     <History className="mr-2 h-4 w-4" />
                     <span onClick={goToHistory}>History</span>
+                    <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <ListOrdered className="mr-2 h-4 w-4" />
+                    <span onClick={goToOrders}>Orders</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
