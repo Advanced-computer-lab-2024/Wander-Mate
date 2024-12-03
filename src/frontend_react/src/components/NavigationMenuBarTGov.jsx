@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -60,7 +60,7 @@ const NavigationMenuBarTGov = () => {
       setUsername(storedUsername);
     }
   }, [navigate]);
-  const navigate = useNavigate();
+  
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
