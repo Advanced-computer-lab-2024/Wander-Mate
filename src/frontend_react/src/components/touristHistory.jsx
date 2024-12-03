@@ -5,6 +5,7 @@ import NavigationMenuBar from './NavigationMenuBar';
 import CompletedItineraries from './completedItineraries';
 import CompletedActivities from './completedActivities';
 import TouristOrdersTable from './touristOrders';
+import BoughtProducts from './boughtProducts';
 
 const TouristHistory = () => {
   return (
@@ -20,9 +21,13 @@ const TouristHistory = () => {
           {/* <h2 className="text-2xl font-semibold mb-4">Completed Activities</h2> */}
           <CompletedActivities />
         </section>
-        <section>
+        {/* <section>
           <h2 className="text-2xl font-semibold mb-4">Order History</h2>
           <TouristOrdersTable />
+        </section> */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-4"></h2>
+          <BoughtProducts />
         </section>
       </main>
     </div>
