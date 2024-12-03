@@ -266,7 +266,7 @@ export default function Places() {
                       ?.Name || "No Category"
                   }
                   TicketPrices={(place.TicketPrices / (exchangeRates[currency] || 1)
-                  )}
+                  ).toFixed(2)}
                 />
               ))
             ) : (

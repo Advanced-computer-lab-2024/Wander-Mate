@@ -23,10 +23,11 @@ import {
   CarouselNext,
 } from "./ui/carousel";
 
-export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
+export default function PlaceModal({ place, isOpen, setIsOpen, children, favorite, setFavorite }) {
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+ 
 
   const handleOpenChange = (open) => {
     console.log(place);
@@ -49,6 +50,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
   const images = place.images;
 
   useEffect(() => {
+    setIsFavorite(favorite)
     const fetchReviews = async () => {
       if (place.reviews && place.reviews.length > 0) {
         try {
@@ -73,9 +75,11 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
     if (urlParams.get("open") === "true"  && urlParams.get("place") === place.placeId) {
       setIsOpen(true);
     }
-  }, [isOpen, place.reviews]);
+  }, [isOpen, place.reviews, favorite]);
 
   const handleToggleFavorite = async () => {
+    setIsFavorite(!isFavorite); 
+    setFavorite(!favorite);
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
@@ -101,7 +105,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children }) {
       }
   
       // Update the favorite status only after the backend operation succeeds
-      setIsFavorite((prevState) => !prevState);
+      // setIsFavorite((prevState) => !prevState);
     } catch (error) {
       console.error("Error toggling favorite Place:", error);
       if (error.response) {

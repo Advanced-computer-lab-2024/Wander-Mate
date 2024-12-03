@@ -394,7 +394,7 @@ app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matc
 app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
 app.get("/seller/:sellerId/image", getSellerImage);
-app.get("/ADvertiser/:advertiserId/image", getadvertiserImage);
+app.get("/ADvertiser/:advertiserID/image", getadvertiserImage);
 app.get("/GUIDE/:guideID/image", gettourGuideImage);
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
 app.post("/searchProductsByName", searchProductsByName);

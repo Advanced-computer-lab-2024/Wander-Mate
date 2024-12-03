@@ -42,7 +42,7 @@ const ViewPDFModelAd = () => {
         if (!response.ok) {throw new Error("Failed to fetch Advertiser ID");}
         const { userID } = await response.json();
         setGuideID(userID);
-        const reply = await fetch(`http://localhost:8000/getTourGuideDocuments/${userID}`);
+        const reply = await fetch(`http://localhost:8000/getAdvertiserDocuments/${userID}`);
         const data = await reply.json();
         if (reply.ok) {
           setDocuments(data.documents);
@@ -169,7 +169,7 @@ const ViewPDFModelAd = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search File"
+                placeholder="  Search File"
                 className="ltr:pl-7 rtl:pr-8"
               />
             </div>

@@ -169,7 +169,7 @@ const ViewPDFModel = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search File"
+                placeholder="  Search File"
                 className="ltr:pl-7 rtl:pr-8"
               />
             </div>
