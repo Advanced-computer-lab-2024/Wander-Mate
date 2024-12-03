@@ -95,7 +95,7 @@ const SellerNavBar = () => {
         if (!username) throw new Error("Username not found in session storage");
 
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get Tour Guide ID");
+        if (!reply.ok) throw new Error("Failed to get Seller ID");
 
         const { userID } = await reply.json();
         setGuideId(userID);
@@ -185,13 +185,13 @@ const SellerNavBar = () => {
       try {
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get tourist ID");
+        if (!reply.ok) throw new Error("Failed to get Seller ID");
 
         const { userID } = await reply.json();
         const response = await fetch(
-          `http://localhost:8000/GUIDE/${userID}/image`
+          `http://localhost:8000/seller/${userID}/image`
         );
-        setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
+        setProfilePicture(`http://localhost:8000/seller/${userID}/image`);
       } catch {
         console.log("error");
       }
@@ -311,7 +311,7 @@ const SellerNavBar = () => {
                       {sessionStorage
                         .getItem("username")
                         ?.slice(0, 2)
-                        .toUpperCase() || "TG"}
+                        .toUpperCase() || "SE"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

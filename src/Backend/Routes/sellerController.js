@@ -534,21 +534,29 @@ const viewSellerProductSalesAndQuantity = async (req, res) => {
 };
 const getSellerImage = async (req, res) => {
   try {
-    const { sellerID } = req.params; // Get the product ID from the request parameters
+    const { sellerID } = req.params; // Get the guide ID from the request parameters
 
-    // Find the product by ID
+    // Find the guide by ID
     const seller = await sellerModel.findById(sellerID);
 
-    // Check if product exists
-    if (!seller || !seller.picture || !seller.picture.data) {
+    // Check if guide exists
+    if (
+      !seller ||
+      !seller.picture ||
+      !seller.picture.data ||
+      !seller.picture.data.buffer
+    ) {
       return res.status(404).json({ error: "Image not found." });
     }
+
+    // Extract the buffer from the Binary object
+    const imageBuffer = seller.picture.data.buffer;
 
     // Set the content type for the image
     res.set("Content-Type", seller.picture.contentType);
 
-    // Send the image data
-    res.send(seller.picture.data);
+    // Send the image data as a buffer
+    res.send(imageBuffer);
   } catch (err) {
     console.error("Error retrieving image:", err);
     res.status(500).json({ error: "Failed to retrieve image." });
