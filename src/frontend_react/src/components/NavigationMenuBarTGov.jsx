@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,7 @@ const SiteLogo = () => (
 
 const NavigationMenuBarTGov = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -57,6 +59,10 @@ const NavigationMenuBarTGov = () => {
     setOpenDropdown(null);
   };
 
+  const logout = () => {
+    sessionStorage.removeItem("username");
+    navigate("/loginPage");
+  };
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -83,7 +89,7 @@ const NavigationMenuBarTGov = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/about/story" className="flex items-center">
+                  <Link to="/AboutUsTGov" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>
@@ -150,7 +156,7 @@ const NavigationMenuBarTGov = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span onClick={logout}>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -66,6 +66,7 @@ import HotelCheckout from "./components/hotelCheckout";
 import UserProfilePage from "./pages/userProfilePage";
 import AboutUs from "./pages/aboutUs";
 import AboutUsTG from "./pages/aboutUsTG";
+import AboutUsTGov from "./pages/aboutUsTGov";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -181,6 +182,7 @@ function App() {
         <Route path="/UserProfilePage" element={<UserProfilePage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
+        <Route path="/AboutUsTGov" element={<AboutUsTGov/>}/>
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
