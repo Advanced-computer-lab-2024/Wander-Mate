@@ -91,7 +91,7 @@ const LogInForm = () => {
             sessionStorage.setItem("curr", response.data.curr || "USD");
 
             setTimeout(() => {
-              navigate("/touristHomepage");
+              navigate("/aboutUs");
             }, 1000);
             break;
           case "Seller":
@@ -119,7 +119,7 @@ const LogInForm = () => {
 
             setTimeout(() => {
               if (response.data.status === "accepted") {
-                navigate("/TourGuidePage");
+                navigate("/AboutUsTG");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");
@@ -147,7 +147,7 @@ const LogInForm = () => {
 
             setTimeout(() => {
               if (response.data.status === "accepted") {
-                navigate("/advertiser");
+                navigate("/AboutUsAD");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");

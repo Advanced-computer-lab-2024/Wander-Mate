@@ -632,6 +632,219 @@ const getAdvertiserById = async (req, res) => {
   }
 };
 
+
+const getAttractionSalesReport = async (req, res) => {
+  const { advertiserId } = req.params; // Assuming the advertiser's ID is passed in the URL
+  try {
+    // Step 1: Fetch all attractions created by the advertiser
+    const attractions = await Attraction.find({ Creator: advertiserId }).select(
+      "_id Name Price"
+    );
+    const attractionIds = attractions.map((attraction) => attraction._id);
+
+    if (attractions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No attractions found for this advertiser." });
+    }
+
+    // Step 2: Aggregate bookings for the advertiser's attractions
+    const salesData = await bookingSchema.aggregate([
+      {
+        $match: {
+          itemId: { $in: attractionIds }, // Only include bookings for the advertiser's attractions
+          itemModel: "Attraction", // Ensure we're looking at attractions
+        },
+      },
+      {
+        $group: {
+          _id: {
+            attractionId: "$itemId",
+            bookedDate: "$bookedDate", // Group by attraction and booking date
+          },
+          totalBookings: { $sum: 1 }, // Count bookings
+          totalRevenue: { $sum: "$price" }, // Sum up revenue from prices
+        },
+      },
+      {
+        $lookup: {
+          from: "attractions", // Join with attractions to get the price
+          localField: "_id.attractionId",
+          foreignField: "_id",
+          as: "attractionDetails",
+        },
+      },
+      {
+        $unwind: "$attractionDetails", // Unwind to flatten attraction details
+      },
+      {
+        $project: {
+          _id: 0,
+          attractionId: "$_id.attractionId",
+          attractionName: "$attractionDetails.Name",
+          bookedDate: "$_id.bookedDate",
+          totalBookings: 1,
+          totalRevenue: { $multiply: ["$totalBookings", "$attractionDetails.Price"] }, // Calculate revenue
+        },
+      },
+    ]);
+
+    if (salesData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this advertiser's attractions." });
+    }
+
+    // Step 3: Send response
+    res.status(200).json({
+      message: "Sales report generated successfully.",
+      salesReport: salesData,
+    });
+  } catch (error) {
+    console.error("Error generating attraction sales report:", error);
+    res
+      .status(500)
+      .json({ message: "Server error while generating sales report." });
+  }
+};
+
+const viewMyNotificationsAd = async (req, res) => {
+  const { advertiserId } = req.params; // Assuming the tourist ID is passed as a URL parameter
+
+  try {
+    // Find the notifications for the given tourist ID
+    const notifications = await Notification.findOne({ userID: advertiserId });
+
+    if (!notifications || notifications.notifications.length === 0) {
+      return res.status(201).json({
+        message: "No notifications found for this Tour Guide.",
+      });
+    }
+
+    res.status(200).json({
+      message: "Notifications retrieved successfully.",
+      notifications: notifications.notifications, // Return all the notifications array for the tourist
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const removeNotificationAd = async (req, res) => {
+  const { advertiserId, notificationId } = req.params; // Get touristId and notificationId from the request body
+  try {
+    // Validate input
+    if (!advertiserId || !notificationId) {
+      return res
+        .status(400)
+        .json({ message: "Tour Guide ID and Notification ID are required." });
+    }
+
+    // Validate that the touristId and notificationId are valid ObjectIds
+    if (
+      !mongoose.Types.ObjectId.isValid(advertiserId) ||
+      !mongoose.Types.ObjectId.isValid(notificationId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid Tourist ID or Notification ID." });
+    }
+
+    // Find the notification document for the given tourist ID
+    const notificationDoc = await Notification.findOne({ userID: advertiserId });
+
+    if (!notificationDoc) {
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this tourist." });
+    }
+
+    // Find the index of the notification to remove by notificationId
+    const notificationIndex = notificationDoc.notifications.findIndex(
+      (notification) => notification._id.toString() === notificationId
+    );
+
+    if (notificationIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Notification not found in the list." });
+    }
+
+    // Remove the notification from the array
+    notificationDoc.notifications.splice(notificationIndex, 1);
+
+    // Save the updated notification document
+    await notificationDoc.save();
+
+    res.status(200).json({
+      message: "Notification removed successfully.",
+      notifications: notificationDoc.notifications, // Return the updated notifications array
+    });
+  } catch (error) {
+    console.error("Error removing notification:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const markNotificationAsReadAd = async (req, res) => {
+  const { userID, notificationId } = req.params;
+
+  try {
+    // Validate input
+    if (!userID || !notificationId) {
+      return res
+        .status(400)
+        .json({ message: "UserID and NotificationID are required." });
+    }
+
+    // Step 1: Find the user notification document by userID
+    const notificationDocument = await Notification.findOne({ userID: userID });
+
+    if (!notificationDocument) {
+      return res
+        .status(404)
+        .json({ message: "No notifications found for this user." });
+    }
+
+    // Step 2: Find the specific notification by notificationId
+    const notification = notificationDocument.notifications.find(
+      (notif) => notif._id.toString() === notificationId
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found." });
+    }
+
+    // Step 3: Check if isRead is not defined, set it to false if undefined
+    if (notification.isRead === undefined) {
+      notification.isRead = false;
+    }
+
+    // Step 4: Mark the notification as read (set isRead to true)
+    notification.isRead = true;
+
+    // Step 5: Save the updated notifications array in the user document
+    await notificationDocument.save();
+
+    // Step 6: Respond with a success message
+    res.status(200).json({
+      message: "Notification marked as read successfully.",
+      notification: notification,
+    });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+
 module.exports = {
   createActivity,
   readActivity,
@@ -654,4 +867,8 @@ module.exports = {
   viewActivityReport,
   notifyAdvertiser,
   getAdvertiserById,
+  getAttractionSalesReport,
+  viewMyNotificationsAd,
+  markNotificationAsReadAd,
+  removeNotificationAd,
 };

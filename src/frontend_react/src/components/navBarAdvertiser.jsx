@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,18 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  LogOut,
-  Settings,
-  User,
-  Info,
-  Users,
-  Briefcase,
-  MapPin,
-  Tag,
-} from "lucide-react";
+import { LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Bell, Trash2, File } from 'lucide-react';
+import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "./ui/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 const SiteLogo = () => (
   <svg
@@ -47,10 +42,12 @@ const SiteLogo = () => (
   </svg>
 );
 
-const NavigationMenuBarTGov = () => {
+const NavigationMenuBarAd = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [username, setUsername] = useState("");
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [advertiserId, setTouristId] = useState(0);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -60,7 +57,35 @@ const NavigationMenuBarTGov = () => {
       setUsername(storedUsername);
     }
   }, [navigate]);
-  
+
+  useEffect(() => {
+    const fetchTouristIdAndNotifications = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) throw new Error("Username not found in session storage");
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get Advertiser ID");
+
+        const { userID } = await reply.json();
+        setTouristId(userID);
+
+        const response = await axios.get(
+          `http://localhost:8000/viewMyNotificationsAd/${userID}`
+        );
+        setNotifications(response.data.notifications || []);
+      } catch (error) {
+        console.error("Error fetching Advertiser ID or notifications:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load notifications. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchTouristIdAndNotifications();
+  }, []);
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -74,6 +99,78 @@ const NavigationMenuBarTGov = () => {
     sessionStorage.removeItem("username");
     navigate("/loginPage");
   };
+
+  const markNotificationAsRead = async (id) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/markNotificationAsReadAd/${advertiserId}/${id}`
+      );
+
+      if (response.status === 200) {
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notification) =>
+            notification._id === id
+              ? { ...notification, isRead: true }
+              : notification
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark notification as read. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteNotification = useCallback(
+    async (notificationId) => {
+      try {
+        const response = await axios.delete(
+          `http://localhost:8000/removeNotificationAd/${advertiserId}/${notificationId}`
+        );
+
+        if (response.status === 200) {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter(
+              (notification) => notification._id !== notificationId
+            )
+          );
+
+          toast({
+            title: "Success",
+            description: "Notification deleted successfully.",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to delete notification. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+
+        toast({
+          title: "Error",
+          description: "Failed to delete notification. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [advertiserId]
+  );
+
+  const goToProfile = () => {
+    navigate("/AdvertiserHomePage");
+  };
+
+  const goToDocs = () => {
+    navigate("/AdDocs");
+  };
+
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -100,13 +197,13 @@ const NavigationMenuBarTGov = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <DropdownMenuItem>
-                  <Link to="/AboutUsTGov" className="flex items-center">
+                  <Link to="/AboutUsAD" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
                     <span>Our Story</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/MeetPageTGov" className="flex items-center">
+                  <Link to="/MeetPageAd" className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Meet the Team</span>
                   </Link>
@@ -116,32 +213,84 @@ const NavigationMenuBarTGov = () => {
 
             <Button
               variant="ghost"
-              onMouseEnter={() => handleMouseEnter("places")}
-              onMouseLeave={handleMouseLeave}
+              onClick={() => navigate("/advertiserTransportations")}
             >
-              <MapPin className="mr-2 h-4 w-4" />
-              Places
+              Transportation
             </Button>
-
             <Button
-              asChild
               variant="ghost"
-              onMouseEnter={() => handleMouseEnter("tags")}
-              onMouseLeave={handleMouseLeave}
+              onClick={() => navigate("/advertiseractivities")}
             >
-              <Link to="/historicaltags">
-                <Tag className="mr-2 h-4 w-4" />
-                Tags
-              </Link>
+              Activities
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/aal")}
+            >
+              Sales Report
             </Button>
           </div>
 
-          <div className="flex items-center space-x-4">
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Notifications">
+                  <Bell className="h-5 w-5" />
+                  {notifications.some((n) => !n.isRead) && (
+                    <span className=" right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-lg">Notifications</h3>
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-gray-500">
+                      No new notifications
+                    </p>
+                  ) : (
+                    <ScrollArea className="h-[300px]">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          className={`p-4 ${
+                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                        >
+                          <p
+                            className="text-sm"
+                            onClick={() =>
+                              markNotificationAsRead(notification._id)
+                            }
+                          >
+                            {notification.message}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification._id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete notification</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarFallback>TG</AvatarFallback>
+                    <AvatarFallback>
+                      {username.slice(0, 2).toUpperCase() || "WM"}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -151,25 +300,30 @@ const NavigationMenuBarTGov = () => {
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span onClick={goToProfile}>Profile</span>
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <File className="mr-2 h-4 w-4" />
+                    <span onClick={goToDocs}>Documents</span>
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          
         </nav>
       </div>
     </header>
   );
 };
 
-export default NavigationMenuBarTGov;
+export default NavigationMenuBarAd;
+

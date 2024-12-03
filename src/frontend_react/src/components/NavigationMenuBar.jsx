@@ -79,6 +79,16 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const [touristID, setTouristId] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchTouristIdAndWishlist = async () => {
@@ -370,7 +380,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToProfile = async () => {
     navigate("/UserProfilePage");
   };
- 
+
   const goToHistory = async () => {
     navigate("/touristHistory");
   };
@@ -444,15 +454,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/about/team" className="flex items-center">
+                  <Link to="/MeetPage" className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Meet the Team</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -489,13 +493,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <DropdownMenuItem>
                   <Link to="/bookings/flights" className="flex items-center">
                     <Plane className="mr-2 h-4 w-4" />
-                    <span>Flights</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/bookings/hotels" className="flex items-center">
-                    <Hotel className="mr-2 h-4 w-4" />
-                    <span>Hotels</span>
+                    <span>Flights & Hotels</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
@@ -717,10 +715,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
                     <AvatarFallback>
-                      {sessionStorage
-                        .getItem("username")
-                        .slice(0, 2)
-                        .toUpperCase() || "WM"}
+                      {username.slice(0, 2).toUpperCase() || "WM"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -739,17 +734,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <span onClick={goToHistory}>History</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>
-                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <FileText className="mr-2 h-4 w-4" />

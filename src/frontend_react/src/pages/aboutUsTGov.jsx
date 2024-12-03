@@ -1,5 +1,5 @@
 import React from 'react'
-import TourGuideNavBar from '../components/tourGuideNavBar';
+import NavigationMenuBarTGov from '../components/NavigationMenuBarTGov';
 import OurAcheivementsBlock from "../components/OurAcheivementsBlock"
 import OurService from "../components/OurServiceBlock"
 import WhatPeopleSay from "../components/whatpeoplesay" // Import the WhatPeopleSay component
@@ -7,25 +7,25 @@ import ExploreComponent from "../components/exploreComponent" // Import the Expl
 import BookingSteps from "../components/processComponent"
 import { useNavigate } from "react-router-dom";
 
-export default function AboutUsTG() {
+export default function AboutUsTGov() {
     
     const navigate = useNavigate();
     
       const handleRegClick = () => {
-        navigate("/TourGuideItinerary");
+        navigate("/TourismGovHomePage");
       };
     
   return (
    
     <div className="min-h-screen bg-gray-50">
-      <TourGuideNavBar />
+      <NavigationMenuBarTGov />
       <div className="full">
     <div className="frame">
       <div className="inner-container">
         <h1 className="title">QUALITY & PASSION</h1>
         <div className="buttonR">
           <span className="buttonR-text" onClick={handleRegClick}>
-            Itineraries
+            Home Page
           </span>
         </div>
       </div>

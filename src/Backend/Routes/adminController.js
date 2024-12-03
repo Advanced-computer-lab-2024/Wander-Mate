@@ -37,7 +37,7 @@ const Rating = require("../Models/rating.js");
 const Review = require("../Models/review.js");
 const BookedFlights = require("../Models/bookedFlights.js");
 const BookedHotel = require("../Models/bookedHotel.js");
-const BookedMarks = require("../Models/bookMark.js");
+const BookedMarks = require("../Models/bookMark.js").default;
 const address = require("../Models/address.js");
 const cart = require("../Models/cart.js");
 const wishlist = require("../Models/whishlist.js");
@@ -1344,9 +1344,8 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyAdvertiser(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Event ${
-          updatedItem.isFlagged ? "flagged" : "unflagged"
-        } successfully.`,
+        message: `Event ${updatedItem.isFlagged ? "flagged" : "unflagged"
+          } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
     } else if (type === "itinerary") {
@@ -1368,9 +1367,8 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyTourGuide(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Itinerary ${
-          updatedItem.isFlagged ? "flagged" : "unflagged"
-        } successfully.`,
+        message: `Itinerary ${updatedItem.isFlagged ? "flagged" : "unflagged"
+          } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
     } else {

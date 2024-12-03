@@ -13,12 +13,19 @@ import { Icon } from "@iconify/react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { format, parseISO } from "date-fns";
 import { Textarea } from "./ui/textarea";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CustomConfirmationDialog from "./ui/confirmationDialog";
 import NonMovableMap from "./ui/nonMovableMap";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
 export default function ItineraryModel({
   itinerary,
   isOpen,
@@ -36,12 +43,15 @@ export default function ItineraryModel({
     TimeLine: itinerary.TimeLine,
     Activities: itinerary.Activities,
     LocationsToVisit: itinerary.LocationsToVisit,
+    AvailableDates: itinerary.AvailableDates || [],
   });
   const [allActivities, setAllActivities] = useState([]);
   const [allLocations, setAllLocations] = useState([]);
   const [isActive, setIsActive] = useState(itinerary.isActive);
+  const [currentDate, setCurrentDate] = useState("");
+  const [newlyAddedDates, setNewlyAddedDates] = useState([]);
   const navigate = useNavigate();
-   const images = itinerary.images;
+  const images = itinerary.images;
 
   const handleCreatorClick = (e) => {
     e.preventDefault();
@@ -49,6 +59,26 @@ export default function ItineraryModel({
       const creatorData = encodeURIComponent(JSON.stringify(creator));
       navigate(`/itineraryTourGuide?creator=${creatorData}`);
     }
+  };
+
+  const formatDate = (dateString) => {
+    return format(parseISO(dateString), "yyyy-MM-dd");
+  };
+
+  const handleAddDate = () => {
+    if (
+      currentDate &&
+      !editedItinerary.AvailableDates.includes(currentDate) &&
+      !newlyAddedDates.includes(currentDate)
+    ) {
+      const newDate = new Date(currentDate).toISOString();
+      setNewlyAddedDates((prev) => [...prev, newDate].sort());
+      setCurrentDate("");
+    }
+  };
+
+  const handleRemoveDate = (dateToRemove) => {
+    setNewlyAddedDates((prev) => prev.filter((date) => date !== dateToRemove));
   };
 
   useEffect(() => {
@@ -146,9 +176,11 @@ export default function ItineraryModel({
         LocationsToVisit: Array.isArray(editedItinerary.LocationsToVisit)
           ? editedItinerary.LocationsToVisit.map((location) => location._id)
           : [], // Fallback to empty array if not an array
+        AvailableDates: [
+          ...editedItinerary.AvailableDates,
+          ...newlyAddedDates,
+        ].sort(),
       };
-
-      console.log(editedItinerary.LocationsToVisit);
 
       const response = await axios.put(
         `http://localhost:8000/updateItinerary/${itinerary.itineraryId}`,
@@ -410,6 +442,46 @@ export default function ItineraryModel({
                       </div>
                     </div>
                     <div>
+                      <Label>Available Dates</Label>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Input
+                          type="date"
+                          value={currentDate}
+                          onChange={(e) => setCurrentDate(e.target.value)}
+                          min={format(new Date(), "yyyy-MM-dd")}
+                        />
+                        <Button onClick={handleAddDate} type="button">
+                          Add Date
+                        </Button>
+                      </div>
+                      <ul className="space-y-2">
+                        {editedItinerary.AvailableDates.map((date, index) => (
+                          <li
+                            key={index}
+                            className="flex justify-between items-center"
+                          >
+                            <span>{formatDate(date)}</span>
+                          </li>
+                        ))}
+                        {newlyAddedDates.map((date, index) => (
+                          <li
+                            key={`new-${index}`}
+                            className="flex justify-between items-center"
+                          >
+                            <span>{formatDate(date)}</span>
+                            <Button
+                              onClick={() => handleRemoveDate(date)}
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                            >
+                              Remove
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
                       <Button
                         onClick={handleSave}
                         style={{ marginRight: "8px" }}
@@ -498,6 +570,14 @@ export default function ItineraryModel({
                             : location.Name
                         ).join(", ")}
                       </p>
+                      <div>
+                        <strong>Available Dates:</strong>
+                        <ul className="list-disc list-inside">
+                          {editedItinerary.AvailableDates.map((date, index) => (
+                            <li key={index}>{formatDate(date)}</li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
 
                     {/* Edit and Share Buttons */}

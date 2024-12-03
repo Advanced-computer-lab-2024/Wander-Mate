@@ -635,9 +635,9 @@ const getAmadeusToken = async () => {
     const tokenResponse = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       "grant_type=client_credentials&client_id=" +
-        apiKey +
-        "&client_secret=" +
-        apiSecret,
+      apiKey +
+      "&client_secret=" +
+      apiSecret,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -747,6 +747,15 @@ const BookFlight = async (req, res) => {
     await newBooking.save();
     console.log("newBooking saved successfully.");
 
+    const fakeReq = { body: { amountPaid: price, touristID } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
+
     res.status(201).json({
       message: "Flight booked successfully",
       bookingDetails: { confirmationNumber: bookedFlight._id }, // Add confirmation number
@@ -821,10 +830,10 @@ const searchHotel = async (req, res) => {
       isSponsored: hotel.isSponsored || false,
       cardPhotos: hotel.cardPhotos
         ? hotel.cardPhotos.map((photo) =>
-            photo.sizes.urlTemplate
-              .replace("{width}", "400")
-              .replace("{height}", "300")
-          )
+          photo.sizes.urlTemplate
+            .replace("{width}", "400")
+            .replace("{height}", "300")
+        )
         : [], // Default to empty array if no photos
     }));
 
@@ -864,6 +873,15 @@ const bookHotel = async (req, res) => {
     });
 
     await newBooking.save();
+
+    const fakeReq = { body: { amountPaid: price, touristID: userId } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
 
     res
       .status(201)
@@ -1311,15 +1329,15 @@ const bookTransportation = async (req, res) => {
 
     // Respond back with success message and booking details
 
-     // Call the calculateLoyaltyPoints function
-     const fakeReq = { body: { amountPaid: transportation.price, touristID: userId } };
-     const fakeRes = {
-         json: (response) => {
-           console.log("Loyalty points response:", response);
-         },
-       
-     };
-     await calculateLoyaltyPoints(fakeReq, fakeRes);
+    // Call the calculateLoyaltyPoints function
+    const fakeReq = { body: { amountPaid: transportation.price, touristID: userId } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
     res.status(200).json({
       message: "Transportation booked successfully!",
       booking: newBooking,
@@ -1424,9 +1442,9 @@ const requestTouristAccountDeletion = async (req, res) => {
 
     await userModel.findByIdAndDelete(touristID);
     await Usernames.findOneAndDelete({ userID: touristID });
-    await ordermodel.deleteMany({userId: touristID});
-    await bookingSchema.deleteMany({userId: touristID});
-    await Notification.deleteMany({userID: touristID});
+    await ordermodel.deleteMany({ userId: touristID });
+    await bookingSchema.deleteMany({ userId: touristID });
+    await Notification.deleteMany({ userID: touristID });
 
     // Proceed to delete if no future bookings found
     // await userModel.findByIdAndUpdate(
@@ -1496,11 +1514,7 @@ const calculateLoyaltyPoints = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({
-      message: "Loyalty points calculated successfully",
-      pointsEarned,
-      updatedPoints,
-    });
+    
   } catch (error) {
     console.error("Error calculating loyalty points:", error);
     res
@@ -1801,6 +1815,15 @@ const bookItinerary = async (req, res) => {
     // Attempt to save the updated itinerary document
     await itinerary.save();
 
+    const fakeReq = { body: { amountPaid: itinerary.Price, touristID: userId } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
+
     // Respond back with success message and booking details
     res.status(200).json({
       message: "Itinerary booked successfully!",
@@ -1838,6 +1861,15 @@ const bookActivity = async (req, res) => {
     // Attempt to save the updated itinerary document
     await activity.save();
     await newBooking.save();
+
+    const fakeReq = { body: { amountPaid: activity.Price, touristID: userId } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
 
     // Respond back with success message and booking details
     res.status(200).json({
@@ -2480,9 +2512,9 @@ const ViewBookmarkedAttractions = async (req, res) => {
       const attractions = await Promise.all(
         user.bookmarkedAttractions.map(async (attraction) => {
           // Ensure attraction.event is a valid ObjectId
-       
 
-          const bookmark = await bookmarked.findOne({ event: attraction});
+
+          const bookmark = await bookmarked.findById(attraction);
           if (!bookmark) return null;
 
           let eventDetails;
@@ -2858,6 +2890,15 @@ const makeOrder = async (req, res) => {
       quantities,
     });
     await order.save();
+
+    const fakeReq = { body: { amountPaid: total, touristID: userId } };
+    const fakeRes = {
+      json: (response) => {
+        console.log("Loyalty points response:", response);
+      },
+
+    };
+    await calculateLoyaltyPoints(fakeReq, fakeRes);
     return res
       .status(200)
       .json({ message: "Order created successfully", order });
@@ -3167,9 +3208,8 @@ async function sendUpcomingEventNotifications() {
 
     for (const booking of upcomingBookings) {
       const { userId, bookedDate, itemId, itemModel } = booking;
-      const notificationMessage = `Reminder: You have an upcoming booking for an ${
-        itemId.Name
-      } on ${bookedDate.toLocaleDateString()}.`;
+      const notificationMessage = `Reminder: You have an upcoming booking for an ${itemId.Name
+        } on ${bookedDate.toLocaleDateString()}.`;
 
       // Check if the notification for this aboutID already exists
       const existingNotification = await Notification.findOne({
@@ -3565,24 +3605,24 @@ const getMyOrders = async (req, res) => {
 };
 
 const getTouristPoints = async (req, res) => {
-     const { touristID } = req.params; // Get tourist ID from request parameters
-  
-     try {
-       const tourist = await userModel.findById(touristID).select("Points"); // Fetch only Points field
-  
-      if (!tourist) {
-        return res.status(404).json({ message: "Tourist not found" });
-      }
-   
-    return res.status(200).json({ Points: tourist.Points }); // Return the Points|   } catch (error) {
-     console.error("Error retrieving tourist points:", error);
-     res.status(500).json({ message: "Internal server error", error: error.message });
-   }
-   catch(error){
-    console.error("Error retrieving tourist points:", error);
-   }
+  const { touristID } = req.params; // Get tourist ID from request parameters
 
-   };
+  try {
+    const tourist = await userModel.findById(touristID).select("Points"); // Fetch only Points field
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    return res.status(200).json({ Points: tourist.Points }); // Return the Points|   } catch (error) {
+    console.error("Error retrieving tourist points:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+  catch (error) {
+    console.error("Error retrieving tourist points:", error);
+  }
+
+};
 
 module.exports = {
   ViewOrders,

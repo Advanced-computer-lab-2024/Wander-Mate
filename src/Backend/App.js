@@ -236,6 +236,7 @@ const {
   viewMyNotificationsTG,
   removeNotificationTG,
   markNotificationAsReadTG,
+  getItinerarySalesReport,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -259,6 +260,10 @@ const {
   viewActivityReport,
   notifyAdvertiser,
   getAdvertiserById,
+  getAttractionSalesReport,
+  viewMyNotificationsAd,
+  removeNotificationAd,
+  markNotificationAsReadAd
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -595,6 +600,7 @@ app.get("/viewAllOrders", viewAllOrders);
 app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.get("/viewMyNotifications/:touristId", viewMyNotifications);
 app.get("/viewMyNotificationsTG/:guideID", viewMyNotificationsTG);
+app.get("/viewMyNotificationsAd/:advertiserId", viewMyNotificationsAd);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
@@ -606,6 +612,10 @@ app.delete(
 app.delete(
   "/removeNotificationTG/:guideID/:notificationId",
   removeNotificationTG
+);
+app.delete(
+  "/removeNotificationAd/:advertiserId/:notificationId",
+  removeNotificationAd
 );
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
@@ -645,6 +655,10 @@ app.put(
   "/markNotificationAsReadTG/:userID/:notificationId",
   markNotificationAsReadTG
 );
+app.put(
+  "/markNotificationAsReadAd/:userID/:notificationId",
+  markNotificationAsReadAd
+);
 app.get("/getRevenue/:userID", getRevenue);
 app.get("/getBookingDetails/:bookingID", getBookingDetails);
 app.get("/getEmail/:userID", getEmail);
@@ -654,3 +668,6 @@ app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
 app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
 app.get("/getTouristPoints/:touristID",getTouristPoints);
+
+app.get("/getItinerarySalesReport/:guideId",getItinerarySalesReport);
+app.get("/getAttractionSalesReport/:advertiserId",getAttractionSalesReport);

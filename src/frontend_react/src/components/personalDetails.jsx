@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import CustomConfirmationDialog from "./ui/confirmationDialog";
 const PersonalDetails = () => {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +18,7 @@ const PersonalDetails = () => {
   const [currencies, setCurrencies] = useState([]);
   const [nations, setNations] = useState([]);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const navigate = useNavigate();
 
   const [jobs] = useState([
@@ -132,14 +134,20 @@ const PersonalDetails = () => {
     }));
   };
 
+  const handleDelete = () => {
+    setIsConfirmationOpen(true);
+  };
+
+
+
+  const handleCancelDelete = () => {
+    setIsConfirmationOpen(false);
+  };
+  
   const handleDeleteAccount = useCallback(async () => {
     if (!userData?._id) return;
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone."
-    );
-
-    if (!confirmDelete) return;
+    
 
     setIsDeletingAccount(true);
     try {
@@ -312,11 +320,17 @@ const PersonalDetails = () => {
             )}
             <Button
               color="destructive"
-              onClick={handleDeleteAccount}
+              onClick={handleDelete}
               disabled={isDeletingAccount}
             >
               {isDeletingAccount ? "Requesting Deletion..." : "Delete Account"}
             </Button>
+            <CustomConfirmationDialog
+                        isOpen={isConfirmationOpen}
+                        onConfirm={handleDeleteAccount}
+                        onCancel={handleCancelDelete}
+                        message="Are you sure you want to delete this itinerary?"
+                      />
           </div>
         </div>
       </CardContent>

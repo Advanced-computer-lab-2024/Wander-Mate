@@ -7,7 +7,7 @@ import { Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import coverImage from "../public/images/files/userprofile.jpg"; // Background image import
 
-const HeaderTG = () => {
+const HeaderAD = () => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -20,8 +20,8 @@ const HeaderTG = () => {
       if (!reply.ok) throw new Error("Failed to get tourist ID");
   
       const { userID } = await reply.json();
-      const response = await fetch(`http://localhost:8000/GUIDE/${userID}/image`);
-      setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
+      const response = await fetch(`http://localhost:8000/ADvertiser/${userID}/image`);
+      setProfilePicture(`http://localhost:8000/ADvertiser/${userID}/image`);
     }catch{
       console.log("error");
     }
@@ -51,7 +51,7 @@ const HeaderTG = () => {
             <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
               <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                 <AvatarImage src={profilePicture} />
-                <AvatarFallback className="text-3xl font-bold">TG</AvatarFallback>
+                <AvatarFallback className="text-3xl font-bold">AD</AvatarFallback>
               </Avatar>
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-1">
@@ -63,8 +63,8 @@ const HeaderTG = () => {
             {/* Navigation links */}
             <div className="absolute bottom-4 right-6 flex gap-6 z-10">
               {[
-                { title: "Documents", link: "/TourGuideDocs" },
-                { title: "Settings", link: "/TourGuidePage" },
+                { title: "Documents", link: "/AdDocs" },
+                { title: "Settings", link: "/AdvertiserHomePage" },
               ].map((item, index) => (
                 <Link
                   key={`user-profile-link-${index}`}
@@ -87,4 +87,4 @@ const HeaderTG = () => {
   );
 };
 
-export default HeaderTG;
+export default HeaderAD;
