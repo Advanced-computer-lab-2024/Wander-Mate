@@ -229,7 +229,12 @@ const NavigationMenuBarAd = () => {
             >
               Activities
             </Button>
-            
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/aal")}
+            >
+              Sales Report
+            </Button>
           </div>
 
 

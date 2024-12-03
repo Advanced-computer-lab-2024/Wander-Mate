@@ -1514,11 +1514,7 @@ const calculateLoyaltyPoints = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({
-      message: "Loyalty points calculated successfully",
-      pointsEarned,
-      updatedPoints,
-    });
+    
   } catch (error) {
     console.error("Error calculating loyalty points:", error);
     res
