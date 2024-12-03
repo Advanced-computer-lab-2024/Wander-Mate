@@ -201,7 +201,7 @@ We would like to acknowledge the following resources and tools used during the d
 
 ## Contribute
 
-We welcome contributions from the open-source community! Whether you have an idea for a new feature, a bug fix, or even an improvement to the documentation, we encourage you to get involved.
+We welcome contributions from the open-source community! Whether you have an idea for a new feature, a bug fix, or even an improvement to the documentation, we encourage you to get involved in order to reach the best vesrsion of your travelling mate.
 
 Please follow the guidelines below to ensure that your contributions are easy to review and integrate:
 
@@ -209,5 +209,5 @@ Please follow the guidelines below to ensure that your contributions are easy to
 1. **Fork the Repository**: Fork the repository to your GitHub account.
 2. **Clone the Forked Repository**: Clone your fork locally to make changes.
    ```bash
-   git clone https://github.com/your-username/Wander-Mate.git
+   git clone https://github.com/Advanced-computer-lab-2024/Wander-Mate.git
 
