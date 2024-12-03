@@ -108,6 +108,9 @@ import SellerHomePage from "./pages/SellerHomePage";
 import ViewMyComplaints from "./components/mycomplaints";
 import LegendEvents from "./components/QuantityChart";
 import AdminDocumentsPage from "./pages/viewDocsAsAdmin";
+import LegendEventsSeller from "./components/SellerSalesReport";
+import LegendEventsAdvertiser from "./components/AdvertiserSalesReport";
+import LegendEventsTourGuide from "./components/TourGuideSalesReport";
 function App() {
   return (
     <Router>
@@ -251,6 +254,9 @@ function App() {
         <Route path="/viewmycomplaints" element={<ViewMyComplaints/>}/>
         <Route path="/quantity" element={<LegendEvents/>}/>
         <Route path="/AdminDocumentsPage" element={<AdminDocumentsPage/>}/>
+        <Route path="/SellerSalesReport" element={<LegendEventsSeller/>}/>
+        <Route path="/AdvertiserSalesReport" element={<LegendEventsAdvertiser/>}/>
+        <Route path="/TourGuideSalesReport" element={<LegendEventsTourGuide/>}/>
 
       </Routes>
     </Router>
