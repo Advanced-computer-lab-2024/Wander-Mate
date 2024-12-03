@@ -713,6 +713,28 @@ const getSalesReport = async (req, res) => {
   }
 };
 
+const getSellerDocuments = async (req, res) => {
+  try {
+    const ownerId = req.params.ownerId; // Get the ownerId from the request parameters
+
+    // Fetch the documents from the database where the owner is the TourGuide and the model is "TourGuide"
+    const documents = await PdfDetails.find({
+      Owner: ownerId,
+      ownerModel: "Seller",
+    });
+
+
+
+    // Return the fetched documents
+    return res.status(200).json({
+      message: "Documents fetched successfully!",
+      documents: documents,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error fetching documents" });
+  }
+};
 
 
 
@@ -739,4 +761,5 @@ module.exports = {
   sendOutOfStockNotificationSeller,
   viewProductsOfSeller,
   getSalesReport,
+  getSellerDocuments
 };

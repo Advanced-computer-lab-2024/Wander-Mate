@@ -101,6 +101,7 @@ import MeetPage from "./pages/meetPage";
 import MeetPageTG from "./pages/meetPageTG";
 import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
+import SalesReportTableadvertiser from "./components/salestableadvertiser";
 function App() {
   return (
     <Router>
@@ -210,7 +211,7 @@ function App() {
         />
         <Route path="/TourGuidePage" element={<TourGuidePage />} />
         <Route path="/AdminProducts" element={<AdminProducts />} />
-        <Route path="/salestable" element={<SalesReportTable />} />
+        <Route path="/salestableseller" element={<SalesReportTable />} />
         <Route path="/TouristOrders" element={<TouristOrders />} />
         <Route path="/viewBookmarks" element={<ViewBookmarks />} />
 
@@ -228,6 +229,7 @@ function App() {
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/AdDocs" element={<AdDocs />} />
         <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
+        <Route path="/salestableadvertiser" element={<SalesReportTableadvertiser/>}/>
       </Routes>
     </Router>
   );
