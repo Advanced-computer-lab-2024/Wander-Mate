@@ -114,6 +114,7 @@ const {
   viewBoughtProducts,
   getTouristPoints,
   unbookmarkEvent,
+  checkIfEventBookmarked,
 } = require("./Routes/touristController");
 
 const {
@@ -647,6 +648,7 @@ app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
 app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
+app.post("/checkIfEventBookmarked",checkIfEventBookmarked)
 app.put(
   "/markNotificationAsRead/:userID/:notificationId",
   markNotificationAsRead
