@@ -13,6 +13,7 @@ import { Icon } from "@iconify/react";
 import { Eye, EyeOff } from "lucide-react"; // Importing icons
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import AdminNavBar from "./AdminNavBar";
 
 const ChangePassword = ({ URL }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -84,7 +85,7 @@ const ChangePassword = ({ URL }) => {
       setError("");
       toast.success("Password changed successfully.");
     } else {
-      toast.success(data.message);
+      toast.error(data.message);
     }
   } catch (error) {
     toast.error(error.message || "An unexpected error occurred.");
@@ -94,6 +95,7 @@ const ChangePassword = ({ URL }) => {
 
   return (
     <div className="space-y-6">
+      
       <Toaster/>
       <Card className="rounded-lg p-6 w-full">
         <CardContent>
