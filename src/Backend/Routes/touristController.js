@@ -2367,6 +2367,7 @@ const Bookmarkevent = async (req, res) => {
 
     // Find or create a bookmark document in the Bookmarked collection
     let bookmark = await bookmarked.findOne({ userId, eventModel: type });
+    const any = bookmark? bookmark.event.includes(eventId) : null;
 
     if (!bookmark) {
       // If no existing bookmark document, create a new one
@@ -2386,8 +2387,9 @@ const Bookmarkevent = async (req, res) => {
     await bookmark.save();
 
     // Toggle bookmark in `user.bookmarkedAttractions`
-    if (isEventBookmarked) {
+    if (isEventBookmarked && any) {
       // Remove the bookmark ID if the event is already bookmarked (unbookmarking)
+      console.log("hamada");
       return res.status(400).json("Event is already bookmarked")
       
     } else {
@@ -2474,14 +2476,17 @@ const unbookmarkEvent = async (req, res) => {
     // If no more events are left, delete the bookmark
     if (bookmark.event.length === 0) {
       await bookmark.deleteOne();
+      user.bookmarkedAttractions = user.bookmarkedAttractions.filter(
+        (id) => id.toString() !== bookmark._id.toString()
+      );
     } else {
       await bookmark.save();
     }
 
     // Remove the bookmark ID from the user's `bookmarkedAttractions`
-    user.bookmarkedAttractions = user.bookmarkedAttractions.filter(
-      (id) => id.toString() !== bookmark._id.toString()
-    );
+    // user.bookmarkedAttractions = user.bookmarkedAttractions.filter(
+    //   (id) => id.toString() !== bookmark._id.toString()
+    // );
     await user.save();
 
     return res.status(200).json({ message: "Event unbookmarked successfully" });

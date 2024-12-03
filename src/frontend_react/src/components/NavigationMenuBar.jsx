@@ -32,6 +32,7 @@ import {
   Trash2,
   Bell,
   FileText,
+  ListOrdered
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -384,6 +385,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToHistory = async () => {
     navigate("/touristHistory");
   };
+  const goToOrders = async () => {
+    navigate("/touristOrders");
+  };
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
@@ -475,35 +479,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
               </DropdownMenuTrigger>
             </DropdownMenu>
 
-            <DropdownMenu open={openDropdown === "bookings"}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onMouseEnter={() => handleMouseEnter("bookings")}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  Travel Bookings
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-56"
-                onMouseEnter={() => handleMouseEnter("bookings")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownMenuItem>
-                  <Link to="/bookings/flights" className="flex items-center">
-                    <Plane className="mr-2 h-4 w-4" />
-                    <span>Flights & Hotels</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/bookings/packages" className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <span>Vacation Packages</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/flights")}
+            >
+              Flights & Hotels
+            </Button>
 
             <DropdownMenu open={openDropdown === "activities"}>
               <DropdownMenuTrigger asChild>
@@ -732,6 +713,11 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                   <DropdownMenuItem>
                     <History className="mr-2 h-4 w-4" />
                     <span onClick={goToHistory}>History</span>
+                    <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <ListOrdered className="mr-2 h-4 w-4" />
+                    <span onClick={goToOrders}>Orders</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

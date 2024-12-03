@@ -140,6 +140,7 @@ const {
   sendOutOfStockNotificationSeller,
   viewProductsOfSeller,
   getSalesReport,
+  getSellerDocuments,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -263,7 +264,8 @@ const {
   getAttractionSalesReport,
   viewMyNotificationsAd,
   removeNotificationAd,
-  markNotificationAsReadAd
+  markNotificationAsReadAd,
+  getAdvertiserDocuments,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -667,6 +669,8 @@ app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
 app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
+app.get("/getAdvertiserDocuments/:ownerId",getAdvertiserDocuments);
+app.get("/getSellerDocuments/:ownerId",getSellerDocuments);
 app.get("/getTouristPoints/:touristID",getTouristPoints);
 
 app.get("/getItinerarySalesReport/:guideId",getItinerarySalesReport);

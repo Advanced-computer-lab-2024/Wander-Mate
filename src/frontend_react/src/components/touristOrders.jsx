@@ -9,7 +9,7 @@ import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, getS
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
 import { DataTableFacetedFilter } from "../components/table/data-table-faceted-filter";
-
+import NavigationMenuBar from "./NavigationMenuBar";
 const columns = [
   {
     accessorKey: "invoiceNumber",
@@ -206,7 +206,11 @@ const TouristOrdersTable = () => {
 
   return (
     <>
+        <NavigationMenuBar />
+        <br/> <br/>
+        <h1 className="text-3xl font-bold text-center mb-8">Your Orders History</h1>
       <div className="mb-4 flex justify-end">
+
         <DataTableFacetedFilter
           column={table.getColumn("status")}
           title="Order Status"

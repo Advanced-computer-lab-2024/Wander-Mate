@@ -843,6 +843,28 @@ const markNotificationAsReadAd = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+const getAdvertiserDocuments = async (req, res) => {
+  try {
+    const ownerId = req.params.ownerId; // Get the ownerId from the request parameters
+
+    // Fetch the documents from the database where the owner is the TourGuide and the model is "TourGuide"
+    const documents = await PdfDetails.find({
+      Owner: ownerId,
+      ownerModel: "Advertiser",
+    });
+
+
+
+    // Return the fetched documents
+    return res.status(200).json({
+      message: "Documents fetched successfully!",
+      documents: documents,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error fetching documents" });
+  }
+};
 
 
 module.exports = {
@@ -871,4 +893,5 @@ module.exports = {
   viewMyNotificationsAd,
   markNotificationAsReadAd,
   removeNotificationAd,
+  getAdvertiserDocuments,
 };
