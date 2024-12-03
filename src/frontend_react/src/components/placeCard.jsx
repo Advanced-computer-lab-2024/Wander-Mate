@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
@@ -31,6 +31,48 @@ export default function PlaceCard({
   currency
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [favorite,setFavorite]=useState(false);
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          console.log("No username found in session storage");
+          setFavorite(false);  // Set to false if no user is logged in
+          return;
+        }
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+    
+        const { userID } = await reply.json();
+        const response = await fetch(`http://localhost:8000/checkIfEventBookmarked`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            eventId: placeId,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+  
+        const data = await response.json();
+        setFavorite(data);
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+        setFavorite(false);  // Set to false in case of any error
+      }
+    };
+    
+    if (placeId !== null) { // Only fetch if itineraryId is available
+      fetchFavorite();
+    }
+  }, [placeId]);
 
   const place = {
     placeId,
@@ -58,10 +100,12 @@ export default function PlaceCard({
   };
 
   return (
-    <PlaceModal place={place} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+    <PlaceModal place={place} isOpen={isModalOpen} setIsOpen={setIsModalOpen} favorite={favorite === null ? false : favorite}
+    setFavorite={setFavorite}    >
       <Card
         className="p-4 rounded-md cursor-pointer"
         onClick={() => setIsModalOpen(true)}
+        
       >
         <div className="relative h-[191px] mb-3 rounded-md overflow-hidden">
           <Carousel>
