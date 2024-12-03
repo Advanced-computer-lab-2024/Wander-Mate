@@ -459,12 +459,6 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <span>Meet the Team</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -499,13 +493,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <DropdownMenuItem>
                   <Link to="/bookings/flights" className="flex items-center">
                     <Plane className="mr-2 h-4 w-4" />
-                    <span>Flights</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/bookings/hotels" className="flex items-center">
-                    <Hotel className="mr-2 h-4 w-4" />
-                    <span>Hotels</span>
+                    <span>Flights & Hotels</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
@@ -746,17 +734,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <span onClick={goToHistory}>History</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>
-                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <FileText className="mr-2 h-4 w-4" />
