@@ -1,6 +1,6 @@
 // pages/UserPage.jsx
 import React from 'react';
-import NavigationMenuBar from '../components/NavigationMenuBar';
+import NavigationMenuBarAd from '../components/navBarAdvertiser';
 import UserCard from '../components/meetComp';
 import pic1 from "../public/images/files/tony.jpg"
 import pic2 from "../public/images/files/khelo.jpg";
@@ -12,7 +12,7 @@ import pic7 from "../public/images/files/peter.jpg"
 import pic8 from "../public/images/files/youssefm.jpg";
 import pic9 from "../public/images/files/Nadeem.jpg"
 import pic10 from "../public/images/files/youssefashraf.jpg";
-const MeetPage = () => {
+const MeetPageAd = () => {
   // Predefined user data
   const users = [
     { id: 1, name: 'Antony Ayman', email: 'antony.alfy@student.guc.edu.eg', picture: pic1 },
@@ -29,7 +29,7 @@ const MeetPage = () => {
 
   return (
     <>
-        <NavigationMenuBar />
+        <NavigationMenuBarAd />
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-semibold text-center mb-6">Meet The Team</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -43,4 +43,4 @@ const MeetPage = () => {
   );
 };
 
-export default MeetPage;
+export default MeetPageAd;

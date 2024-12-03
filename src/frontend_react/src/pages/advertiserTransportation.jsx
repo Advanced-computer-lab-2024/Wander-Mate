@@ -18,6 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CreateTransportationDialog from "../components/addNewTransportationCard";
 import EditableTransportationCard from "../components/editableTransportationCard";
+import NavigationMenuBarAd from "../components/navBarAdvertiser";
 
 const AdvertiserTransportation = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,6 +126,8 @@ const AdvertiserTransportation = () => {
   const handleVehicleTypeChange = (value) => setSelectedVehicleType(value);
 
   return (
+    <>
+        <NavigationMenuBarAd />
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Transportation Listings</h1>
       <Card className="mb-8">
@@ -289,6 +292,7 @@ const AdvertiserTransportation = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
