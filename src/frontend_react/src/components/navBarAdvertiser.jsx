@@ -13,7 +13,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Bell, Trash2 } from 'lucide-react';
+import { LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Bell, Trash2, File } from 'lucide-react';
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -164,10 +164,12 @@ const NavigationMenuBarAd = () => {
   );
 
   const goToProfile = () => {
-    navigate("/AdvertiserProfileInformation");
+    navigate("/AdvertiserHomePage");
   };
 
-
+  const goToDocs = () => {
+    navigate("/AdDocs");
+  };
 
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
@@ -227,7 +229,12 @@ const NavigationMenuBarAd = () => {
             >
               Activities
             </Button>
-            
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/aal")}
+            >
+              Sales Report
+            </Button>
           </div>
 
 
@@ -300,6 +307,13 @@ const NavigationMenuBarAd = () => {
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
                     <span onClick={goToProfile}>Profile</span>
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <File className="mr-2 h-4 w-4" />
+                    <span onClick={goToDocs}>Documents</span>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

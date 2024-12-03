@@ -82,10 +82,10 @@ const columns = [
     ),
   },
   {
-    accessorKey: "totalQuantity",
+    accessorKey: "totalBookings",
     header: "Total Bookings",
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("totalQuantity")}</div>
+      <div className="text-center">{row.getValue("totalBookings")}</div>
     ),
   },
   {
@@ -136,7 +136,9 @@ const columns = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(itinerary.itineraryId)}
+                onClick={() =>
+                  navigator.clipboard.writeText(itinerary.itineraryId)
+                }
               >
                 Copy Itinerary ID
               </DropdownMenuItem>
@@ -164,15 +166,20 @@ export function SalesReportTabletourguide() {
     const fetchSalesReport = async () => {
       const username = sessionStorage.getItem("username");
       try {
-        const idResponse = await fetch(`http://localhost:8000/getID/${username}`);
+        const idResponse = await fetch(
+          `http://localhost:8000/getID/${username}`
+        );
         if (!idResponse.ok) throw new Error("Failed to get tourist ID");
-  
+
         const { userID } = await idResponse.json();
-        const response = await fetch(`http://localhost:8000/getItinerarySalesReport/${userID}`);
+        const response = await fetch(
+          `http://localhost:8000/getItinerarySalesReport/${userID}`
+        );
         const result = await response.json();
-  
+
         if (response.ok) {
           const processedData = processData(result.salesReport);
+          console.log(processedData);
           setData(processedData);
           setOriginalData(processedData);
         } else {
@@ -182,10 +189,10 @@ export function SalesReportTabletourguide() {
         console.error("Error fetching sales report:", error);
       }
     };
-  
+
     fetchSalesReport();
   }, []);
-  
+
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
       const existingItem = acc.find((i) => i.itineraryId === item.itineraryId); // Group by productId
@@ -201,23 +208,22 @@ export function SalesReportTabletourguide() {
       } else {
         // Create a new entry for the product
         acc.push({
-            itineraryId: item.itineraryId,
-            itineraryName: item.itineraryName,
-            totalBookings: item.totalBookings,
-            totalRevenue: item.totalRevenue,
-            itineraries: [
-              {
-                totalBookings: item.totalBookings,
-                revenue: item.totalRevenue,
-                bookedDate: new Date(item.bookedDate).toISOString(),
-              },
+          itineraryId: item.itineraryId,
+          itineraryName: item.itineraryName,
+          totalBookings: item.totalBookings,
+          totalRevenue: item.totalRevenue,
+          itineraries: [
+            {
+              totalBookings: item.totalBookings,
+              revenue: item.totalRevenue,
+              bookedDate: new Date(item.bookedDate).toISOString(),
+            },
           ],
         });
       }
       return acc;
     }, []);
   };
-  
 
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
@@ -233,7 +239,7 @@ export function SalesReportTabletourguide() {
 
         if (filteredItineraries.length === 0) return null;
 
-        const totalQuantity = filteredItineraries.reduce(
+        const totalBookings = filteredItineraries.reduce(
           (sum, itinerary) => sum + itinerary.quantity,
           0
         );
@@ -244,7 +250,7 @@ export function SalesReportTabletourguide() {
 
         return {
           ...item,
-          totalQuantity,
+          totalBookings,
           totalRevenue,
           itineraries: filteredItineraries,
         };
@@ -266,18 +272,18 @@ export function SalesReportTabletourguide() {
 
   const columns = [
     {
-      accessorKey: "productName",
+      accessorKey: "itineraryName",
       header: "Itinerary Name",
       size: 200,
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("productName")}</div>
+        <div className="capitalize">{row.getValue("itineraryName")}</div>
       ),
     },
     {
-      accessorKey: "totalQuantity",
+      accessorKey: "totalBookings",
       header: "Total Bookings",
       size: 100,
-      cell: ({ row }) => <div>{row.getValue("totalQuantity")}</div>,
+      cell: ({ row }) => <div>{row.getValue("totalBookings")}</div>,
     },
     {
       accessorKey: "totalRevenue",
@@ -285,7 +291,6 @@ export function SalesReportTabletourguide() {
       size: 150,
       cell: ({ row }) => <div>${row.getValue("totalRevenue").toFixed(2)}</div>,
     },
-    
   ];
 
   const table = useReactTable({
@@ -336,10 +341,10 @@ export function SalesReportTabletourguide() {
     <>
       <div className="flex items-center flex-wrap gap-2 px-4">
         <Input
-          placeholder="Filter product names..."
-          value={table.getColumn("productName")?.getFilterValue() ?? ""}
+          placeholder="Filter itinerary names..."
+          value={table.getColumn("itineraryName")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("productName")?.setFilterValue(event.target.value)
+            table.getColumn("itineraryName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm min-w-[200px] h-10"
         />
@@ -368,9 +373,7 @@ export function SalesReportTabletourguide() {
           </SelectContent>
         </Select>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
@@ -394,7 +397,7 @@ export function SalesReportTabletourguide() {
       </div>
       <div>
         <Table className="table-fixed w-full">
-          <TableHeader >
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -412,21 +415,22 @@ export function SalesReportTabletourguide() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody >
+          <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow 
+                <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center" >
+                    <TableCell
+                      key={cell.id}
+                      className="text-center last:text-center"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                      
                     </TableCell>
                   ))}
                 </TableRow>
@@ -436,7 +440,6 @@ export function SalesReportTabletourguide() {
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
-                  
                 >
                   No results.
                 </TableCell>

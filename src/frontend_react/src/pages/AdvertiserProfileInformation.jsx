@@ -102,8 +102,7 @@ const AdvertiserProfileManager = () => {
   if (!profile) return <div>Loading...</div>
 
   return (
-    <>
-    <NavigationMenuBarAd/>
+    
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <br />
       <Tabs defaultValue="profile">
@@ -196,7 +195,7 @@ const AdvertiserProfileManager = () => {
         </TabsContent>
       </Tabs>
     </div>
-    </>
+    
   )
 }
 

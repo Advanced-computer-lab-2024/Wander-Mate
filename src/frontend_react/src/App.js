@@ -93,6 +93,7 @@ import ViewBookmarks from "./pages/ViewBookmarks";
 import ViewItinerariesGuest from "./pages/viewItinerariesGuest";
 import ActivitiesGuest from "./pages/activitiesGuest";
 import TourGuideDocs from "./pages/docsTG";
+import AdDocs from "./pages/docsAD";
 import PlacesGuest from "./pages/placesGuest";
 import ProductsGuest from "./pages/productsGuest";
 import SalesReportTabletourguide from "./components/salestabletourguide";
@@ -225,6 +226,7 @@ function App() {
         <Route path ="/MeetPageTGov" element={<MeetPageTGov/>}/>
         <Route path ="/MeetPageAd" element={<MeetPageAd/>}/>
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
+        <Route path="/AdDocs" element={<AdDocs />} />
         <Route path="/salestabletourguide" element={<SalesReportTabletourguide/>}/>
       </Routes>
     </Router>
