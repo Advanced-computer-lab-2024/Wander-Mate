@@ -1533,6 +1533,7 @@ const viewMyComplaints = async (req, res) => {
       Body: complaint.Body, // Complaint body text
       Date: complaint.Date, // Date when the complaint was made
       Status: complaint.Status, // Status (pending/resolved)
+      Reply: complaint.reply,
     }));
 
     // Step 5: Return the list of complaints for the specific tourist

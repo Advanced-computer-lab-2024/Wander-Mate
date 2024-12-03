@@ -59,7 +59,7 @@ const SiteLogo = () => (
 
 const SellerNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [guideID, setGuideId] = useState(0);
+  const [sellerID, setGuideId] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -99,9 +99,10 @@ const SellerNavBar = () => {
 
         const { userID } = await reply.json();
         setGuideId(userID);
+        console.log(userID);
 
         const response = await axios.get(
-          `http://localhost:8000/viewMyNotificationsTG/${userID}`
+          `http://localhost:8000/viewMyNotificationsSeller/${userID}`
         );
         setNotifications(response.data.notifications || []);
       } catch (error) {
@@ -120,7 +121,7 @@ const SellerNavBar = () => {
     async (notificationId) => {
       try {
         const response = await axios.delete(
-          `http://localhost:8000/removeNotificationTG/${guideID}/${notificationId}`
+          `http://localhost:8000/removeNotificationSeller/${sellerID}/${notificationId}`
         );
 
         if (response.status === 200) {
@@ -151,12 +152,13 @@ const SellerNavBar = () => {
         });
       }
     },
-    [guideID]
+    [sellerID]
   );
   const markNotificationAsRead = async (id) => {
     try {
+        console.log(id);
       const response = await axios.put(
-        `http://localhost:8000/markNotificationAsRead/${guideID}/${id}`
+        `http://localhost:8000/markNotificationAsReadSeller/${sellerID}/${id}`
       );
 
       if (response.status === 200) {

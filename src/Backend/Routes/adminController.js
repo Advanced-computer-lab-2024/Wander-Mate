@@ -1736,10 +1736,13 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
         .status(400)
         .json({ error: "Message, adminId, and productId are required." });
     }
-
+    const user = await userModel.findOne({ userID: adminId });
+    const type = await user.Type;
     // Find or update the notification for the specified admin
     const notification = await Notification.findOneAndUpdate(
-      { userID: adminId },
+      { userID: adminId,
+        userModel: type,
+       },
       {
         $push: {
           notifications: {
@@ -1751,7 +1754,6 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
       },
       { upsert: true, new: true } // Create a new document if it doesn't exist
     );
-    const user = await userModel.findOne({ userID: adminId });
     console.log(process.env.EMAILJS_SERVICE_ID_2);
     let data = {
       service_id: process.env.EMAILJS_SERVICE_ID_2,

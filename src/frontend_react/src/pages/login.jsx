@@ -101,7 +101,7 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "Seller");
             setTimeout(() => {
               if (response.data.status === "accepted") {
-                navigate("/seller");
+                navigate("/AboutUsSeller");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");
