@@ -1,7 +1,7 @@
 import React from 'react';
 import NavigationMenuBarAd from '../components/navBarAdvertiser';
 import HeaderAD from '../components/headerAD';
-import ViewPDFModel from "../components/viewPDFModel"; // Import ViewPDFModel
+import ViewPDFModelAd from "../components/viewPDFModelAd"; // Import ViewPDFModel
 
 const AdDocs = () => {
   return (
@@ -15,7 +15,7 @@ const AdDocs = () => {
 
         {/* Add the ViewPDFModel component here */}
         <div className="absolute top-[275px] left-[0.5%] w-[99%]"> {/* Add margin to ensure content is below the header */}
-          <ViewPDFModel /> {/* Add ViewPDFModel to render it */}
+          <ViewPDFModelAd /> {/* Add ViewPDFModel to render it */}
         </div>
       </main>
     </div>
