@@ -170,7 +170,7 @@ const FlightOrHotelSearch = () => {
           }}
         >
           <div
-            className="absolute mt-[37vh] ml-[2vw] rounded-t-3xl"
+            className="absolute mt-[37.9vh] ml-[2vw] rounded-t-3xl"
             style={{
               width: "fit-content",
               backgroundColor: "rgba(234, 240, 240, 0.8)",
