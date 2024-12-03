@@ -52,7 +52,7 @@ const ExploreComponent = () => {
 
   const handleDiscoverMore = () => {
     // Redirect to View Itineraries page (adjust the navigation logic as per your setup)
-    window.location.href = "/viewItinerariesGuest"; // Replace with your routing mechanism if needed
+    window.location.href = "/viewItineraries"; // Replace with your routing mechanism if needed
   };
 
   return (
