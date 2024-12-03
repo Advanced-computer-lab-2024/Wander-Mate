@@ -68,6 +68,7 @@ import AboutUs from "./pages/aboutUs";
 import AboutUsTG from "./pages/aboutUsTG";
 import AboutUsTGov from "./pages/aboutUsTGov";
 import AboutUsAD from "./pages/aboutUsAD";
+import AboutUsSeller from "./pages/aboutUsSeller";
 import MyBookings from "./components/myBookings";
 import AdminProducts from "./pages/adminProducts";
 import Admin from "./pages/admin";
@@ -189,6 +190,7 @@ function App() {
         <Route path="/AboutUsTG" element={<AboutUsTG />} />
         <Route path="/AboutUsTGov" element={<AboutUsTGov />} />
         <Route path="/AboutUsAD" element={<AboutUsAD />} />
+        <Route path="/AboutUsSeller" element={<AboutUsSeller />} />
         <Route path="/revinueChart" element={<RevinueChart />} />
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
