@@ -11,6 +11,7 @@ import PopularProducts from "../components/popularProducts";
 import LegendEvents from "../components/QuantityChart";
 import LegendEvents2 from "../components/BookingsQuantity";
 import { Label } from "../components/ui/label";
+import AllProductsAtAdmin from "../components/AllProductsAdminDashBoard";
 
 const Admin = () => {
   return (
@@ -47,7 +48,11 @@ const Admin = () => {
         </div>
 
         <AdminOrders />
-        <PopularProducts />
+
+        {/* Adding margin-top to create space between AdminOrders and AllProductsAtAdmin */}
+        <div className="mt-8">
+          <AllProductsAtAdmin />
+        </div>
       </main>
 
       {/* Footer */}
