@@ -1,20 +1,16 @@
 import React from 'react';
-import NavigationMenuBarAd from '../components/navBarAdvertiser';
-import HeaderAD from '../components/headerAD';
+import SellerNavBar from '../components/sellerNavBar';
+import HeaderSE from '../components/headerSE';
 import ViewPDFModelSeller from '../components/viewPDFModelSeller'; // Import ViewPDFModel
 
 const SellerDocs = () => {
   return (
     <div className="flex flex-col min-h-screen">
-      <NavigationMenuBarAd />
-      <main className="flex-grow relative">
-        {/* Adjust width of HeaderTG wrapper */}
-        <div className="absolute top-[-30px] left-[0.5%] w-[99%]">
-          <HeaderAD />
-        </div>
-
+      <SellerNavBar />
+      <main className="flex-grow relative">      
+          <HeaderSE />
         {/* Add the ViewPDFModel component here */}
-        <div className="absolute top-[275px] left-[0.5%] w-[99%]"> {/* Add margin to ensure content is below the header */}
+        <div className="absolute top-[275px] w-[100%]"> {/* Add margin to ensure content is below the header */}
           <ViewPDFModelSeller /> {/* Add ViewPDFModel to render it */}
         </div>
       </main>

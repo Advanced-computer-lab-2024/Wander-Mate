@@ -17,6 +17,7 @@ import { Card, CardContent } from "../components/ui/card";
 import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "../components/ui/button";
 import AddProductSellerModal from "../components/AddProductSellerModal";
+import SellerNavBar from "../components/sellerNavBar";
 
 export default function SellerProducts() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -113,6 +114,8 @@ export default function SellerProducts() {
   };
 
   return (
+    <>
+    <SellerNavBar/>
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Your Products</h1>
       <Card className="mb-8">
@@ -228,5 +231,6 @@ export default function SellerProducts() {
         )}
       </div>
     </div>
+    </>
   );
 }
