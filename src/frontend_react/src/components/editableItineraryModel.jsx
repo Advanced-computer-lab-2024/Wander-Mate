@@ -190,6 +190,9 @@ export default function ItineraryModel({
       if (response.status === 200) {
         setIsEditing(false);
         toast.success("Itinerary details updated successfully!");
+        const reply = await axios.post(
+          "http://localhost:8000/sendItineraryNotifications"
+        );
         window.location.reload();
       } else {
         toast.error("Failed to update itinerary details");
