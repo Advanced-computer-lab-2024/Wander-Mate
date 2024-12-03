@@ -208,6 +208,8 @@ const {
   emptyCart,
   getRevenue,
   getEmail,
+  getTotalQuantities,
+  getTotalBookings
 } = require("./Routes/adminController.js");
 
 const {
@@ -669,3 +671,5 @@ app.get("/getTouristPoints/:touristID",getTouristPoints);
 
 app.get("/getItinerarySalesReport/:guideId",getItinerarySalesReport);
 app.get("/getAttractionSalesReport/:advertiserId",getAttractionSalesReport);
+app.get("/getTotalQuantities",getTotalQuantities);
+app.get("/getTotalBookings",getTotalBookings);
