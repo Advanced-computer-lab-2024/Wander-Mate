@@ -1,42 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "./ui/use-toast";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-  } from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-    Heart,
-    History,
-    LogOut,
-    Settings,
-    ShoppingCart,
-    User,
-    Plane,
-    Hotel,
-    Ticket,
-    MapPin,
-    Info,
-    Users,
-    Briefcase,
-    Plus,
-    Minus,
-    Trash2,
-    Bell,
-    FileText,
-  } from "lucide-react";
-  import { ScrollArea } from "./ui/scroll-area";
-
+  Heart,
+  History,
+  LogOut,
+  Settings,
+  ShoppingCart,
+  User,
+  Plane,
+  Hotel,
+  Ticket,
+  MapPin,
+  Info,
+  Users,
+  Briefcase,
+  Plus,
+  Minus,
+  Trash2,
+  Bell,
+  FileText,
+} from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 const SiteLogo = () => (
   <svg
@@ -67,6 +62,16 @@ const TourGuideNavBar = () => {
   const [guideID, setGuideId] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);
@@ -95,7 +100,9 @@ const TourGuideNavBar = () => {
         const { userID } = await reply.json();
         setGuideId(userID);
 
-        const response = await axios.get(`http://localhost:8000/viewMyNotificationsTG/${userID}`);
+        const response = await axios.get(
+          `http://localhost:8000/viewMyNotificationsTG/${userID}`
+        );
         setNotifications(response.data.notifications || []);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -112,13 +119,17 @@ const TourGuideNavBar = () => {
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
-        const response = await axios.delete(`http://localhost:8000/removeNotificationTG/${guideID}/${notificationId}`);
-  
+        const response = await axios.delete(
+          `http://localhost:8000/removeNotificationTG/${guideID}/${notificationId}`
+        );
+
         if (response.status === 200) {
           setNotifications((prevNotifications) =>
-            prevNotifications.filter((notification) => notification._id !== notificationId)
+            prevNotifications.filter(
+              (notification) => notification._id !== notificationId
+            )
           );
-  
+
           toast({
             title: "Success",
             description: "Notification deleted successfully.",
@@ -132,7 +143,7 @@ const TourGuideNavBar = () => {
         }
       } catch (error) {
         console.error("Error deleting notification:", error);
-  
+
         toast({
           title: "Error",
           description: "Failed to delete notification. Please try again.",
@@ -144,12 +155,16 @@ const TourGuideNavBar = () => {
   );
   const markNotificationAsRead = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:8000/markNotificationAsRead/${guideID}/${id}`);
-  
+      const response = await axios.put(
+        `http://localhost:8000/markNotificationAsRead/${guideID}/${id}`
+      );
+
       if (response.status === 200) {
         setNotifications((prevNotifications) =>
           prevNotifications.map((notification) =>
-            notification._id === id ? { ...notification, isRead: true } : notification
+            notification._id === id
+              ? { ...notification, isRead: true }
+              : notification
           )
         );
       }
@@ -162,26 +177,28 @@ const TourGuideNavBar = () => {
       });
     }
   };
-const [profilePicture, setProfilePicture] = useState("");
-  
-    useEffect(() => {
-      // Get the profile picture URL from sessionStorage
-      const fetchPicture = async () => { 
-      try{
+  const [profilePicture, setProfilePicture] = useState("");
+
+  useEffect(() => {
+    // Get the profile picture URL from sessionStorage
+    const fetchPicture = async () => {
+      try {
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get tourist ID");
-    
+
         const { userID } = await reply.json();
-        const response = await fetch(`http://localhost:8000/GUIDE/${userID}/image`);
+        const response = await fetch(
+          `http://localhost:8000/GUIDE/${userID}/image`
+        );
         setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
-      }catch{
+      } catch {
         console.log("error");
       }
-    }
-  
-     fetchPicture();
-    }, []); 
+    };
+
+    fetchPicture();
+  }, []);
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -227,10 +244,7 @@ const [profilePicture, setProfilePicture] = useState("");
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button
-              variant="ghost"
-              asChild
-            >
+            <Button variant="ghost" asChild>
               <Link to="/TourGuideItinerary" className="flex items-center">
                 <Link className="hidden md:flex space-x-6" />
                 <span>Itineraries</span>
@@ -238,58 +252,60 @@ const [profilePicture, setProfilePicture] = useState("");
             </Button>
           </div>
           <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Notifications">
-                  <Bell className="h-5 w-5" />
-                  {notifications.some(n => !n.isRead) && (
-                     <span className="relative right-1 bottom-2 h-2 w-2 rounded-full bg-red-500" />
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-4">
-                  <h3 className="font-medium text-lg">Notifications</h3>
-                  {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">No new notifications</p>
-                  ) : (
-                    <ScrollArea className="h-[300px]">
-                      {notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className={`p-4 ${
-                            notification.isRead ? 'bg-gray-50' : 'bg-blue-50'
-                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+                {notifications.some((n) => !n.isRead) && (
+                  <span className="relative right-1 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg">Notifications</h3>
+                {notifications.length === 0 ? (
+                  <p className="text-sm text-gray-500">No new notifications</p>
+                ) : (
+                  <ScrollArea className="h-[300px]">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification._id}
+                        className={`p-4 ${
+                          notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                        } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                      >
+                        <p
+                          className="text-sm"
+                          onClick={() =>
+                            markNotificationAsRead(notification._id)
+                          }
                         >
-                          <p 
-                            className="text-sm"
-                            onClick={() => markNotificationAsRead(notification._id)}
-                          >
-                            {notification.message}
-                          </p>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteNotification(notification._id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete notification</span>
-                          </Button>
-                        </div>
-                      ))}
-                    </ScrollArea>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
+                          {notification.message}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteNotification(notification._id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete notification</span>
+                        </Button>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                  <AvatarImage src={profilePicture} alt={"sorry"}/>
+                    <AvatarImage src={profilePicture} alt={"sorry"} />
                     <AvatarFallback>
                       {sessionStorage
                         .getItem("username")
@@ -318,4 +334,3 @@ const [profilePicture, setProfilePicture] = useState("");
 };
 
 export default TourGuideNavBar;
-

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
@@ -48,6 +48,17 @@ const SiteLogo = () => (
 
 const NavigationMenuBarTGov = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   const handleMouseEnter = (dropdown) => {
     setOpenDropdown(dropdown);

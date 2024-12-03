@@ -79,6 +79,16 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const [touristID, setTouristId] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchTouristIdAndWishlist = async () => {
@@ -370,7 +380,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToProfile = async () => {
     navigate("/UserProfilePage");
   };
- 
+
   const goToHistory = async () => {
     navigate("/touristHistory");
   };
@@ -717,10 +727,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
                     <AvatarFallback>
-                      {sessionStorage
-                        .getItem("username")
-                        .slice(0, 2)
-                        .toUpperCase() || "WM"}
+                      {username.slice(0, 2).toUpperCase() || "WM"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
