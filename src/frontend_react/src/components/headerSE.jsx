@@ -32,7 +32,7 @@ const HeaderSE = () => {
 
   return (
     <Fragment>
-      <Card className="mt-6 rounded-t-2xl overflow-hidden">
+      <Card className="mt-0 rounded-t-2xl overflow-hidden">
         <CardContent className="p-0">
           <div
             className="relative h-[296px] w-[full] bg-cover bg-center"
@@ -63,7 +63,7 @@ const HeaderSE = () => {
             {/* Navigation links */}
             <div className="absolute bottom-4 right-6 flex gap-6 z-10">
               {[
-                // { title: "Documents", link: "/AdDocs" },
+                { title: "Documents", link: "/SellerDocs" },
                 { title: "Settings", link: "/SellerHomePage" },
               ].map((item, index) => (
                 <Link

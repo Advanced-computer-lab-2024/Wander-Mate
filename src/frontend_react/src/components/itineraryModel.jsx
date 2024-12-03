@@ -30,7 +30,7 @@ export default function ItineraryModel({
   setIsOpen,
   children,
   favorite,
-  setFavorite
+  setFavorite,
 }) {
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -46,7 +46,6 @@ export default function ItineraryModel({
     navigate(`/itineraryTourGuide?creator=${creatorData}`);
   };
   const images = itinerary.images;
-
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating); // Full stars (integer part of the rating)
     const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half star if the remainder is >= 0.5
@@ -131,7 +130,7 @@ export default function ItineraryModel({
   };
 
   useEffect(() => {
-    setIsFavorite(favorite)
+    setIsFavorite(favorite);
     const fetchReviews = async () => {
       try {
         const response = await fetch(
@@ -160,17 +159,21 @@ export default function ItineraryModel({
   const doNothing = () => {};
 
   const handleToggleFavorite = async () => {
-    setIsFavorite(!isFavorite);  // Toggle favorite state
+    setIsFavorite(!isFavorite); // Toggle favorite state
     setFavorite(!favorite);
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
-  
+
       const { userID } = await reply.json();
-  
-      console.log({ userID, eventId: itinerary.itineraryId, type: "Itinerary" }); // Add this line to log the data
-  
+
+      console.log({
+        userID,
+        eventId: itinerary.itineraryId,
+        type: "Itinerary",
+      }); // Add this line to log the data
+
       // Toggle bookmark based on the current state of `isFavorite`
       if (isFavorite) {
         // Call unbookmark endpoint
@@ -193,7 +196,7 @@ export default function ItineraryModel({
       }
     } catch (error) {
       console.error("Error toggling favorite itinerary:", error);
-      toast.error("Failed to update favorite status: " + error.message);  // Display detailed error message
+      toast.error("Failed to update favorite status: " + error.message); // Display detailed error message
     }
   };
   const fetchUserAge = async () => {
@@ -202,7 +205,9 @@ export default function ItineraryModel({
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
       const { userID } = await reply.json();
-      const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+      const userResponse = await fetch(
+        `http://localhost:8000/gettourist/${userID}`
+      );
       if (!userResponse.ok) throw new Error("Failed to get user details");
 
       const userData = await userResponse.json();
@@ -214,9 +219,7 @@ export default function ItineraryModel({
       console.error("Error fetching user age:", error);
     }
   };
-  fetchUserAge();  
-  
-  
+  fetchUserAge();
 
   const handleShare = (method) => {
     // Get the current URL without query parameters
@@ -252,6 +255,32 @@ export default function ItineraryModel({
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
+  };
+
+  const handleNotifyMe = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+
+      const { userID } = await reply.json();
+      console.log(itinerary.itineraryId);
+      const response = await axios.post(
+        "http://localhost:8000/requestToBeNotified",
+        {
+          touristId: userID,
+          itineraryId: itinerary.itineraryId,
+        }
+      );
+      if (response.status === 200) {
+        toast.success("You will be notified when it starts taking bookings!");
+      } else {
+        toast.error("Failed to request to be notified");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to request to be notified");
+    }
   };
 
   return (
@@ -338,7 +367,10 @@ export default function ItineraryModel({
                     </p>
                     <div className="flex space-x-4">
                       {itinerary.AvailableDates ? (
-                        itinerary.AvailableDates.map((date, index) => {
+                        itinerary.AvailableDates.filter((date) => {
+                          const parsedDate = new Date(date.$date || date);
+                          return parsedDate >= new Date(); // Filter out past dates
+                        }).map((date, index) => {
                           const formattedDate = new Date(
                             date.$date || date
                           ).toLocaleDateString();
@@ -372,107 +404,127 @@ export default function ItineraryModel({
 
                   {/* Favorite and Share Buttons */}
                   <div className="space-y-4">
-  <div className="flex space-x-4">
-    <Button
-      className={`flex-1 ${isFavorite ? "bg-red-500 hover:bg-red-600" : ""}`}
-      onClick={handleToggleFavorite}
-    >
-      <Icon
-        icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-        className="w-4 h-4 mr-2"
-      />
-      {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-    </Button>
-    <Popover
-      open={isShareOpen}
-      onOpenChange={setIsShareOpen}
-      onClose={() => setIsShareOpen(false)}
-      trigger={
-        <Button
-          variant="outline"
-          onClick={() => setIsShareOpen(true)}
-        >
-          <Icon
-            icon="heroicons:share"
-            className="w-4 h-4 mr-2"
-          />
-          Share
-        </Button>
-      }
-    >
-      <div className="w-48 p-2">
-        <div className="flex flex-col space-y-2">
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("link")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:link"
-              className="w-4 h-4 mr-2"
-            />
-            Copy Link
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => handleShare("email")}
-            className="w-full justify-start"
-          >
-            <Icon
-              icon="heroicons:envelope"
-              className="w-4 h-4 mr-2"
-            />
-            Email
-          </Button>
-        </div>
-      </div>
-    </Popover>
-  </div>
+                    <div className="flex space-x-4">
+                      <Button
+                        className={`flex-1 ${
+                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                        }`}
+                        onClick={handleToggleFavorite}
+                      >
+                        <Icon
+                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                          className="w-4 h-4 mr-2"
+                        />
+                        {isFavorite
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </Button>
+                      <Popover
+                        open={isShareOpen}
+                        onOpenChange={setIsShareOpen}
+                        onClose={() => setIsShareOpen(false)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsShareOpen(true)}
+                          >
+                            <Icon
+                              icon="heroicons:share"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Share
+                          </Button>
+                        }
+                      >
+                        <div className="w-48 p-2">
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("link")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:link"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Copy Link
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("email")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:envelope"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Email
+                            </Button>
+                          </div>
+                        </div>
+                      </Popover>
+                    </div>
 
-  {/* Add spacing below the buttons */}
-  {!isBooked ? (
-    <div className="flex flex-col items-center">
-      <Button
-        className="text-white w-full"
-        onClick={handleBook}
-        disabled={userAge < 18}
-      >
-        <Icon
-          icon="heroicons:shopping-bag"
-          className="w-4 h-4 mr-2"
-        />
-        Book
-      </Button>
-      {userAge < 18 && (
-        <p className="text-red-500 text-sm mt-2">
-          You must be at least 18 years old to book.
-        </p>
-      )}
-    </div>
-  ) : (
-    <div className="flex items-center space-x-4">
-      <div className="flex-2 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
-        <button
-          type="button"
-          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={decrementCount}
-        >
-          <Icon icon="eva:minus-fill" />
-        </button>
-        <span className="px-4 py-2 text-gray-600">
-          {count}
-        </span>
-        <button
-          type="button"
-          className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={incrementCount}
-          disabled={count >= maxQuantity}
-        >
-          <Icon icon="eva:plus-fill" />
-        </button>
-      </div>
+                    {/* Add spacing below the buttons */}
+                    {!isBooked ? (
+                      <div className="flex flex-col items-center">
+                        {itinerary.AvailableDates &&
+                        itinerary.AvailableDates.some(
+                          (date) => new Date(date.$date || date) > new Date()
+                        ) ? (
+                          <Button
+                            className="text-white w-full"
+                            onClick={handleBook}
+                            disabled={userAge < 18}
+                          >
+                            <Icon
+                              icon="heroicons:shopping-bag"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Book Now
+                          </Button>
+                        ) : (
+                          <Button
+                            className="text-white w-full"
+                            onClick={handleNotifyMe}
+                          >
+                            <Icon
+                              icon="heroicons:bell"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Notify Me When Available
+                          </Button>
+                        )}
+                        {userAge < 18 && (
+                          <p className="text-red-500 text-sm mt-2">
+                            You must be at least 18 years old to book.
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-2 h-10 flex border border-1 border-primary delay-150 ease-in-out divide-x-[1px] text-sm font-normal divide-primary rounded">
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={decrementCount}
+                          >
+                            <Icon icon="eva:minus-fill" />
+                          </button>
+                          <span className="px-4 py-2 text-gray-600">
+                            {count}
+                          </span>
+                          <button
+                            type="button"
+                            className="flex-none px-4 text-primary hover:bg-primary hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={incrementCount}
+                            disabled={count >= maxQuantity}
+                          >
+                            <Icon icon="eva:plus-fill" />
+                          </button>
+                        </div>
 
-      {/* <Button
+                        {/* <Button
         variant="outline"
         onClick={finishBooking}
         className="py-2 px-5"
@@ -480,16 +532,15 @@ export default function ItineraryModel({
         <Icon icon="heroicons:check-circle" className="w-4 h-4" />
         Confirm Booking
       </Button> */}
-      <PayNow
-        amount={count * itinerary.price}
-        itinerary={itinerary}
-        count={count}
-        bookedDate={selectedDate}
-      />
-    </div>
-  )}
-</div>
-
+                        <PayNow
+                          amount={count * itinerary.price}
+                          itinerary={itinerary}
+                          count={count}
+                          bookedDate={selectedDate}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
