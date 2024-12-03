@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -13,7 +13,15 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
+import {
+  ShoppingCart,
+  User,
+  AlertTriangle,
+  Backpack,
+  CloudUploadIcon,
+  Ticket,
+  ShoppingBasket,
+} from "lucide-react";
 
 const SiteLogo = () => (
   <svg
@@ -42,6 +50,16 @@ const SiteLogo = () => (
 const AdminNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   const handleMouseEnter = (dropdown) => {
     if (dropdown === "products") {
@@ -61,9 +79,8 @@ const AdminNavBar = () => {
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
-
           <Link to="/" className="flex items-center space-x-2">
-        <SiteLogo/>
+            <SiteLogo />
             <span className="text-xl font-bold">Wandermate</span>
           </Link>
           <Link to="/adminItinerary">
@@ -159,4 +176,3 @@ const AdminNavBar = () => {
 };
 
 export default AdminNavBar;
-

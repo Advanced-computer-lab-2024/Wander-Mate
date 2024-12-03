@@ -49,6 +49,17 @@ const SiteLogo = () => (
 
 const NavigationMenuBarTGov = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (!storedUsername) {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
   const navigate = useNavigate();
 
   const handleMouseEnter = (dropdown) => {
