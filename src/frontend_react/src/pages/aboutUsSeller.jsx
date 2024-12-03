@@ -5,7 +5,7 @@ import OurService from "../components/OurServiceBlock"
 import WhatPeopleSay from "../components/whatpeoplesay" // Import the WhatPeopleSay component
 import { useNavigate } from "react-router-dom";
 
-export default function AboutUsTG() {
+export default function AboutUsSeller() {
     
     const navigate = useNavigate();
     
