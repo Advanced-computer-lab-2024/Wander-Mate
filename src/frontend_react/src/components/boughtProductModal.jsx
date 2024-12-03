@@ -175,7 +175,7 @@ export default function BoughtProductModal({
               <TabsContent value="reviews" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    {reviews.length > 0 ? (
+                    {Array.isArray(reviews) && reviews.length > 0 ? (
                       <ul className="space-y-4">
                         {reviews.map((review, index) => (
                           <li

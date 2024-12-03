@@ -111,12 +111,6 @@ const NavigationMenuBarTGov = () => {
                     <span>Meet the Team</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

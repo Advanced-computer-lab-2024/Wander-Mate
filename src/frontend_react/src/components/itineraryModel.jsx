@@ -29,6 +29,8 @@ export default function ItineraryModel({
   isOpen,
   setIsOpen,
   children,
+  favorite,
+  setFavorite
 }) {
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -129,6 +131,7 @@ export default function ItineraryModel({
   };
 
   useEffect(() => {
+    setIsFavorite(favorite)
     const fetchReviews = async () => {
       try {
         const response = await fetch(
@@ -152,12 +155,13 @@ export default function ItineraryModel({
     ) {
       setIsOpen(true);
     }
-  }, [isOpen, itinerary.Ratings]);
+  }, [isOpen, itinerary.Ratings, favorite]);
 
   const doNothing = () => {};
 
   const handleToggleFavorite = async () => {
     setIsFavorite(!isFavorite);  // Toggle favorite state
+    setFavorite(!favorite);
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);

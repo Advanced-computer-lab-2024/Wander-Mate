@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -48,6 +48,7 @@ const NavigationMenuBarAd = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [advertiserId, setTouristId] = useState(0);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -85,6 +86,21 @@ const NavigationMenuBarAd = () => {
     };
 
     fetchTouristIdAndNotifications();
+    const fetchPicture = async () => { 
+      try{
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get advertiser ID");
+    
+        const { userID } = await reply.json();
+        const response = await fetch(`http://localhost:8000/ADvertiser/${userID}/image`);
+        setProfilePicture(`http://localhost:8000/ADvertiser/${userID}/image`);
+      }catch{
+        console.log("error");
+      }
+    }
+  
+     fetchPicture();
   }, []);
 
   const handleMouseEnter = (dropdown) => {
@@ -208,12 +224,6 @@ const NavigationMenuBarAd = () => {
                     <span>Meet the Team</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/about/careers" className="flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Careers</span>
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -294,7 +304,8 @@ const NavigationMenuBarAd = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarFallback>
+                  <AvatarImage src={profilePicture} />
+                    <AvatarFallback >
                       {username.slice(0, 2).toUpperCase() || "WM"}
                     </AvatarFallback>
                   </Avatar>
