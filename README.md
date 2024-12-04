@@ -165,7 +165,7 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
 ## Testing
 - **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view
                              the desired outcome here is an example
-![Screenshot](src/frontend_react/src/Screenshot-2024-12-03-at-10.12.10 PM.svg)
+![Preview](src/screenshots/Screenshot%202024-12-03%20at%20&209.25.20%20PM.png)
 
 
 ---
