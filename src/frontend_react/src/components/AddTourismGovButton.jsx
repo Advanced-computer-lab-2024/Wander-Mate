@@ -14,7 +14,9 @@ import {
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
-
+import {  User } from 'lucide-react';
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 function SubmitButton({ pending }) {
   return (
     <Button type="submit" disabled={pending}>
@@ -38,12 +40,13 @@ export async function addAdmin(username, password) {
 
     const data = await response.json()
 
-    if (!response.ok) {
-      return { success: false, message: data.message }
+    if (data.ok) {
+     
+      toast.success("tourism governor added successfully.");
     }
-
+    
     // Handle successful creation (optional - you can manage any additional status like tokens if needed)
-    return { success: true, message: 'Tourism Governor created successfully' }
+    return { success:toast.success("tourism governor added successfully."),  message: 'Tourism Governor created successfully' }
   } catch (error) {
     console.error('Error creating Tourism Governor:', error)
     return { success: false, message: "Can't create the Tourism Governor" }
@@ -79,13 +82,18 @@ export default function AddAdminDialog() {
   }
 
   return (
+    <div >     
+    <Toaster/>
     <Dialog open={state?.success ? false : undefined} onOpenChange={handleOpenChange} ref={dialogRef}>
       <DialogTrigger asChild>
-        <Button variant="outline">Add New Tourism Governor</Button>
+        
+        <User  className="mr-2 h-4 w-4">Add New tourism governor 
+        <span onClick={DialogTrigger}>Add New tourism governor</span>
+        </User>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Admin</DialogTitle>
+          <DialogTitle>Add New tourism governor</DialogTitle>
           <DialogDescription>
             Enter the details for the new Tourism Governor account.
           </DialogDescription>
@@ -134,5 +142,6 @@ export default function AddAdminDialog() {
         </form>
       </DialogContent>
     </Dialog>
+    </div>
   )
 }

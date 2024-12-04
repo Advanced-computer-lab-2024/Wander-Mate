@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,17 +12,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  ShoppingCart,
-  LogOut,
-  User,
-  AlertTriangle,
-  Backpack,
-  CloudUploadIcon,
-  Ticket,
-  ShoppingBasket,
-} from "lucide-react";
-import  AddAdminButton  from "../components/AddAdminButton";
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
+
+import AddAdminButton from "./AddAdminButton";
+import AddTourismGovButton from "./AddTourismGovButton";
 
 const SiteLogo = () => (
   <svg
@@ -176,10 +168,15 @@ const AdminNavBar = () => {
                   <span onClick={logout}>Log out</span>
                   <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span onClick={logout}>Add admin</span>
-                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4" >
+                    <AddAdminButton />
+                  </div>Add new admin
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4">
+                    <AddTourismGovButton />
+                  </div>Add new tourism governor
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -191,3 +188,4 @@ const AdminNavBar = () => {
 };
 
 export default AdminNavBar;
+
