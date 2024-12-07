@@ -91,7 +91,7 @@ const LogInForm = () => {
             sessionStorage.setItem("curr", response.data.curr || "USD");
 
             setTimeout(() => {
-              navigate("/aboutUs");
+              navigate("/viewItineraries");
             }, 1000);
             break;
           case "Seller":

@@ -57,7 +57,7 @@ import HotelCard from "./components/hotelCard";
 import PayForFlight from "./components/payForFlight";
 import CompletedItineraries from "./components/completedItineraries";
 import AdminNavBar from "./components/AdminNavBar";
-import Orders from "./components/adminOrders";
+// import Orders from "./components/adminOrders";
 import SellerPage from "./pages/productSeller";
 // import PurchasedProducts from "./components/purchasedProducts";
 import TouristSettings from "./components/TouristSettings";
@@ -113,6 +113,9 @@ import LegendEventsAdvertiser from "./components/AdvertiserSalesReport";
 import LegendEventsTourGuide from "./components/TourGuideSalesReport";
 import AdminProfilePage from "./pages/adminprofile";
 import AdminOwnProducts from "./pages/AdminProduct";
+import AdminTags from "./pages/AdminTags";
+import AdminCategories from "./pages/AdminCategories";
+import AdminOrders from "./pages/AdminOrder";
 
 function App() {
   return (
@@ -188,7 +191,7 @@ function App() {
         />
         <Route path="/payForFlight" element={<PayForFlight />} />
         <Route path="/adminNavBar" element={<AdminNavBar />} />
-        <Route path="/adminOrders" element={<Orders />} />
+        {/* <Route path="/adminOrders" element={<Orders />} /> */}
         <Route path="/sellerProduct" element={<SellerPage />} />
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
         <Route
@@ -262,7 +265,9 @@ function App() {
         <Route path="/TourGuideSalesReport" element={<LegendEventsTourGuide/>}/>
         <Route path="/adminprofile" element={<AdminProfilePage/>}/>
         <Route path="/AdminOwnProducts" element={<AdminOwnProducts/>}/>
-
+        <Route path="/AdminTags" element={<AdminTags/>}/>
+        <Route path="/AdminCategories" element={<AdminCategories/>}/>
+        <Route path="/AdminOrders" element={<AdminOrders/>}/>
       </Routes>
     </Router>
   );

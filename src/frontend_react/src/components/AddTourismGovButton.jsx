@@ -40,16 +40,16 @@ export async function addAdmin(username, password) {
 
     const data = await response.json()
 
-    if (data.ok) {
-     
-      toast.success("tourism governor added successfully.");
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create tourism governor')
     }
-    
+
     // Handle successful creation (optional - you can manage any additional status like tokens if needed)
-    return { success:toast.success("tourism governor added successfully."),  message: 'Tourism Governor created successfully' }
+    return {  success:  toast.success("tourism governor added successfully."),  message: 'tourism governor created successfully'  }
   } catch (error) {
-    console.error('Error creating Tourism Governor:', error)
-    return { success: false, message: "Can't create the Tourism Governor" }
+    console.error('Error creating tourism governor:', error)
+    return { success: toast.error("Can't create the tourism governor")
+    , message: "Can't create the tourism governor" }
   }
 }
 
