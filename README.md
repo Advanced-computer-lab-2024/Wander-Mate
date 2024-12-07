@@ -166,6 +166,166 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
   }
 };
 ```
+Code Example and how to make for adding item to cart
+
+Here is the cart model
+```javascript
+const mongoose = require("mongoose");
+
+const CartItemSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Product",
+  },
+  name: {
+    type: String,
+    required: true, // The name of the product
+  },
+  price: {
+    type: Number,
+    required: true, // Price per unit
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    default: 1, // Default quantity is 1
+  },
+  total: {
+    type: Number, // Calculated as price * quantity
+  },
+  attributes: {
+    type: Map, // Key-value pairs for product-specific attributes like size, color
+    of: String,
+    default: {},
+  },
+  picture: {
+    type: String,
+  },
+});
+
+CartItemSchema.pre("save", function (next) {
+  // Automatically calculate total
+  this.total = this.price * this.quantity;
+  next();
+});
+
+const CartSchema = new mongoose.Schema({
+  touristID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Tourist",
+  },
+  items: [CartItemSchema], // Array of cart items
+  subtotal: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Timestamp of when the cart was created
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now, // Timestamp of last cart update
+  },
+});
+
+CartSchema.pre("save", function (next) {
+  this.items.forEach((item) => {
+    item.total = item.price * item.quantity;
+  });
+
+  // Calculate `subtotal` as the sum of all `total` fields
+  this.subtotal = this.items.reduce((sum, item) => sum + item.total, 0);
+
+  next();
+});
+
+module.exports = mongoose.model("Cart", CartSchema);
+```
+the  backend method
+```javascript
+const addItemToCart = async (req, res) => {
+  const { touristID, productId, name, price, picture } = req.body;
+  let { quantity, attributes } = req.body;
+  if (!touristID || !productId || !name || !price) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  if (!quantity) {
+    quantity = 1;
+  }
+  if (!attributes) {
+    attributes = {};
+  }
+  try {
+    // Find the user's cart
+    let cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
+
+    // Check if the product with the same attributes is already in the cart
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
+
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += quantity;
+    } else {
+      // Add a new item with attributes
+      cart.items.push({
+        productId,
+        name,
+        price,
+        quantity,
+        attributes,
+        picture,
+      });
+    }
+
+    // Save the updated cart
+    await cart.save();
+    return res.status(200).json({ message: "Item added to cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error adding item to cart" });
+  }
+};
+```
+here is calling the method in app.js
+```javascript
+app.post("/addItemToCart", upload.single("picture"), addItemToCart);
+```
+here how it is connected to the frontend
+```javascript
+ const handleAddToCart = async () => {
+    setIsAdded(true);
+    if (!isInStock()) return;
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(`http://localhost:8000/addItemToCart`, {
+        touristID: userID,
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        picture: product.image,
+      });
+    } catch (error) {
+      console.error("Error adding to cart data:", error);
+    }
+  };
+```
+
+
 ---
 ## Testing
 - **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view
