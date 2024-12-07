@@ -201,8 +201,6 @@ const TransportationCard = ({
     return null;
   };
   const handleBook = () => {
-    
-
     if (userAge < 18) {
       toast.error("You must be 18 or older to book this itinerary.");
       return;
@@ -218,7 +216,9 @@ const TransportationCard = ({
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
       const { userID } = await reply.json();
-      const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+      const userResponse = await fetch(
+        `http://localhost:8000/gettourist/${userID}`
+      );
       if (!userResponse.ok) throw new Error("Failed to get user details");
 
       const userData = await userResponse.json();
@@ -259,10 +259,10 @@ const TransportationCard = ({
                     vehicleType === "Car"
                       ? Car
                       : vehicleType === "Bus"
-                        ? Bus
-                        : vehicleType === "Boat"
-                          ? Boat
-                          : Helicopter
+                      ? Bus
+                      : vehicleType === "Boat"
+                      ? Boat
+                      : Helicopter
                   }
                   alt={`${vehicleType} to ${destination}`}
                   className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
@@ -310,7 +310,10 @@ const TransportationCard = ({
               <div className="flex items-center justify-between mb-4">
                 <p className="space-x-4">
                   <span className="text-secondary-foreground text-base font-medium">
-                    {currrn} {discount > 0 ? price - (price * discount) / 100 : (price/ (exchangeRates[currency] || 1)).toFixed(2)}
+                    {currrn}{" "}
+                    {discount > 0
+                      ? price - (price * discount) / 100
+                      : (price / (exchangeRates[currency] || 1)).toFixed(2)}
                   </span>
                   {discount > 0 && (
                     <del className="text-default-500 dark:text-default-500 font-normal text-base">
@@ -375,10 +378,10 @@ const TransportationCard = ({
                       vehicleType === "Car"
                         ? Car
                         : vehicleType === "Bus"
-                          ? Bus
-                          : vehicleType === "Boat"
-                            ? Boat
-                            : Helicopter
+                        ? Bus
+                        : vehicleType === "Boat"
+                        ? Boat
+                        : Helicopter
                     }
                     alt={`${vehicleType} to ${destination}`}
                     className="w-full h-full object-cover"
@@ -410,12 +413,18 @@ const TransportationCard = ({
 
                     <div className="mb-6">
                       <span className="text-3xl font-bold text-primary">
-                        {currrn}{" "}{(price/ (exchangeRates[currency] || 1)).toFixed(2)}
+                        {currrn}{" "}
+                        {(price / (exchangeRates[currency] || 1)).toFixed(2)}
                       </span>
                       {discount > 0 && (
                         <>
                           <span className="ml-2 text-lg line-through text-gray-500">
-                            {((price/ (exchangeRates[currency] || 1)) + ((price/ (exchangeRates[currency] || 1)) * discount) / 100).toFixed(2)}
+                            {(
+                              price / (exchangeRates[currency] || 1) +
+                              ((price / (exchangeRates[currency] || 1)) *
+                                discount) /
+                                100
+                            ).toFixed(2)}
                           </span>
                           <span className="ml-2 text-lg font-semibold text-green-600">
                             {discount}% Off
@@ -516,28 +525,28 @@ const TransportationCard = ({
                           </Button>
                         </div>
                       )} */}
-                     {!isBooking ? (
-    <div className="flex flex-col items-center">
-      <Button
-        className="text-white w-full"
-        onClick={handleBook}
-        disabled={userAge < 18}
-      >
-        <Icon
-          icon="heroicons:shopping-bag"
-          className="w-4 h-4 mr-2"
-        />
-        Book
-      </Button>
-      {userAge < 18 && (
-        <p className="text-red-500 text-sm mt-2">
-          You must be at least 18 years old to book.
-        </p>
-      )}
-    </div>
-  ) : (
+                      {!isBooking ? (
+                        <div className="flex flex-col items-center">
+                          <Button
+                            className="text-white w-full"
+                            onClick={handleBook}
+                            disabled={userAge < 18}
+                          >
+                            <Icon
+                              icon="heroicons:shopping-bag"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Book Now
+                          </Button>
+                          {userAge < 18 && (
+                            <p className="text-red-500 text-sm mt-2">
+                              You must be at least 18 years old to book.
+                            </p>
+                          )}
+                        </div>
+                      ) : (
                         <PayForTransportation
-                          amount={(price/ (exchangeRates[currency] || 1))}
+                          amount={price / (exchangeRates[currency] || 1)}
                           transportationId={transportationId}
                           date={date}
                           onPaymentSuccess={handlePaymentSuccess}

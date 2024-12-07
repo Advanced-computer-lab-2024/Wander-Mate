@@ -39,7 +39,7 @@ const FlightForm = (props) => {
   return (
     <React.Fragment>
       <div
-        className="absolute mt-[52vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
+        className="absolute mt-[47vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
         style={{ backgroundColor: "rgba(234, 240, 240, 0.8)" }}
       >
         <form
