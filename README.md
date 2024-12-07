@@ -508,7 +508,72 @@ const login = async (req, res) => {
   }
 };
 ```
+Code snippet for fetching the favourite itineraries in the frontend-react
+```javascript
+    const fetchFavorite = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          console.log("No username found in session storage");
+          setFavorite(false);  // Set to false if no user is logged in
+          return;
+        }
 
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+    
+        const { userID } = await reply.json();
+        const response = await fetch(`http://localhost:8000/checkIfEventBookmarked`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            eventId: itineraryId,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+  
+        const data = await response.json();
+        setFavorite(data);
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+        setFavorite(false);  // Set to false in case of any error
+      }
+    };
+```
+Code snippet for sending a notification that an itinerary is now available
+```javascript
+  const handleNotifyMe = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+
+      const { userID } = await reply.json();
+      console.log(itinerary.itineraryId);
+      const response = await axios.post(
+        "http://localhost:8000/requestToBeNotified",
+        {
+          touristId: userID,
+          itineraryId: itinerary.itineraryId,
+        }
+      );
+      if (response.status === 200) {
+        toast.success("You will be notified when it starts taking bookings!");
+      } else {
+        toast.error("Failed to request to be notified");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to request to be notified");
+    }
+  };
+```
 
 ---
 ## Testing
