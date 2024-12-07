@@ -17,6 +17,7 @@ import SingleFileCard from "./single-file-card";
 import ViewPDFComp from "./viewPDFComponent";
 import { Label } from "../components/ui/label";
 import { useToast } from "./ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const ViewPDFModelAd = () => {
   const [fileView, setFileView] = useState("grid");
@@ -28,6 +29,7 @@ const ViewPDFModelAd = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const navigate =useNavigate();
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -51,6 +53,7 @@ const ViewPDFModelAd = () => {
         }
       } catch (error) {
         setErrorMessage("Failed to fetch documents");
+        navigate("/loginPage");
       } finally {
         setIsLoading(false);
       }
@@ -112,12 +115,9 @@ const ViewPDFModelAd = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    navigate("/loginPage");
   }
 
   const filteredDocuments = documents.filter((item) =>
