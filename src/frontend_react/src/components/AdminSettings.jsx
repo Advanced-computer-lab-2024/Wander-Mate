@@ -5,10 +5,10 @@ import ChangePassword from "./changePassword";
 
 const AdminSettings = () => {
   const tabs = [
-    {
-      label: "Personal Details",
-      value: "personal",
-    },
+      // {
+      //   label: "Personal Details",
+      //   value: "personal",
+      // },
     {
       label: "Change Password",
       value: "password",
@@ -21,8 +21,8 @@ const AdminSettings = () => {
         <Socials />
         <Skills />
       </div> */}
-      <div className="col-span-3 lg:col-span-8">
-        <Tabs defaultValue="personal" className="p-0 px-1">
+      <div className="col-span-12 lg:col-span-8 lg:col-start-3">
+        <Tabs defaultValue="password" className="p-0 px-1">
           <TabsList className="bg-card  flex-1 overflow-x-auto md:overflow-hidden  w-full px-5 pt-6 pb-2.5 h-fit border-b border-default-200  rounded-none justify-start gap-12 rounded-t-md">
             {tabs.map((tab, index) => (
               <TabsTrigger
