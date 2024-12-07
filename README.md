@@ -5,7 +5,7 @@
   Wander-Mate
   <br>
 </h1>
-<h1 align="center"># Wander Mate: Travel Planning Made Easy</h1>
+<h1 align="center"># Wander Mate: Your Best Travelling Mate</h1>
 
 <h4 align="center">A modern, intuitive travel planning and itinerary management tool to help users explore the world effortlessly.</h4>
 
