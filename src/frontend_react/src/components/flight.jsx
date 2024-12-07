@@ -12,6 +12,7 @@ import {
 } from "./ui/carousel";
 import PayForFlight from "./payForFlight";
 import toast from "react-hot-toast";
+import plane from "../public/images/plane.webp";
 
 const Flight = ({ flight }) => {
   const [isBooking, setIsBooking] = useState(false);
@@ -96,7 +97,10 @@ const Flight = ({ flight }) => {
           <CarouselContent>
             <CarouselItem className="w-full">
               <div className="flex items-center justify-center h-[191px] w-full bg-sky-100">
-                <Plane className="w-24 h-24 text-sky-500" />
+                <img
+                  src={plane}
+                  className="w-24 h-24 text-sky-500 w-full h-full"
+                />
               </div>
             </CarouselItem>
           </CarouselContent>
@@ -108,7 +112,7 @@ const Flight = ({ flight }) => {
       </div>
       <CardContent className="flex flex-col flex-1">
         <h3 className="text-lg font-bold mb-2">
-          {departureSegment?.carrierCode || "N/A"}
+          Flight Number: {departureSegment?.carrierCode || "N/A"}
           {departureSegment?.number || "N/A"}
         </h3>
         <div className="flex justify-between items-center mb-4">
