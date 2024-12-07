@@ -16,6 +16,12 @@ import { useThemeStore } from "../store";
 import { useTheme } from "next-themes";
 import { themes } from "../config/thems";
 import { Doughnut } from "react-chartjs-2";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/card"; // Adjust the import path based on your structure
 
 ChartJS.register(
   CategoryScale,
@@ -60,7 +66,7 @@ const LegendEventsSeller = ({ height = 350 }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get tourist ID");
@@ -69,34 +75,33 @@ const LegendEventsSeller = ({ height = 350 }) => {
         const sellerId = userID;
         const response = await fetch(`http://localhost:8000/getSalesReport/${sellerId}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         const result = await response.json();
-        // Check if result.data exists and is an array
+
         if (result.salesReport && Array.isArray(result.salesReport)) {
           setChartData(result.salesReport);
         } else {
           console.error("No sales data available");
-          setChartData([]); // Set to empty array if data is invalid
+          setChartData([]);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setChartData([]); // Set to empty array on error
+        console.error("Error fetching data:", error);
+        setChartData([]);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  // Check if chartData is empty or undefined before calling .map()
   const data = {
-    labels: chartData?.length > 0 ? chartData.map(item => item.productName) : [],
+    labels: chartData?.length > 0 ? chartData.map((item) => item.productName) : [],
     datasets: [
       {
         label: "Total Quantity",
-        data: chartData?.length > 0 ? chartData.map(item => item.totalQuantity) : [],
+        data: chartData?.length > 0 ? chartData.map((item) => item.totalQuantity) : [],
         backgroundColor: [rgbPrimary, rgbInfo, rgbWarning, rgbSuccess, rgbMuted],
       },
     ],
@@ -118,12 +123,17 @@ const LegendEventsSeller = ({ height = 350 }) => {
     maintainAspectRatio: false,
   };
 
-  if (loading) return <div>Loading...</div>; // Show loading message until data is fetched
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <Doughnut options={options} data={data} height={height} />
-    </div>
+    <Card className="max-w-lg mx-auto">
+      <CardHeader>
+        <CardTitle>Sales Report</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Doughnut options={options} data={data} height={height} />
+      </CardContent>
+    </Card>
   );
 };
 

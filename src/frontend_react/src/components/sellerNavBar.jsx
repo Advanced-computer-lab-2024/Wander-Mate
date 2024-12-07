@@ -246,8 +246,8 @@ const SellerNavBar = () => {
               </Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link to="/salestableseller" className="flex items-center">
-                <span>Sales Report</span>
+              <Link to="/sellerDashboard" className="flex items-center">
+                <span>Dashboard</span>
               </Link>
             </Button>
           </div>

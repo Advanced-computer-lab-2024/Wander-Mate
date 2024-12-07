@@ -116,6 +116,7 @@ import AdminOwnProducts from "./pages/AdminProduct";
 import AdminTags from "./pages/AdminTags";
 import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrder";
+import SellerDashboard from "./components/sellerDashboard";
 
 function App() {
   return (
@@ -268,6 +269,7 @@ function App() {
         <Route path="/AdminTags" element={<AdminTags/>}/>
         <Route path="/AdminCategories" element={<AdminCategories/>}/>
         <Route path="/AdminOrders" element={<AdminOrders/>}/>
+        <Route path="/sellerDashboard" element={<SellerDashboard/>}/>
       </Routes>
     </Router>
   );
