@@ -166,6 +166,350 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
   }
 };
 ```
+Code Example and how to make for adding item to cart
+
+Here is the cart model
+```javascript
+const mongoose = require("mongoose");
+
+const CartItemSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Product",
+  },
+  name: {
+    type: String,
+    required: true, // The name of the product
+  },
+  price: {
+    type: Number,
+    required: true, // Price per unit
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    default: 1, // Default quantity is 1
+  },
+  total: {
+    type: Number, // Calculated as price * quantity
+  },
+  attributes: {
+    type: Map, // Key-value pairs for product-specific attributes like size, color
+    of: String,
+    default: {},
+  },
+  picture: {
+    type: String,
+  },
+});
+
+CartItemSchema.pre("save", function (next) {
+  // Automatically calculate total
+  this.total = this.price * this.quantity;
+  next();
+});
+
+const CartSchema = new mongoose.Schema({
+  touristID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Tourist",
+  },
+  items: [CartItemSchema], // Array of cart items
+  subtotal: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Timestamp of when the cart was created
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now, // Timestamp of last cart update
+  },
+});
+
+CartSchema.pre("save", function (next) {
+  this.items.forEach((item) => {
+    item.total = item.price * item.quantity;
+  });
+
+  // Calculate `subtotal` as the sum of all `total` fields
+  this.subtotal = this.items.reduce((sum, item) => sum + item.total, 0);
+
+  next();
+});
+
+module.exports = mongoose.model("Cart", CartSchema);
+```
+the  backend method
+```javascript
+const addItemToCart = async (req, res) => {
+  const { touristID, productId, name, price, picture } = req.body;
+  let { quantity, attributes } = req.body;
+  if (!touristID || !productId || !name || !price) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  if (!quantity) {
+    quantity = 1;
+  }
+  if (!attributes) {
+    attributes = {};
+  }
+  try {
+    // Find the user's cart
+    let cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
+
+    // Check if the product with the same attributes is already in the cart
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
+
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += quantity;
+    } else {
+      // Add a new item with attributes
+      cart.items.push({
+        productId,
+        name,
+        price,
+        quantity,
+        attributes,
+        picture,
+      });
+    }
+
+    // Save the updated cart
+    await cart.save();
+    return res.status(200).json({ message: "Item added to cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error adding item to cart" });
+  }
+};
+```
+here is calling the method in app.js
+```javascript
+app.post("/addItemToCart", upload.single("picture"), addItemToCart);
+```
+here how it is connected to the frontend
+```javascript
+ const handleAddToCart = async () => {
+    setIsAdded(true);
+    if (!isInStock()) return;
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(`http://localhost:8000/addItemToCart`, {
+        touristID: userID,
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        picture: product.image,
+      });
+    } catch (error) {
+      console.error("Error adding to cart data:", error);
+    }
+  };
+```
+code snippet for search hotel using api
+```javascript
+const searchHotel = async (req, res) => {
+  const { place, checkInDate, checkOutdate } = req.body;
+  try {
+    const locationData = await searchHotellocation(place);
+    if (!locationData || !locationData.data || locationData.data.length === 0) {
+      return res.status(400).json({ message: "No location data found" });
+    }
+
+    const geoId = locationData.data[0].geoId;
+    const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e",
+        "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const hotelData = await response.json();
+
+    if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      return res.status(400).json({ message: "No hotels found" });
+    }
+
+    // Extract relevant details including photos
+    const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
+      id: hotel.id,
+      title: hotel.title,
+      price: hotel.priceForDisplay || "N/A",
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : "N/A",
+      provider: hotel.provider || "N/A",
+      cancellationPolicy: hotel.priceDetails || "N/A",
+      isSponsored: hotel.isSponsored || false,
+      cardPhotos: hotel.cardPhotos
+        ? hotel.cardPhotos.map((photo) =>
+            photo.sizes.urlTemplate
+              .replace("{width}", "400")
+              .replace("{height}", "300")
+          )
+        : [], // Default to empty array if no photos
+    }));
+
+    res.status(200).json(hotels);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+```
+code snippet for Search flights using the api
+```javascript
+const SearchFlights = async (req, res) => {
+  const { origin, destination, departureDate, returnDate } = req.query;
+
+  // Validate input
+  if (!origin || !destination || !departureDate) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Call the flight search API with the access token
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      {
+        params: {
+          originLocationCode: origin,
+          destinationLocationCode: destination,
+          departureDate,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: 1, // Use 'adults' instead of 'travelers'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // Log the response for debugging
+    console.log("Flight search response:", response.data);
+
+    // Return the available flights
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(
+      "Error fetching flights:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({
+      message: "Failed to search flights",
+      error: error.response ? error.response.data : error.message,
+    });
+  }
+};
+```
+Code snippet for login 
+```javascript
+const login = async (req, res) => {
+  try {
+    const { Username, Password, rememberMe } = req.body;
+
+    // Check if both fields are provided
+    if (!Username || !Password) {
+      return res
+        .status(400)
+        .json({ message: "Username and Password are required" });
+    }
+
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+    let userLogged;
+    let status = "";
+    switch (user.Type) {
+      case "Admin":
+        userLogged = await adminModel.findOne({ Username: Username });
+        break;
+      case "Tourist":
+        userLogged = await touristModel.findOne({ Username: Username });
+        break;
+      case "Seller":
+        userLogged = await sellerModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourGuide":
+        userLogged = await tourGuideModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourismGoverner":
+        userLogged = await TourismGoverner.findOne({ Username: Username });
+        break;
+      case "Advertiser":
+        userLogged = await advertiserModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+    }
+
+    // Check if the admin exists in the database
+    if (!userLogged) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    const saltRounds = 10;
+    const isPasswordValid = await bcrypt.compare(Password, userLogged.Password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    // Create a session or token (if using JWT, generate a token here)
+    // Example using JWT:
+    const token = createToken(userLogged.Username);
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
+    };
+
+    res.cookie("jwt", token, cookieOptions);
+    res
+      .status(200)
+      .json({
+        Username: Username,
+        Type: user.Type,
+        status,
+        curr: userLogged.Currency,
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred during login" });
+  }
+};
+```
+
+
 ---
 ## Testing
 - **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view

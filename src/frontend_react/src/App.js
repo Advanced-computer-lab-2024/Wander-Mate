@@ -113,6 +113,8 @@ import LegendEventsAdvertiser from "./components/AdvertiserSalesReport";
 import LegendEventsTourGuide from "./components/TourGuideSalesReport";
 import AdminProfilePage from "./pages/adminprofile";
 import AdminOwnProducts from "./pages/AdminProduct";
+import AdminTags from "./pages/AdminTags";
+import AdminCategories from "./pages/AdminCategories";
 
 function App() {
   return (
@@ -262,7 +264,8 @@ function App() {
         <Route path="/TourGuideSalesReport" element={<LegendEventsTourGuide/>}/>
         <Route path="/adminprofile" element={<AdminProfilePage/>}/>
         <Route path="/AdminOwnProducts" element={<AdminOwnProducts/>}/>
-
+        <Route path="/AdminTags" element={<AdminTags/>}/>
+        <Route path="/AdminCategories" element={<AdminCategories/>}/>
       </Routes>
     </Router>
   );
