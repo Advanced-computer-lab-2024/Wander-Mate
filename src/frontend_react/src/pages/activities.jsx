@@ -20,7 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import { Filter, Loader, ArrowUpDown } from 'lucide-react';
+import { Filter, Loader, ArrowUpDown } from "lucide-react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ActivitiesTour from "../components/activitiesTour";
 
@@ -43,7 +43,12 @@ export default function Activities() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([fetchCategories(), fetchTags(), fetchActivities(), fetchExchangeRates()]);
+      await Promise.all([
+        fetchCategories(),
+        fetchTags(),
+        fetchActivities(),
+        fetchExchangeRates(),
+      ]);
       setLoading(false);
     };
 
@@ -142,9 +147,7 @@ export default function Activities() {
     })
     .sort((a, b) => {
       if (sortCriteria === "rating") {
-        return sortOrder === "asc"
-          ? a.rating - b.rating
-          : b.rating - a.rating;
+        return sortOrder === "asc" ? a.rating - b.rating : b.rating - a.rating;
       }
       if (sortCriteria === "price") {
         return sortOrder === "asc" ? a.Price - b.Price : b.Price - a.Price;
@@ -193,7 +196,7 @@ export default function Activities() {
               </Button>
             </div>
             <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <SheetTrigger asChild>
+              <SheetTrigger asChild id="filter">
                 <Button variant="outline">
                   <Filter className="mr-2 h-4 w-4" />
                   Filters
@@ -291,4 +294,3 @@ export default function Activities() {
     </>
   );
 }
-
