@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home } from 'lucide-react';
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
@@ -80,6 +80,12 @@ const AdminNavBar = () => {
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>
+          <Link to="/admin">
+            <Button variant="ghost">
+              <Home className="mr-2 h-4 w-4" />
+              Home Page
+            </Button>
+          </Link>
           <Link to="/adminItinerary">
             <Button variant="ghost">
               <Ticket className="mr-2 h-4 w-4" />
@@ -110,7 +116,7 @@ const AdminNavBar = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link to="/SellerProducts" className="flex items-center">
+                <Link to="/AdminOwnProducts" className="flex items-center">
                   <ShoppingBasket className="mr-2 h-4 w-4" />
                   <span>My Products</span>
                 </Link>

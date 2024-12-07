@@ -112,6 +112,8 @@ import LegendEventsSeller from "./components/SellerSalesReport";
 import LegendEventsAdvertiser from "./components/AdvertiserSalesReport";
 import LegendEventsTourGuide from "./components/TourGuideSalesReport";
 import AdminProfilePage from "./pages/adminprofile";
+import AdminOwnProducts from "./pages/AdminProduct";
+
 function App() {
   return (
     <Router>
@@ -259,6 +261,7 @@ function App() {
         <Route path="/AdvertiserSalesReport" element={<LegendEventsAdvertiser/>}/>
         <Route path="/TourGuideSalesReport" element={<LegendEventsTourGuide/>}/>
         <Route path="/adminprofile" element={<AdminProfilePage/>}/>
+        <Route path="/AdminOwnProducts" element={<AdminOwnProducts/>}/>
 
       </Routes>
     </Router>
