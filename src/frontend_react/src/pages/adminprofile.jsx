@@ -20,14 +20,11 @@ const AdminProfilePage = () => {
         </div>
   
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-         
-          <div className="lg:col-span-2 -mt-12 -mr-16 w-full">
-            <AdminSettings />
-          </div>
+      <div className="w-full max-w-8xl mx-auto space-y-10">
+        <AdminSettings />
+      </div>
         </div>
       </div>
-    </div>
   );
 };
 

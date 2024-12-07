@@ -4,7 +4,7 @@ import { DataTable } from "./table/data-table";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton"; // You can install this package
-
+import AdminNavBar from "./AdminNavBar";
 const ViewAllComplaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,6 +94,10 @@ const ViewAllComplaints = () => {
 
   return (
     <Fragment>
+      <AdminNavBar/>
+      <br/>
+      <br/>
+      
       <DataTable data={complaints} columns={columns} />
     </Fragment>
   );
