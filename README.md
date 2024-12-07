@@ -778,9 +778,9 @@ Code for paying by wallet
 
 ---
 ## Installations 
-- **Vs Code link:** https://code.visualstudio.com/download
-- **MongoDB link:** https://www.mongodb.com/try/download/community
-- **Postman link:** https://www.postman.com/downloads/
+- **Vs Code link:** [Vs Code](https://code.visualstudio.com/download)
+- **MongoDB link:** [Mongo DB](https://www.mongodb.com/try/download/community)
+- **Postman link:** [Postman](https://www.postman.com/downloads/)
 ---
 ## License
 
@@ -806,21 +806,36 @@ We would like to acknowledge the following resources and tools used during the d
 4. **Lucide Logos**: Icon set used for various UI components.
 5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
 
-### API refrences
-1.**Hotel API: using rapidapi**:https://rapidapi.com.
-the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}.
+### API References
 
-2.**Flight API: using amadeus**:https://amadeus.com/en.
-the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers.
+1. **Hotel API (using RapidAPI)**  
+   Website: [RapidAPI](https://rapidapi.com)  
+   Actual API in Code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}
 
-3.**Transactions API: using stripe**:https://stripe.com/pricing.
-the actual api in code: "stripe/react-stripe-js".
 
-4.**email API: using emailjs**:https://www.emailjs.com/.
-the actual api in code:https://api.emailjs.com/api/v1.0/email/send.
 
-5.**Map Box API: using Map box maps** :https://www.mapbox.com.
-the actual api in code: https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap.
+2. **Flight API (using Amadeus)**  
+Website: [Amadeus](https://amadeus.com/en)  
+Actual API in Code: https://test.api.amadeus.com/v2/shopping/flight-offers
+
+
+
+3. **Transactions API (using Stripe)**  
+Website: [Stripe](https://stripe.com/pricing)  
+Actual API in Code: stripe/react-stripe-js
+
+
+
+4. **Email API (using EmailJS)**  
+Website: [EmailJS](https://www.emailjs.com/)  
+Actual API in Code: https://api.emailjs.com/api/v1.0/email/send
+
+
+
+5. **Map Box API (using Mapbox Maps)**  
+Website: [Mapbox](https://www.mapbox.com)  
+Actual API in Code: https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap
+
 
 ## Contribute
 
