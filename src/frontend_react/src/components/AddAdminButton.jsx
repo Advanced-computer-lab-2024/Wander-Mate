@@ -40,16 +40,16 @@ export async function addAdmin(username, password) {
 
     const data = await response.json()
 
-    if (data.ok) {
-        
-        toast.success("Admin added successfully.");
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create admin')
     }
 
     // Handle successful creation (optional - you can manage any additional status like tokens if needed)
-    return {  success:toast.success("Admin added successfully."),  message: 'Admin created successfully'  }
+    return {  success:  toast.success("Admin added successfully."),  message: 'Admin created successfully'  }
   } catch (error) {
     console.error('Error creating admin:', error)
-    return { success: false, message: "Can't create the admin" }
+    return { success: toast.error("Can't create the admin")
+    , message: "Can't create the admin" }
   }
 }
 
@@ -82,8 +82,11 @@ export default function AddAdminDialog() {
   }
 
   return (
-    <div >     
+    <>
     <Toaster/>
+    
+    <div >     
+    
     <Dialog open={state?.success ? false : undefined} onOpenChange={handleOpenChange} ref={dialogRef}>
       <DialogTrigger asChild>
         
@@ -143,5 +146,6 @@ export default function AddAdminDialog() {
       </DialogContent>
     </Dialog>
   </div>
+  </>
   )
 }
