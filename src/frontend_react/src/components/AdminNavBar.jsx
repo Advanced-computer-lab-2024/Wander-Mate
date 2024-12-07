@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home, Tag, LucideSquareChartGantt } from 'lucide-react';
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home, Tag, LucideSquareChartGantt, Table } from 'lucide-react';
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
@@ -62,6 +62,11 @@ const AdminNavBar = () => {
   };
   const handleMouseEnterA = (dropdown) => {
     if (dropdown === "activities") {
+      setOpenDropdown(dropdown);
+    }
+  };
+  const handleMouseEnterB = (dropdown) => {
+    if (dropdown === "users") {
       setOpenDropdown(dropdown);
     }
   };
@@ -171,9 +176,57 @@ const AdminNavBar = () => {
           <Link to="/AdminDocumentsPage">
             <Button variant="ghost">
               <CloudUploadIcon className="mr-2 h-4 w-4" />
-              ViewDocuments
+              View Documents
             </Button>
           </Link>
+          <DropdownMenu open={openDropdown === "users"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnterB("users")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Table className="mr-2 h-4 w-4" />
+                Users Table
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnterB("users")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/touristtable" className="flex items-center">
+                  <Table className="mr-2 h-4 w-4" />
+                  <span>Tourist Table</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/tourguidetable" className="flex items-center">
+                  <Table className="mr-2 h-4 w-4" />
+                  <span>Tour Guide Table</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/tourismgovtable" className="flex items-center">
+                  <Table className="mr-2 h-4 w-4" />
+                  <span>Tourism Governer Table</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/advertisertable" className="flex items-center">
+                  <Table className="mr-2 h-4 w-4" />
+                  <span>Advertiser Table</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/sellertable" className="flex items-center">
+                  <Table className="mr-2 h-4 w-4" />
+                  <span>Seller Table</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

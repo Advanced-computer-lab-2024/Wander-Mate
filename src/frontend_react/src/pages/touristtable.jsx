@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-
+import AdminNavBar from "../components/AdminNavBar";
 const TouristTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
   const [tourists, setTourists] = useState([]);
@@ -125,7 +125,10 @@ const TouristTable = () => {
 
   return (
     <>
+    <AdminNavBar/>
     <Toaster/>
+    <br></br>
+    <h1 className="text-3xl font-bold mb-6 ml-6">All Tourists</h1>
     <Table>
       <TableHeader className="text-left">
         <TableRow>
