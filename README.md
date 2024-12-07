@@ -757,12 +757,21 @@ Code for paying by wallet
 
 ---
 ## Testing
-- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); , app.get("/readItinerary/:id", readItinerary); and add it postman to view
-                             the desired outcome here is an example for:
-  Viewing the product i bought
+- **Testing using Postman**: We take the url added in the app.js and add it postman to view for ex.
+  
+ 1. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts);
+  
+ 2. app.get("/readItinerary/:id", readItinerary);
+  
+
+  **the desired outcome here is an example for:**
+
+- Viewing the product i bought
+
 ![Preview](Test1.png)
 ---
-viewing the itinerary details
+- viewing the itinerary details
+  
 ![Preview](pt1.png)
 ![Preview](pt2.png)
 ![Preview](pt3.png)
@@ -798,14 +807,21 @@ We would like to acknowledge the following resources and tools used during the d
 5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
 
 ### API refrences
-1.**Hotel API: using rapidapi**:https://rapidapi.com
-the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}
-2.**Flight API: using amadeus**:https://amadeus.com/en
-the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers
-3.**Transactions API: using stripe**:https://stripe.com/pricing
-the actual api in code: "stripe/react-stripe-js"
-4.**email API: using emailjs**:https://www.emailjs.com/
-the actual api in code:https://api.emailjs.com/api/v1.0/email/send
+1.**Hotel API: using rapidapi**:https://rapidapi.com.
+the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}.
+
+2.**Flight API: using amadeus**:https://amadeus.com/en.
+the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers.
+
+3.**Transactions API: using stripe**:https://stripe.com/pricing.
+the actual api in code: "stripe/react-stripe-js".
+
+4.**email API: using emailjs**:https://www.emailjs.com/.
+the actual api in code:https://api.emailjs.com/api/v1.0/email/send.
+
+5.**Map Box API: using Map box maps** :https://www.mapbox.com.
+the actual api in code: https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap.
+
 ## Contribute
 
 We welcome contributions from the open-source community! Whether you have an idea for a new feature, a bug fix, or even an improvement to the documentation, we encourage you to get involved in order to reach the best vesrsion of your travelling mate.
