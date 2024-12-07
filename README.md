@@ -64,9 +64,14 @@ This structured approach ensures that the codebase remains clean, efficient, and
 ---
 ## Screenshots
 
-![Example Screenshot](path/to/screenshot.png)
-(You can include multiple images or a video here to show the project in action. This could be a video of the user interface or some key features of the app.)
-
+![Preview](1.png)
+![Preview](2.png)
+![Preview](3.png)
+![Preview](4.png)
+![Preview](5.png)
+![Preview](6.png)
+![Preview](7.png)
+![Preview](8.png)
 ---
 
 ## Tech/Framework Used
