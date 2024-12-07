@@ -324,6 +324,190 @@ here how it is connected to the frontend
     }
   };
 ```
+code snippet for search hotel using api
+```javascript
+const searchHotel = async (req, res) => {
+  const { place, checkInDate, checkOutdate } = req.body;
+  try {
+    const locationData = await searchHotellocation(place);
+    if (!locationData || !locationData.data || locationData.data.length === 0) {
+      return res.status(400).json({ message: "No location data found" });
+    }
+
+    const geoId = locationData.data[0].geoId;
+    const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e",
+        "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const hotelData = await response.json();
+
+    if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      return res.status(400).json({ message: "No hotels found" });
+    }
+
+    // Extract relevant details including photos
+    const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
+      id: hotel.id,
+      title: hotel.title,
+      price: hotel.priceForDisplay || "N/A",
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : "N/A",
+      provider: hotel.provider || "N/A",
+      cancellationPolicy: hotel.priceDetails || "N/A",
+      isSponsored: hotel.isSponsored || false,
+      cardPhotos: hotel.cardPhotos
+        ? hotel.cardPhotos.map((photo) =>
+            photo.sizes.urlTemplate
+              .replace("{width}", "400")
+              .replace("{height}", "300")
+          )
+        : [], // Default to empty array if no photos
+    }));
+
+    res.status(200).json(hotels);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+```
+code snippet for Search flights using the api
+```javascript
+const SearchFlights = async (req, res) => {
+  const { origin, destination, departureDate, returnDate } = req.query;
+
+  // Validate input
+  if (!origin || !destination || !departureDate) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Call the flight search API with the access token
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      {
+        params: {
+          originLocationCode: origin,
+          destinationLocationCode: destination,
+          departureDate,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: 1, // Use 'adults' instead of 'travelers'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // Log the response for debugging
+    console.log("Flight search response:", response.data);
+
+    // Return the available flights
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(
+      "Error fetching flights:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({
+      message: "Failed to search flights",
+      error: error.response ? error.response.data : error.message,
+    });
+  }
+};
+```
+Code snippet for login 
+```javascript
+const login = async (req, res) => {
+  try {
+    const { Username, Password, rememberMe } = req.body;
+
+    // Check if both fields are provided
+    if (!Username || !Password) {
+      return res
+        .status(400)
+        .json({ message: "Username and Password are required" });
+    }
+
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+    let userLogged;
+    let status = "";
+    switch (user.Type) {
+      case "Admin":
+        userLogged = await adminModel.findOne({ Username: Username });
+        break;
+      case "Tourist":
+        userLogged = await touristModel.findOne({ Username: Username });
+        break;
+      case "Seller":
+        userLogged = await sellerModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourGuide":
+        userLogged = await tourGuideModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourismGoverner":
+        userLogged = await TourismGoverner.findOne({ Username: Username });
+        break;
+      case "Advertiser":
+        userLogged = await advertiserModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+    }
+
+    // Check if the admin exists in the database
+    if (!userLogged) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    const saltRounds = 10;
+    const isPasswordValid = await bcrypt.compare(Password, userLogged.Password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    // Create a session or token (if using JWT, generate a token here)
+    // Example using JWT:
+    const token = createToken(userLogged.Username);
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
+    };
+
+    res.cookie("jwt", token, cookieOptions);
+    res
+      .status(200)
+      .json({
+        Username: Username,
+        Type: user.Type,
+        status,
+        curr: userLogged.Currency,
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred during login" });
+  }
+};
+```
 
 
 ---
