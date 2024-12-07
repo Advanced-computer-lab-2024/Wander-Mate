@@ -798,14 +798,14 @@ We would like to acknowledge the following resources and tools used during the d
 5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
 
 ### API refrences
-1.**Hotel API: using rapidapi**:https://rapidapi.com
-the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}
-2.**Flight API: using amadeus**:https://amadeus.com/en
-the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers
-3.**Transactions API: using stripe**:https://stripe.com/pricing
-the actual api in code: "stripe/react-stripe-js"
-4.**email API: using emailjs**:https://www.emailjs.com/
-the actual api in code:https://api.emailjs.com/api/v1.0/email/send
+1.**Hotel API: using rapidapi**:https://rapidapi.com.
+the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}.
+2.**Flight API: using amadeus**:https://amadeus.com/en.
+the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers.
+3.**Transactions API: using stripe**:https://stripe.com/pricing.
+the actual api in code: "stripe/react-stripe-js".
+4.**email API: using emailjs**:https://www.emailjs.com/.
+the actual api in code:https://api.emailjs.com/api/v1.0/email/send.
 ## Contribute
 
 We welcome contributions from the open-source community! Whether you have an idea for a new feature, a bug fix, or even an improvement to the documentation, we encourage you to get involved in order to reach the best vesrsion of your travelling mate.
