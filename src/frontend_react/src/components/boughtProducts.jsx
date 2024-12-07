@@ -129,7 +129,7 @@ export default function BoughtProducts() {
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Bought Products</h1>
+        <h1 className="text-2xl font-bold">Purchased Products</h1>
         <div className="flex gap-2">
           <Button
             variant="outline"

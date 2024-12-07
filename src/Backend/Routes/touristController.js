@@ -2507,23 +2507,52 @@ const ViewBookmarkedAttractions = async (req, res) => {
       // Fetch and manually populate attractions based on eventModel
       const attractions = await Promise.all(
         user.bookmarkedAttractions.map(async (attraction) => {
-          // Ensure attraction.event is a valid ObjectId
-
           const bookmark = await bookmarked.findById(attraction);
           if (!bookmark) return null;
 
-          let eventDetails;
-          switch (bookmark.eventModel) {
-            case "Attraction":
-              eventDetails = await attractionModel.findById(bookmark.event);
-              break;
-            case "Itinerary":
-              eventDetails = await itineraryModel.findById(bookmark.event);
-              break;
-            default:
-              console.warn(`Unknown eventModel type: ${bookmark.eventModel}`);
-              return null;
+          let eventDetails = [];
+          if (Array.isArray(bookmark.event)) {
+            // Process each event in the array
+            eventDetails = await Promise.all(
+              bookmark.event.map(async (eventId) => {
+                switch (bookmark.eventModel) {
+                  case "Attraction":
+                    return await attractionModel.findById(eventId);
+                  case "Itinerary":
+                    return await itineraryModel
+                      .findById(eventId)
+                      .populate("Activities")
+                      .populate("LocationsToVisit");
+                  default:
+                    console.warn(
+                      `Unknown eventModel type: ${bookmark.eventModel}`
+                    );
+                    return null;
+                }
+              })
+            );
+          } else {
+            // Handle single event
+            switch (bookmark.eventModel) {
+              case "Attraction":
+                eventDetails = await attractionModel.findById(bookmark.event);
+                break;
+              case "Itinerary":
+                eventDetails = await itineraryModel
+                  .findById(bookmark.event)
+                  .populate("Activities")
+                  .populate("LocationsToVisit");
+                break;
+              default:
+                console.warn(`Unknown eventModel type: ${bookmark.eventModel}`);
+                return null;
+            }
           }
+
+          // Filter out nulls from eventDetails
+          eventDetails = Array.isArray(eventDetails)
+            ? eventDetails.filter((event) => event !== null)
+            : eventDetails;
 
           return { ...bookmark.toObject(), event: eventDetails };
         })
@@ -3164,8 +3193,6 @@ const sendItineraryNotifications = async (req, res) => {
   }
 };
 
-
-
 const requestToBeNotifiedForAttraction = async (req, res) => {
   const { attractionId, touristId } = req.body;
 
@@ -3185,9 +3212,9 @@ const requestToBeNotifiedForAttraction = async (req, res) => {
 
     // Validate the attraction type
     if (String(attraction.Type) !== "67025cb6bb14549b7e29f376") {
-      return res
-        .status(400)
-        .json({ message: "Notifications are not allowed for this attraction type" });
+      return res.status(400).json({
+        message: "Notifications are not allowed for this attraction type",
+      });
     }
 
     // Add touristId to the 'notifyMe' array
@@ -3273,9 +3300,6 @@ const sendNotificationForAttraction = async (touristId, attraction) => {
     console.error("Error sending notification:", error.message);
   }
 };
-
-
-
 
 const checkOut = async (req, res) => {
   const { userId, products, total, address, isPaid } = req.body;

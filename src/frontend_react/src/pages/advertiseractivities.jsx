@@ -70,46 +70,47 @@ export default function AdvertiserActivities() {
 
   const fetchActivities = async () => {
     try {
-        // Retrieve the username from session storage
-        const username = sessionStorage.getItem("username");
-        if (!username) {
-            console.error("Username not found in session storage");
-            alert("Please log in to view activities.");
-            setLoading(false);
-            return;
-        }
-
-        // Fetch the user ID based on the username
-        const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to fetch user ID");
-
-        const { userID } = await reply.json(); // Assuming { userID } is returned
-        const creatorID = userID;
-
-        // Fetch all activities
-        const response = await fetch("http://localhost:8000/viewActivities");
-        if (!response.ok) throw new Error("Failed to fetch activities");
-
-        const allActivities = await response.json();
-
-        // Filter activities where the Creator matches the user's ID
-        const userActivities = allActivities.filter(
-            (activity) => activity.Creator === creatorID
-        );
-
-        // Add a default rating if not present
-        setActivities(userActivities.map((activity) => ({
-            ...activity,
-            rating: activity.rating || 0,
-        })));
-    } catch (error) {
-        console.error("Error fetching activities:", error);
-        alert("Could not load activities. Please try again later.");
-    } finally {
+      // Retrieve the username from session storage
+      const username = sessionStorage.getItem("username");
+      if (!username) {
+        console.error("Username not found in session storage");
+        alert("Please log in to view activities.");
         setLoading(false);
-    }
-};
+        return;
+      }
 
+      // Fetch the user ID based on the username
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to fetch user ID");
+
+      const { userID } = await reply.json(); // Assuming { userID } is returned
+      const creatorID = userID;
+
+      // Fetch all activities
+      const response = await fetch("http://localhost:8000/viewActivities");
+      if (!response.ok) throw new Error("Failed to fetch activities");
+
+      const allActivities = await response.json();
+
+      // Filter activities where the Creator matches the user's ID
+      const userActivities = allActivities.filter(
+        (activity) => activity.Creator === creatorID
+      );
+
+      // Add a default rating if not present
+      setActivities(
+        userActivities.map((activity) => ({
+          ...activity,
+          rating: activity.rating || 0,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      alert("Could not load activities. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,7 +157,7 @@ export default function AdvertiserActivities() {
 
   return (
     <>
-        <NavigationMenuBarAd />
+      <NavigationMenuBarAd />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4"> My Activities</h1>
 
@@ -168,7 +169,7 @@ export default function AdvertiserActivities() {
             onChange={handleSearch}
             className="max-w-sm"
           />
-          <AddAdvertiserActivityModel/>
+          <AddAdvertiserActivityModel />
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant="outline">
@@ -248,11 +249,14 @@ export default function AdvertiserActivities() {
                   "Unknown Category"
                 }
                 tags={activity.Tags.map((tagId) => tagMap[tagId])}
-                checkedTags = {activity.Tags}
+                checkedTags={activity.Tags}
                 price={activity.Price}
                 date={activity.Date}
                 time={activity.Time}
-                category={activity.Category}
+                category={
+                  categories.find((cat) => cat._id === activity.Category)?.Name ||
+                  "No Category"
+                }
                 isAvailable={activity.IsAvailable}
                 rating={activity.rating}
                 discounts={activity.Discounts}

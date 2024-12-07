@@ -6,7 +6,7 @@ import { Card, CardContent } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import NonMovableMap from "./ui/nonMovableMap";
-import { StarIcon } from 'lucide-react';
+import { StarIcon } from "lucide-react";
 import PayForActivity from "./PayForActivity";
 import {
   CustomPopover as Popover,
@@ -23,14 +23,14 @@ export default function ActivityModal({
   setIsOpen,
   children,
   favorite,
-  setFavorite
+  setFavorite,
 }) {
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [bookingError, setBookingError] = useState(null);
-  const [userAge, setUserAge] = useState(null);
+  const [userAge, setUserAge] = useState(19);
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
@@ -109,7 +109,9 @@ export default function ActivityModal({
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
       const { userID } = await reply.json();
-      const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+      const userResponse = await fetch(
+        `http://localhost:8000/gettourist/${userID}`
+      );
       if (!userResponse.ok) throw new Error("Failed to get user details");
 
       const userData = await userResponse.json();
@@ -257,7 +259,7 @@ export default function ActivityModal({
                   {activity.category || "Not specified"}
                 </p>
                 <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-semibold">Price: </span> 
+                  <span className="font-semibold">Price: </span>
                   {activity.currency} {activity.price}
                 </p>
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -281,154 +283,156 @@ export default function ActivityModal({
                   </span>
                 </div>
                 <div
-  className={`flex ${
-    activity.isAvailable ? "flex-row space-x-4" : "flex-col space-y-4"
-  } w-full`}
->
-  {activity.isAvailable ? (
-    <>
-      <Button
-        className="flex-1 py-2"
-        onClick={handleBook}
-        disabled={userAge < 18}
-      >
-        <Icon
-          icon="heroicons:shopping-bag"
-          className="w-4 h-4 mr-2"
-        />
-        Book Now
-      </Button>
-      <Button
-        className={`flex-1 py-2 ${
-          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
-        }`}
-        onClick={handleToggleFavorite}
-      >
-        <Icon
-          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-          className="w-4 h-4 mr-2"
-        />
-        {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-      </Button>
-      <Popover
-        open={isShareOpen}
-        onOpenChange={setIsShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        trigger={
-          <Button
-            variant="outline"
-            className="flex-1 py-2"
-            onClick={() => setIsShareOpen(true)}
-          >
-            <Icon
-              icon="heroicons:share"
-              className="w-4 h-4 mr-2"
-            />
-            Share
-          </Button>
-        }
-      >
-        <div className="w-48 p-2">
-          <div className="flex flex-col space-y-2">
-            <Button
-              variant="ghost"
-              onClick={() => handleShare("link")}
-              className="w-full justify-start"
-            >
-              <Icon
-                icon="heroicons:link"
-                className="w-4 h-4 mr-2"
-              />
-              Copy Link
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleShare("email")}
-              className="w-full justify-start"
-            >
-              <Icon
-                icon="heroicons:envelope"
-                className="w-4 h-4 mr-2"
-              />
-              Email
-            </Button>
-          </div>
-        </div>
-      </Popover>
-    </>
-  ) : (
-    <>
-      <Button
-        className="text-white w-full py-2"
-        onClick={handleNotifyMe}
-      >
-        <Icon
-          icon="heroicons:bell"
-          className="w-4 h-4 mr-2"
-        />
-        Notify Me When Available
-      </Button>
-      <Button
-        className={`w-full py-2 ${
-          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
-        }`}
-        onClick={handleToggleFavorite}
-      >
-        <Icon
-          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
-          className="w-4 h-4 mr-2"
-        />
-        {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-      </Button>
-      <Popover
-        open={isShareOpen}
-        onOpenChange={setIsShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        trigger={
-          <Button
-            variant="outline"
-            className="w-full py-2"
-            onClick={() => setIsShareOpen(true)}
-          >
-            <Icon
-              icon="heroicons:share"
-              className="w-4 h-4 mr-2"
-            />
-            Share
-          </Button>
-        }
-      >
-        <div className="w-48 p-2">
-          <div className="flex flex-col space-y-2">
-            <Button
-              variant="ghost"
-              onClick={() => handleShare("link")}
-              className="w-full justify-start"
-            >
-              <Icon
-                icon="heroicons:link"
-                className="w-4 h-4 mr-2"
-              />
-              Copy Link
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleShare("email")}
-              className="w-full justify-start"
-            >
-              <Icon
-                icon="heroicons:envelope"
-                className="w-4 h-4 mr-2"
-              />
-              Email
-            </Button>
-          </div>
-        </div>
-      </Popover>
-    </>
-  )}
-</div>
-
+                  className={`flex ${
+                    activity.isAvailable
+                      ? "flex-row space-x-4"
+                      : "flex-col space-y-4"
+                  } w-full`}
+                >
+                  {activity.isAvailable ? (
+                    <>
+                      <Button
+                        className="flex-1 py-2"
+                        onClick={handleBook}
+                        disabled={userAge < 18}
+                      >
+                        <Icon
+                          icon="heroicons:shopping-bag"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Book Now
+                      </Button>
+                      <Button
+                        className={`flex-1 py-2 ${
+                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                        }`}
+                        onClick={handleToggleFavorite}
+                      >
+                        <Icon
+                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                          className="w-4 h-4 mr-2"
+                        />
+                        {isFavorite
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </Button>
+                      <Popover
+                        open={isShareOpen}
+                        onOpenChange={setIsShareOpen}
+                        onClose={() => setIsShareOpen(false)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            className="flex-1 py-2"
+                            onClick={() => setIsShareOpen(true)}
+                          >
+                            <Icon
+                              icon="heroicons:share"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Share
+                          </Button>
+                        }
+                      >
+                        <div className="w-48 p-2">
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("link")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:link"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Copy Link
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("email")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:envelope"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Email
+                            </Button>
+                          </div>
+                        </div>
+                      </Popover>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        className="text-white w-full py-2"
+                        onClick={handleNotifyMe}
+                      >
+                        <Icon icon="heroicons:bell" className="w-4 h-4 mr-2" />
+                        Notify Me When Available
+                      </Button>
+                      <Button
+                        className={`w-full py-2 ${
+                          isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                        }`}
+                        onClick={handleToggleFavorite}
+                      >
+                        <Icon
+                          icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                          className="w-4 h-4 mr-2"
+                        />
+                        {isFavorite
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
+                      </Button>
+                      <Popover
+                        open={isShareOpen}
+                        onOpenChange={setIsShareOpen}
+                        onClose={() => setIsShareOpen(false)}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            className="w-full py-2"
+                            onClick={() => setIsShareOpen(true)}
+                          >
+                            <Icon
+                              icon="heroicons:share"
+                              className="w-4 h-4 mr-2"
+                            />
+                            Share
+                          </Button>
+                        }
+                      >
+                        <div className="w-48 p-2">
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("link")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:link"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Copy Link
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleShare("email")}
+                              className="w-full justify-start"
+                            >
+                              <Icon
+                                icon="heroicons:envelope"
+                                className="w-4 h-4 mr-2"
+                              />
+                              Email
+                            </Button>
+                          </div>
+                        </div>
+                      </Popover>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -437,4 +441,3 @@ export default function ActivityModal({
     </Dialog>
   );
 }
-

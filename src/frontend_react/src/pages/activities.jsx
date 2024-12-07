@@ -280,7 +280,10 @@ export default function Activities() {
                   ).toFixed(2)}
                   date={activity.Date}
                   time={activity.Time}
-                  category={activity.Category}
+                  category={
+                    categories.find((cat) => cat._id === activity.Category)
+                      ?.Name || "No Category"
+                  }
                   isAvailable={activity.IsAvailable}
                   rating={activity.rating}
                 />

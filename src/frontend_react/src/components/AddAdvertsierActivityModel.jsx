@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
-import { Switch } from "./ui/switch"
-import { toast, Toaster } from "react-hot-toast"
-import { Icon } from "@iconify/react"
-import BasicMap from "./ui/basic-map" // No changes here, keeping it as is
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { toast, Toaster } from "react-hot-toast";
+import { Icon } from "@iconify/react";
+import BasicMap from "./ui/basic-map"; // No changes here, keeping it as is
 
 const AddAdvertiserActivityModel = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     Creator: "",
     Name: "",
@@ -26,77 +26,81 @@ const AddAdvertiserActivityModel = () => {
     Tags: [],
     Discounts: [],
     IsAvailable: true,
-  })
-  const [categories, setCategories] = useState([])
-  const [tags, setTags] = useState([])
-  const [loadingCategories, setLoadingCategories] = useState(true)
-  const [loadingTags, setLoadingTags] = useState(true)
-  const [selectedCategoryName, setSelectedCategoryName] = useState("")
-  const [newDiscount, setNewDiscount] = useState({ percentage: "", description: "" })
-  
+  });
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingTags, setLoadingTags] = useState(true);
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [newDiscount, setNewDiscount] = useState({
+    percentage: "",
+    description: "",
+  });
 
   useEffect(() => {
-    fetchCreatorId()
-    fetchCategories()
-    fetchTags()
-  }, [])
+    fetchCreatorId();
+    fetchCategories();
+    fetchTags();
+  }, []);
 
   const fetchCreatorId = async () => {
     try {
-      const username = sessionStorage.getItem("username")
+      const username = sessionStorage.getItem("username");
       if (!username) {
-        toast.error("Please log in to add activities.")
-        return
+        toast.error("Please log in to add activities.");
+        return;
       }
 
-      const response = await fetch(`http://localhost:8000/getID/${username}`)
-      if (!response.ok) throw new Error("Failed to fetch user ID")
+      const response = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!response.ok) throw new Error("Failed to fetch user ID");
 
-      const { userID } = await response.json()
-      setFormData((prev) => ({ ...prev, Creator: userID }))
+      const { userID } = await response.json();
+      setFormData((prev) => ({ ...prev, Creator: userID }));
     } catch (error) {
-      console.error("Error fetching creator ID:", error)
-      toast.error("Failed to retrieve user information. Please try logging in again.")
+      console.error("Error fetching creator ID:", error);
+      toast.error(
+        "Failed to retrieve user information. Please try logging in again."
+      );
     }
-  }
+  };
 
   const fetchCategories = async () => {
     try {
-      setLoadingCategories(true)
-      const response = await fetch("http://localhost:8000/getCategories")
-      if (!response.ok) throw new Error("Failed to fetch categories")
-      const data = await response.json()
-      setCategories(data)
+      setLoadingCategories(true);
+      const response = await fetch("http://localhost:8000/getCategories");
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      const data = await response.json();
+      setCategories(data);
     } catch (error) {
-      console.error("Error fetching categories:", error)
-      toast.error("Could not load categories. Please try again later.")
+      console.error("Error fetching categories:", error);
+      toast.error("Could not load categories. Please try again later.");
     } finally {
-      setLoadingCategories(false)
+      setLoadingCategories(false);
     }
-  }
+  };
 
   const fetchTags = async () => {
     try {
-      setLoadingTags(true)
-      const response = await fetch("http://localhost:8000/readPreferenceTags")
-      if (!response.ok) throw new Error("Failed to fetch tags")
-      const data = await response.json()
-      setTags(data)
+      setLoadingTags(true);
+      const response = await fetch("http://localhost:8000/readPreferenceTags");
+      if (!response.ok) throw new Error("Failed to fetch tags");
+      const data = await response.json();
+      setTags(data);
     } catch (error) {
-      console.error("Error fetching tags:", error)
-      toast.error("Could not load tags. Please try again later.")
+      console.error("Error fetching tags:", error);
+      toast.error("Could not load tags. Please try again later.");
     } finally {
-      setLoadingTags(false)
+      setLoadingTags(false);
     }
-  }
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleLocationSelect = (lng, lat) => {
     setFormData((prev) => ({
@@ -105,13 +109,13 @@ const AddAdvertiserActivityModel = () => {
         type: "Point",
         coordinates: [lng, lat],
       },
-    }))
-  }
+    }));
+  };
 
   const handleCategoryChange = (categoryId, categoryName) => {
-    setFormData((prev) => ({ ...prev, Category: categoryName }))
-    setSelectedCategoryName(categoryName)
-  }
+    setFormData((prev) => ({ ...prev, Category: categoryId }));
+    setSelectedCategoryName(categoryName);
+  };
 
   const handleTagChange = (tagId) => {
     setFormData((prev) => ({
@@ -119,28 +123,28 @@ const AddAdvertiserActivityModel = () => {
       Tags: prev.Tags.includes(tagId)
         ? prev.Tags.filter((id) => id !== tagId)
         : [...prev.Tags, tagId],
-    }))
-  }
+    }));
+  };
 
   const handleAddDiscount = () => {
-    const { percentage, description } = newDiscount
+    const { percentage, description } = newDiscount;
     if (!percentage || !description) {
-      toast.error("Please fill both percentage and description.")
-      return
+      toast.error("Please fill both percentage and description.");
+      return;
     }
     setFormData((prev) => ({
       ...prev,
       Discounts: [...prev.Discounts, { percentage, description }],
-    }))
-    setNewDiscount({ percentage: "", description: "" })
-  }
+    }));
+    setNewDiscount({ percentage: "", description: "" });
+  };
 
   const handleRemoveDiscount = (index) => {
     setFormData((prev) => ({
       ...prev,
       Discounts: prev.Discounts.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const resetForm = () => {
     setFormData({
@@ -157,29 +161,35 @@ const AddAdvertiserActivityModel = () => {
       Tags: [],
       Discounts: [],
       IsAvailable: true,
-    })
-    setSelectedCategoryName("")
-    setIsOpen(false)
-  }
+    });
+    setSelectedCategoryName("");
+    setIsOpen(false);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.Creator) {
-      toast.error("User ID not found. Please log in again.")
-      return
+      toast.error("User ID not found. Please log in again.");
+      return;
     }
 
-    if (!formData.Name || !formData.Date || !formData.Time || !formData.Price || !formData.Category) {
-      toast.error("Please fill all required fields.")
-      return
+    if (
+      !formData.Name ||
+      !formData.Date ||
+      !formData.Time ||
+      !formData.Price ||
+      !formData.Category
+    ) {
+      toast.error("Please fill all required fields.");
+      return;
     }
 
     const submitData = {
       ...formData,
       DateString: formData.Date,
       Price: parseFloat(formData.Price),
-    }
+    };
 
     try {
       const response = await fetch("http://localhost:8000/createActivity", {
@@ -188,27 +198,32 @@ const AddAdvertiserActivityModel = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(submitData),
-      })
+      });
 
       if (response.ok) {
-        toast.success(`Activity "${formData.Name}" created successfully under the category "${selectedCategoryName}".`)
-        resetForm()
+        toast.success(
+          `Activity "${formData.Name}" created successfully under the category "${selectedCategoryName}".`
+        );
+        resetForm();
       } else {
-        const errorData = await response.json()
-        toast.error(errorData.error || "Error adding activity")
+        const errorData = await response.json();
+        toast.error(errorData.error || "Error adding activity");
       }
     } catch (error) {
-      console.error("Error submitting activity:", error)
-      toast.error("Failed to add activity")
+      console.error("Error submitting activity:", error);
+      toast.error("Failed to add activity");
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button>Add New Activity</Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto" size="full">
+      <DialogContent
+        className="w-full max-w-[900px] max-h-[90vh] overflow-y-auto"
+        size="full"
+      >
         <Toaster />
         <div className="relative">
           <Button
@@ -224,46 +239,92 @@ const AddAdvertiserActivityModel = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Activity Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="Name">Activity Name: <span className="text-red-500">*</span></Label>
-                  <Input id="Name" name="Name" placeholder="Activity Name" required value={formData.Name} onChange={handleInputChange} />
+                  <Label htmlFor="Name">
+                    Activity Name: <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="Name"
+                    name="Name"
+                    placeholder="Activity Name"
+                    required
+                    value={formData.Name}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Date */}
                 <div className="space-y-2">
-                  <Label htmlFor="Date">Date: <span className="text-red-500">*</span></Label>
-                  <Input id="Date" name="Date" type="date" required value={formData.Date} onChange={handleInputChange} />
+                  <Label htmlFor="Date">
+                    Date: <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="Date"
+                    name="Date"
+                    type="date"
+                    required
+                    value={formData.Date}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Time */}
                 <div className="space-y-2">
-                  <Label htmlFor="Time">Time: <span className="text-red-500">*</span></Label>
-                  <Input id="Time" name="Time" type="time" required value={formData.Time} onChange={handleInputChange} />
+                  <Label htmlFor="Time">
+                    Time: <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="Time"
+                    name="Time"
+                    type="time"
+                    required
+                    value={formData.Time}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Price */}
                 <div className="space-y-2">
-                  <Label htmlFor="Price">Price: <span className="text-red-500">*</span></Label>
-                  <Input id="Price" name="Price" type="number" placeholder="Activity Price" required value={formData.Price} onChange={handleInputChange} />
+                  <Label htmlFor="Price">
+                    Price: <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="Price"
+                    name="Price"
+                    type="number"
+                    placeholder="Activity Price"
+                    required
+                    value={formData.Price}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Category */}
                 <div className="space-y-2">
-                  <Label>Category: <span className="text-red-500">*</span></Label>
+                  <Label>
+                    Category: <span className="text-red-500">*</span>
+                  </Label>
                   <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
                     {loadingCategories ? (
                       <p>Loading categories...</p>
                     ) : (
                       categories.map((category) => (
-                        <div key={category._id} className="flex items-center space-x-2">
+                        <div
+                          key={category._id}
+                          className="flex items-center space-x-2"
+                        >
                           <input
                             type="radio"
                             id={`category_${category._id}`}
                             name="category"
-                            checked={formData.Category === category.Name}
-                            onChange={() => handleCategoryChange(category._id, category.Name)}
+                            checked={formData.Category === category._id}
+                            onChange={() =>
+                              handleCategoryChange(category._id, category.Name)
+                            }
                             className="h-4 w-4 border-gray-300 rounded focus:ring-blue-500"
                           />
-                          <label htmlFor={`category_${category._id}`}>{category.Name}</label>
+                          <label htmlFor={`category_${category._id}`}>
+                            {category.Name}
+                          </label>
                         </div>
                       ))
                     )}
@@ -279,7 +340,10 @@ const AddAdvertiserActivityModel = () => {
                     <p>Loading tags...</p>
                   ) : (
                     tags.map((tag) => (
-                      <div key={tag._id} className="flex items-center space-x-2">
+                      <div
+                        key={tag._id}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="checkbox"
                           id={`tag_${tag._id}`}
@@ -315,7 +379,10 @@ const AddAdvertiserActivityModel = () => {
                         placeholder="e.g., 10"
                         value={newDiscount.percentage}
                         onChange={(e) =>
-                          setNewDiscount((prev) => ({ ...prev, percentage: e.target.value }))
+                          setNewDiscount((prev) => ({
+                            ...prev,
+                            percentage: e.target.value,
+                          }))
                         }
                       />
                     </div>
@@ -328,7 +395,10 @@ const AddAdvertiserActivityModel = () => {
                         placeholder="e.g., Holiday Special"
                         value={newDiscount.description}
                         onChange={(e) =>
-                          setNewDiscount((prev) => ({ ...prev, description: e.target.value }))
+                          setNewDiscount((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
                         }
                       />
                     </div>
@@ -346,7 +416,8 @@ const AddAdvertiserActivityModel = () => {
                           className="flex justify-between items-center border p-2 rounded"
                         >
                           <p>
-                            <strong>{discount.percentage}%</strong> - {discount.description}
+                            <strong>{discount.percentage}%</strong> -{" "}
+                            {discount.description}
                           </p>
                           <Button
                             type="button"
@@ -358,7 +429,9 @@ const AddAdvertiserActivityModel = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-gray-500">No discounts added yet.</p>
+                      <p className="text-sm text-gray-500">
+                        No discounts added yet.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -384,7 +457,7 @@ const AddAdvertiserActivityModel = () => {
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default AddAdvertiserActivityModel
+export default AddAdvertiserActivityModel;
