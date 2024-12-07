@@ -512,10 +512,15 @@ const login = async (req, res) => {
 
 ---
 ## Testing
-- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view
-                             the desired outcome here is an example
+- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); , app.get("/readItinerary/:id", readItinerary); and add it postman to view
+                             the desired outcome here is an example for:
+  Viewing the product i bought
 ![Preview](Test1.png)
-
+---
+viewing the itinerary details
+![Preview](pt1.png)
+![Preview](pt2.png)
+![Preview](pt3.png)
 
 ---
 ## Installations 
