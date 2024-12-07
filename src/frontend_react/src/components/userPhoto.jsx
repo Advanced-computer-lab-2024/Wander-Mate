@@ -56,7 +56,7 @@ const UserPhoto = ({ onImageSelect, isUploading, initialImage }) => {
         className="hidden"
         disabled={isUploading}
       />
-      <p className="text-sm text-gray-500">Click on the image to change your photo</p>
+      <p className="text-sm text-gray-500"></p>
     </div>
   );
 };
