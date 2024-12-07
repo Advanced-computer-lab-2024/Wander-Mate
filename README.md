@@ -65,12 +65,10 @@ This structured approach ensures that the codebase remains clean, efficient, and
 ## Screenshots
 
 ![Preview](1.png)
-![Preview](2.png)
 ![Preview](3.png)
 ![Preview](4.png)
 ![Preview](5.png)
 ![Preview](6.png)
-![Preview](7.png)
 ![Preview](8.png)
 ---
 
@@ -781,9 +779,9 @@ Code for paying by wallet
 - **Vs Code link:** [Vs Code](https://code.visualstudio.com/download)
 - **MongoDB link:** [Mongo DB](https://www.mongodb.com/try/download/community)
 - **Postman link:** [Postman](https://www.postman.com/downloads/)
-- **Node.js link**[Node.js](https://nodejs.org/en/download/package-manager)
-- **React link**[React](https://react.dev/learn/installation)
-- **Express link**[Express](https://expressjs.com)
+- **Node.js link:** [Node.js](https://nodejs.org/en/download/package-manager)
+- **React link:** [React](https://react.dev/learn/installation)
+- **Express link:** [Express](https://expressjs.com)
 ---
 ## License
 

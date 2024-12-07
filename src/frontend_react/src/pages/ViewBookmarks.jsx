@@ -9,6 +9,14 @@ const ViewBookmarks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [types] = useState([]);
+  const [currency, setCurrency] = useState("USD");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [tagMap, setTagMap] = useState({});
+  const [tags, setTags] = useState([]);
+
+
+
+
 
   const getBookmarks = async () => {
     try {
@@ -35,8 +43,48 @@ const ViewBookmarks = () => {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/readHistoricalTags"
+      );
+      const reply = await fetch("http://localhost:8000/readPreferenceTags");
+      if (!response.ok || !reply.ok)
+        throw new Error("Network response was not ok");
+      const data = await response.json();
+      const data2 = await reply.json();
+      const tagMapping = {};
+      data.forEach((tag) => {
+        tagMapping[tag._id] = tag.Name;
+      });
+      data2.forEach((tag) => {
+        tagMapping[tag._id] = tag.Name;
+      });
+      setTags([...data, ...data2]);
+      setTagMap(tagMapping);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      alert("Could not load tags. Please try again later.");
+    }
+  };
+  const fetchExchangeRates = async () => {
+    try {
+      const c = sessionStorage.getItem("curr");
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${c}`
+      );
+      const data = await response.json();
+      setExchangeRates(data.rates);
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+
+  fetchExchangeRates();
   useEffect(() => {
     getBookmarks();
+    fetchExchangeRates();
+    fetchTags();
   }, []);
 
   if (loading) {
@@ -63,7 +111,7 @@ const ViewBookmarks = () => {
                   key={index}
                   activityId={bookmark.event._id}
                   name={bookmark.event.Name}
-                  location={bookmark.event.location}
+                  location={bookmark.event.Location}
                   type={
                     types.find((t) => t._id === bookmark.event.Category)?.Name ||
                     "Unknown Category"
@@ -86,22 +134,33 @@ const ViewBookmarks = () => {
                   key={index}
                   itineraryId={bookmark.event._id}
                   name={bookmark.event.Name}
-                  images={bookmark.event.images || []}
-                  tags={bookmark.event.Tags || []}
-                  duration={bookmark.event.duration}
-                  latitude={bookmark.event.latitude}
-                  longitude={bookmark.event.longitude}
-                  reviews={bookmark.event.reviews}
+                  images={bookmark.event.LocationsToVisit.flatMap(
+                    (location) => location.Pictures || []
+                  )}
+                  tags={[
+                    ...bookmark.event.LocationsToVisit.flatMap(
+                      (location) => location.Tags || []
+                    ),
+                    ...bookmark.event.Activities.flatMap(
+                      (activity) => activity.Tags || []
+                    ),
+                  ].map((tagId) => tagMap[tagId])}
+                  price={(
+                    bookmark.event.Price / (exchangeRates[currency] || 1)
+                  ).toFixed(2)}
+                  currrn={sessionStorage.getItem("curr")}
+                  rating={bookmark.event.Ratings}
+                  Activities={bookmark.event.Activities.map(
+                    (activity) => activity.Name
+                  )}
+                  LocationsToVisit={bookmark.event.LocationsToVisit.map(
+                    (location) => location.Name
+                  )}
                   TimeLine={bookmark.event.TimeLine}
-                  price={bookmark.event.price}
                   AvailableDates={bookmark.event.AvailableDates}
-                  Activities={bookmark.event.Activities}
-                  LocationsToVisit={bookmark.event.LocationsToVisit}
                   PickUpLocation={bookmark.event.PickUpLocation}
                   DropOffLocation={bookmark.event.DropOffLocation}
                   Language={bookmark.event.Language}
-                  currrn={bookmark.event.currrn}
-                  rating={bookmark.event.rating}
                   Creator={bookmark.event.Creator}
                 />
               ))}
