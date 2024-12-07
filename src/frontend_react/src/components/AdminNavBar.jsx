@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home } from 'lucide-react';
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home, Tag, LucideSquareChartGantt } from 'lucide-react';
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
@@ -60,7 +60,11 @@ const AdminNavBar = () => {
       setOpenDropdown(dropdown);
     }
   };
-
+  const handleMouseEnterA = (dropdown) => {
+    if (dropdown === "activities") {
+      setOpenDropdown(dropdown);
+    }
+  };
   const handleMouseLeave = () => {
     setOpenDropdown(null);
   };
@@ -86,12 +90,7 @@ const AdminNavBar = () => {
               Home Page
             </Button>
           </Link>
-          <Link to="/adminItinerary">
-            <Button variant="ghost">
-              <Ticket className="mr-2 h-4 w-4" />
-              Itineraries
-            </Button>
-          </Link>
+         
 
           <DropdownMenu open={openDropdown === "products"}>
             <DropdownMenuTrigger asChild>
@@ -138,12 +137,36 @@ const AdminNavBar = () => {
             </Button>
           </Link>
 
-          <Link to="/createActivity">
-            <Button variant="ghost">
-              <Backpack className="mr-2 h-4 w-4" />
-              Activity
-            </Button>
-          </Link>
+          <DropdownMenu open={openDropdown === "activities"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnterA("activities")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Ticket className="mr-2 h-4 w-4" />
+                Tags & Categories
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnterA("activities")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/AdminTags" className="flex items-center">
+                  <Tag className="mr-2 h-4 w-4" />
+                  <span>Tags</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/AdminCategories" className="flex items-center">
+                  <LucideSquareChartGantt className="mr-2 h-4 w-4" />
+                  <span>Categories</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Link to="/AdminDocumentsPage">
             <Button variant="ghost">
