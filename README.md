@@ -5,7 +5,7 @@
   Wander-Mate
   <br>
 </h1>
-<h1 align="center"># Wander Mate: Your Best Travelling Mate</h1>
+<h1 align="center"># Wander Mate: Your Travelling Best Mate</h1>
 
 <h4 align="center">A modern, intuitive travel planning and itinerary management tool to help users explore the world effortlessly.</h4>
 
@@ -781,6 +781,9 @@ Code for paying by wallet
 - **Vs Code link:** [Vs Code](https://code.visualstudio.com/download)
 - **MongoDB link:** [Mongo DB](https://www.mongodb.com/try/download/community)
 - **Postman link:** [Postman](https://www.postman.com/downloads/)
+- **Node.js link**[Node.js](https://nodejs.org/en/download/package-manager)
+- **React link**[React](https://react.dev/learn/installation)
+- **Express link**[Express](https://expressjs.com)
 ---
 ## License
 
@@ -792,6 +795,8 @@ This project is licensed under the following licenses:
 - **0BSD**: This project includes dependencies licensed under the 0BSD License.
 - **BSD-2-Clause**: This project includes dependencies licensed under the BSD-2-Clause License.
 - **AGPL-3.0**: This project includes dependencies licensed under the Affero General Public License v3.0.
+- **MIT**: This project includes dependencies licensed under the MIT License.
+
 
 ### Third-Party Licenses:
 - **Stripe**: This project uses Stripe for payment processing. Stripe is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
@@ -800,11 +805,12 @@ This project is licensed under the following licenses:
 
 We would like to acknowledge the following resources and tools used during the development of this project:
 
-1. **ChatGPT**: Used for assistance with coding, problem-solving and error handling .
-2. **V0 by Vercel**: A useful resource for frontend development and deployment.
-3. **CMS GUC**: The content management system used for learning skills needed for achieving the goals of the project more efficiently  - [cms.guc.edu.eg](https://cms.guc.edu.eg).
-4. **Lucide Logos**: Icon set used for various UI components.
-5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
+1. **V0 by Vercel**: A useful resource for frontend development and deployment.
+2. **CMS GUC**: The content management system used for learning skills needed for achieving the goals of the project more efficiently - [cms.guc.edu.eg](https://cms.guc.edu.eg).
+3. **Lucide Logos**: Icon set used for various UI components.
+4. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
+5. **ChatGPT**: Used for assistance with coding, problem-solving and error handling.
+6. **YouTube**: A valuable resource for tutorials, coding guides, and problem-solving.
 
 ### API References
 
