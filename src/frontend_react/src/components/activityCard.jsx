@@ -17,7 +17,7 @@ export default function ActivityCard({
   time,
   category,
   isAvailable,
-  rating,
+  rating = 0,
   currency,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
