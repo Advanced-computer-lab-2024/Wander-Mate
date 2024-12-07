@@ -15,7 +15,7 @@ import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-
+import AdminNavBar from "../components/AdminNavBar";
 const TourismGovTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
   const [tourismGovs, setTourismGovs] = useState([]); // Store tourism governor data
@@ -121,7 +121,10 @@ const TourismGovTable = () => {
 
   return (
     <>
+    <AdminNavBar/>
     <Toaster/>
+    <br></br>
+    <h1 className="text-3xl font-bold mb-6 ml-6">All Tourism Governers</h1>
     <Table>
       <TableHeader className="text-left">
         <TableRow>

@@ -15,6 +15,7 @@ import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import AdminNavBar from "../components/AdminNavBar";
 
 const AdvertiserTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
@@ -124,7 +125,10 @@ const AdvertiserTable = () => {
 
   return (
     <>
+    <AdminNavBar/>
     <Toaster/>
+    <br></br>
+    <h1 className="text-3xl font-bold mb-6 ml-6">All Advertisers</h1>
     <Table>
       <TableHeader className="text-left">
         <TableRow>
