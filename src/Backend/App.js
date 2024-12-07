@@ -115,6 +115,7 @@ const {
   getTouristPoints,
   unbookmarkEvent,
   checkIfEventBookmarked,
+  sendItineraryNotifications,
 } = require("./Routes/touristController");
 
 const {
@@ -141,6 +142,9 @@ const {
   viewProductsOfSeller,
   getSalesReport,
   getSellerDocuments,
+  viewMyNotificationsSeller,
+  removeNotificationSeller,
+  markNotificationAsReadSeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -210,6 +214,8 @@ const {
   emptyCart,
   getRevenue,
   getEmail,
+  getTotalQuantities,
+  getTotalBookings
 } = require("./Routes/adminController.js");
 
 const {
@@ -392,7 +398,7 @@ app.get("/sortProductsByRatingstourist", sortProductsByRatingstourist);
 app.post("/addProduct", upload.single("picture"), addProduct); // 'picture' matches the field name in the form
 app.post("/addProductseller", upload.single("picture"), addProductseller);
 app.get("/products/:productId/image", getImage); //getImage with productID
-app.get("/seller/:sellerId/image", getSellerImage);
+app.get("/seller/:sellerID/image", getSellerImage);
 app.get("/ADvertiser/:advertiserID/image", getadvertiserImage);
 app.get("/GUIDE/:guideID/image", gettourGuideImage);
 app.get("/TouristsearchProductByName", TouristsearchProductByName);
@@ -603,6 +609,7 @@ app.get("/viewMyWishlist/:touristId", viewMyWishlist);
 app.get("/viewMyNotifications/:touristId", viewMyNotifications);
 app.get("/viewMyNotificationsTG/:guideID", viewMyNotificationsTG);
 app.get("/viewMyNotificationsAd/:advertiserId", viewMyNotificationsAd);
+app.get("/viewMyNotificationsSeller/:sellerId", viewMyNotificationsSeller);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
@@ -619,11 +626,12 @@ app.delete(
   "/removeNotificationAd/:advertiserId/:notificationId",
   removeNotificationAd
 );
+app.delete("/removeNotificationSeller/:sellerId/:notificationId",removeNotificationSeller);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
 app.put("/notifyTourGuide", notifyTourGuide);
-app.delete('/unbookmarkEvent', unbookmarkEvent);
+app.delete("/unbookmarkEvent", unbookmarkEvent);
 app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
@@ -648,7 +656,7 @@ app.get("/getItineraryReviews/:itineraryId", getItineraryReviews);
 app.get("/getGuideReviews/:guideId", getGuideReviews);
 app.get("/getPreferences/:touristId", getPreferences);
 app.delete("/removePreference/:touristId/:preferenceId", removePreference);
-app.post("/checkIfEventBookmarked",checkIfEventBookmarked)
+app.post("/checkIfEventBookmarked", checkIfEventBookmarked);
 app.put(
   "/markNotificationAsRead/:userID/:notificationId",
   markNotificationAsRead
@@ -661,6 +669,10 @@ app.put(
   "/markNotificationAsReadAd/:userID/:notificationId",
   markNotificationAsReadAd
 );
+app.put(
+  "/markNotificationAsReadSeller/:userID/:notificationId",
+  markNotificationAsReadSeller
+);
 app.get("/getRevenue/:userID", getRevenue);
 app.get("/getBookingDetails/:bookingID", getBookingDetails);
 app.get("/getEmail/:userID", getEmail);
@@ -668,10 +680,14 @@ app.get("/gettourist/:touristID", gettourist);
 app.get("/getTouristWallet/:touristId", getTouristWallet);
 app.get("/getSalesReport/:sellerId", getSalesReport);
 app.get("/getMyOrders/:userId", getMyOrders);
-app.get("/getTourGuideDocuments/:ownerId",getTourGuideDocuments);
-app.get("/getAdvertiserDocuments/:ownerId",getAdvertiserDocuments);
-app.get("/getSellerDocuments/:ownerId",getSellerDocuments);
-app.get("/getTouristPoints/:touristID",getTouristPoints);
+app.get("/getTourGuideDocuments/:ownerId", getTourGuideDocuments);
+app.get("/getAdvertiserDocuments/:ownerId", getAdvertiserDocuments);
+app.get("/getSellerDocuments/:ownerId", getSellerDocuments);
+app.get("/getTouristPoints/:touristID", getTouristPoints);
 
-app.get("/getItinerarySalesReport/:guideId",getItinerarySalesReport);
-app.get("/getAttractionSalesReport/:advertiserId",getAttractionSalesReport);
+app.get("/getItinerarySalesReport/:guideId", getItinerarySalesReport);
+app.get("/getAttractionSalesReport/:advertiserId", getAttractionSalesReport);
+app.post("/sendItineraryNotifications", sendItineraryNotifications);
+
+app.get("/getTotalQuantities",getTotalQuantities);
+app.get("/getTotalBookings",getTotalBookings);

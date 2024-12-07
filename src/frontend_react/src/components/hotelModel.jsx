@@ -43,7 +43,7 @@ const HotelModal = ({
   const [additionalServices, setAdditionalServices] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
   const [isBooked, setIsBooked] = useState(false);
-  const combo=sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const handleBooking = () => {
     console.log("Booking:", {
@@ -171,7 +171,9 @@ const HotelModal = ({
           </div>
           <div>
             <p className="text-lg font-semibold">Total Price</p>
-            <p className="text-2xl font-bold">{combo}{" "}{calculateTotalPrice()}</p>
+            <p className="text-2xl font-bold">
+              {combo} {calculateTotalPrice()}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -183,7 +185,7 @@ const HotelModal = ({
             </Button>
             {!isBooked ? (
               <Button
-                className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full"
+                className="flex items-center justify-center px-3 py-3 gap-2.5 bg-[#826AF9] rounded-lg text-white w-full mt-5"
                 onClick={handleBook}
               >
                 <Icon icon="heroicons:shopping-bag" className="w-4 h-4 mr-2" />

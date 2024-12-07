@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
-const TourismGovernerFooter = () => {
+const TourGuideFooter = () => {
   return (
     <footer className="bg-gray-800 text-white py-8 mt-10">
       <div className="container mx-auto px-4">
@@ -9,7 +9,7 @@ const TourismGovernerFooter = () => {
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-2">About WanderMate</h3>
             <p className="text-gray-400">
-              Your Traveling Best Mate
+            Your Traveling Best Mate
             </p>
           </div>
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
@@ -55,4 +55,4 @@ const TourismGovernerFooter = () => {
   );
 };
 
-export default TourismGovernerFooter;
+export default TourGuideFooter;

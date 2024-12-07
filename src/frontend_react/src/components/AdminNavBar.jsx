@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,15 +12,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  ShoppingCart,
-  User,
-  AlertTriangle,
-  Backpack,
-  CloudUploadIcon,
-  Ticket,
-  ShoppingBasket,
-} from "lucide-react";
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
+
+import AddAdminButton from "./AddAdminButton";
+import AddTourismGovButton from "./AddTourismGovButton";
 
 const SiteLogo = () => (
   <svg
@@ -72,16 +66,19 @@ const AdminNavBar = () => {
   };
 
   const goToProfile = async () => {
-    navigate("/UserProfilePage");
+    navigate("/AdminProfile");
   };
-
+  const logout = () => {
+    sessionStorage.removeItem("username");
+    navigate("/loginPage");
+  };
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <SiteLogo />
-            <span className="text-xl font-bold">Wandermate</span>
+            <span className="text-xl font-bold">WanderMate</span>
           </Link>
           <Link to="/adminItinerary">
             <Button variant="ghost">
@@ -142,10 +139,10 @@ const AdminNavBar = () => {
             </Button>
           </Link>
 
-          <Link to="/uploadDocs">
+          <Link to="/AdminDocumentsPage">
             <Button variant="ghost">
               <CloudUploadIcon className="mr-2 h-4 w-4" />
-              Documents
+              ViewDocuments
             </Button>
           </Link>
 
@@ -166,6 +163,21 @@ const AdminNavBar = () => {
                   <span onClick={goToProfile}>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span onClick={logout}>Log out</span>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4" >
+                    <AddAdminButton />
+                  </div>Add new admin
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4">
+                    <AddTourismGovButton />
+                  </div>Add new tourism governor
+                </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -176,3 +188,4 @@ const AdminNavBar = () => {
 };
 
 export default AdminNavBar;
+

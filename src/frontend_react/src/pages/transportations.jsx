@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TransportationCard from "../components/transportCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Slider } from "../components/ui/slider";
@@ -12,10 +12,9 @@ import {
 } from "../components/ui/select";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, CalendarIcon } from 'lucide-react';
 import { Button } from "../components/ui/button";
-import DatePickerWithRange from "./../components/date-picker-with-range";
-
+import NavigationMenuBar from "../components/NavigationMenuBar";
 const Transportation = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -28,6 +27,8 @@ const Transportation = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("All");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [currency, setCurrency] = useState("USD");
 
   const fetchTransportations = async () => {
     try {
@@ -83,6 +84,20 @@ const Transportation = () => {
   };
 
   useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
+        );
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    };
+
+    fetchExchangeRates();
     fetchTransportations();
   }, []);
 
@@ -118,10 +133,15 @@ const Transportation = () => {
     setMaxPrice(value);
     setPriceRange([minPrice, value]);
   };
-  const handleDateChange = (date) => setSelectedDate(date);
+  const handleDateChange = (e) => {
+    const date = e.target.value ? new Date(e.target.value) : null;
+    setSelectedDate(date);
+    handleFilterAndSort();
+  };
   const handleVehicleTypeChange = (value) => setSelectedVehicleType(value);
 
   return (
+    <><NavigationMenuBar/>
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Transportation Listings</h1>
       <Card className="mb-8">
@@ -212,12 +232,17 @@ const Transportation = () => {
               >
                 Date
               </Label>
-              <DatePickerWithRange
-                id="date-picker"
-                selected={selectedDate}
-                onSelect={handleDateChange}
-                placeholderText="Select a date"
-              />
+              <div className="relative">
+                <Input
+                  type="date"
+                  id="date-picker"
+                  name="date-picker"
+                  value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+                  onChange={handleDateChange}
+                  className="pl-10 pr-4 h-10 w-[200px]"
+                />
+                <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              </div>
             </div>
             <div>
               <Label
@@ -258,7 +283,8 @@ const Transportation = () => {
               transportationId={transportation._id}
               destination={transportation.destination}
               startPlace={transportation.startPlace}
-              price={transportation.price}
+              currrn={sessionStorage.getItem("curr")}
+              price={(transportation.price / (exchangeRates[currency] || 1)).toFixed(2)}
               vehicleType={transportation.vehicleType}
               availability={transportation.availability}
               discount={transportation.discount}
@@ -283,7 +309,9 @@ const Transportation = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
 export default Transportation;
+

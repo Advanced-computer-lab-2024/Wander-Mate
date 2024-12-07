@@ -59,7 +59,7 @@ const SiteLogo = () => (
 
 const SellerNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [guideID, setGuideId] = useState(0);
+  const [sellerID, setGuideId] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -95,13 +95,14 @@ const SellerNavBar = () => {
         if (!username) throw new Error("Username not found in session storage");
 
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get Tour Guide ID");
+        if (!reply.ok) throw new Error("Failed to get Seller ID");
 
         const { userID } = await reply.json();
         setGuideId(userID);
+        console.log(userID);
 
         const response = await axios.get(
-          `http://localhost:8000/viewMyNotificationsTG/${userID}`
+          `http://localhost:8000/viewMyNotificationsSeller/${userID}`
         );
         setNotifications(response.data.notifications || []);
       } catch (error) {
@@ -120,7 +121,7 @@ const SellerNavBar = () => {
     async (notificationId) => {
       try {
         const response = await axios.delete(
-          `http://localhost:8000/removeNotificationTG/${guideID}/${notificationId}`
+          `http://localhost:8000/removeNotificationSeller/${sellerID}/${notificationId}`
         );
 
         if (response.status === 200) {
@@ -151,12 +152,13 @@ const SellerNavBar = () => {
         });
       }
     },
-    [guideID]
+    [sellerID]
   );
   const markNotificationAsRead = async (id) => {
     try {
+        console.log(id);
       const response = await axios.put(
-        `http://localhost:8000/markNotificationAsRead/${guideID}/${id}`
+        `http://localhost:8000/markNotificationAsReadSeller/${sellerID}/${id}`
       );
 
       if (response.status === 200) {
@@ -185,13 +187,13 @@ const SellerNavBar = () => {
       try {
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get tourist ID");
+        if (!reply.ok) throw new Error("Failed to get Seller ID");
 
         const { userID } = await reply.json();
         const response = await fetch(
-          `http://localhost:8000/GUIDE/${userID}/image`
+          `http://localhost:8000/seller/${userID}/image`
         );
-        setProfilePicture(`http://localhost:8000/GUIDE/${userID}/image`);
+        setProfilePicture(`http://localhost:8000/seller/${userID}/image`);
       } catch {
         console.log("error");
       }
@@ -240,90 +242,86 @@ const SellerNavBar = () => {
             </DropdownMenu>
             <Button variant="ghost" asChild>
               <Link to="/SellerProducts" className="flex items-center">
-                <Link className="hidden md:flex space-x-6" />
                 <span>Products</span>
               </Link>
             </Button>
-
             <Button variant="ghost" asChild>
               <Link to="/salestableseller" className="flex items-center">
-                <Link className="hidden md:flex space-x-6" />
                 <span>Sales Report</span>
               </Link>
             </Button>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Notifications">
-                <Bell className="h-5 w-5" />
-                {notifications.some((n) => !n.isRead) && (
-                  <span className="relative right-1 bottom-2 h-2 w-2 rounded-full bg-red-500" />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <h3 className="font-medium text-lg">Notifications</h3>
-                {notifications.length === 0 ? (
-                  <p className="text-sm text-gray-500">No new notifications</p>
-                ) : (
-                  <ScrollArea className="h-[300px]">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification._id}
-                        className={`p-4 ${
-                          notification.isRead ? "bg-gray-50" : "bg-blue-50"
-                        } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
-                      >
-                        <p
-                          className="text-sm"
-                          onClick={() =>
-                            markNotificationAsRead(notification._id)
-                          }
-                        >
-                          {notification.message}
-                        </p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteNotification(notification._id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete notification</span>
-                        </Button>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+
           <div className="flex items-center space-x-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Notifications">
+                  <Bell className="h-5 w-5" />
+                  {notifications.some((n) => !n.isRead) && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-lg">Notifications</h3>
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-gray-500">No new notifications</p>
+                  ) : (
+                    <ScrollArea className="h-[300px]">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          className={`p-4 ${
+                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                        >
+                          <p
+                            className="text-sm"
+                            onClick={() => markNotificationAsRead(notification._id)}
+                          >
+                            {notification.message}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification._id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete notification</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarImage src={profilePicture} alt={"sorry"} />
+                    <AvatarImage src={profilePicture} alt="User avatar" />
                     <AvatarFallback>
-                      {sessionStorage
+                      {typeof window !== 'undefined' && sessionStorage
                         .getItem("username")
                         ?.slice(0, 2)
-                        .toUpperCase() || "TG"}
+                        .toUpperCase() || "SE"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={goToProfile}>
                   <User className="mr-2 h-4 w-4" />
-                  <span onClick={goToProfile}>Profile</span>
+                  <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span onClick={logout}>Log out</span>
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

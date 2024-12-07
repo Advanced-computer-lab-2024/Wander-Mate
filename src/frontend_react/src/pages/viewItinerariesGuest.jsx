@@ -32,8 +32,8 @@ export default function ViewItinerariesGuest() {
   const [tags, setTags] = useState([]);
   const [tagMap, setTagMap] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
-  const [currency, setCurrency] = useState("USD");
+  // const [exchangeRates, setExchangeRates] = useState({});
+  // const [currency, setCurrency] = useState("USD");
 
   // Filter states
   const [budget, setBudget] = useState([0, 100000]);
@@ -46,20 +46,20 @@ export default function ViewItinerariesGuest() {
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const c = sessionStorage.getItem("curr");
-        const response = await fetch(
-          `https://api.exchangerate-api.com/v4/latest/${c}`
-        );
-        const data = await response.json();
-        setExchangeRates(data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    };
+    // const fetchExchangeRates = async () => {
+    //   try {
+    //     const c = sessionStorage.getItem("curr");
+    //     const response = await fetch(
+    //       `https://api.exchangerate-api.com/v4/latest/${c}`
+    //     );
+    //     const data = await response.json();
+    //     setExchangeRates(data.rates);
+    //   } catch (error) {
+    //     console.error("Error fetching exchange rates:", error);
+    //   }
+    // };
 
-    fetchExchangeRates();
+    // fetchExchangeRates();
 
     const fetchItineraries = async () => {
       try {
@@ -143,7 +143,7 @@ export default function ViewItinerariesGuest() {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice = itinerary.Price / (exchangeRates[currency] || 1);
+      const convertedPrice = itinerary.Price ;
       const matchesBudget =
         convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
@@ -384,10 +384,8 @@ export default function ViewItinerariesGuest() {
                       (activity) => activity.Tags || []
                     ),
                   ].map((tagId) => tagMap[tagId])}
-                  price={(
-                    itinerary.Price / (exchangeRates[currency] || 1)
-                  ).toFixed(2)}
-                  currrn={sessionStorage.getItem("curr")}
+                  price={
+                    itinerary.Price}
                   rating={itinerary.Ratings}
                   Activities={itinerary.Activities.map(
                     (activity) => activity.Name

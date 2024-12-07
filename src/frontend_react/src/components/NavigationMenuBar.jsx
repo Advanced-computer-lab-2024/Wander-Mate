@@ -485,7 +485,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
             >
               Flights & Hotels
             </Button>
-
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/transportations")}
+            >
+              Transportations
+            </Button>
             <DropdownMenu open={openDropdown === "activities"}>
               <DropdownMenuTrigger asChild>
                 <Button

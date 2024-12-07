@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -6,37 +6,40 @@ import { Card, CardContent } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import NonMovableMap from "./ui/nonMovableMap";
-import { StarIcon } from "lucide-react";
+import { StarIcon } from 'lucide-react';
 import PayForActivity from "./PayForActivity";
-import toast from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
 import {
   CustomPopover as Popover,
   PopoverTrigger,
   PopoverContent,
 } from "./ui/popover";
 import axios from "axios";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 export default function ActivityModal({
   activity,
   isOpen,
   setIsOpen,
   children,
+  favorite,
+  setFavorite
 }) {
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [bookingError, setBookingError] = useState(null);
   const [userAge, setUserAge] = useState(null);
+
   const handleOpenChange = (open) => {
     setIsOpen(open);
     if (!open) {
       // setIsBookingConfirmed(false);
     }
   };
-  const handleBook = () => {
-    
 
+  const handleBook = () => {
     if (userAge < 18) {
       toast.error("You must be 18 or older to book this itinerary.");
       return;
@@ -46,10 +49,52 @@ export default function ActivityModal({
       setIsBooking(true);
     }
   };
+
+  useEffect(() => {
+    setIsFavorite(favorite);
+  }, [favorite]);
+
+  const handleToggleFavorite = async () => {
+    setIsFavorite(!isFavorite);
+    setFavorite(!favorite);
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+
+      const { userID } = await reply.json();
+
+      console.log({
+        userID,
+        eventId: activity.activityId,
+        type: "Attraction",
+      });
+
+      if (isFavorite) {
+        await axios.delete("http://localhost:8000/unbookmarkEvent", {
+          data: {
+            userId: userID,
+            eventId: activity.activityId,
+            type: "Attraction",
+          },
+        });
+        toast.success("Removed from Favorites");
+      } else {
+        await axios.post("http://localhost:8000/Bookmarkevent", {
+          userId: userID,
+          eventId: activity.activityId,
+          type: "Attraction",
+        });
+        toast.success("Added to Favorites");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite Activity:", error);
+      toast.error("Failed to update favorite Activity: " + error.message);
+    }
+  };
+
   const handlePaymentSuccess = () => {
-    // setIsBooking(false);
     setBookingError(null);
-    // Additional logic for successful booking
     console.log("Booking successful!");
   };
 
@@ -76,7 +121,11 @@ export default function ActivityModal({
       console.error("Error fetching user age:", error);
     }
   };
-  fetchUserAge();
+
+  useEffect(() => {
+    fetchUserAge();
+  }, []);
+
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
     const shareUrl = `${currentUrl}?open=true&activity=${activity.activityId}`;
@@ -103,6 +152,7 @@ export default function ActivityModal({
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
       >
+        <Toaster />
         <div className="relative">
           <Button
             variant="ghost"
@@ -205,31 +255,26 @@ export default function ActivityModal({
                   </span>
                 </div>
                 <div className="flex space-x-4 mb-6">
-                  {/* {activity.isAvailable && !isBookingConfirmed && (
-                    <Button onClick={handleBooking} className="w-full mb-4">
-                      Book Now
-                    </Button>
-                  )} */}
                   {!isBooking ? (
-    <div className="flex flex-col items-center">
-      <Button
-        className="text-white w-full"
-        onClick={handleBook}
-        disabled={userAge < 18}
-      >
-        <Icon
-          icon="heroicons:shopping-bag"
-          className="w-4 h-4 mr-2"
-        />
-        Book
-      </Button>
-      {userAge < 18 && (
-        <p className="text-red-500 text-sm mt-2">
-          You must be at least 18 years old to book.
-        </p>
-      )}
-    </div>
-  ) :  (
+                    <div className="flex flex-col items-center">
+                      <Button
+                        className="text-white w-full"
+                        onClick={handleBook}
+                        disabled={userAge < 18}
+                      >
+                        <Icon
+                          icon="heroicons:shopping-bag"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Book
+                      </Button>
+                      {userAge < 18 && (
+                        <p className="text-red-500 text-sm mt-2">
+                          You must be at least 18 years old to book.
+                        </p>
+                      )}
+                    </div>
+                  ) : (
                     <PayForActivity
                       activity={activity}
                       amount={activity.price}
@@ -240,6 +285,18 @@ export default function ActivityModal({
                   {bookingError && (
                     <p className="text-red-500 mt-2">{bookingError}</p>
                   )}
+                  <Button
+                    className={`flex-1 ${
+                      isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                    }`}
+                    onClick={handleToggleFavorite}
+                  >
+                    <Icon
+                      icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
+                      className="w-4 h-4 mr-2"
+                    />
+                    {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                  </Button>
                   <Popover
                     open={isShareOpen}
                     onOpenChange={setIsShareOpen}
@@ -290,3 +347,4 @@ export default function ActivityModal({
     </Dialog>
   );
 }
+
