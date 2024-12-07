@@ -636,13 +636,38 @@ const UpdateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const id = req.params.id; // Get product ID from request parameters
+
+    // Delete the product
     const product = await productModel.findByIdAndDelete(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json({ message: "Product deleted successfully" });
-  } catch {
-    res.status(400).json({ message: "Error to delete product" });
+
+    // Remove the deleted product from the `products` array in orders
+    await orderModel.updateMany(
+      { products: id }, // Find orders containing the product ID
+      { $pull: { products: id } } // Remove the product ID from the array
+    );
+
+    // Remove the deleted product from the `items` array in carts
+    await cartModel.updateMany(
+      { "items.productId": id }, // Find carts containing the product ID
+      { $pull: { items: { productId: id } } } // Remove the product from the items array
+    );
+
+    // Remove the deleted product from the `products` array in wishlists
+    await wishlist.updateMany(
+      { products: id }, // Find wishlists containing the product ID
+      { $pull: { products: id } } // Remove the product ID from the array
+    );
+
+    res.status(200).json({
+      message:
+        "Product deleted successfully and removed from orders, carts, and wishlists",
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging
+    res.status(400).json({ message: "Error deleting product" });
   }
 };
 
@@ -1345,8 +1370,9 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyAdvertiser(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Event ${updatedItem.isFlagged ? "flagged" : "unflagged"
-          } successfully.`,
+        message: `Event ${
+          updatedItem.isFlagged ? "flagged" : "unflagged"
+        } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
     } else if (type === "itinerary") {
@@ -1368,8 +1394,9 @@ const flagEventOrItinerary = async (req, res) => {
       // Notify the creator about the flag change
       await notifyTourGuide(updatedItem.Creator, id);
       res.status(200).json({
-        message: `Itinerary ${updatedItem.isFlagged ? "flagged" : "unflagged"
-          } successfully.`,
+        message: `Itinerary ${
+          updatedItem.isFlagged ? "flagged" : "unflagged"
+        } successfully.`,
         updatedItem, // Return the updated item with the `isFlagged` field
       });
     } else {
@@ -1509,14 +1536,12 @@ const login = async (req, res) => {
     };
 
     res.cookie("jwt", token, cookieOptions);
-    res
-      .status(200)
-      .json({
-        Username: Username,
-        Type: user.Type,
-        status,
-        curr: userLogged.Currency,
-      });
+    res.status(200).json({
+      Username: Username,
+      Type: user.Type,
+      status,
+      curr: userLogged.Currency,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "An error occurred during login" });
@@ -1740,9 +1765,7 @@ const sendOutOfStockNotificationAdmin = async (req, res) => {
     const type = await user.Type;
     // Find or update the notification for the specified admin
     const notification = await Notification.findOneAndUpdate(
-      { userID: adminId,
-        userModel: type,
-       },
+      { userID: adminId, userModel: type },
       {
         $push: {
           notifications: {
@@ -1998,10 +2021,6 @@ const getEmail = async (req, res) => {
   }
 };
 
-
-
-
-
 const getTotalQuantities = async (req, res) => {
   try {
     const result = await orderModel.aggregate([
@@ -2101,7 +2120,7 @@ const getTotalBookings = async (req, res) => {
         $group: {
           _id: "$itemId",
           totalBookings: { $sum: 1 },
-          itemModel: { $first: "$itemModel" },  // Get the itemModel for each grouped item
+          itemModel: { $first: "$itemModel" }, // Get the itemModel for each grouped item
         },
       },
       {
@@ -2142,7 +2161,7 @@ const getTotalBookings = async (req, res) => {
           itemDetails = await BookedFlights.findById(booking.itemId).exec();
           break;
         default:
-          itemDetails = null;  // In case the itemModel is unknown
+          itemDetails = null; // In case the itemModel is unknown
       }
 
       // Push result with the populated item details
@@ -2165,9 +2184,6 @@ const getTotalBookings = async (req, res) => {
     });
   }
 };
-
-
-
 
 module.exports = {
   createAdmin,
@@ -2237,5 +2253,5 @@ module.exports = {
   getRevenue,
   getEmail,
   getTotalQuantities,
-  getTotalBookings
+  getTotalBookings,
 };

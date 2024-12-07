@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../forms/PaymentForm";
-import { Bed, Users, Wifi, Coffee, Tv, Calendar } from 'lucide-react';
+import { Bed, Users, Wifi, Coffee, Tv, Calendar } from "lucide-react";
 
 const stripePromise = loadStripe(
   "pk_test_51QNbspEozkMz2Yq3CeUlvq37Ptboa8zRKVDaiVjjzrwP8tZPcKmo4QKsCQzCFVn4d0GnDBm2O3p2zS5v3pA7BUKg00xjpsuhcW"
@@ -67,7 +67,9 @@ const HotelCheckOut = ({
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get user ID");
         const { userID } = await reply.json();
-        const userResponse = await fetch(`http://localhost:8000/gettourist/${userID}`);
+        const userResponse = await fetch(
+          `http://localhost:8000/gettourist/${userID}`
+        );
         if (!userResponse.ok) throw new Error("Failed to get user details");
 
         const userData = await userResponse.json();
@@ -173,8 +175,8 @@ const HotelCheckOut = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button 
-          className="w-full text-white py-2 rounded mt-1" 
+        <Button
+          className="w-full text-white py-2 rounded mt-5"
           disabled={userAge < 18}
         >
           {userAge < 18 ? "Must be 18+ to Book" : "Confirm Booking"}
@@ -308,11 +310,11 @@ const HotelCheckOut = ({
             <DialogClose asChild>
               <Button type="button">Close</Button>
             </DialogClose>
-          ) : (
+          ) : selected === "rwb_1" && activeIndex === 2 ? null : (
             <Button
               type="button"
               onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}
-              disabled={userAge < 18}
+              disabled={activeIndex === 2 && selected !== "rwb_1"}
             >
               Next
             </Button>
@@ -324,4 +326,3 @@ const HotelCheckOut = ({
 };
 
 export default HotelCheckOut;
-

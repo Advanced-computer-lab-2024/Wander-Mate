@@ -116,6 +116,8 @@ const {
   unbookmarkEvent,
   checkIfEventBookmarked,
   sendItineraryNotifications,
+  requestToBeNotifiedForAttraction,
+  sendAttractionNotifications,
 } = require("./Routes/touristController");
 
 const {
@@ -636,6 +638,7 @@ app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post("/requestToBeNotified", requestToBeNotified);
+app.post("/requestToBeNotifiedForAttraction",requestToBeNotifiedForAttraction);
 app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
 app.get("/viewAllUsers", viewAllUsers);
 app.get("/ViewOrders/:userId", ViewOrders);
@@ -688,6 +691,7 @@ app.get("/getTouristPoints/:touristID", getTouristPoints);
 app.get("/getItinerarySalesReport/:guideId", getItinerarySalesReport);
 app.get("/getAttractionSalesReport/:advertiserId", getAttractionSalesReport);
 app.post("/sendItineraryNotifications", sendItineraryNotifications);
+app.post("/sendAttractionNotifications",sendAttractionNotifications);
 
 app.get("/getTotalQuantities",getTotalQuantities);
 app.get("/getTotalBookings",getTotalBookings);

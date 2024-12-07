@@ -38,7 +38,7 @@ export const columns = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.original.Owner.Email}</div>
+      <div className="w-[80px]" style={{ paddingRight: "8vw" }}>{row.original.Owner.Email}</div>
     ),
     enableSorting: true,
     enableHiding: true,

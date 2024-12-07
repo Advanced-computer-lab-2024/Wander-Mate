@@ -3892,4 +3892,6 @@ module.exports = {
   unbookmarkEvent,
   checkIfEventBookmarked,
   sendItineraryNotifications,
+  requestToBeNotifiedForAttraction,
+  sendAttractionNotifications,
 };

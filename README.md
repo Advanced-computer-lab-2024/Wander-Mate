@@ -5,7 +5,7 @@
   Wander-Mate
   <br>
 </h1>
-<h1 align="center"># Wander Mate: Your Best Travelling Mate</h1>
+<h1 align="center"># Wander Mate: Your Travelling Best Mate</h1>
 
 <h4 align="center">A modern, intuitive travel planning and itinerary management tool to help users explore the world effortlessly.</h4>
 
@@ -575,7 +575,7 @@ Code snippet for sending a notification that an itinerary is now available
   };
 ```
 Here is the code snippet for fetching the product details in the frontend-react
-``javascript
+```javascript
 const fetchData = async () => {
       try {
         const username = sessionStorage.getItem("username");
@@ -662,25 +662,128 @@ Code snippet for fetching the details of a Place
     }
   };
 ```
+Code snippet for fetching the complaints
+```javascript
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/viewAllComplaints"
+        );
+        if (response.status === 200) {
+          const complaintsData = response.data.complaints;
 
+          // Fetch user data for each complaint
+          const userCache = {}; // Cache to avoid duplicate API calls
+          const enrichedComplaints = await Promise.all(
+            complaintsData.map(async (complaint) => {
+              if (!userCache[complaint.userId]) {
+                const userResponse = await axios.get(
+                  `http://localhost:8000/getUsername/${complaint.Maker}`
+                );
+
+                userCache[complaint.userId] = userResponse.data;
+              }
+              return {
+                ...complaint,
+                userName: userCache[complaint.userId],
+              };
+            })
+          );
+
+
+          setComplaints(enrichedComplaints);
+        } else {
+          setError("No complaints found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch complaints.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+```
+Code for fetching all the orders
+```javascript
+  const fetchOrders = async (userID) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/getMyOrders/${userID}`);
+      const ordersWithOpenDetails = response.data.orders.map(order => ({
+        ...order,
+        openOrderDetails: () => setSelectedOrder(order),
+        cancelOrder: (orderId) => handleCancelOrder(orderId)
+      }));
+      setOrders(ordersWithOpenDetails);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast({
+        title: "Error",
+        description: "Could not load orders.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+```
+Code for paying by wallet
+```javascript
+  const handleWallet = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID: userID,
+        amount,
+      });
+
+      if (response.status === 200) {
+        setAlertMessage(null);
+        await handlePaymentSuccess();
+        handleNextSlide();
+      } else {
+        setAlertMessage(response.data || "Payment failed.");
+      }
+    } catch (error) {
+      console.error("Wallet payment error:", error);
+      setAlertMessage("An error occurred during the transaction.");
+    }
+  };
+```
 
 ---
 ## Testing
-- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); , app.get("/readItinerary/:id", readItinerary); and add it postman to view
-                             the desired outcome here is an example for:
-  Viewing the product i bought
+- **Testing using Postman**: We take the url added in the app.js and add it postman to view for ex.
+  
+ 1. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts);
+  
+ 2. app.get("/readItinerary/:id", readItinerary);
+  
+
+  **the desired outcome here is an example for:**
+
+- Viewing the product i bought
+
 ![Preview](Test1.png)
 ---
-viewing the itinerary details
+- viewing the itinerary details
+  
 ![Preview](pt1.png)
 ![Preview](pt2.png)
 ![Preview](pt3.png)
 
 ---
 ## Installations 
-- **Vs Code link:** https://code.visualstudio.com/download
-- **MongoDB link:** https://www.mongodb.com/try/download/community
-- **Postman link:** https://www.postman.com/downloads/
+- **Vs Code link:** [Vs Code](https://code.visualstudio.com/download)
+- **MongoDB link:** [Mongo DB](https://www.mongodb.com/try/download/community)
+- **Postman link:** [Postman](https://www.postman.com/downloads/)
+- **Node.js link**[Node.js](https://nodejs.org/en/download/package-manager)
+- **React link**[React](https://react.dev/learn/installation)
+- **Express link**[Express](https://expressjs.com)
 ---
 ## License
 
@@ -692,6 +795,8 @@ This project is licensed under the following licenses:
 - **0BSD**: This project includes dependencies licensed under the 0BSD License.
 - **BSD-2-Clause**: This project includes dependencies licensed under the BSD-2-Clause License.
 - **AGPL-3.0**: This project includes dependencies licensed under the Affero General Public License v3.0.
+- **MIT**: This project includes dependencies licensed under the MIT License.
+
 
 ### Third-Party Licenses:
 - **Stripe**: This project uses Stripe for payment processing. Stripe is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
@@ -700,11 +805,42 @@ This project is licensed under the following licenses:
 
 We would like to acknowledge the following resources and tools used during the development of this project:
 
-1. **ChatGPT**: Used for assistance with coding, problem-solving and error handling .
-2. **V0 by Vercel**: A useful resource for frontend development and deployment.
-3. **CMS GUC**: The content management system used for learning skills needed for achieving the goals of the project more efficiently  - [cms.guc.edu.eg](https://cms.guc.edu.eg).
-4. **Lucide Logos**: Icon set used for various UI components.
-5. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
+1. **V0 by Vercel**: A useful resource for frontend development and deployment.
+2. **CMS GUC**: The content management system used for learning skills needed for achieving the goals of the project more efficiently - [cms.guc.edu.eg](https://cms.guc.edu.eg).
+3. **Lucide Logos**: Icon set used for various UI components.
+4. **Mahara Tech**: For contributing technical expertise in the development of the project and learning MERN stack.
+5. **ChatGPT**: Used for assistance with coding, problem-solving and error handling.
+6. **YouTube**: A valuable resource for tutorials, coding guides, and problem-solving.
+
+### API References
+
+1. **Hotel API (using RapidAPI)**  
+   Website: [RapidAPI](https://rapidapi.com)  
+   Actual API in Code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}
+
+
+
+2. **Flight API (using Amadeus)**  
+Website: [Amadeus](https://amadeus.com/en)  
+Actual API in Code: https://test.api.amadeus.com/v2/shopping/flight-offers
+
+
+
+3. **Transactions API (using Stripe)**  
+Website: [Stripe](https://stripe.com/pricing)  
+Actual API in Code: stripe/react-stripe-js
+
+
+
+4. **Email API (using EmailJS)**  
+Website: [EmailJS](https://www.emailjs.com/)  
+Actual API in Code: https://api.emailjs.com/api/v1.0/email/send
+
+
+
+5. **Map Box API (using Mapbox Maps)**  
+Website: [Mapbox](https://www.mapbox.com)  
+Actual API in Code: https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap
 
 
 ## Contribute

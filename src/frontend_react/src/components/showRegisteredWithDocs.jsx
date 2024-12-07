@@ -1,9 +1,7 @@
-import { Fragment } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { columns } from "./documentsTable/docs-columns";
 import { DocsTable } from "./documentsTable/docs-table";
 import axios from "axios";
-import { useState, useEffect } from "react";
-import Skeleton from "react-loading-skeleton"; // You can install this package
 
 const ViewAllDocuments = () => {
   const [documents, setDocuments] = useState([]);
@@ -16,25 +14,8 @@ const ViewAllDocuments = () => {
         const response = await axios.get("http://localhost:8000/viewDocuments");
         if (response.status === 200) {
           const documentsData = response.data.documents;
-
-          // // Check if documentsData is an object with ownerIds as keys
-          // if (typeof documentsData === "object") {
-          //   // Convert the object to an array of documents with ownerId included
-          //   const flattenedDocuments = Object.entries(documentsData).flatMap(
-          //     ([ownerId, documents]) =>
-          //       documents.map((doc) => ({
-          //         ...doc,
-          //         ownerId, // Attach the ownerId to each document
-          //       }))
-          //   );
-
-          //   console.log(flattenedDocuments);
-
-          // } else {
-          //   setError("Unexpected data format.");
-          // }
           console.log(documentsData);
-          setDocuments(documentsData); // Update state with flattened documents
+          setDocuments(documentsData);
         } else {
           setError("No documents found.");
         }
@@ -50,43 +31,10 @@ const ViewAllDocuments = () => {
   }, []);
 
   if (loading) {
-    return (
-      <Fragment>
-        <table>
-          <thead>
-            <tr>
-              {/* Skeleton loader for table headers */}
-              {Array(5)
-                .fill()
-                .map((_, idx) => (
-                  <th key={idx}>
-                    <Skeleton width={100} height={20} />
-                  </th>
-                ))}
-            </tr>
-          </thead>
-          <tbody>
-            {/* Skeleton loader for table rows */}
-            {Array(5)
-              .fill()
-              .map((_, idx) => (
-                <tr key={idx}>
-                  {Array(5)
-                    .fill()
-                    .map((_, colIdx) => (
-                      <td key={colIdx}>
-                        <Skeleton width={120} height={20} />
-                      </td>
-                    ))}
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </Fragment>
-    );
+    return <LoadingSkeleton />;
   }
 
-  if (error) return <p>{error}</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <Fragment>
@@ -95,4 +43,36 @@ const ViewAllDocuments = () => {
   );
 };
 
+const LoadingSkeleton = () => {
+  return (
+    <div className="rounded-md border">
+      <div className="overflow-x-auto">
+        <table className="w-full caption-bottom text-sm">
+          <thead className="[&_tr]:border-b">
+            <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              {Array(5).fill(null).map((_, idx) => (
+                <th key={idx} className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                  <div className="h-4 w-3/4 animate-pulse bg-gray-200 rounded"></div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="[&_tr:last-child]:border-0">
+            {Array(5).fill(null).map((_, rowIdx) => (
+              <tr key={rowIdx} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                {Array(5).fill(null).map((_, colIdx) => (
+                  <td key={colIdx} className="p-4 align-middle">
+                    <div className="h-4 w-full animate-pulse bg-gray-200 rounded"></div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 export default ViewAllDocuments;
+

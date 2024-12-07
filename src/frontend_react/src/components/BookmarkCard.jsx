@@ -16,18 +16,25 @@ const BookmarkCard = ({ bookmark }) => {
         onClick={() => setIsModalOpen(true)} // Open the modal when clicking the card
         style={{ cursor: "pointer" }} // Add pointer cursor for better UX
       >
-        <Card>
-          <h2>{event.Name || "Unnamed Event"}</h2>
-          <p>Price: ${event.Price || "N/A"}</p>
+        
+          <h1>Activities</h1>
           {eventModel === "Attraction" && (
             <>
-              <p>Type: {event.Category || "N/A"}</p>
-              <p>Date: {new Date(event.Date).toLocaleDateString() || "N/A"}</p>
-              {event.Location && (
-                <p>Location: {event.Location.coordinates.join(", ")}</p>
-              )}
+            <Card className="p-4 rounded-md cursor-pointer">
+              <div className="mb-3">
+              <p className="font-bold text-base mb-1">{event.Name}</p>
+              <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
+            Date: {new Date(event.Date).toLocaleDateString()} | Time: {event.Time}
+          </p>
+          <p className="text-default-500 dark:text-default-500 text-sm font-normal mb-2">
+            Category: {event.category || "Not specified"}
+          </p>
+              </div>
+              </Card>
             </>
+            
           )}
+          <h1>Iternaries</h1>
           {eventModel === "Itinerary" && (
             <>
               <p>Timeline: {event.TimeLine || "N/A"}</p>
@@ -40,7 +47,6 @@ const BookmarkCard = ({ bookmark }) => {
               )}
             </>
           )}
-        </Card>
       </div>
     </BookmarkModel>
   );

@@ -59,14 +59,17 @@ const LegendEvents = ({ height = 350 }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/getTotalQuantities');
+        const response = await fetch(
+          "http://localhost:8000/getTotalQuantities"
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         const result = await response.json();
+        console.log(result.data);
         setChartData(result.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -74,12 +77,18 @@ const LegendEvents = ({ height = 350 }) => {
   }, []);
 
   const data = {
-    labels: chartData.map(item => item.productDetails.name),
+    labels: chartData.map((item) => item.productDetails.name),
     datasets: [
       {
         label: "Total Quantity",
-        data: chartData.map(item => item.totalQuantity),
-        backgroundColor: [rgbPrimary, rgbInfo, rgbWarning, rgbSuccess, rgbMuted],
+        data: chartData.map((item) => item.totalQuantity),
+        backgroundColor: [
+          rgbPrimary,
+          rgbInfo,
+          rgbWarning,
+          rgbSuccess,
+          rgbMuted,
+        ],
       },
     ],
   };
@@ -108,4 +117,3 @@ const LegendEvents = ({ height = 350 }) => {
 };
 
 export default LegendEvents;
-

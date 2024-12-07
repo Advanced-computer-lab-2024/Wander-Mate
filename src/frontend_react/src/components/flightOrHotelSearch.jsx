@@ -170,7 +170,7 @@ const FlightOrHotelSearch = () => {
           }}
         >
           <div
-            className="absolute mt-[37.9vh] ml-[2vw] rounded-t-3xl"
+            className="absolute mt-[32vh] ml-[2vw] rounded-t-3xl"
             style={{
               width: "fit-content",
               backgroundColor: "rgba(234, 240, 240, 0.8)",
@@ -211,7 +211,7 @@ const FlightOrHotelSearch = () => {
           </div>
           {selected === 0 ? (
             <div
-              className="absolute mt-[52vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
+              className="absolute mt-[47vh] ml-[2vw] rounded-b-3xl rounded-tr-3xl p-7"
               style={{ backgroundColor: "rgba(234, 240, 240, 0.8)" }} // 0.5 is 50% transparency
             >
               <div className="flex flex-wrap justify-between items-end gap-6">
@@ -311,21 +311,6 @@ const FlightOrHotelSearch = () => {
                 onFlightDataChange={handleFlightDataChange}
                 onSubmit={handleSubmit}
               />
-              {loading && (
-                <p className="text-center mt-4">Loading flights...</p>
-              )}
-              {error && <p className="text-center mt-4 text-danger">{error}</p>}
-              {!loading && !error && flights.length > 0 && (
-                <div className="mt-4">
-                  <ul>
-                    {flights.map((f, index) => (
-                      <li key={index}>
-                        <Flight flight={f} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </React.Fragment>
           )}{" "}
         </div>
@@ -358,6 +343,19 @@ const FlightOrHotelSearch = () => {
             ) : (
               <p className="col-span-full text-center">No hotels found</p>
             )}
+          </div>
+        )}
+        {selected === 1 && loading && (
+          <p className="text-center mt-4">Loading flights...</p>
+        )}
+        {selected === 1 && error && (
+          <p className="text-center mt-4 text-danger">{error}</p>
+        )}
+        {selected === 1 && !loading && !error && flights.length > 0 && (
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ml-[2.5vw]">
+            {flights.map((f, index) => (
+              <Flight flight={f} />
+            ))}
           </div>
         )}
       </div>
