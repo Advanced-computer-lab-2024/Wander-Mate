@@ -243,7 +243,7 @@ const NavigationMenuBarAd = () => {
               variant="ghost"
               onClick={() => navigate("/AdvertiserSalesReport")}
             >
-              Sales Report
+              Dashboard
             </Button>
           </div>
 
