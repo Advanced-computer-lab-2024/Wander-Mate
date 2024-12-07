@@ -800,10 +800,13 @@ We would like to acknowledge the following resources and tools used during the d
 ### API refrences
 1.**Hotel API: using rapidapi**:https://rapidapi.com.
 the actual api in code: https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchLocation?query=${place}.
+
 2.**Flight API: using amadeus**:https://amadeus.com/en.
 the actual api in code: https://test.api.amadeus.com/v2/shopping/flight-offers.
+
 3.**Transactions API: using stripe**:https://stripe.com/pricing.
 the actual api in code: "stripe/react-stripe-js".
+
 4.**email API: using emailjs**:https://www.emailjs.com/.
 the actual api in code:https://api.emailjs.com/api/v1.0/email/send.
 ## Contribute
