@@ -54,7 +54,7 @@ const EditableProductCard = ({
             style={{ left: "0%", top: "0%" }}
           >
             <img
-              className="h-full w-full object-contain p-6 transition-all duration-300 group-hover:scale-105"
+              className="h-full w-full transition-all duration-300 group-hover:scale-105"
               src={image}
               alt={name}
             />
@@ -116,15 +116,8 @@ const EditableProductCard = ({
             </p>
           </div>
 
-          <Button
-            className="w-full"
-            variant="outline"
-            
-          >
-            <Icon
-              icon={"ph:info"}
-              className="w-4 h-4 ltr:mr-2 rtl:ml-2"
-            />
+          <Button className="w-full" variant="outline">
+            <Icon icon={"ph:info"} className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
             Show details
           </Button>
         </div>

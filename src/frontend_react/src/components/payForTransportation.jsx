@@ -108,6 +108,7 @@ const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
       } else {
         throw new Error("Booking failed");
       }
+      setActiveIndex(totalSlide);
     } catch (error) {
       console.error("Error booking transportation:", error);
       toast.error("Failed to book transportation");
@@ -129,7 +130,6 @@ const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
-          <Toaster />
           <DialogHeader className="p-6 pb-2">
             {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">
@@ -148,7 +148,7 @@ const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
             <ScrollArea className="h-full px-6">
               {/* Step 1: Payment Method */}
               {activeIndex === 1 && (
-                <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
+                <div className="sm:grid sm:grid-cols-1 sm:gap-5 space-y-4 sm:space-y-0">
                   <div className="flex flex-col gap-2">
                     <Label>Payment Method</Label>
                     <RadioGroup
@@ -259,7 +259,7 @@ const PayForTransportation = ({ amount, disabled, transportationId, date }) => {
               <DialogClose asChild>
                 <Button type="button">Close</Button>
               </DialogClose>
-            ) : (
+            ) : selected === "rwb_1" && activeIndex === 2 ? null : (
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}

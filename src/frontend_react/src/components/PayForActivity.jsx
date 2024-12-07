@@ -298,7 +298,7 @@ const PayForActivity = ({ amount, disabled, activity }) => {
               <DialogClose asChild>
                 <Button type="button">Close</Button>
               </DialogClose>
-            ) : (
+            ) : selected === "rwb_1" && activeIndex === 2 ? null : (
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}

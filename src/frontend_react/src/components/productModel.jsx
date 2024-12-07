@@ -30,7 +30,7 @@ export default function ProductModal({
   const [isAdded, setIsAdded] = useState(initialIsAdded);
   const [seller, setSeller] = useState(null);
   const navigate = useNavigate();
-  const combo =sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const goToCart = () => {
     navigate("/cart");
@@ -123,7 +123,10 @@ export default function ProductModal({
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true" && urlParams.get("product") === product.productId) {
+    if (
+      urlParams.get("open") === "true" &&
+      urlParams.get("product") === product.productId
+    ) {
       setIsOpen(true);
     }
   }, [isOpen, product.reviews]);
@@ -281,7 +284,7 @@ export default function ProductModal({
                   {/* Price */}
                   <div className="mb-6">
                     <span className="text-3xl font-bold text-primary">
-                      {combo } {product.price}
+                      {combo} {product.price}
                     </span>
                     {product.discount && (
                       <>
