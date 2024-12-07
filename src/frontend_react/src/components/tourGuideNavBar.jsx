@@ -208,9 +208,14 @@ const TourGuideNavBar = () => {
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>
-  
+          
           {/* Navigation Menu */}
           <div className="hidden md:flex space-x-6">
+          <Button variant="ghost" asChild>
+              <Link to="/TourGuideDash" className="flex items-center">
+                <span>Home Page</span>
+              </Link>
+            </Button>
             <DropdownMenu open={openDropdown === "about"}>
               <DropdownMenuTrigger asChild>
                 <Button

@@ -93,8 +93,8 @@ const steps = [
   {
     id: "itinerary-card",
     attachTo: { element: ".grid > div:first-child", on: "bottom" },
-    title: "Itinerary Card",
-    text: "Each card represents an itinerary. Click on a card to view more details and start your journey.",
+    title: "Activity Card",
+    text: "Each card represents an activity. Click on a card to view more details and start your journey.",
     buttons: [
       {
         action() {

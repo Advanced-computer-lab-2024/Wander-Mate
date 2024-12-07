@@ -116,6 +116,7 @@ import AdminOwnProducts from "./pages/AdminProduct";
 import AdminTags from "./pages/AdminTags";
 import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrder";
+import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
 
 function App() {
@@ -269,6 +270,7 @@ function App() {
         <Route path="/AdminTags" element={<AdminTags/>}/>
         <Route path="/AdminCategories" element={<AdminCategories/>}/>
         <Route path="/AdminOrders" element={<AdminOrders/>}/>
+        <Route path="/TourGuideDash" element={<TourGuideDash/>}/>
         <Route path="/sellerDashboard" element={<SellerDashboard/>}/>
       </Routes>
     </Router>

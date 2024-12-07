@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { Plus } from "lucide-react";
+import { Plus,Filter } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -43,7 +43,7 @@ export function DataTableFacetedFilter({ column, title, options }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="ltr:ml-2 rtl:mr-2 h-8">
-          <Plus className="ltr:mr-2 rtl:ml-2 h-4 w-4" />
+          <Filter className="ltr:mr-2 rtl:ml-2 h-4 w-4" />
           {title}
           {selectedValues.size > 0 && (
             <>

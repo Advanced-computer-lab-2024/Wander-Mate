@@ -122,7 +122,9 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
 
   return (
     <div>
+      <div className="bg-white rounded-lg shadow-lg p-6">
       <Doughnut options={options} data={data} height={height} />
+      </div>
     </div>
   );
 };
