@@ -123,7 +123,7 @@ const AdminNavBar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/adminOrders">
+          <Link to="/AdminOrders">
             <Button variant="ghost">
               <ShoppingCart className="mr-2 h-4 w-4" />
               Orders
