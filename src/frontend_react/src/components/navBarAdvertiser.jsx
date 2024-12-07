@@ -241,19 +241,19 @@ const NavigationMenuBarAd = () => {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => navigate("/aal")}
+              onClick={() => navigate("/AdvertiserSalesReport")}
             >
               Sales Report
             </Button>
           </div>
 
-
+          <div className="flex items-center space-x-2">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Notifications">
                   <Bell className="h-5 w-5" />
                   {notifications.some((n) => !n.isRead) && (
-                    <span className=" right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
                   )}
                 </Button>
               </PopoverTrigger>
@@ -304,8 +304,8 @@ const NavigationMenuBarAd = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                  <AvatarImage src={profilePicture} />
-                    <AvatarFallback >
+                    <AvatarImage src={profilePicture} />
+                    <AvatarFallback>
                       {username.slice(0, 2).toUpperCase() || "WM"}
                     </AvatarFallback>
                   </Avatar>
@@ -315,27 +315,24 @@ const NavigationMenuBarAd = () => {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={goToProfile}>
                     <User className="mr-2 h-4 w-4" />
-                    <span onClick={goToProfile}>Profile</span>
-                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    <span>Profile</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={goToDocs}>
                     <File className="mr-2 h-4 w-4" />
-                    <span onClick={goToDocs}>Documents</span>
-                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    <span>Documents</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span onClick={logout}>Log out</span>
-                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          
+          </div>
         </nav>
       </div>
     </header>

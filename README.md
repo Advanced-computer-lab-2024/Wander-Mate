@@ -5,7 +5,7 @@
   Wander-Mate
   <br>
 </h1>
-<h1 align="center"># Wander Mate: Travel Planning Made Easy</h1>
+<h1 align="center"># Wander Mate: Your Best Travelling Mate</h1>
 
 <h4 align="center">A modern, intuitive travel planning and itinerary management tool to help users explore the world effortlessly.</h4>
 
@@ -64,9 +64,14 @@ This structured approach ensures that the codebase remains clean, efficient, and
 ---
 ## Screenshots
 
-![Example Screenshot](path/to/screenshot.png)
-(You can include multiple images or a video here to show the project in action. This could be a video of the user interface or some key features of the app.)
-
+![Preview](1.png)
+![Preview](2.png)
+![Preview](3.png)
+![Preview](4.png)
+![Preview](5.png)
+![Preview](6.png)
+![Preview](7.png)
+![Preview](8.png)
 ---
 
 ## Tech/Framework Used
@@ -161,12 +166,606 @@ const reply = await fetch(`https://api.emailjs.com/api/v1.0/email/send`, {
   }
 };
 ```
+Code Example and how to make for adding item to cart
+
+Here is the cart model
+```javascript
+const mongoose = require("mongoose");
+
+const CartItemSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Product",
+  },
+  name: {
+    type: String,
+    required: true, // The name of the product
+  },
+  price: {
+    type: Number,
+    required: true, // Price per unit
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    default: 1, // Default quantity is 1
+  },
+  total: {
+    type: Number, // Calculated as price * quantity
+  },
+  attributes: {
+    type: Map, // Key-value pairs for product-specific attributes like size, color
+    of: String,
+    default: {},
+  },
+  picture: {
+    type: String,
+  },
+});
+
+CartItemSchema.pre("save", function (next) {
+  // Automatically calculate total
+  this.total = this.price * this.quantity;
+  next();
+});
+
+const CartSchema = new mongoose.Schema({
+  touristID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Tourist",
+  },
+  items: [CartItemSchema], // Array of cart items
+  subtotal: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Timestamp of when the cart was created
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now, // Timestamp of last cart update
+  },
+});
+
+CartSchema.pre("save", function (next) {
+  this.items.forEach((item) => {
+    item.total = item.price * item.quantity;
+  });
+
+  // Calculate `subtotal` as the sum of all `total` fields
+  this.subtotal = this.items.reduce((sum, item) => sum + item.total, 0);
+
+  next();
+});
+
+module.exports = mongoose.model("Cart", CartSchema);
+```
+the  backend method
+```javascript
+const addItemToCart = async (req, res) => {
+  const { touristID, productId, name, price, picture } = req.body;
+  let { quantity, attributes } = req.body;
+  if (!touristID || !productId || !name || !price) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  if (!quantity) {
+    quantity = 1;
+  }
+  if (!attributes) {
+    attributes = {};
+  }
+  try {
+    // Find the user's cart
+    let cart = await Cart.findOne({ touristID });
+
+    if (!cart) {
+      // If no cart exists, create a new one
+      cart = new Cart({ touristID, items: [] });
+    }
+
+    // Check if the product with the same attributes is already in the cart
+    const existingItem = cart.items.find((item) => {
+      item.productId.toString() === productId &&
+        JSON.stringify(item.attributes) === JSON.stringify(attributes);
+    });
+
+    if (existingItem) {
+      // Increment the quantity if the same product with the same attributes exists
+      existingItem.quantity += quantity;
+    } else {
+      // Add a new item with attributes
+      cart.items.push({
+        productId,
+        name,
+        price,
+        quantity,
+        attributes,
+        picture,
+      });
+    }
+
+    // Save the updated cart
+    await cart.save();
+    return res.status(200).json({ message: "Item added to cart successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error adding item to cart" });
+  }
+};
+```
+here is calling the method in app.js
+```javascript
+app.post("/addItemToCart", upload.single("picture"), addItemToCart);
+```
+here how it is connected to the frontend
+```javascript
+ const handleAddToCart = async () => {
+    setIsAdded(true);
+    if (!isInStock()) return;
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+      const response = await axios.post(`http://localhost:8000/addItemToCart`, {
+        touristID: userID,
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        picture: product.image,
+      });
+    } catch (error) {
+      console.error("Error adding to cart data:", error);
+    }
+  };
+```
+code snippet for search hotel using api
+```javascript
+const searchHotel = async (req, res) => {
+  const { place, checkInDate, checkOutdate } = req.body;
+  try {
+    const locationData = await searchHotellocation(place);
+    if (!locationData || !locationData.data || locationData.data.length === 0) {
+      return res.status(400).json({ message: "No location data found" });
+    }
+
+    const geoId = locationData.data[0].geoId;
+    const url = `https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotels?geoId=${geoId}&checkIn=${checkInDate}&checkOut=${checkOutdate}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "1e3f65aa5cmsh39a2d77a5006638p1059c7jsnfd6b183ccc4e",
+        "X-RapidAPI-Host": "tripadvisor16.p.rapidapi.com",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const hotelData = await response.json();
+
+    if (!hotelData || !hotelData.data || hotelData.data.length === 0) {
+      return res.status(400).json({ message: "No hotels found" });
+    }
+
+    // Extract relevant details including photos
+    const hotels = hotelData.data.data.slice(0, 10).map((hotel) => ({
+      id: hotel.id,
+      title: hotel.title,
+      price: hotel.priceForDisplay || "N/A",
+      rating: hotel.bubbleRating ? hotel.bubbleRating.rating : "N/A",
+      provider: hotel.provider || "N/A",
+      cancellationPolicy: hotel.priceDetails || "N/A",
+      isSponsored: hotel.isSponsored || false,
+      cardPhotos: hotel.cardPhotos
+        ? hotel.cardPhotos.map((photo) =>
+            photo.sizes.urlTemplate
+              .replace("{width}", "400")
+              .replace("{height}", "300")
+          )
+        : [], // Default to empty array if no photos
+    }));
+
+    res.status(200).json(hotels);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+```
+code snippet for Search flights using the api
+```javascript
+const SearchFlights = async (req, res) => {
+  const { origin, destination, departureDate, returnDate } = req.query;
+
+  // Validate input
+  if (!origin || !destination || !departureDate) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    // Get the OAuth access token
+    const accessToken = await getAmadeusToken();
+
+    // Call the flight search API with the access token
+    const response = await axios.get(
+      "https://test.api.amadeus.com/v2/shopping/flight-offers",
+      {
+        params: {
+          originLocationCode: origin,
+          destinationLocationCode: destination,
+          departureDate,
+          returnDate: returnDate || undefined, // Omit returnDate if it's an empty string
+          adults: 1, // Use 'adults' instead of 'travelers'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // Log the response for debugging
+    console.log("Flight search response:", response.data);
+
+    // Return the available flights
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(
+      "Error fetching flights:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({
+      message: "Failed to search flights",
+      error: error.response ? error.response.data : error.message,
+    });
+  }
+};
+```
+Code snippet for login 
+```javascript
+const login = async (req, res) => {
+  try {
+    const { Username, Password, rememberMe } = req.body;
+
+    // Check if both fields are provided
+    if (!Username || !Password) {
+      return res
+        .status(400)
+        .json({ message: "Username and Password are required" });
+    }
+
+    const user = await userModel.findOne({ Username: Username });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+    let userLogged;
+    let status = "";
+    switch (user.Type) {
+      case "Admin":
+        userLogged = await adminModel.findOne({ Username: Username });
+        break;
+      case "Tourist":
+        userLogged = await touristModel.findOne({ Username: Username });
+        break;
+      case "Seller":
+        userLogged = await sellerModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourGuide":
+        userLogged = await tourGuideModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+      case "TourismGoverner":
+        userLogged = await TourismGoverner.findOne({ Username: Username });
+        break;
+      case "Advertiser":
+        userLogged = await advertiserModel.findOne({ Username: Username });
+        status = userLogged.status;
+        break;
+    }
+
+    // Check if the admin exists in the database
+    if (!userLogged) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    const saltRounds = 10;
+    const isPasswordValid = await bcrypt.compare(Password, userLogged.Password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+
+    // Create a session or token (if using JWT, generate a token here)
+    // Example using JWT:
+    const token = createToken(userLogged.Username);
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 30 days or 1 day
+    };
+
+    res.cookie("jwt", token, cookieOptions);
+    res
+      .status(200)
+      .json({
+        Username: Username,
+        Type: user.Type,
+        status,
+        curr: userLogged.Currency,
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred during login" });
+  }
+};
+```
+Code snippet for fetching the favourite itineraries in the frontend-react
+```javascript
+    const fetchFavorite = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) {
+          console.log("No username found in session storage");
+          setFavorite(false);  // Set to false if no user is logged in
+          return;
+        }
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+    
+        const { userID } = await reply.json();
+        const response = await fetch(`http://localhost:8000/checkIfEventBookmarked`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            eventId: itineraryId,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+  
+        const data = await response.json();
+        setFavorite(data);
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+        setFavorite(false);  // Set to false in case of any error
+      }
+    };
+```
+Code snippet for sending a notification that an itinerary is now available
+```javascript
+  const handleNotifyMe = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+
+      const { userID } = await reply.json();
+      console.log(itinerary.itineraryId);
+      const response = await axios.post(
+        "http://localhost:8000/requestToBeNotified",
+        {
+          touristId: userID,
+          itineraryId: itinerary.itineraryId,
+        }
+      );
+      if (response.status === 200) {
+        toast.success("You will be notified when it starts taking bookings!");
+      } else {
+        toast.error("Failed to request to be notified");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to request to be notified");
+    }
+  };
+```
+Here is the code snippet for fetching the product details in the frontend-react
+```javascript
+const fetchData = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+        const { userID } = await reply.json();
+        setUserID(userID);
+
+        const response = await axios.put("http://localhost:8000/isInWishlist", {
+          productId: productId,
+          touristId: userID,
+        });
+
+        if (response.status === 200) {
+          setIsLiked(true);
+        } else {
+          setIsLiked(false);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+```
+Here is a code snippet for adding a new admin
+```javascript
+export async function addAdmin(username, password) {
+  try {
+    const usernameFromSession = sessionStorage.getItem("username")
+    
+    // Assuming the backend has an 'addAdmin' API endpoint
+    const response = await fetch('http://localhost:8000/addAdmin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ Username: username, Password: password, CreatedBy: usernameFromSession }), // Adding created by field
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create admin')
+    }
+
+    // Handle successful creation (optional - you can manage any additional status like tokens if needed)
+    return {  success:  toast.success("Admin added successfully."),  message: 'Admin created successfully'  }
+  } catch (error) {
+    console.error('Error creating admin:', error)
+    return { success: toast.error("Can't create the admin")
+    , message: "Can't create the admin" }
+  }
+}
+```
+Code snippet for fetching the details of a Place
+```javascript
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await fetch("http://localhost:8000/getCategories");
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Could not load categories. Please try again later.");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      setLoadingTags(true);
+      const response = await fetch("http://localhost:8000/readHistoricalTags");
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setTags(data);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      toast.error("Could not load tags. Please try again later.");
+    } finally {
+      setLoadingTags(false);
+    }
+  };
+```
+Code snippet for fetching the complaints
+```javascript
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/viewAllComplaints"
+        );
+        if (response.status === 200) {
+          const complaintsData = response.data.complaints;
+
+          // Fetch user data for each complaint
+          const userCache = {}; // Cache to avoid duplicate API calls
+          const enrichedComplaints = await Promise.all(
+            complaintsData.map(async (complaint) => {
+              if (!userCache[complaint.userId]) {
+                const userResponse = await axios.get(
+                  `http://localhost:8000/getUsername/${complaint.Maker}`
+                );
+
+                userCache[complaint.userId] = userResponse.data;
+              }
+              return {
+                ...complaint,
+                userName: userCache[complaint.userId],
+              };
+            })
+          );
+
+
+          setComplaints(enrichedComplaints);
+        } else {
+          setError("No complaints found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch complaints.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+```
+Code for fetching all the orders
+```javascript
+  const fetchOrders = async (userID) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/getMyOrders/${userID}`);
+      const ordersWithOpenDetails = response.data.orders.map(order => ({
+        ...order,
+        openOrderDetails: () => setSelectedOrder(order),
+        cancelOrder: (orderId) => handleCancelOrder(orderId)
+      }));
+      setOrders(ordersWithOpenDetails);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast({
+        title: "Error",
+        description: "Could not load orders.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+```
+Code for paying by wallet
+```javascript
+  const handleWallet = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID: userID,
+        amount,
+      });
+
+      if (response.status === 200) {
+        setAlertMessage(null);
+        await handlePaymentSuccess();
+        handleNextSlide();
+      } else {
+        setAlertMessage(response.data || "Payment failed.");
+      }
+    } catch (error) {
+      console.error("Wallet payment error:", error);
+      setAlertMessage("An error occurred during the transaction.");
+    }
+  };
+```
+
 ---
 ## Testing
-- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); and add it postman to view
-                             the desired outcome here is an example
+- **Testing using Postman**: We take the url added in the app.js for ex. app.get("/viewBoughtProducts/:touristId", viewBoughtProducts); , app.get("/readItinerary/:id", readItinerary); and add it postman to view
+                             the desired outcome here is an example for:
+  Viewing the product i bought
 ![Preview](Test1.png)
-
+---
+viewing the itinerary details
+![Preview](pt1.png)
+![Preview](pt2.png)
+![Preview](pt3.png)
 
 ---
 ## Installations 

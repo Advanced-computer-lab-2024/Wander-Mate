@@ -3164,6 +3164,119 @@ const sendItineraryNotifications = async (req, res) => {
   }
 };
 
+
+
+const requestToBeNotifiedForAttraction = async (req, res) => {
+  const { attractionId, touristId } = req.body;
+
+  if (!attractionId || !touristId) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: attractionId or touristId" });
+  }
+
+  try {
+    // Check if the attraction type matches the allowed type
+    const attraction = await attractionModel.findById(attractionId);
+
+    if (!attraction) {
+      return res.status(404).json({ message: "Attraction not found" });
+    }
+
+    // Validate the attraction type
+    if (String(attraction.Type) !== "67025cb6bb14549b7e29f376") {
+      return res
+        .status(400)
+        .json({ message: "Notifications are not allowed for this attraction type" });
+    }
+
+    // Add touristId to the 'notifyMe' array
+    const updatedAttraction = await attractionModel.findByIdAndUpdate(
+      attractionId,
+      { $addToSet: { notifyMe: touristId } }, // Add touristId to 'notifyMe' array only if it's not already present
+      { new: true, upsert: false } // upsert: false to ensure it only updates existing documents
+    );
+
+    return res.status(200).json({
+      message: "Tourist added to 'notifyMe' list successfully",
+      attraction: updatedAttraction,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for better debugging
+    return res.status(500).json({
+      message: "Error adding tourist to 'notifyMe' list",
+      error: error.message,
+    });
+  }
+};
+
+const sendAttractionNotifications = async (req, res) => {
+  try {
+    // Find all attractions with the specific type and a non-empty 'notifyMe' array
+    const attractions = await attractionModel.find({
+      Type: "67025cb6bb14549b7e29f376", // Only include attractions with the specified type
+      notifyMe: { $ne: [] }, // Ensure 'notifyMe' is not empty
+    });
+
+    // Loop through each attraction
+    attractions.forEach((attraction) => {
+      const tourists = attraction.notifyMe;
+
+      // Ensure tourists is an array before proceeding
+      if (Array.isArray(tourists)) {
+        tourists.forEach((touristId) => {
+          // Replace this with your actual notification sending logic
+          sendNotificationForAttraction(touristId, attraction);
+        });
+      } else {
+        console.warn(
+          `Invalid 'notifyMe' value for attraction ID: ${attraction._id}`
+        );
+      }
+    });
+
+    return res.status(200).json({
+      message: "Notifications sent successfully",
+    });
+  } catch (error) {
+    console.error("Error in sendAttractionNotifications:", error); // Log the error for better debugging
+    return res.status(500).json({
+      message: "Error sending notifications",
+      error: error.message,
+    });
+  }
+};
+
+const sendNotificationForAttraction = async (touristId, attraction) => {
+  try {
+    // Create the notification content
+    const newNotification = {
+      aboutID: attraction._id, // Reference the attraction ID
+      aboutModel: "Attraction", // Indicating it's about an Attraction
+      message: `${attraction.Name} started taking bookings, Check it out!`, // Custom message
+      isRead: false, // Default unread status
+    };
+
+    // Find the user's notification document and update it
+    const updatedNotificationDoc = await Notification.findOneAndUpdate(
+      { userID: touristId, userModel: "Tourist" }, // Match the tourist
+      { $push: { notifications: newNotification } }, // Add the notification
+      { new: true, upsert: true } // Create the document if it doesn't exist
+    );
+
+    if (updatedNotificationDoc) {
+      console.log(`Notification sent to user ${touristId}`);
+    } else {
+      console.error(`Failed to send notification to user ${touristId}`);
+    }
+  } catch (error) {
+    console.error("Error sending notification:", error.message);
+  }
+};
+
+
+
+
 const checkOut = async (req, res) => {
   const { userId, products, total, address, isPaid } = req.body;
   if (!userId || !products || !total || !address) {
@@ -3779,4 +3892,6 @@ module.exports = {
   unbookmarkEvent,
   checkIfEventBookmarked,
   sendItineraryNotifications,
+  requestToBeNotifiedForAttraction,
+  sendAttractionNotifications,
 };

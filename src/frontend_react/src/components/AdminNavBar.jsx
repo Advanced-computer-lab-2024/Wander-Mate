@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket } from 'lucide-react';
+import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home, Tag, LucideSquareChartGantt } from 'lucide-react';
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
@@ -60,7 +60,11 @@ const AdminNavBar = () => {
       setOpenDropdown(dropdown);
     }
   };
-
+  const handleMouseEnterA = (dropdown) => {
+    if (dropdown === "activities") {
+      setOpenDropdown(dropdown);
+    }
+  };
   const handleMouseLeave = () => {
     setOpenDropdown(null);
   };
@@ -80,12 +84,13 @@ const AdminNavBar = () => {
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>
-          <Link to="/adminItinerary">
+          <Link to="/admin">
             <Button variant="ghost">
-              <Ticket className="mr-2 h-4 w-4" />
-              Itineraries
+              <Home className="mr-2 h-4 w-4" />
+              Home Page
             </Button>
           </Link>
+         
 
           <DropdownMenu open={openDropdown === "products"}>
             <DropdownMenuTrigger asChild>
@@ -110,7 +115,7 @@ const AdminNavBar = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link to="/SellerProducts" className="flex items-center">
+                <Link to="/AdminOwnProducts" className="flex items-center">
                   <ShoppingBasket className="mr-2 h-4 w-4" />
                   <span>My Products</span>
                 </Link>
@@ -118,7 +123,7 @@ const AdminNavBar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/adminOrders">
+          <Link to="/AdminOrders">
             <Button variant="ghost">
               <ShoppingCart className="mr-2 h-4 w-4" />
               Orders
@@ -132,12 +137,36 @@ const AdminNavBar = () => {
             </Button>
           </Link>
 
-          <Link to="/createActivity">
-            <Button variant="ghost">
-              <Backpack className="mr-2 h-4 w-4" />
-              Activity
-            </Button>
-          </Link>
+          <DropdownMenu open={openDropdown === "activities"}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                onMouseEnter={() => handleMouseEnterA("activities")}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Ticket className="mr-2 h-4 w-4" />
+                Tags & Categories
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56"
+              onMouseEnter={() => handleMouseEnterA("activities")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownMenuItem>
+                <Link to="/AdminTags" className="flex items-center">
+                  <Tag className="mr-2 h-4 w-4" />
+                  <span>Tags</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/AdminCategories" className="flex items-center">
+                  <LucideSquareChartGantt className="mr-2 h-4 w-4" />
+                  <span>Categories</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Link to="/AdminDocumentsPage">
             <Button variant="ghost">

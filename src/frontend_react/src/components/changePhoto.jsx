@@ -4,7 +4,7 @@ import axios from "axios";
 import UserPhoto from "./userPhoto";
 import { useNavigate } from "react-router-dom";
 
-const ChangePhoto = () => {
+const ChangePhoto = ({user = "seller"}) => {
   const [profileImage, setProfileImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [userID, setUserID] = useState(null);
@@ -30,7 +30,7 @@ const ChangePhoto = () => {
         if (!reply.ok) throw new Error("Failed to get seller ID");
 
         const { userID } = await reply.json();
-        const imageUrl = `http://localhost:8000/seller/${userID}/image`;
+        const imageUrl = `http://localhost:8000/${user}/${userID}/image`;
         setProfileImage(imageUrl);
       } catch (error) {
         console.log("Error fetching profile picture:", error);
