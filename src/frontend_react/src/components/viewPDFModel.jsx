@@ -17,6 +17,7 @@ import SingleFileCard from "./single-file-card";
 import ViewPDFComp from "./viewPDFComponent";
 import { Label } from "../components/ui/label";
 import { useToast } from "./ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const ViewPDFModel = () => {
   const [fileView, setFileView] = useState("grid");
@@ -28,6 +29,7 @@ const ViewPDFModel = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const navigate =useNavigate();
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -112,12 +114,9 @@ const ViewPDFModel = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    navigate("/loginPage");
   }
 
   const filteredDocuments = documents.filter((item) =>
@@ -175,12 +174,6 @@ const ViewPDFModel = () => {
             </div>
 
             <Label htmlFor="fileUpload">
-              {/* <Button asChild disabled={isUploading}>
-                <span className="cursor-pointer flex items-center gap-1">
-                  <UploadCloud className="h-4 w-4" />
-                  {isUploading ? 'Uploading...' : 'Upload File'}
-                </span>
-              </Button> */}
               <Input 
                 type="file" 
                 className="hidden" 
