@@ -575,7 +575,7 @@ Code snippet for sending a notification that an itinerary is now available
   };
 ```
 Here is the code snippet for fetching the product details in the frontend-react
-``javascript
+```javascript
 const fetchData = async () => {
       try {
         const username = sessionStorage.getItem("username");
@@ -662,7 +662,98 @@ Code snippet for fetching the details of a Place
     }
   };
 ```
+Code snippet for fetching the complaints
+```javascript
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/viewAllComplaints"
+        );
+        if (response.status === 200) {
+          const complaintsData = response.data.complaints;
 
+          // Fetch user data for each complaint
+          const userCache = {}; // Cache to avoid duplicate API calls
+          const enrichedComplaints = await Promise.all(
+            complaintsData.map(async (complaint) => {
+              if (!userCache[complaint.userId]) {
+                const userResponse = await axios.get(
+                  `http://localhost:8000/getUsername/${complaint.Maker}`
+                );
+
+                userCache[complaint.userId] = userResponse.data;
+              }
+              return {
+                ...complaint,
+                userName: userCache[complaint.userId],
+              };
+            })
+          );
+
+
+          setComplaints(enrichedComplaints);
+        } else {
+          setError("No complaints found.");
+        }
+      } catch (err) {
+        setError("Failed to fetch complaints.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+```
+Code for fetching all the orders
+```javascript
+  const fetchOrders = async (userID) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/getMyOrders/${userID}`);
+      const ordersWithOpenDetails = response.data.orders.map(order => ({
+        ...order,
+        openOrderDetails: () => setSelectedOrder(order),
+        cancelOrder: (orderId) => handleCancelOrder(orderId)
+      }));
+      setOrders(ordersWithOpenDetails);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast({
+        title: "Error",
+        description: "Could not load orders.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+```
+Code for paying by wallet
+```javascript
+  const handleWallet = async () => {
+    try {
+      const username = sessionStorage.getItem("username");
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get tourist ID");
+
+      const { userID } = await reply.json();
+
+      const response = await axios.put("http://localhost:8000/payWithWallet", {
+        touristID: userID,
+        amount,
+      });
+
+      if (response.status === 200) {
+        setAlertMessage(null);
+        await handlePaymentSuccess();
+        handleNextSlide();
+      } else {
+        setAlertMessage(response.data || "Payment failed.");
+      }
+    } catch (error) {
+      console.error("Wallet payment error:", error);
+      setAlertMessage("An error occurred during the transaction.");
+    }
+  };
+```
 
 ---
 ## Testing
