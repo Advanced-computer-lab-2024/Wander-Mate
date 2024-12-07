@@ -630,6 +630,39 @@ export async function addAdmin(username, password) {
   }
 }
 ```
+Code snippet for fetching the details of a Place
+```javascript
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await fetch("http://localhost:8000/getCategories");
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Could not load categories. Please try again later.");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      setLoadingTags(true);
+      const response = await fetch("http://localhost:8000/readHistoricalTags");
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setTags(data);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      toast.error("Could not load tags. Please try again later.");
+    } finally {
+      setLoadingTags(false);
+    }
+  };
+```
+
 
 ---
 ## Testing
