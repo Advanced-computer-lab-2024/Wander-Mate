@@ -26,7 +26,7 @@ const ProductCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userID, setUserID] = useState(0);
   const navigate = useNavigate();
-  const combo =sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const goToCart = () => {
     navigate("/cart");
@@ -178,7 +178,7 @@ const ProductCard = ({
             style={{ left: "0%", top: "0%" }}
           >
             <img
-              className="h-full w-full object-contain p-6 transition-all duration-300 group-hover:scale-105"
+              className="h-full w-full  transition-all duration-300 group-hover:scale-105"
               src={image}
               alt={name}
             />
@@ -225,11 +225,12 @@ const ProductCard = ({
           <div className="flex items-center justify-between mb-4">
             <p className="space-x-4">
               <span className="text-secondary-foreground text-base font-medium">
-                {combo } {discount > 0 ? price - (price * discount) / 100 : price} 
+                {combo}{" "}
+                {discount > 0 ? price - (price * discount) / 100 : price}
               </span>
               {discount && (
                 <del className="text-default-500 dark:text-default-500 font-normal text-base">
-                   {price}
+                  {price}
                 </del>
               )}
             </p>

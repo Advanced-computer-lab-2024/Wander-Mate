@@ -44,7 +44,7 @@ const PayForFlight = ({
   const [bookingError, setBookingError] = useState(null);
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
-  const combo=sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const handleValueChange = (value) => {
     setSelected(value);
@@ -106,7 +106,7 @@ const PayForFlight = ({
       console.error("Error fetching exchange rates:", error);
     }
   };
-  flight.price.currency=[combo];
+  flight.price.currency = [combo];
   fetchExchangeRates();
 
   const handlePaymentSuccess = async () => {
@@ -120,7 +120,7 @@ const PayForFlight = ({
       const bookingData = {
         userID,
         flightID: flight.id,
-        price: flight.price.total/ (exchangeRates[currency]) ,
+        price: flight.price.total / exchangeRates[currency],
         departureDate: departureSegment?.departure?.at,
         arrivalDate: arrivalSegment?.arrival?.at,
       };
@@ -129,6 +129,8 @@ const PayForFlight = ({
         `http://localhost:8000/book-flight/${userID}`,
         bookingData
       );
+      toast.success("Booking successful!");
+      setActiveIndex(totalSlide);
     } catch (error) {
       console.error("Error booking flight:", error);
       setBookingError("Failed to book the flight. Please try again later.");
@@ -144,7 +146,7 @@ const PayForFlight = ({
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="py-2 px-5" disabled={disabled}>
+          <Button className="py-2 px-5 w-full" disabled={disabled}>
             Confirm Booking
           </Button>
         </DialogTrigger>
@@ -168,7 +170,7 @@ const PayForFlight = ({
             <ScrollArea className="h-full px-6">
               {/* Step 1: Payment Method */}
               {activeIndex === 1 && (
-                <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
+                <div className="sm:grid sm:grid-cols-1 sm:gap-5 space-y-4 sm:space-y-0">
                   <div className="flex flex-col gap-2">
                     <Label>Payment Method</Label>
                     <RadioGroup
@@ -279,7 +281,7 @@ const PayForFlight = ({
               <DialogClose asChild>
                 <Button type="button">Close</Button>
               </DialogClose>
-            ) : (
+            ) : selected === "rwb_1" && activeIndex === 2 ? null : (
               <Button
                 type="button"
                 onClick={selected === "rwb_3" ? handleWallet : handleNextSlide}

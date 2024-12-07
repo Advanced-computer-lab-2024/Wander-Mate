@@ -178,7 +178,7 @@ const ProductCardGuest = ({
             style={{ left: "0%", top: "0%" }}
           >
             <img
-              className="h-full w-full object-contain p-6 transition-all duration-300 group-hover:scale-105"
+              className="h-full w-full transition-all duration-300 group-hover:scale-105"
               src={image}
               alt={name}
             />
