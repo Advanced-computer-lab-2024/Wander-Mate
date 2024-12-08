@@ -207,12 +207,17 @@ const SellerNavBar = () => {
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/sellerDashboard" className="flex items-center space-x-2">
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>
 
           <div className="hidden md:flex space-x-6">
+          <Button variant="ghost" asChild>
+              <Link to="/sellerDashboard" className="flex items-center">
+                <span>Home Page</span>
+              </Link>
+            </Button>
             <DropdownMenu open={openDropdown === "about"}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -247,11 +252,7 @@ const SellerNavBar = () => {
                 <span>Products</span>
               </Link>
             </Button>
-            <Button variant="ghost" asChild>
-              <Link to="/sellerDashboard" className="flex items-center">
-                <span>Dashboard</span>
-              </Link>
-            </Button>
+            
           </div>
 
           <div className="flex items-center space-x-4">

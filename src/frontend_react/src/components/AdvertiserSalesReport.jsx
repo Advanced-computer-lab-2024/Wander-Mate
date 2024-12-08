@@ -122,6 +122,8 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
 
   return (
     <div>
+      <h1 className="text-3xl font-bold mb-6 ml-6">Activities</h1>
+      <div className="bg-white rounded-lg shadow-lg p-6"></div>
       <Doughnut options={options} data={data} height={height} />
     </div>
   );
