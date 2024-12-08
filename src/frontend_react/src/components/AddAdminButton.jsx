@@ -17,6 +17,8 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
 import {  User } from 'lucide-react';
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import {UserPlus} from 'lucide-react';
+
 function SubmitButton({ pending }) {
   return (
     <Button type="submit" disabled={pending}>
@@ -90,9 +92,9 @@ export default function AddAdminDialog() {
     <Dialog open={state?.success ? false : undefined} onOpenChange={handleOpenChange} ref={dialogRef}>
       <DialogTrigger asChild>
         
-        <User  className="mr-2 h-4 w-4">Add New Admin 
-        <span onClick={DialogTrigger}>Add New Admin</span>
-        </User>
+        <UserPlus  className="mr-2 h-4 w-4">
+        <span onClick={DialogTrigger}></span>
+        </UserPlus>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -158,17 +158,17 @@ function App() {
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />
-        <Route path="/paymentByCard" element={<PaymentPage />} />
+        {/* <Route path="/paymentByCard" element={<PaymentPage />} /> */}
         <Route path="/admin" element={<Admin />} />
         <Route
           path="/tourGuideProfileManager"
           element={<TourGuideProfileManager />}
         />
-        <Route
+        {/* <Route
           path="/transportationCheckout"
           element={<TransportationCheckout />}
-        />
-        <Route path="/payNow" element={<PayNow />} />
+        /> */}
+        {/* <Route path="/payNow" element={<PayNow />} /> */}
         <Route path="/addressCard" element={<AddressCard />} />
         <Route path="/TouristHomePage" element={<TouristHomePage />} />
         <Route path="/historicaltags" element={<HistoricalTagsPage />} />
