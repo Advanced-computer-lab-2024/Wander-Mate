@@ -269,9 +269,7 @@ export default function TourismGovernerPlaces() {
                   categories.find((cat) => cat._id === place.Category)?.Name ||
                   "No Category"
                 }
-                TicketPrices={(
-                  place.TicketPrices / (exchangeRates[currency] || 1)
-                ).toFixed(2)}
+                TicketPrices={place.TicketPrices}
                 OpeningHours={place.OpeningHours}
               />
             ))
