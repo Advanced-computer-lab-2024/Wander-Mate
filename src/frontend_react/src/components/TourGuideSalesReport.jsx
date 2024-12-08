@@ -69,15 +69,19 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
         const { userID } = await reply.json();
         const tourguideId = userID;
         const response = await fetch(
-          `http://localhost:8000/getItinerarySalesReport/${tourguideId}`
+          `http://localhost:8000/getTotalBookingsForItineraryTourGuide/${tourguideId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const result = await response.json();
         // Check if result.data exists and is an array
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (
+          result.report.itineraries &&
+          Array.isArray(result.report.itineraries)
+        ) {
+          setChartData(result.report.itineraries);
         } else {
           console.error("No sales data available");
           setChartData([]); // Set to empty array if data is invalid

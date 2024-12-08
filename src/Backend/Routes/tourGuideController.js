@@ -900,6 +900,93 @@ const getItinerarySalesReport = async (req, res) => {
   }
 };
 
+const getTotalBookingsForItineraryTourGuide = async (req, res) => {
+  const { guideId } = req.params; // Assuming the guide's ID is passed in the URL
+
+  try {
+    // Step 1: Fetch all itineraries created by the guide
+    const itineraries = await Itinerary.find({ Creator: guideId }).select(
+      "_id Name Price"
+    );
+    const itineraryIds = itineraries.map((itinerary) => itinerary._id);
+
+    if (itineraries.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No itineraries found for this guide." });
+    }
+
+    // Step 2: Aggregate bookings for the guide's itineraries
+    const bookingSummary = await bookingSchema.aggregate([
+      {
+        $match: {
+          itemId: { $in: itineraryIds }, // Match bookings related to the guide's itineraries
+          itemModel: "Itinerary", // Ensure only Itinerary model is considered
+        },
+      },
+      {
+        $group: {
+          _id: "$itemId", // Group by itinerary ID
+          totalBookings: { $sum: 1 }, // Count total bookings
+          totalRevenue: { $sum: "$price" }, // Calculate total revenue
+        },
+      },
+      {
+        $lookup: {
+          from: "itineraries", // Join with Itinerary model for details
+          localField: "_id",
+          foreignField: "_id",
+          as: "itineraryDetails",
+        },
+      },
+      {
+        $unwind: "$itineraryDetails", // Flatten itinerary details
+      },
+      {
+        $project: {
+          _id: 0,
+          itineraryId: "$_id",
+          itineraryName: "$itineraryDetails.Name",
+          totalBookings: 1,
+          totalRevenue: 1,
+        },
+      },
+    ]);
+
+    if (bookingSummary.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this guide's itineraries." });
+    }
+
+    // Step 3: Calculate grand totals
+    const totalRevenue = bookingSummary.reduce(
+      (acc, record) => acc + record.totalRevenue,
+      0
+    );
+    const totalBookings = bookingSummary.reduce(
+      (acc, record) => acc + record.totalBookings,
+      0
+    );
+
+    // Step 4: Send response
+    res.status(200).json({
+      message: "Itinerary report generated successfully.",
+      report: {
+        itineraries: bookingSummary,
+        summary: {
+          totalBookings,
+          totalRevenue,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error generating itinerary report:", error);
+    res.status(500).json({
+      message: "Server error while generating itinerary report.",
+    });
+  }
+};
 
 module.exports = {
   createTourGuide,
@@ -927,4 +1014,5 @@ module.exports = {
   deleteMyItinerary,
   getTourGuideDocuments,
   getItinerarySalesReport,
+  getTotalBookingsForItineraryTourGuide
 };

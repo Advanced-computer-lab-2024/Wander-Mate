@@ -22,24 +22,9 @@ const TGovSettings = () => {
         <Skills />
       </div> */}
       <div className="col-span-12 lg:col-span-8 lg:col-start-3">
+      <h1 className="text-3xl font-bold mb-6 ml-6">Change Password</h1>
         <Tabs defaultValue="password" className="p-0 px-1">
-          <TabsList className="bg-card  flex-1 overflow-x-auto md:overflow-hidden  w-full px-5 pt-6 pb-2.5 h-fit border-b border-default-200  rounded-none justify-start gap-12 rounded-t-md">
-            {tabs.map((tab, index) => (
-              <TabsTrigger
-                className="capitalize px-0  data-[state=active]:shadow-none  data-[state=active]:bg-transparent data-[state=active]:text-primary transition duration-150 before:transition-all before:duration-150 relative before:absolute
-           before:left-1/2 before:-bottom-[11px] before:h-[2px]
-             before:-translate-x-1/2 before:w-0 data-[state=active]:before:bg-primary data-[state=active]:before:w-full"
-                value={tab.value}
-                key={`tab-${index}`}
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <TabsContent value="personal" className="mt-0">
-            
-          </TabsContent>
-          <TabsContent value="password" className="mt-0">
+            <TabsContent value="password" className="mt-0">
             <ChangePassword URL="http://localhost:8000/changePasswordTourismGoverner"/>
           </TabsContent>
           

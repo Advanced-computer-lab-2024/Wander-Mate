@@ -13,7 +13,7 @@ import LegendEvents2 from "../components/BookingsQuantity";
 import { Label } from "../components/ui/label";
 import AllProductsAtAdmin from "../components/AllProductsAdminDashBoard";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
-
+import TopUsers from "../components/topUsers";
 const Admin = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -51,8 +51,13 @@ const Admin = () => {
         <AdminOrders />
 
         {/* Adding margin-top to create space between AdminOrders and AllProductsAtAdmin */}
-        <div className="mt-8">
-          <AllProductsAtAdmin />
+        <div className="flex space-x-8 mt-8">
+          <div className="w-1/2 mt-8">
+            <AllProductsAtAdmin />
+          </div>
+          <div className="w-1/2 mt-8">
+            <TopUsers />
+          </div>
         </div>
       </main>
 

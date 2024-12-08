@@ -960,8 +960,6 @@ const getTotalQuantitiesForSeller = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
   createSeller,
   updateSeller,
