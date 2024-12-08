@@ -66,7 +66,9 @@ const TourGuideNavBar = () => {
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    if (!storedUsername) {
+    const type = sessionStorage.getItem("Type");
+    const status = sessionStorage.getItem("status");
+    if (!storedUsername || !type || type !== "TourGuide" || !status) {
       navigate("/loginPage");
     } else {
       setUsername(storedUsername);
@@ -208,10 +210,10 @@ const TourGuideNavBar = () => {
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>
-          
+
           {/* Navigation Menu */}
           <div className="hidden md:flex space-x-6">
-          <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild>
               <Link to="/TourGuideDash" className="flex items-center">
                 <span>Home Page</span>
               </Link>
@@ -251,7 +253,7 @@ const TourGuideNavBar = () => {
               </Link>
             </Button>
           </div>
-  
+
           {/* Profile and Notifications */}
           <div className="flex items-center space-x-4">
             <Popover>
@@ -267,7 +269,9 @@ const TourGuideNavBar = () => {
                 <div className="space-y-4">
                   <h3 className="font-medium text-lg">Notifications</h3>
                   {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">No new notifications</p>
+                    <p className="text-sm text-gray-500">
+                      No new notifications
+                    </p>
                   ) : (
                     <ScrollArea className="h-[300px]">
                       {notifications.map((notification) => (
@@ -333,7 +337,6 @@ const TourGuideNavBar = () => {
       </div>
     </header>
   );
-  
 };
 
 export default TourGuideNavBar;

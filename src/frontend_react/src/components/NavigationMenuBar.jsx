@@ -32,7 +32,7 @@ import {
   Trash2,
   Bell,
   FileText,
-  ListOrdered
+  ListOrdered,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -84,7 +84,8 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    if (!storedUsername) {
+    const type = sessionStorage.getItem("Type");
+    if (!storedUsername || !type || type !== "Tourist") {
       navigate("/loginPage");
     } else {
       setUsername(storedUsername);
@@ -479,10 +480,7 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
               </DropdownMenuTrigger>
             </DropdownMenu>
 
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/flights")}
-            >
+            <Button variant="ghost" onClick={() => navigate("/flights")}>
               Flights & Hotels
             </Button>
             <Button

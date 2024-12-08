@@ -13,7 +13,22 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { LogOut, Settings, ShoppingCart, User, Plane, Hotel, Ticket, MapPin, Info, Users, Briefcase, Bell, Trash2, File } from 'lucide-react';
+import {
+  LogOut,
+  Settings,
+  ShoppingCart,
+  User,
+  Plane,
+  Hotel,
+  Ticket,
+  MapPin,
+  Info,
+  Users,
+  Briefcase,
+  Bell,
+  Trash2,
+  File,
+} from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -52,7 +67,9 @@ const NavigationMenuBarAd = () => {
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    if (!storedUsername) {
+    const type = sessionStorage.getItem("Type");
+    const status = sessionStorage.getItem("status");
+    if (!storedUsername || !type || type !== "Advertiser" || !status) {
       navigate("/loginPage");
     } else {
       setUsername(storedUsername);
@@ -86,21 +103,23 @@ const NavigationMenuBarAd = () => {
     };
 
     fetchTouristIdAndNotifications();
-    const fetchPicture = async () => { 
-      try{
+    const fetchPicture = async () => {
+      try {
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get advertiser ID");
-    
+
         const { userID } = await reply.json();
-        const response = await fetch(`http://localhost:8000/ADvertiser/${userID}/image`);
+        const response = await fetch(
+          `http://localhost:8000/ADvertiser/${userID}/image`
+        );
         setProfilePicture(`http://localhost:8000/ADvertiser/${userID}/image`);
-      }catch{
+      } catch {
         console.log("error");
       }
-    }
-  
-     fetchPicture();
+    };
+
+    fetchPicture();
   }, []);
 
   const handleMouseEnter = (dropdown) => {
@@ -340,4 +359,3 @@ const NavigationMenuBarAd = () => {
 };
 
 export default NavigationMenuBarAd;
-

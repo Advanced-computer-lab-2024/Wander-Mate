@@ -12,7 +12,20 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ShoppingCart, LogOut, User, AlertTriangle, Backpack, CloudUploadIcon, Ticket, ShoppingBasket, Home, Tag, LucideSquareChartGantt, Table } from 'lucide-react';
+import {
+  ShoppingCart,
+  LogOut,
+  User,
+  AlertTriangle,
+  Backpack,
+  CloudUploadIcon,
+  Ticket,
+  ShoppingBasket,
+  Home,
+  Tag,
+  LucideSquareChartGantt,
+  Table,
+} from "lucide-react";
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
@@ -48,7 +61,8 @@ const AdminNavBar = () => {
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    if (!storedUsername) {
+    const type = sessionStorage.getItem("Type");
+    if (!storedUsername || !type || type !== "Admin") {
       navigate("/loginPage");
     } else {
       setUsername(storedUsername);
@@ -95,7 +109,6 @@ const AdminNavBar = () => {
               Home Page
             </Button>
           </Link>
-         
 
           <DropdownMenu open={openDropdown === "products"}>
             <DropdownMenuTrigger asChild>
@@ -251,14 +264,16 @@ const AdminNavBar = () => {
                   <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <div className="mr-2 h-4 w-4" >
+                  <div className="mr-2 h-4 w-4">
                     <AddAdminButton />
-                  </div>Add new admin
+                  </div>
+                  Add new admin
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <div className="mr-2 h-4 w-4">
                     <AddTourismGovButton />
-                  </div>Add new tourism governor
+                  </div>
+                  Add new tourism governor
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -270,4 +285,3 @@ const AdminNavBar = () => {
 };
 
 export default AdminNavBar;
-

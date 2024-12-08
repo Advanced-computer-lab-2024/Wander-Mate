@@ -66,7 +66,9 @@ const SellerNavBar = () => {
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
-    if (!storedUsername) {
+    const type = sessionStorage.getItem("Type");
+    const status = sessionStorage.getItem("status");
+    if (!storedUsername || !type || type !== "Seller" || !status) {
       navigate("/loginPage");
     } else {
       setUsername(storedUsername);
@@ -156,7 +158,7 @@ const SellerNavBar = () => {
   );
   const markNotificationAsRead = async (id) => {
     try {
-        console.log(id);
+      console.log(id);
       const response = await axios.put(
         `http://localhost:8000/markNotificationAsReadSeller/${sellerID}/${id}`
       );
@@ -266,7 +268,9 @@ const SellerNavBar = () => {
                 <div className="space-y-4">
                   <h3 className="font-medium text-lg">Notifications</h3>
                   {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">No new notifications</p>
+                    <p className="text-sm text-gray-500">
+                      No new notifications
+                    </p>
                   ) : (
                     <ScrollArea className="h-[300px]">
                       {notifications.map((notification) => (
@@ -278,7 +282,9 @@ const SellerNavBar = () => {
                         >
                           <p
                             className="text-sm"
-                            onClick={() => markNotificationAsRead(notification._id)}
+                            onClick={() =>
+                              markNotificationAsRead(notification._id)
+                            }
                           >
                             {notification.message}
                           </p>
@@ -306,10 +312,12 @@ const SellerNavBar = () => {
                   <Avatar>
                     <AvatarImage src={profilePicture} alt="User avatar" />
                     <AvatarFallback>
-                      {typeof window !== 'undefined' && sessionStorage
-                        .getItem("username")
-                        ?.slice(0, 2)
-                        .toUpperCase() || "SE"}
+                      {(typeof window !== "undefined" &&
+                        sessionStorage
+                          .getItem("username")
+                          ?.slice(0, 2)
+                          .toUpperCase()) ||
+                        "SE"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
