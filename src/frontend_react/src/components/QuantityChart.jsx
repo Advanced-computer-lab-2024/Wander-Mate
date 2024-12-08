@@ -113,7 +113,7 @@ const LegendEvents = ({ height = 350 }) => {
   return (
     <div>
       <Doughnut options={options} data={data} height={height} />
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </div>
   );
 };

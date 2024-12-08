@@ -85,7 +85,7 @@ const LoadingSkeleton = () => {
           </table>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

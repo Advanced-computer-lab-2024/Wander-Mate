@@ -503,7 +503,7 @@ export function SalesReportTableadvertiser() {
           </div>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </>
   );
 }

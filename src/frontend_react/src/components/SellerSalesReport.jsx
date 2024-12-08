@@ -151,7 +151,7 @@ const LegendEventsSeller = ({ height = 350 }) => {
           <Doughnut options={options} data={data} height={height} />
         </CardContent>
       </Card>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

@@ -207,7 +207,7 @@ const SellerProfileManager = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

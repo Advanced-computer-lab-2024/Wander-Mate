@@ -145,7 +145,7 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
           <Doughnut options={options} data={data} height={height} />
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };
