@@ -177,13 +177,23 @@ const updatePlace = async (req, res) => {
 const deletePlace = async (req, res) => {
   try {
     const { Id } = req.params;
+
+    // Find and delete the place from the attraction collection
     const place = await attractionModel.findByIdAndDelete(Id);
 
     if (!place) {
       return res.status(400).json({ message: "Place not found" });
-    } else {
-      res.status(200).json({ message: "Place deleted" });
     }
+
+    // Remove the deleted place from all bookmarks
+    await BookMark.updateMany(
+      { event: Id }, // Filter bookmarks containing the place
+      { $pull: { event: Id } } // Remove the place ID from the event array
+    );
+
+    res
+      .status(200)
+      .json({ message: "Place deleted and removed from all bookmarks" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -212,7 +222,6 @@ const createHistoricalTags = async (req, res) => {
   }
 };
 
-
 const readHistoricalTags = async (req, res) => {
   try {
     const tags = await Tag.find();
@@ -231,7 +240,7 @@ const updateHistoricalTags = async (req, res) => {
       return res.status(400).json({ message: "Tag not found" });
     }
     return res.status(200).json(tag);
-  } catch(error) {
+  } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Error updating tag" });
   }
@@ -245,7 +254,7 @@ const deleteHistoricalTags = async (req, res) => {
       return res.status(400).json({ message: "Tag not found" });
     }
     return res.status(200).json(tag);
-  } catch(error) {
+  } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Error updating tag" });
   }
@@ -315,5 +324,5 @@ module.exports = {
   viewAll0,
   getPlaceImage,
   changePasswordTourismGoverner,
-  deleteHistoricalTags
+  deleteHistoricalTags,
 };

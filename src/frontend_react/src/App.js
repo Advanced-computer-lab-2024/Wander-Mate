@@ -118,6 +118,7 @@ import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrder";
 import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
+import TourismGovernerPlaces from "./pages/tourismGovernerPlaces";
 
 function App() {
   return (
@@ -176,7 +177,7 @@ function App() {
           path="/advertiserTransportations"
           element={<AdvertiserTransportation />}
         />
-        <Route path="pop" element={<OrdersTable />} />
+        <Route path="pop" element={<TourismGovernerPlaces />} />
         <Route path="/touristtable" element={<TouristTable />} />
         <Route path="/advertisertable" element={<AdvertiserTable />} />
         <Route path="/sellertable" element={<SellerTable />} />
@@ -258,20 +259,26 @@ function App() {
           path="/salestableadvertiser"
           element={<SalesReportTableadvertiser />}
         />
-        <Route path="/SellerHomePage" element={<SellerHomePage/>}/>
-        <Route path="/viewmycomplaints" element={<ViewMyComplaints/>}/>
-        <Route path="/quantity" element={<LegendEvents/>}/>
-        <Route path="/AdminDocumentsPage" element={<AdminDocumentsPage/>}/>
-        <Route path="/SellerSalesReport" element={<LegendEventsSeller/>}/>
-        <Route path="/AdvertiserSalesReport" element={<LegendEventsAdvertiser/>}/>
-        <Route path="/TourGuideSalesReport" element={<LegendEventsTourGuide/>}/>
-        <Route path="/adminprofile" element={<AdminProfilePage/>}/>
-        <Route path="/AdminOwnProducts" element={<AdminOwnProducts/>}/>
-        <Route path="/AdminTags" element={<AdminTags/>}/>
-        <Route path="/AdminCategories" element={<AdminCategories/>}/>
-        <Route path="/AdminOrders" element={<AdminOrders/>}/>
-        <Route path="/TourGuideDash" element={<TourGuideDash/>}/>
-        <Route path="/sellerDashboard" element={<SellerDashboard/>}/>
+        <Route path="/SellerHomePage" element={<SellerHomePage />} />
+        <Route path="/viewmycomplaints" element={<ViewMyComplaints />} />
+        <Route path="/quantity" element={<LegendEvents />} />
+        <Route path="/AdminDocumentsPage" element={<AdminDocumentsPage />} />
+        <Route path="/SellerSalesReport" element={<LegendEventsSeller />} />
+        <Route
+          path="/AdvertiserSalesReport"
+          element={<LegendEventsAdvertiser />}
+        />
+        <Route
+          path="/TourGuideSalesReport"
+          element={<LegendEventsTourGuide />}
+        />
+        <Route path="/adminprofile" element={<AdminProfilePage />} />
+        <Route path="/AdminOwnProducts" element={<AdminOwnProducts />} />
+        <Route path="/AdminTags" element={<AdminTags />} />
+        <Route path="/AdminCategories" element={<AdminCategories />} />
+        <Route path="/AdminOrders" element={<AdminOrders />} />
+        <Route path="/TourGuideDash" element={<TourGuideDash />} />
+        <Route path="/sellerDashboard" element={<SellerDashboard />} />
       </Routes>
     </Router>
   );

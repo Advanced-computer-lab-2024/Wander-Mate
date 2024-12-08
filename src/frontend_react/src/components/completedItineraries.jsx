@@ -94,7 +94,7 @@ export default function CompletedItineraries() {
   if (loading) {
     return (
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Featured Itineraries</h1>
+        <h1 className="text-2xl font-bold mb-4">Completed Itineraries</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Array.from({ length: 2 }).map((_, index) => (
             <ECommerceDefaultSkeleton key={index} />

@@ -163,7 +163,7 @@ const PayForActivity = ({ amount, disabled, activity }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="py-2 px-5" disabled={disabled}>
+          <Button className="text-white w-full py-2" disabled={disabled}>
             Confirm Booking
           </Button>
         </DialogTrigger>
@@ -187,7 +187,7 @@ const PayForActivity = ({ amount, disabled, activity }) => {
             <ScrollArea className="h-full px-6">
               {/* Step 1: Payment Method */}
               {activeIndex === 1 && (
-                <div className="sm:grid sm:grid-cols-2 sm:gap-5 space-y-4 sm:space-y-0">
+                <div className="sm:grid sm:grid-cols-1 sm:gap-5 space-y-4 sm:space-y-0">
                   <div className="flex flex-col gap-2">
                     <Label>Payment Method</Label>
                     <RadioGroup

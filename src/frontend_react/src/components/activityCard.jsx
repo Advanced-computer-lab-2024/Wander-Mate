@@ -1,10 +1,10 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import ActivityModal from "../components/activityModel";
-import { StarIcon } from 'lucide-react';
+import { StarIcon } from "lucide-react";
 
 export default function ActivityCard({
   activityId,
@@ -37,52 +37,60 @@ export default function ActivityCard({
     currency,
   };
 
-  const [favorite,setFavorite]=useState(false);
+  const [favorite, setFavorite] = useState(false);
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
         const username = sessionStorage.getItem("username");
         if (!username) {
           console.log("No username found in session storage");
-          setFavorite(false);  // Set to false if no user is logged in
+          setFavorite(false); // Set to false if no user is logged in
           return;
         }
 
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
         if (!reply.ok) throw new Error("Failed to get tourist ID");
-    
+
         const { userID } = await reply.json();
-        const response = await fetch(`http://localhost:8000/checkIfEventBookmarked`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userID,
-            eventId: activityId,
-          }),
-        });
-        
+        const response = await fetch(
+          `http://localhost:8000/checkIfEventBookmarked`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userID,
+              eventId: activityId,
+            }),
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
-  
+
         const data = await response.json();
         setFavorite(data);
       } catch (error) {
         console.error("Error fetching favorite status:", error);
-        setFavorite(false);  
+        setFavorite(false);
       }
     };
-    
-    if (activityId !== null) { 
+
+    if (activityId !== null) {
       fetchFavorite();
     }
   }, [activityId]);
 
   return (
-    <ActivityModal activity={activity} isOpen={isModalOpen} setIsOpen={setIsModalOpen} favorite={favorite === null ? false : favorite}
-    setFavorite={setFavorite} >
+    <ActivityModal
+      activity={activity}
+      isOpen={isModalOpen}
+      setIsOpen={setIsModalOpen}
+      favorite={favorite === null ? false : favorite}
+      setFavorite={setFavorite}
+    >
       <Card
         className="p-4 rounded-md cursor-pointer"
         onClick={() => setIsModalOpen(true)}
@@ -104,11 +112,15 @@ export default function ActivityCard({
             <StarIcon
               key={star}
               className={`w-4 h-4 ${
-                star <= Math.round(rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                star <= Math.round(rating)
+                  ? "text-yellow-400 fill-current"
+                  : "text-gray-300"
               }`}
             />
           ))}
-          <span className="ml-2 text-sm text-gray-600">({rating.toFixed(1)})</span>
+          <span className="ml-2 text-sm text-gray-600">
+            ({Number(rating).toFixed(1)})
+          </span>
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
           {tags && tags.length > 0 ? (
@@ -147,4 +159,3 @@ export default function ActivityCard({
     </ActivityModal>
   );
 }
-

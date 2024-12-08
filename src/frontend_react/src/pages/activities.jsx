@@ -285,7 +285,7 @@ export default function Activities() {
                       ?.Name || "No Category"
                   }
                   isAvailable={activity.IsAvailable}
-                  rating={activity.rating}
+                  rating={activity.Ratings}
                 />
               ))
             ) : (

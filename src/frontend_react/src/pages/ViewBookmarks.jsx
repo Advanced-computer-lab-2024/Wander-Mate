@@ -1,20 +1,67 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import axios from "axios";
 import ItineraryCard from "../components/itineraryCard";
 import ActivityCard from "../components/activityCard";
 import PlaceCard from "../components/placeCard";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "../components/ui/button";
+
+const EmblaCarousel = ({ children, title }) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+  });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  return (
+    <div className="relative">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={scrollPrev}
+            aria-label="Previous"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={scrollNext}
+            aria-label="Next"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex">{children}</div>
+      </div>
+    </div>
+  );
+};
 
 const ViewBookmarks = () => {
-  const [bookmarks, setBookmarks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [types] = useState([]);
-  const [currency, setCurrency] = useState("USD");
-  const [exchangeRates, setExchangeRates] = useState({});
-  const [tagMap, setTagMap] = useState({});
-  const [tags, setTags] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [bookmarks, setBookmarks] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+  const [types] = React.useState([]);
+  const [currency, setCurrency] = React.useState("USD");
+  const [exchangeRates, setExchangeRates] = React.useState({});
+  const [tagMap, setTagMap] = React.useState({});
+  const [tags, setTags] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
 
   const getBookmarks = async () => {
     try {
@@ -87,7 +134,7 @@ const ViewBookmarks = () => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     getBookmarks();
     fetchExchangeRates();
     fetchTags();
@@ -108,114 +155,123 @@ const ViewBookmarks = () => {
       {bookmarks.length === 0 ? (
         <div>No bookmarks found.</div>
       ) : (
-        <div className="container mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-4">Places</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="container mx-auto p-4 space-y-8">
+          <EmblaCarousel title="Places">
             {bookmarks
               .filter((bookmark) => bookmark.eventModel === "Attraction")
               .flatMap((bookmark) =>
                 bookmark.event
                   .filter((event) => event.Type !== "67025cb6bb14549b7e29f376")
                   .map((event, index) => (
-                    <PlaceCard
+                    <div
                       key={`${bookmark._id}-${index}`}
-                      placeId={event._id}
-                      name={event.Name}
-                      location={event.Location.coordinates}
-                      images={event.Pictures}
-                      description={event.Description}
-                      tags={event.Tags.map((tagId) => tagMap[tagId])}
-                      category={
-                        categories.find((cat) => cat._id === event.Category)
-                          ?.Name || "No Category"
-                      }
-                      latitude={event.Location.coordinates[0]}
-                      longitude={event.Location.coordinates[1]}
-                      ratings={[]}
-                      reviews={[]}
-                      TicketPrices={(
-                        event.TicketPrices / (exchangeRates[currency] || 1)
-                      ).toFixed(2)}
-                      currency={currency}
-                    />
+                      className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] md:flex-[0_0_33.33%] lg:flex-[0_0_25%] pl-4"
+                    >
+                      <PlaceCard
+                        placeId={event._id}
+                        name={event.Name}
+                        location={event.Location.coordinates}
+                        images={event.Pictures}
+                        description={event.Description}
+                        tags={event.Tags.map((tagId) => tagMap[tagId])}
+                        category={
+                          categories.find((cat) => cat._id === event.Category)
+                            ?.Name || "No Category"
+                        }
+                        latitude={event.Location.coordinates[0]}
+                        longitude={event.Location.coordinates[1]}
+                        ratings={[]}
+                        reviews={[]}
+                        TicketPrices={(
+                          event.TicketPrices / (exchangeRates[currency] || 1)
+                        ).toFixed(2)}
+                        currency={currency}
+                      />
+                    </div>
                   ))
               )}
-          </div>
+          </EmblaCarousel>
 
-          <h1 className="text-2xl font-bold my-4">Activities</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <EmblaCarousel title="Activities">
             {bookmarks
               .filter((bookmark) => bookmark.eventModel === "Attraction")
               .flatMap((bookmark) =>
                 bookmark.event
                   .filter((event) => event.Type === "67025cb6bb14549b7e29f376")
                   .map((event, index) => (
-                    <ActivityCard
+                    <div
                       key={`${bookmark._id}-${index}`}
-                      activityId={event._id}
-                      name={event.Name}
-                      location={event.Location}
-                      type={
-                        types.find((t) => t._id === event.Category)?.Name ||
-                        "Unknown Category"
-                      }
-                      category={
-                        categories.find((cat) => cat._id === event.Category)
-                          ?.Name || "No Category"
-                      }
-                      tags={event.Tags.map((tagId) => tagMap[tagId])}
-                      price={event.price}
-                      date={event.Date}
-                      time={event.Time}
-                      isAvailable={event.IsAvailable}
-                      rating={event.rating}
-                    />
+                      className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] md:flex-[0_0_33.33%] lg:flex-[0_0_25%] pl-4"
+                    >
+                      <ActivityCard
+                        activityId={event._id}
+                        name={event.Name}
+                        location={event.Location}
+                        type={
+                          types.find((t) => t._id === event.Category)?.Name ||
+                          "Unknown Category"
+                        }
+                        category={
+                          categories.find((cat) => cat._id === event.Category)
+                            ?.Name || "No Category"
+                        }
+                        tags={event.Tags.map((tagId) => tagMap[tagId])}
+                        price={event.price}
+                        date={event.Date}
+                        time={event.Time}
+                        isAvailable={event.IsAvailable}
+                        rating={event.rating}
+                      />
+                    </div>
                   ))
               )}
-          </div>
+          </EmblaCarousel>
 
-          <h1 className="text-2xl font-bold my-4">Itineraries</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <EmblaCarousel title="Itineraries">
             {bookmarks
               .filter((bookmark) => bookmark.eventModel === "Itinerary")
               .flatMap((bookmark) =>
                 bookmark.event.map((event, index) => (
-                  <ItineraryCard
+                  <div
                     key={`${bookmark._id}-${index}`}
-                    itineraryId={event._id}
-                    name={event.Name}
-                    images={event.LocationsToVisit.flatMap(
-                      (location) => location.Pictures || []
-                    )}
-                    tags={[
-                      ...event.LocationsToVisit.flatMap(
-                        (location) => location.Tags || []
-                      ),
-                      ...event.Activities.flatMap(
-                        (activity) => activity.Tags || []
-                      ),
-                    ].map((tagId) => tagMap[tagId])}
-                    price={(
-                      event.Price / (exchangeRates[currency] || 1)
-                    ).toFixed(2)}
-                    currrn={sessionStorage.getItem("curr")}
-                    rating={event.Ratings}
-                    Activities={event.Activities.map(
-                      (activity) => activity.Name
-                    )}
-                    LocationsToVisit={event.LocationsToVisit.map(
-                      (location) => location.Name
-                    )}
-                    TimeLine={event.TimeLine}
-                    AvailableDates={event.AvailableDates}
-                    PickUpLocation={event.PickUpLocation}
-                    DropOffLocation={event.DropOffLocation}
-                    Language={event.Language}
-                    Creator={event.Creator}
-                  />
+                    className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] md:flex-[0_0_33.33%] lg:flex-[0_0_25%] pl-4"
+                  >
+                    <ItineraryCard
+                      itineraryId={event._id}
+                      name={event.Name}
+                      images={event.LocationsToVisit.flatMap(
+                        (location) => location.Pictures || []
+                      )}
+                      tags={[
+                        ...event.LocationsToVisit.flatMap(
+                          (location) => location.Tags || []
+                        ),
+                        ...event.Activities.flatMap(
+                          (activity) => activity.Tags || []
+                        ),
+                      ].map((tagId) => tagMap[tagId])}
+                      price={(
+                        event.Price / (exchangeRates[currency] || 1)
+                      ).toFixed(2)}
+                      currrn={sessionStorage.getItem("curr")}
+                      rating={event.Ratings}
+                      Activities={event.Activities.map(
+                        (activity) => activity.Name
+                      )}
+                      LocationsToVisit={event.LocationsToVisit.map(
+                        (location) => location.Name
+                      )}
+                      TimeLine={event.TimeLine}
+                      AvailableDates={event.AvailableDates}
+                      PickUpLocation={event.PickUpLocation}
+                      DropOffLocation={event.DropOffLocation}
+                      Language={event.Language}
+                      Creator={event.Creator}
+                    />
+                  </div>
                 ))
               )}
-          </div>
+          </EmblaCarousel>
         </div>
       )}
     </React.Fragment>
