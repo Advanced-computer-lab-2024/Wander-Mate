@@ -121,6 +121,7 @@ export default function AdvertiserActivityModal({
         Discounts:updatedActivity.discounts,
         IsAvailable:updatedActivity.isAvailable
       });
+      console.log(activity);
      toast.success("Activity updated successfully!");
       setIsEditing(false);
       setUpdatedActivity(response.data.activity); // Update the state with the response data
@@ -129,6 +130,21 @@ export default function AdvertiserActivityModal({
       toast.error(error.response?.data?.error || "Error updating activity");
     }
   };
+  const handleDeleteActivity = async () => {
+    if (window.confirm("Are you sure you want to delete this activity?")) {
+      try {
+        // Ensure the ID is passed in the request body correctly
+        const response = await axios.delete("http://localhost:8000/deleteActivity", {
+          data: { id: activity.activityId }, // Pass the ID in the `data` field
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error deleting activity:", error);
+        toast.error(error.response?.data?.message || "Error deleting activity");
+      }
+    }
+  };
+  
 
   // Handle input field changes
   const handleInputChange = (e) => {
@@ -466,6 +482,7 @@ export default function AdvertiserActivityModal({
                       </div>
                       <div className="mt-4">
                         <Button type="submit">Update Activity</Button>
+                        
                       </div>
                     </form>
                   )}
@@ -478,6 +495,9 @@ export default function AdvertiserActivityModal({
                     <Button variant="outline" onClick={() => setIsEditing(true)}>
                       Edit Activity
                     </Button>
+                    <Button color="destructive" onClick={handleDeleteActivity}>
+                          Delete Activity
+                        </Button>
                   </div>
                 )}
               </div>

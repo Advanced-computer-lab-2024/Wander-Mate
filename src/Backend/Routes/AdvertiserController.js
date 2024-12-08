@@ -151,17 +151,14 @@ const updateActivity = async (req, res) => {
 };
 
 const deleteActivity = async (req, res) => {
-  const { id, Creator } = req.body;
+  const { id } = req.body; // Accept only the ID from the request body
   try {
     const activity = await attractionModel.findById(id);
     if (!activity) {
       return res.status(400).json({ message: "Activity not found." });
     }
-    if (activity.Creator !== Creator) {
-      return res.status(400).json({ message: "You are not the creator." });
-    }
     // Check if bookings list is empty
-    if (activity.bookings && activity.bookings.length > 0) {
+    if (activity.Bookings && activity.Bookings.length > 0) {
       return res
         .status(400)
         .json({ message: "Cannot delete activity with existing bookings." });
@@ -174,6 +171,7 @@ const deleteActivity = async (req, res) => {
     res.status(400).json({ error: "Error deleting activity" });
   }
 };
+
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {

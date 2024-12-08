@@ -209,6 +209,8 @@ const AddAdvertiserActivityModel = () => {
         const errorData = await response.json();
         toast.error(errorData.error || "Error adding activity");
       }
+      window.location.reload();
+
     } catch (error) {
       console.error("Error submitting activity:", error);
       toast.error("Failed to add activity");
