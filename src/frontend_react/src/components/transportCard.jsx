@@ -276,7 +276,7 @@ const TransportationCard = ({
                   </Badge>
                 )}
                 <div className="hover-box flex flex-col invisible absolute top-3 right-2 opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300 space-y-[6px]">
-                  <button
+                  {/* <button
                     className="rounded-full bg-background p-2"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -289,7 +289,7 @@ const TransportationCard = ({
                         isLiked ? "text-red-500" : "text-muted-foreground"
                       }`}
                     />
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
