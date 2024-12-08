@@ -70,6 +70,7 @@ const createPlace = async (req, res) => {
       Category,
       Tags, // Now handling Tags as an array
     } = req.body;
+    console.log(Category);
     const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378");
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
