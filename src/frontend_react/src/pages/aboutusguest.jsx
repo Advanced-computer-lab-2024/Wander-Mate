@@ -22,7 +22,7 @@ export default function Aboutusguest() {
       <div className="full">
         <div className="frame">
           <div className="inner-container">
-            <h1 className="title">QUALITY & PASSION</h1>
+            <h1 className="title">REACH YOUR DREAMS</h1>
             <div className="buttonR">
               <span className="buttonR-text" onClick={handleRegClick}>
                 Products

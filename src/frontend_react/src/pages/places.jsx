@@ -6,7 +6,6 @@ import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
-import { Checkbox } from "../components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import { Filter, X } from "lucide-react";
+import { Filter } from 'lucide-react';
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ViewPlacesTour from "../components/placesTour";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
@@ -39,7 +38,7 @@ export default function Places() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
-  const combo = sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr") || "USD";
 
   const fetchImages = async (activityId) => {
     try {
@@ -108,20 +107,21 @@ export default function Places() {
       setLoading(false);
     }
   };
-
+  const fetchExchangeRates = async () => {
+    try {
+      
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${combo}`
+      );
+      const data = await response.json();
+      console.log(data.rates);
+      setExchangeRates(data.rates);
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
   useEffect(() => {
-    const fetchExchangeRates = async () => {
-      try {
-        const c = sessionStorage.getItem("curr");
-        const response = await fetch(
-          `https://api.exchangerate-api.com/v4/latest/${c}`
-        );
-        const data = await response.json();
-        setExchangeRates(data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    };
+
 
     fetchExchangeRates();
     const fetchData = async () => {
@@ -129,6 +129,7 @@ export default function Places() {
       await fetchCategories();
       await fetchTags();
       await fetchPlaces();
+      await fetchExchangeRates();
     };
 
     fetchData();
@@ -252,6 +253,7 @@ export default function Places() {
               ))
             ) : filteredPlaces.length > 0 ? (
               filteredPlaces.map((place) => (
+                console.log("Ahooooo",exchangeRates[combo]),
                 <PlaceCard
                   currency={combo}
                   key={place._id}
@@ -266,9 +268,14 @@ export default function Places() {
                     categories.find((cat) => cat._id === place.Category)
                       ?.Name || "No Category"
                   }
-                  TicketPrices={(
-                    place.TicketPrices / (exchangeRates[currency] || 1)
-                  ).toFixed(2)}
+                  TicketPrices={
+                    place.TicketPrices && place.TicketPrices.length > 0
+                      ? JSON.parse(place.TicketPrices[0]).map(([type, price]) => ({
+                          type,
+                          price: (parseFloat(price) / (exchangeRates[currency] || 1)).toFixed(2)
+                        }))
+                      : []
+                  }
                 />
               ))
             ) : (
@@ -281,3 +288,4 @@ export default function Places() {
     </>
   );
 }
+
