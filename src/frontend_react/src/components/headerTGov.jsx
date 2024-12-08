@@ -1,7 +1,7 @@
 import { Card, CardContent } from "../components/ui/card";
 import React, { useState, useEffect, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { cn } from "../lib/utils";
 import { Fragment } from "react";
 import { useLocation } from "react-router-dom";
@@ -10,6 +10,17 @@ import coverImage from "../public/images/files/userprofile.jpg"; // Background i
 const HeaderTGov = () => {
   const location = useLocation();
   const [profilePicture, setProfilePicture] = useState(null);
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    const type = sessionStorage.getItem("Type");
+    if (!storedUsername || !type || type !== "TourismGoverner") {
+      navigate("/loginPage");
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     // Get the profile picture URL from sessionStorage
@@ -47,7 +58,9 @@ const HeaderTGov = () => {
             <div className="absolute left-10 bottom-0 transform translate-y-[-40px] flex items-center gap-6 z-10"> {/* Move avatar up */}
               <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                 <AvatarImage src={profilePicture} />
-                <AvatarFallback className="text-3xl font-bold">TG</AvatarFallback>
+                <AvatarFallback className="text-4xl">
+  {username.slice(0, 2).toUpperCase() || "TO"}
+</AvatarFallback>
               </Avatar>
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-1">
