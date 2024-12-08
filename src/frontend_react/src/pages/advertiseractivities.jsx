@@ -258,7 +258,7 @@ export default function AdvertiserActivities() {
                   "No Category"
                 }
                 isAvailable={activity.IsAvailable}
-                rating={activity.rating}
+                rating={activity.Ratings}
                 discounts={activity.Discounts}
               />
             ))
