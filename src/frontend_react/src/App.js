@@ -126,7 +126,7 @@ import TopUsers from "./components/topUsers";
 import GuestNavigationMenuBar from "./components/Guestnavbar";
 import Aboutusguest from "./pages/aboutusguest";
 import MeetPageguest from "./pages/meetpageguest";
-import TopCustomersSeller from "./components/topCustomersSeller";
+
 
 function App() {
   return (
@@ -290,7 +290,7 @@ function App() {
         <Route path="/AdDashboard" element={<AdDashboard />} />
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
         <Route path="/TourismGovProfile" element={<TourismGovProfile />} />
-        <Route path="/pop" element={<TopCustomersSeller />} />
+        
         <Route
           path="/GuestNavigationMenuBar"
           element={<GuestNavigationMenuBar />}
