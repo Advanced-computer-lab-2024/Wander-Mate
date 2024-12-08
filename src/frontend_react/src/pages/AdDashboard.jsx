@@ -5,12 +5,19 @@ import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const AdDashboard = () => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <NavigationMenuBarAd />
-      <br></br>
-      <LegendEventsAdvertiser />
-      <br></br>
-      <SalesReportTableadvertiser />
+      <main className="flex-grow p-6">
+        <div className="flex flex-col md:flex-row gap-6 mb-6">
+          <div className="w-full md:w-1/2">
+            <LegendEventsAdvertiser />
+          </div>
+          <div className="w-full md:w-1/2">
+           
+          </div>
+        </div>
+        <SalesReportTableadvertiser />
+      </main>
       <TourismGovernerFooter />
     </div>
   );
