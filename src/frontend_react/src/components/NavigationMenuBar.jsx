@@ -33,6 +33,7 @@ import {
   Bell,
   FileText,
   ListOrdered,
+  BookMarked,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -527,6 +528,12 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
           </div>
 
           <div className="flex items-center space-x-4">
+          <Button
+              variant="ghost"
+              onClick={() => navigate("/viewBookmarks")}
+            >
+               <BookMarked className="h-5 w-5 " />
+            </Button>
             <Sheet open={isWishlistOpen} onOpenChange={setIsWishlistOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Wishlist">
