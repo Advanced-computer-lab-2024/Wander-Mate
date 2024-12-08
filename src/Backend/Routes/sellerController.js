@@ -731,8 +731,6 @@ const getSellerDocuments = async (req, res) => {
       ownerModel: "Seller",
     });
 
-
-
     // Return the fetched documents
     return res.status(200).json({
       message: "Documents fetched successfully!",
@@ -744,7 +742,7 @@ const getSellerDocuments = async (req, res) => {
   }
 };
 
-const viewMyNotificationsSeller  = async (req, res) => {
+const viewMyNotificationsSeller = async (req, res) => {
   const { sellerId } = req.params; // Assuming the tourist ID is passed as a URL parameter
 
   try {
@@ -769,7 +767,7 @@ const viewMyNotificationsSeller  = async (req, res) => {
   }
 };
 
-const removeNotificationSeller  = async (req, res) => {
+const removeNotificationSeller = async (req, res) => {
   const { sellerId, notificationId } = req.params; // Get touristId and notificationId from the request body
   try {
     // Validate input
@@ -884,10 +882,14 @@ const getTotalQuantitiesForSeller = async (req, res) => {
     const { sellerId } = req.params; // Extract sellerId from route parameters
 
     // Step 1: Fetch the seller's products
-    const sellerProducts = await ProductModel.find({ seller: sellerId }).select('_id name price');
-    
+    const sellerProducts = await ProductModel.find({ seller: sellerId }).select(
+      "_id name price"
+    );
+
     if (sellerProducts.length === 0) {
-      return res.status(404).json({ message: "No products found for the seller Alah." });
+      return res
+        .status(404)
+        .json({ message: "No products found for the seller Alah." });
     }
 
     // Create a map for product details
@@ -900,8 +902,8 @@ const getTotalQuantitiesForSeller = async (req, res) => {
     }, {});
 
     // Step 2: Fetch total quantities sold for the seller's products
-    const productIds = sellerProducts.map(product => product._id);
-    
+    const productIds = sellerProducts.map((product) => product._id);
+
     const result = await OrderModel.aggregate([
       {
         $match: {
@@ -942,7 +944,7 @@ const getTotalQuantitiesForSeller = async (req, res) => {
     ]);
 
     // Step 3: Combine results with product details
-    const response = result.map(item => ({
+    const response = result.map((item) => ({
       productId: item.productId,
       totalQuantity: item.totalQuantity,
       productDetails: productDetailsMap[item.productId.toString()],
@@ -957,6 +959,76 @@ const getTotalQuantitiesForSeller = async (req, res) => {
     res.status(500).json({
       message: "Server error while calculating total quantities by seller.",
     });
+  }
+};
+
+const getTouristsBySeller = async (req, res) => {
+  try {
+    const { sellerId } = req.params; // Assuming sellerId is passed as a route parameter
+
+    // Validate sellerId
+    if (!sellerId || !mongoose.Types.ObjectId.isValid(sellerId)) {
+      return res.status(400).json({ message: "A valid sellerId is required" });
+    }
+
+    // Aggregate data to find tourists and their total payments
+    const result = await OrderModel.aggregate([
+      {
+        $lookup: {
+          from: "products", // Join with Product collection
+          localField: "products",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" }, // Decompose product details array
+      {
+        $match: {
+          "productDetails.seller": new mongoose.Types.ObjectId(sellerId),
+        },
+      },
+      {
+        $group: {
+          _id: "$userId", // Group by tourist ID
+          totalPaid: { $sum: "$total" }, // Sum the total amount paid
+        },
+      },
+      {
+        $lookup: {
+          from: "tourists", // Join with Tourist collection
+          localField: "_id",
+          foreignField: "_id",
+          as: "touristDetails",
+        },
+      },
+      { $unwind: "$touristDetails" }, // Unwind tourist details
+      {
+        $project: {
+          _id: 0,
+          touristId: "$_id",
+          fullName: "$touristDetails.FullName",
+          email: "$touristDetails.Email",
+          totalPaid: 1,
+        },
+      },
+      { $sort: { totalPaid: -1 } }, // Sort by totalPaid in descending order
+    ]);
+
+    // If no results, return a message
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: "No tourists found who bought from this seller",
+      });
+    }
+
+    // Return the aggregated result
+    return res.status(200).json({
+      message: "Tourists retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error in getTouristsBySeller:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -987,5 +1059,6 @@ module.exports = {
   viewMyNotificationsSeller,
   removeNotificationSeller,
   markNotificationAsReadSeller,
-  getTotalQuantitiesForSeller
+  getTotalQuantitiesForSeller,
+  getTouristsBySeller,
 };

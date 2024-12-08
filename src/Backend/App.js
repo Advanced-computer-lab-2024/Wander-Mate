@@ -147,7 +147,8 @@ const {
   viewMyNotificationsSeller,
   removeNotificationSeller,
   markNotificationAsReadSeller,
-  getTotalQuantitiesForSeller
+  getTotalQuantitiesForSeller,
+  getTouristsBySeller,
 } = require("./Routes/sellerController.js");
 
 const {
@@ -218,7 +219,7 @@ const {
   getRevenue,
   getEmail,
   getTotalQuantities,
-  getTotalBookings
+  getTotalBookings,
 } = require("./Routes/adminController.js");
 
 const {
@@ -247,7 +248,7 @@ const {
   removeNotificationTG,
   markNotificationAsReadTG,
   getItinerarySalesReport,
-  getTotalBookingsForItineraryTourGuide
+  getTotalBookingsForItineraryTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -276,7 +277,7 @@ const {
   removeNotificationAd,
   markNotificationAsReadAd,
   getAdvertiserDocuments,
-  getAdvertiserTotalAttractionBookings
+  getAdvertiserTotalAttractionBookings,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -631,7 +632,10 @@ app.delete(
   "/removeNotificationAd/:advertiserId/:notificationId",
   removeNotificationAd
 );
-app.delete("/removeNotificationSeller/:sellerId/:notificationId",removeNotificationSeller);
+app.delete(
+  "/removeNotificationSeller/:sellerId/:notificationId",
+  removeNotificationSeller
+);
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
 app.put("/notifyAdvertiser", notifyAdvertiser);
@@ -641,7 +645,7 @@ app.put("/sendOutOfStockNotificationSeller", sendOutOfStockNotificationSeller);
 app.put("/sendOutOfStockNotificationAdmin", sendOutOfStockNotificationAdmin);
 app.get("/getAdvertiserById/:advertiserId", getAdvertiserById);
 app.post("/requestToBeNotified", requestToBeNotified);
-app.post("/requestToBeNotifiedForAttraction",requestToBeNotifiedForAttraction);
+app.post("/requestToBeNotifiedForAttraction", requestToBeNotifiedForAttraction);
 app.get("/ViewBookmarkedAttractions/:userId", ViewBookmarkedAttractions);
 app.get("/viewAllUsers", viewAllUsers);
 app.get("/ViewOrders/:userId", ViewOrders);
@@ -694,10 +698,17 @@ app.get("/getTouristPoints/:touristID", getTouristPoints);
 app.get("/getItinerarySalesReport/:guideId", getItinerarySalesReport);
 app.get("/getAttractionSalesReport/:advertiserId", getAttractionSalesReport);
 app.post("/sendItineraryNotifications", sendItineraryNotifications);
-app.post("/sendAttractionNotifications",sendAttractionNotifications);
+app.post("/sendAttractionNotifications", sendAttractionNotifications);
 
-app.get("/getTotalQuantities",getTotalQuantities);
-app.get("/getTotalBookings",getTotalBookings);
-app.get("/getTotalQuantitiesForSeller/:sellerId",getTotalQuantitiesForSeller);
-app.get("/getAdvertiserTotalAttractionBookings/:advertiserId",getAdvertiserTotalAttractionBookings);
-app.get("/getTotalBookingsForItineraryTourGuide/:guideId",getTotalBookingsForItineraryTourGuide);
+app.get("/getTotalQuantities", getTotalQuantities);
+app.get("/getTotalBookings", getTotalBookings);
+app.get("/getTotalQuantitiesForSeller/:sellerId", getTotalQuantitiesForSeller);
+app.get(
+  "/getAdvertiserTotalAttractionBookings/:advertiserId",
+  getAdvertiserTotalAttractionBookings
+);
+app.get(
+  "/getTotalBookingsForItineraryTourGuide/:guideId",
+  getTotalBookingsForItineraryTourGuide
+);
+app.get("/getTopCustomersSeller/:sellerId", getTouristsBySeller);
