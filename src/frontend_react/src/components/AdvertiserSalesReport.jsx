@@ -69,7 +69,7 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
         setLoading(true); // Start loading
         const username = sessionStorage.getItem("username");
         const reply = await fetch(`http://localhost:8000/getID/${username}`);
-        if (!reply.ok) throw new Error("Failed to get tourist ID");
+        if (!reply.ok) throw new Error("Failed to get Advertiser ID");
 
         const { userID } = await reply.json();
         const advertiserId = userID;
