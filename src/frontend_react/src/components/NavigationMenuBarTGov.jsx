@@ -147,7 +147,9 @@ const NavigationMenuBarTGov = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar>
-                    <AvatarFallback>TG</AvatarFallback>
+                  <AvatarFallback >
+  {username.slice(0, 2).toUpperCase() || "TG"}
+</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
