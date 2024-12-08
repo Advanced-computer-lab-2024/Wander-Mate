@@ -74,15 +74,16 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
         const { userID } = await reply.json();
         const advertiserId = userID;
         const response = await fetch(
-          `http://localhost:8000/getAttractionSalesReport/${advertiserId}`
+          `http://localhost:8000/getAdvertiserTotalAttractionBookings/${advertiserId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const result = await response.json();
         // Check if result.data exists and is an array
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (result.report.activities && Array.isArray(result.report.activities)) {
+          setChartData(result.report.activities);
         } else {
           console.error("No sales data available");
           setChartData([]); // Set to empty array if data is invalid
