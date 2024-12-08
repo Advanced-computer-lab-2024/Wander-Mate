@@ -129,7 +129,7 @@ const Registration = () => {
           description: "You have successfully registered.",
         });
         if (selectedRole === "Tourist") {
-          navigate("/TouristHomePage");
+          navigate("/viewItineraries");
         } else {
           navigate("/uploadDocs");
         }
