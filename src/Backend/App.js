@@ -249,6 +249,7 @@ const {
   markNotificationAsReadTG,
   getItinerarySalesReport,
   getTotalBookingsForItineraryTourGuide,
+  getTouristsByTourGuide,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -712,3 +713,4 @@ app.get(
   getTotalBookingsForItineraryTourGuide
 );
 app.get("/getTopCustomersSeller/:sellerId", getTouristsBySeller);
+app.get("/getTopCustomersTourGuide/:tourGuideId", getTouristsByTourGuide);

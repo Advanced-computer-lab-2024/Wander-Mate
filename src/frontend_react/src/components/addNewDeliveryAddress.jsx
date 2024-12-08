@@ -255,7 +255,6 @@ const AddNewAddressCard = ({ onAddressAdded }) => {
           </form>
         </CardContent>
       </Card>
-      <TourismGovernerFooter />
     </React.Fragment>
   );
 };
