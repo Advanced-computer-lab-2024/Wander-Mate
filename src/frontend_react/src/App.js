@@ -120,6 +120,7 @@ import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
 import AdDashboard from "./pages/AdDashboard";
 import TourismGovernerPlaces from "./pages/tourismGovernerPlaces";
+import TourismGovProfile from "./pages/TourismGovProfile";
 import TopUsers from "./components/topUsers";
 
 function App() {
@@ -282,6 +283,7 @@ function App() {
         <Route path="/sellerDashboard" element={<SellerDashboard />} />
         <Route path="/AdDashboard" element={<AdDashboard />} />
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
+        <Route path="/TourismGovProfile" element={<TourismGovProfile/>}/>
         <Route path="/pop" element={<TopUsers />} />
       </Routes>
     </Router>

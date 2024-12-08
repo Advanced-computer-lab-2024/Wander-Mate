@@ -69,6 +69,9 @@ const NavigationMenuBarTGov = () => {
   const handleMouseLeave = () => {
     setOpenDropdown(null);
   };
+  const goToProfile = async () => {
+    navigate("/TourismGovProfile");
+  };
 
   const logout = () => {
     sessionStorage.removeItem("username");
@@ -151,7 +154,7 @@ const NavigationMenuBarTGov = () => {
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span onClick={goToProfile}>Profile</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
