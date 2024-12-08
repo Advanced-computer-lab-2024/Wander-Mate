@@ -118,12 +118,15 @@ const NavigationMenuBarTGov = () => {
             </DropdownMenu>
 
             <Button
+            asChild
               variant="ghost"
               onMouseEnter={() => handleMouseEnter("places")}
               onMouseLeave={handleMouseLeave}
             >
-              <MapPin className="mr-2 h-4 w-4" />
-              Places
+            <Link to="/TGovPlaces">
+                <MapPin className="mr-2 h-4 w-4" />
+                Places
+              </Link>
             </Button>
 
             <Button
@@ -156,12 +159,9 @@ const NavigationMenuBarTGov = () => {
                     <User className="mr-2 h-4 w-4" />
                     <span onClick={goToProfile}>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
+                 
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span onClick={logout}>Log out</span>

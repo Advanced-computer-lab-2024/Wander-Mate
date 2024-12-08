@@ -1,7 +1,7 @@
 
 import React from 'react';
 import TGovSettings from '../components/TGovSettings';
-import HeaderAdmin from '../components/headeradmin';
+import HeaderTGov from '../components/headerTGov';
 import NavigationMenuBarTGov from '../components/NavigationMenuBarTGov';
 
 
@@ -16,7 +16,7 @@ const TourismGovProfile = () => {
       <div className="w-full px-0 py-0">
         {/* Top Banner with full-width image */}
         <div className="mt-[-23px]">
-          <HeaderAdmin />
+          <HeaderTGov />
         </div>
   
         {/* Main Content */}
