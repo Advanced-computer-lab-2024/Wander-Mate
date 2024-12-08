@@ -24,6 +24,8 @@ import {
 import { Filter, ArrowUpDown } from "lucide-react";
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import GuestNavigationMenuBar from "../components/Guestnavbar";
+import GuestFooter from "../components/GuestFooter";
 
 export default function ViewItinerariesGuest() {
   const [itineraries, setItineraries] = useState([]);
@@ -33,6 +35,7 @@ export default function ViewItinerariesGuest() {
   const [tags, setTags] = useState([]);
   const [tagMap, setTagMap] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
+  const [likedItemsCount, setLikedItemsCount] = useState(0);
   // const [exchangeRates, setExchangeRates] = useState({});
   // const [currency, setCurrency] = useState("USD");
 
@@ -223,6 +226,7 @@ export default function ViewItinerariesGuest() {
 
   return (
     <>
+    <GuestNavigationMenuBar/>
       <ViewItinerariesTour>
         <div className="container mx-auto p-4" id="container">
           <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
@@ -409,7 +413,7 @@ export default function ViewItinerariesGuest() {
           </div>
         </div>
       </ViewItinerariesTour>
-      <TourismGovernerFooter />
+      <GuestFooter />
     </>
   );
 }
