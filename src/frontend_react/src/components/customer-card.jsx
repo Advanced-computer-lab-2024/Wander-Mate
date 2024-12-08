@@ -5,7 +5,7 @@ import { Progress } from "./ui/progress";
 import { cn } from "../lib/utils";
 import { Icon } from "@iconify/react";
 const CustomerCard = ({ item, index }) => {
-  const { FullName, score, picture, color, amount } = item;
+  const { score, picture, color, revenue, Username } = item;
 
   return (
     <>
@@ -28,9 +28,19 @@ const CustomerCard = ({ item, index }) => {
                 </span>
               )}
               <Avatar className="h-16 w-16">
-                <AvatarImage src={picture.src} />
-                <AvatarFallback>{FullName}</AvatarFallback>
+                {item.user.picture?.data ? (
+                  <AvatarImage
+                    src={`data:${item.user.picture.contentType};base64,${item.user.picture.data}`}
+                  />
+                ) : (
+                  <AvatarFallback>
+                    {(item.user.FullName || item.user.Username)
+                      ?.substring(0, 2)
+                      .toUpperCase()}
+                  </AvatarFallback>
+                )}
               </Avatar>
+
               <Badge className="w-[18px] h-[18px] bg-warning/90 text-[10px] font-semibold p-0  items-center justify-center   absolute left-[calc(100%-14px)] top-[calc(100%-20px)] bg-yellow-400">
                 {index}
               </Badge>
@@ -38,12 +48,12 @@ const CustomerCard = ({ item, index }) => {
           </div>
           <div className="flex flex-col items-center gap-2 ">
             <div className="text-base font-semibold text-default-900 mb-1 whitespace-nowrap">
-              {FullName}
+              {item.user.FullName || item.user.Username}
             </div>
-            <Badge className="bg-primary/80">${amount}</Badge>
+            <Badge className="bg-primary/80">${revenue}</Badge>
           </div>
 
-          <div className="flex-none w-full mt-4">
+          {/* <div className="flex-none w-full mt-4">
             <div className="w-full">
               <div className="flex justify-between items-center gap-2 mb-1">
                 <span className="text-xs font-medium text-default-800">
@@ -55,7 +65,7 @@ const CustomerCard = ({ item, index }) => {
               </div>
               <Progress value={score} size="sm" color={color} />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

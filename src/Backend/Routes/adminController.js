@@ -38,6 +38,7 @@ const Review = require("../Models/review.js");
 const BookedFlights = require("../Models/bookedFlights.js");
 const BookedHotel = require("../Models/bookedHotel.js");
 const BookedMarks = require("../Models/bookMark.js").default;
+const BookmarkModel = require("../Models/bookMark.js");
 const address = require("../Models/address.js");
 const cart = require("../Models/cart.js");
 const wishlist = require("../Models/whishlist.js");
@@ -260,7 +261,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -286,7 +287,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -312,7 +313,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -338,7 +339,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -364,7 +365,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -392,7 +393,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -2143,7 +2144,7 @@ const getTotalBookings = async (req, res) => {
     for (const booking of result) {
       let itemDetails = null;
 
-      // Query based on itemModel
+      // Query based on itemModel, excluding HotelBooked and BookedFlights
       switch (booking.itemModel) {
         case "Attraction":
           itemDetails = await attractions.findById(booking.itemId).exec();
@@ -2152,24 +2153,28 @@ const getTotalBookings = async (req, res) => {
           itemDetails = await Itinerary.findById(booking.itemId).exec();
           break;
         case "Transportation":
-          itemDetails = await transportations.findById(booking.itemId).exec();
-          break;
-        case "HotelBooked":
-          itemDetails = await HotelBooked.findById(booking.itemId).exec();
-          break;
-        case "BookedFlights":
-          itemDetails = await BookedFlights.findById(booking.itemId).exec();
+          const transportation = await transportations
+            .findById(booking.itemId)
+            .exec();
+          if (transportation) {
+            itemDetails = {
+              ...transportation.toObject(),
+              Name: `Transportation From ${transportation.destination}`, // Add transportation.Name as destination
+            };
+          }
           break;
         default:
-          itemDetails = null; // In case the itemModel is unknown
+          continue; // Skip unknown models
       }
 
-      // Push result with the populated item details
-      populatedResults.push({
-        itemId: booking.itemId,
-        totalBookings: booking.totalBookings,
-        itemDetails: itemDetails,
-      });
+      // Push result with the populated item details if valid
+      if (itemDetails) {
+        populatedResults.push({
+          itemId: booking.itemId,
+          totalBookings: booking.totalBookings,
+          itemDetails: itemDetails,
+        });
+      }
     }
 
     // Step 3: Send the aggregated results as a response

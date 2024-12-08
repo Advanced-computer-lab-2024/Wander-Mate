@@ -4,6 +4,8 @@ import { Input } from "../components/ui/input";
 import LightImage from "../public/images/utility/comming-soon-light.png";
 import DarkImage from "../public/images/utility/comming-soon-dark.png";
 import { useTheme } from "next-themes";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import React from "react";
 
 const SiteLogo = () => (
   <svg
@@ -32,45 +34,48 @@ const Pending = () => {
   const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* header */}
-      <div className="flex-none p-10 flex flex-wrap justify-between gap-4">
-        <div className="w-[170px] h-[38px]">
-          <SiteLogo className="h-10 w-10 2xl:w-14 2xl:h-14 text-primary" />
+    <React.Fragment>
+      <div className="flex flex-col min-h-screen">
+        {/* header */}
+        <div className="flex-none p-10 flex flex-wrap justify-between gap-4">
+          <div className="w-[170px] h-[38px]">
+            <SiteLogo className="h-10 w-10 2xl:w-14 2xl:h-14 text-primary" />
+          </div>
         </div>
-      </div>
-      {/* main */}
-      <div className="flex-1 flex flex-col justify-center">
-        <div className="container ">
-          <div className="flex flex-col lg:flex-row  justify-between items-center gap-5 ">
-            <div className="lg:max-w-[570px]">
-              <div className="text-2xl font-medium text-default-900">
-                Not yet
+        {/* main */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="container ">
+            <div className="flex flex-col lg:flex-row  justify-between items-center gap-5 ">
+              <div className="lg:max-w-[570px]">
+                <div className="text-2xl font-medium text-default-900">
+                  Not yet
+                </div>
+                <div className="mt-4 text-5xl 2xl:text-7xl font-semibold text-default-900">
+                  Admin is still looking at your documents
+                </div>
+                <div className="mt-6 text-sm xl:text-base text-default-600">
+                  You will hear from us soon don't worry.
+                </div>
+                <div className="relative mt-5 lg:mt-12">
+                  <Button className="absolute top-1/2 -translate-y-1/2 ltr:right-4 rtl:left-4 h-8 lg:h-11">
+                    <a href="/">Go to Homepage</a>
+                  </Button>
+                </div>
               </div>
-              <div className="mt-4 text-5xl 2xl:text-7xl font-semibold text-default-900">
-                Admin is still looking at your documents
-              </div>
-              <div className="mt-6 text-sm xl:text-base text-default-600">
-                You will hear from us soon don't worry.
-              </div>
-              <div className="relative mt-5 lg:mt-12">
-                <Button className="absolute top-1/2 -translate-y-1/2 ltr:right-4 rtl:left-4 h-8 lg:h-11">
-                  <a href="/">Go to Homepage</a>
-                </Button>
-              </div>
-            </div>
 
-            <div className="mt-10 lg:mt-0 xl:pl-32">
-              <img
-                src={theme === "dark" ? DarkImage : LightImage}
-                alt="comming soon"
-                className="w-full h-full object-cover"
-              />
+              <div className="mt-10 lg:mt-0 xl:pl-32">
+                <img
+                  src={theme === "dark" ? DarkImage : LightImage}
+                  alt="comming soon"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 };
 

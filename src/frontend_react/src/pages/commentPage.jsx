@@ -3,6 +3,7 @@ import NavigationMenuBar from "../components/NavigationMenuBar";
 import CommentForm from "../forms/commentForm";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const CommentPage = () => {
   const [commentFormData, setCommentFormData] = useState({
@@ -49,6 +50,7 @@ const CommentPage = () => {
         onFormDataChange={handleFormDataChange}
         onSubmit={handleSubmit}
       />
+      <TourismGovernerFooter />
     </React.Fragment>
   );
 };
