@@ -126,6 +126,7 @@ import TopUsers from "./components/topUsers";
 import GuestNavigationMenuBar from "./components/Guestnavbar";
 import Aboutusguest from "./pages/aboutusguest";
 import MeetPageguest from "./pages/meetpageguest";
+import AdvertiserPage from "./pages/activityAdvertiser";
 
 function App() {
   return (
@@ -293,6 +294,7 @@ function App() {
         <Route path="/GuestNavigationMenuBar" element={<GuestNavigationMenuBar/>}/>
         <Route path="/aboutusguest" element={<Aboutusguest/>}/>
         <Route path="/meetpageguest"element={<MeetPageguest/>}/>
+        <Route path="/activityAdvertiser"element={<AdvertiserPage/>}/>
       </Routes>
     </Router>
   );

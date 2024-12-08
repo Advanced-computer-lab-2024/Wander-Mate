@@ -473,69 +473,18 @@ export default function AdvertiserActivityModal({
                       {/* Availability */}
                       <div className="flex items-center gap-2">
                         <label>Availability:</label>
-                        <div className="flex items-center space-x-2.5">
-  <label
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      cursor: "pointer",
-    }}
-  >
-    <input
-      id="availability"
-      type="checkbox"
-      checked={updatedActivity.isAvailable}
-      onChange={(e) =>
-        setUpdatedActivity((prev) => ({
-          ...prev,
-          isAvailable: e.target.checked,
-        }))
-      }
-      style={{
-        position: "absolute",
-        opacity: 0,
-        width: 0,
-        height: 0,
-      }}
-    />
-    <span
-      style={{
-        display: "inline-block",
-        width: "40px",
-        height: "20px",
-        backgroundColor: updatedActivity.isAvailable ? "#826AF9" : "#ccc",
-        borderRadius: "10px",
-        position: "relative",
-        transition: "background-color 0.3s",
-      }}
-    >
-      <span
-        style={{
-          content: '""',
-          position: "absolute",
-          height: "16px",
-          width: "16px",
-          backgroundColor: "white",
-          borderRadius: "50%",
-          top: "2px",
-          left: updatedActivity.isAvailable ? "22px" : "2px",
-          transition: "left 0.3s",
-        }}
-      />
-    </span>
-  </label>
-  {/* <Label htmlFor="availability" className="text-base text-muted-foreground font-normal">
-    Available
-  </Label> */}
-</div>
-
+                        <Switch
+                          checked={updatedActivity.isAvailable}
+                          onCheckedChange={(value) =>
+                            setUpdatedActivity((prev) => ({ ...prev, isAvailable: value }))
+                          }
+                        />
                       </div>
                       <div className="mt-4 flex space-x-2">
                         <Button type="submit">Update Activity</Button>
                         <Button
                           variant="outline"
                           onClick={() => {
-                            // Cancel: Reset the updatedActivity state to its initial state (activity props)
                             setUpdatedActivity(activity);
                             setIsEditing(false); // Exit edit mode
                           }}

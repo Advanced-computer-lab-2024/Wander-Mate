@@ -19,6 +19,7 @@ export default function ActivityCard({
   isAvailable,
   rating = 0,
   currency,
+  Creator
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,6 +36,7 @@ export default function ActivityCard({
     isAvailable,
     rating,
     currency,
+    Creator
   };
 
   const [favorite, setFavorite] = useState(false);
