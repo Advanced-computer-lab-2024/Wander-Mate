@@ -181,7 +181,7 @@ const AddressDropDown = ({ onAddressSelect }) => {
           </DialogContent>
         </Dialog>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };
