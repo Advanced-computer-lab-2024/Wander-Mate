@@ -500,7 +500,7 @@ export function SalesReportTabletourguide() {
           </div>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </>
   );
 }

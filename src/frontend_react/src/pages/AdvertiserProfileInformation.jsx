@@ -232,7 +232,7 @@ const AdvertiserProfileManager = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

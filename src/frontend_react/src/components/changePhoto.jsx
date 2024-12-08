@@ -139,7 +139,7 @@ const ChangePhoto = ({ user = "seller" }) => {
           initialImage={profileImage}
         />
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

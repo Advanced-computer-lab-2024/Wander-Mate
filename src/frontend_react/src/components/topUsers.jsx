@@ -74,7 +74,7 @@ const TopUsers = () => {
           </div>
         </CardContent>
       </Card>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

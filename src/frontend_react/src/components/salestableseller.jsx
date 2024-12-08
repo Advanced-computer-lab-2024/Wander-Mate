@@ -505,7 +505,7 @@ export function SalesReportTable() {
           </Button>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </>
   );
 }

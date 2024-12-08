@@ -83,7 +83,10 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
         const result = await response.json();
         // Check if result.data exists and is an array
         console.log(result);
-        if (result.report.activities && Array.isArray(result.report.activities)) {
+        if (
+          result.report.activities &&
+          Array.isArray(result.report.activities)
+        ) {
           setChartData(result.report.activities);
         } else {
           console.error("No sales data available");
@@ -150,7 +153,7 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
           <Doughnut options={options} data={data} height={height} />
         </CardContent>
       </Card>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };
