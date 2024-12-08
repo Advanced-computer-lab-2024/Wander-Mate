@@ -170,7 +170,7 @@ export default function PlacesGuest() {
 
   return (
     <>
-    <GuestNavigationMenuBar likedItemsCount={likedItemsCount} />
+    <GuestNavigationMenuBar  />
       <ViewPlacesTour>
         <div className="container mx-auto p-4" id="container">
           <h1 className="text-2xl font-bold mb-4">Places</h1>
