@@ -127,6 +127,8 @@ import GuestNavigationMenuBar from "./components/Guestnavbar";
 import Aboutusguest from "./pages/aboutusguest";
 import MeetPageguest from "./pages/meetpageguest";
 
+import AdvertiserPage from "./pages/activityAdvertiser";
+
 function App() {
   return (
     <Router>
@@ -289,10 +291,14 @@ function App() {
         <Route path="/AdDashboard" element={<AdDashboard />} />
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
         <Route path="/TourismGovProfile" element={<TourismGovProfile />} />
-        <Route path="/pop" element={<TopUsers />} />
-        <Route path="/GuestNavigationMenuBar" element={<GuestNavigationMenuBar/>}/>
-        <Route path="/aboutusguest" element={<Aboutusguest/>}/>
-        <Route path="/meetpageguest"element={<MeetPageguest/>}/>
+        
+        <Route
+          path="/GuestNavigationMenuBar"
+          element={<GuestNavigationMenuBar />}
+        />
+        <Route path="/aboutusguest" element={<Aboutusguest />} />
+        <Route path="/meetpageguest" element={<MeetPageguest />} />
+        <Route path="/activityAdvertiser"element={<AdvertiserPage/>}/>
       </Routes>
     </Router>
   );

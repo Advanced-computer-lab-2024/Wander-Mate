@@ -16,6 +16,8 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+import { useNavigate, Link } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export default function ActivityModal({
   activity,
@@ -31,6 +33,8 @@ export default function ActivityModal({
   const [isFavorite, setIsFavorite] = useState(false);
   const [bookingError, setBookingError] = useState(null);
   const [userAge, setUserAge] = useState(19);
+  const [advertiser, setAdvertiser] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
@@ -93,6 +97,17 @@ export default function ActivityModal({
     }
   };
 
+  const fetchAdvertiserInfo = async () => {
+    try {
+      console.log(activity.Creator);
+      const response = await axios.get(
+        `http://localhost:8000/getAdvertiserById/${activity.Creator}`
+      );
+      setAdvertiser(response.data);
+    } catch (error) {
+      console.error("Error fetching Advertiser information:", error);
+    }
+  };
   const handlePaymentSuccess = () => {
     setBookingError(null);
     console.log("Booking successful!");
@@ -126,6 +141,7 @@ export default function ActivityModal({
 
   useEffect(() => {
     fetchUserAge();
+    fetchAdvertiserInfo();
   }, []);
 
   const handleShare = (method) => {
@@ -173,6 +189,33 @@ export default function ActivityModal({
     }
   };
 
+  const handleAdvertiserClick = (e) => {
+    e.preventDefault();
+    if (advertiser && advertiser.advertiser) {
+      navigate("/activityAdvertiser", { state: { advertiserId: advertiser.advertiser._id } });
+    }
+  };
+
+
+  const getInitials = (name) => {
+    if (!name) return "SS";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  const getImageSrc = (picture) => {
+    if (picture && picture.data && picture.contentType) {
+      const base64String =
+        typeof picture.data === "string"
+          ? picture.data
+          : btoa(String.fromCharCode.apply(null, new Uint8Array(picture.data)));
+      return `data:${picture.contentType};base64,${base64String}`;
+    }
+    return null;
+  };
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -196,6 +239,7 @@ export default function ActivityModal({
                 <Tabs defaultValue="location" className="w-full">
                   <TabsList className="w-full justify-start">
                     <TabsTrigger value="location">Location</TabsTrigger>
+                    <TabsTrigger value="info">Advertiser Information</TabsTrigger>
                   </TabsList>
                   <TabsContent value="location" className="mt-4">
                     <Card>
@@ -221,6 +265,37 @@ export default function ActivityModal({
                           />
                           Open in Maps
                         </Button>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  <TabsContent value="info" className="mt-4">
+                    <Card>
+                      <CardContent className="p-6">
+                        {advertiser && advertiser.advertiser && (
+                          <div className="flex items-center space-x-2 mt-4">
+                            <span className="font-semibold text-sm text-gray-600">
+                              Advertiser:
+                            </span>
+                            <a
+                              href="#"
+                              onClick={handleAdvertiserClick}
+                              className="flex items-center space-x-2 hover:text-primary transition-colors"
+                            >
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage
+                                  src={getImageSrc(advertiser.advertiser.FullName)}
+                                  alt={advertiser.advertiser.FullName}
+                                />
+                                <AvatarFallback>
+                                  {getInitials(advertiser.advertiser.FullName)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-sm">
+                                {advertiser.advertiser.FullName}
+                              </span>
+                            </a>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </TabsContent>

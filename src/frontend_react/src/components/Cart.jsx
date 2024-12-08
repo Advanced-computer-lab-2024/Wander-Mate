@@ -8,7 +8,6 @@ import NavigationMenuBar from "./NavigationMenuBar";
 import { Icon } from "@iconify/react";
 import { Separator } from "./ui/separator";
 import image from "../public/images/auth/slide-3.png";
-import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
@@ -423,7 +422,6 @@ export default function ShoppingCart() {
           )}
         </main>
       </div>
-      <TourismGovernerFooter />
     </>
   );
 }

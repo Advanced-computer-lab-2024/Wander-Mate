@@ -21,7 +21,7 @@ export default function AboutUsTG() {
       <div className="full">
         <div className="frame">
           <div className="inner-container">
-            <h1 className="title">QUALITY & PASSION</h1>
+            <h1 className="title">DREAMS COME TRUE</h1>
             <div className="buttonR">
               <span className="buttonR-text" onClick={handleRegClick}>
                 Itineraries

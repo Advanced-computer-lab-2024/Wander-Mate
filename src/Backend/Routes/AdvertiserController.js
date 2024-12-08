@@ -11,6 +11,8 @@ const bookingSchema = require("../Models/bookings.js");
 const PdfDetails = require("../Models/pdfDetails.js");
 const jwt = require("jsonwebtoken");
 const Notification = require("../Models/notifications.js");
+const Booking = require("../Models/bookings.js");
+const Tourist = require("../Models/tourist.js");
 
 const createActivity = async (req, res) => {
   const Bookings = [];
@@ -99,7 +101,6 @@ const readActivities = async (req, res) => {
 
 const updateActivity = async (req, res) => {
   const {
-    
     Name,
     id,
     DateString,
@@ -125,7 +126,6 @@ const updateActivity = async (req, res) => {
     }
     console.log(Location);
 
-    
     activity = await attractionModel.findByIdAndUpdate(
       id,
       {
@@ -144,7 +144,7 @@ const updateActivity = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Activity updated successfully.", activity });
-  } catch(error) {
+  } catch (error) {
     console.log(error);
     res.status(400).json({ error: "Error updating activity" });
   }
@@ -171,7 +171,6 @@ const deleteActivity = async (req, res) => {
     res.status(400).json({ error: "Error deleting activity" });
   }
 };
-
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (name) => {
@@ -638,7 +637,6 @@ const getAdvertiserById = async (req, res) => {
   }
 };
 
-
 const getAttractionSalesReport = async (req, res) => {
   const { advertiserId } = req.params; // Assuming the advertiser's ID is passed in the URL
   try {
@@ -690,15 +688,17 @@ const getAttractionSalesReport = async (req, res) => {
           attractionName: "$attractionDetails.Name",
           bookedDate: "$_id.bookedDate",
           totalBookings: 1,
-          totalRevenue: { $multiply: ["$totalBookings", "$attractionDetails.Price"] }, // Calculate revenue
+          totalRevenue: {
+            $multiply: ["$totalBookings", "$attractionDetails.Price"],
+          }, // Calculate revenue
         },
       },
     ]);
 
     if (salesData.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this advertiser's attractions." });
+      return res.status(404).json({
+        message: "No bookings found for this advertiser's attractions.",
+      });
     }
 
     // Step 3: Send response
@@ -760,7 +760,9 @@ const removeNotificationAd = async (req, res) => {
     }
 
     // Find the notification document for the given tourist ID
-    const notificationDoc = await Notification.findOne({ userID: advertiserID });
+    const notificationDoc = await Notification.findOne({
+      userID: advertiserID,
+    });
 
     if (!notificationDoc) {
       return res
@@ -859,8 +861,6 @@ const getAdvertiserDocuments = async (req, res) => {
       ownerModel: "Advertiser",
     });
 
-
-
     // Return the fetched documents
     return res.status(200).json({
       message: "Documents fetched successfully!",
@@ -877,9 +877,9 @@ const getAdvertiserTotalAttractionBookings = async (req, res) => {
 
   try {
     // Step 1: Fetch all attractions created by the advertiser
-    const attractions = await attractionModel.find({ Creator: advertiserId }).select(
-      "_id Name"
-    );
+    const attractions = await attractionModel
+      .find({ Creator: advertiserId })
+      .select("_id Name");
     const attractionIds = attractions.map((attraction) => attraction._id);
 
     if (attractions.length === 0) {
@@ -927,9 +927,9 @@ const getAdvertiserTotalAttractionBookings = async (req, res) => {
 
     // Check if any bookings were found
     if (bookingSummary.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this advertiser's activities." });
+      return res.status(404).json({
+        message: "No bookings found for this advertiser's activities.",
+      });
     }
 
     // Step 3: Calculate grand totals for the advertiser
@@ -961,6 +961,70 @@ const getAdvertiserTotalAttractionBookings = async (req, res) => {
   }
 };
 
+const getTouristsByAdvertiser = async (req, res) => {
+  try {
+    const { advertiserId } = req.params;
+
+    // Validate inputs
+    if (!advertiserId) {
+      return res.status(400).json({
+        message: "Advertiser ID is required",
+      });
+    }
+
+    // Step 1: Find all attractions associated with the specified advertiser
+    const attractions = await Attraction.find({ advertiserId }); // Assuming the Advertiser's ID is stored in Attraction model
+    if (!attractions || attractions.length === 0) {
+      return res.status(404).json({
+        message: "No attractions found for this advertiser",
+      });
+    }
+
+    // Step 2: Find all bookings related to these attractions
+    const bookings = await Booking.find({
+      itemModel: "Attraction",
+      itemId: { $in: attractions.map((attraction) => attraction._id) },
+    });
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({
+        message: "No bookings found for this advertiser",
+      });
+    }
+
+    // Step 3: Fetch tourists' details along with the amount paid for each booking
+    const touristsDetails = await Promise.all(
+      bookings.map(async (booking) => {
+        const tourist = await Tourist.findById(booking.userId);
+        if (!tourist) {
+          return null; // Skip if tourist is not found
+        }
+        return {
+          touristId: tourist._id,
+          fullName: tourist.FullName,
+          email: tourist.Email,
+          amountPaid: booking.price,
+        };
+      })
+    );
+
+    // Step 4: Filter out any null values (in case some tourists weren't found)
+    const filteredTourists = touristsDetails.filter(
+      (tourist) => tourist !== null
+    );
+
+    // Step 5: Sort by the amount paid (in descending order)
+    filteredTourists.sort((a, b) => b.amountPaid - a.amountPaid);
+
+    return res.status(200).json({ tourists: filteredTourists });
+  } catch (error) {
+    console.error("Error in getTouristsByAdvertiser:", error);
+    return res.status(500).json({
+      message: "Server error while retrieving tourists",
+    });
+  }
+};
+
 module.exports = {
   createActivity,
   readActivity,
@@ -988,5 +1052,6 @@ module.exports = {
   markNotificationAsReadAd,
   removeNotificationAd,
   getAdvertiserDocuments,
-  getAdvertiserTotalAttractionBookings
+  getAdvertiserTotalAttractionBookings,
+  getTouristsByAdvertiser,
 };

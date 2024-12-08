@@ -1,8 +1,8 @@
 import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Progress } from "./ui/progress";
-const ListItem = ({ item, index }) => {
-  const { name, email, score, image, revenue, color } = item;
+const ListItemSeller = ({ item, index }) => {
+  const { name, email, score, image, totalPaid, color } = item;
 
   return (
     <>
@@ -12,7 +12,7 @@ const ListItem = ({ item, index }) => {
             <Avatar className="h-16 w-16">
               <AvatarImage src={image} />
               <AvatarFallback>
-                {(item.user.FullName || item.user.Username)
+                {(item.fullName)
                   ?.substring(0, 2)
                   .toUpperCase()}
               </AvatarFallback>
@@ -23,17 +23,17 @@ const ListItem = ({ item, index }) => {
           </div>
           <div>
             <div className="text-sm font-medium text-default-800 mb-1 whitespace-nowrap">
-              {item.user.FullName || item.user.Username}
+              {item.fullName}
             </div>
             <div className="text-xs text-default-600 whitespace-nowrap">
-              {item.user.Email}
+              {item.email}
             </div>
           </div>
         </div>
 
         <div className="flex-1 flex items-center sm:justify-center">
           <div>
-            <Badge variant="soft">${revenue}</Badge>
+            <Badge variant="soft">${totalPaid}</Badge>
           </div>
         </div>
 
@@ -55,4 +55,4 @@ const ListItem = ({ item, index }) => {
   );
 };
 
-export default ListItem;
+export default ListItemSeller;

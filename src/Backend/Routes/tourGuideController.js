@@ -10,6 +10,7 @@ const RatingsModel = require("../Models/rating.js");
 const bookingSchema = require("../Models/bookings.js");
 const jwt = require("jsonwebtoken");
 const Notification = require("../Models/notifications.js");
+const Tourist = require("../Models/tourist.js");
 
 // Creating a tourGuide
 
@@ -388,8 +389,6 @@ const getTourGuideDocuments = async (req, res) => {
       Owner: ownerId,
       ownerModel: "TourGuide",
     });
-
-
 
     // Return the fetched documents
     return res.status(200).json({
@@ -876,15 +875,17 @@ const getItinerarySalesReport = async (req, res) => {
           itineraryName: "$itineraryDetails.Name",
           bookedDate: "$_id.bookedDate",
           totalBookings: 1,
-          totalRevenue: { $multiply: ["$totalBookings", "$itineraryDetails.Price"] }, // Calculate revenue
+          totalRevenue: {
+            $multiply: ["$totalBookings", "$itineraryDetails.Price"],
+          }, // Calculate revenue
         },
       },
     ]);
 
     if (salesData.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this tour guide's itineraries." });
+      return res.status(404).json({
+        message: "No bookings found for this tour guide's itineraries.",
+      });
     }
 
     // Step 3: Send response
@@ -988,6 +989,70 @@ const getTotalBookingsForItineraryTourGuide = async (req, res) => {
   }
 };
 
+const getTouristsByTourGuide = async (req, res) => {
+  try {
+    const { tourGuideId } = req.params;
+
+    // Validate inputs
+    if (!tourGuideId) {
+      return res.status(400).json({
+        message: "Tour guide ID is required",
+      });
+    }
+
+    // Find all itineraries created by the specified tour guide
+    const itineraries = await Itinerary.find({ Creator: tourGuideId });
+    if (!itineraries || itineraries.length === 0) {
+      return res.status(404).json({
+        message: "No itineraries found for this tour guide",
+      });
+    }
+
+    // Find all bookings related to these itineraries
+    const bookings = await bookingSchema.find({
+      itemModel: "Itinerary",
+      itemId: { $in: itineraries.map((itinerary) => itinerary._id) },
+    });
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({
+        message: "No bookings found for this tour guide",
+      });
+    }
+
+    // Fetch tourists' details along with the amount paid for each booking
+    const touristsDetails = await Promise.all(
+      bookings.map(async (booking) => {
+        const tourist = await Tourist.findById(booking.userId);
+        if (!tourist) {
+          return null; // Skip if tourist is not found
+        }
+        return {
+          touristId: tourist._id,
+          fullName: tourist.FullName,
+          email: tourist.Email,
+          amountPaid: booking.price,
+        };
+      })
+    );
+
+    // Filter out any null values (in case some tourists weren't found)
+    const filteredTourists = touristsDetails.filter(
+      (tourist) => tourist !== null
+    );
+
+    // Sort by the amount paid (in descending order)
+    filteredTourists.sort((a, b) => b.amountPaid - a.amountPaid);
+
+    return res.status(200).json({ tourists: filteredTourists });
+  } catch (error) {
+    console.error("Error in getTouristsByTourGuide:", error);
+    return res.status(500).json({
+      message: "Server error while retrieving tourists",
+    });
+  }
+};
+
 module.exports = {
   createTourGuide,
   createItinerary,
@@ -1014,5 +1079,6 @@ module.exports = {
   deleteMyItinerary,
   getTourGuideDocuments,
   getItinerarySalesReport,
-  getTotalBookingsForItineraryTourGuide
+  getTotalBookingsForItineraryTourGuide,
+  getTouristsByTourGuide,
 };

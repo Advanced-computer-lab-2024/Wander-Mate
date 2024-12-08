@@ -245,7 +245,9 @@ const AdminNavBar = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar>
-                  <AvatarFallback>AD</AvatarFallback>
+                <AvatarFallback >
+  {username.slice(0, 2).toUpperCase() || "AD"}
+</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
