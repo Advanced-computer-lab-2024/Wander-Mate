@@ -1,13 +1,14 @@
-import React from 'react';
-import NavigationMenuBar from '../components/NavigationMenuBar';
+import React from "react";
+import NavigationMenuBar from "../components/NavigationMenuBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const TouristHomePage = () => {
-  return(
-    <NavigationMenuBar/>
-    
-  )
+  return (
+    <React.Fragment>
+      <NavigationMenuBar />
+      <TourismGovernerFooter />
+    </React.Fragment>
+  );
+};
 
-
-}
-
-  export default TouristHomePage;
+export default TouristHomePage;
