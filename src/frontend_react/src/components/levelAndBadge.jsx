@@ -123,10 +123,10 @@ const LevelAndBadge = () => {
       <Card className="w-full max-w-[1500px]">
         <CardContent className="flex items-center justify-between p-6">
           <Toaster />
-          <Badge className={`flex items-center ${badgeContent.color}`}>
+          {/* <Badge className={`flex items-center ${badgeContent.color}`}>
             {badgeContent.icon}
             {badgeContent.text}
-          </Badge>
+          </Badge> */}
           <div className="flex items-center">
             <Wallet className="mr-2 h-4 w-4" />
             <span>
