@@ -23,6 +23,7 @@ import {
 } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
 import UserPhoto from "./userPhoto";
+import RegisterUserPhoto from "./registerUserPhoto";
 
 const Registration = () => {
   const [activestep, setActiveStep] = useState(0);
@@ -425,7 +426,7 @@ const Registration = () => {
                         <Label className="mb-2 text-center" htmlFor="fullName">
                           Upload a photo
                         </Label>
-                        <UserPhoto onImageSelect={handleImageSelect} />
+                        <RegisterUserPhoto onImageSelect={handleImageSelect} />
                       </div>
                       <div className="col-span-12 lg:col-span-6">
                         <Label className="mb-2" htmlFor="fullName">

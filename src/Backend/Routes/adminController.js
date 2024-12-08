@@ -2144,7 +2144,7 @@ const getTotalBookings = async (req, res) => {
     for (const booking of result) {
       let itemDetails = null;
 
-      // Query based on itemModel
+      // Query based on itemModel, excluding HotelBooked and BookedFlights
       switch (booking.itemModel) {
         case "Attraction":
           itemDetails = await attractions.findById(booking.itemId).exec();
@@ -2153,24 +2153,28 @@ const getTotalBookings = async (req, res) => {
           itemDetails = await Itinerary.findById(booking.itemId).exec();
           break;
         case "Transportation":
-          itemDetails = await transportations.findById(booking.itemId).exec();
-          break;
-        case "HotelBooked":
-          itemDetails = await HotelBooked.findById(booking.itemId).exec();
-          break;
-        case "BookedFlights":
-          itemDetails = await BookedFlights.findById(booking.itemId).exec();
+          const transportation = await transportations
+            .findById(booking.itemId)
+            .exec();
+          if (transportation) {
+            itemDetails = {
+              ...transportation.toObject(),
+              Name: `Transportation From ${transportation.destination}`, // Add transportation.Name as destination
+            };
+          }
           break;
         default:
-          itemDetails = null; // In case the itemModel is unknown
+          continue; // Skip unknown models
       }
 
-      // Push result with the populated item details
-      populatedResults.push({
-        itemId: booking.itemId,
-        totalBookings: booking.totalBookings,
-        itemDetails: itemDetails,
-      });
+      // Push result with the populated item details if valid
+      if (itemDetails) {
+        populatedResults.push({
+          itemId: booking.itemId,
+          totalBookings: booking.totalBookings,
+          itemDetails: itemDetails,
+        });
+      }
     }
 
     // Step 3: Send the aggregated results as a response

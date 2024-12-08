@@ -572,7 +572,6 @@ export default function ItineraryModelGuest({
                             {itinerary.Creator.Username || "N/A"}
                           </span>
                         </div>
-
                         <div>
                           <strong>Average Rating: </strong>
                           <div className="flex items-center">

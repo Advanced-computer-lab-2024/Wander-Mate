@@ -40,15 +40,25 @@ const TopUsers = () => {
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-4 mb-0 border-none p-6">
-        <CardTitle>Top Customers</CardTitle>
-        <DashboardDropdown />
+        <CardTitle>Top Sellers</CardTitle>
       </CardHeader>
       <CardContent className="pt-0 ">
         <div className="pt-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-6">
-            {data.slice(0, 3).map((item, index) => (
-              <CustomerCard key={item._id} item={item} index={index + 1} />
-            ))}
+            {data
+              .slice(0, 3)
+              .map(
+                (item, index) => (
+                  console.log(item),
+                  (
+                    <CustomerCard
+                      key={item._id}
+                      item={item}
+                      index={index + 1}
+                    />
+                  )
+                )
+              )}
           </div>
           <div className="mt-8 ">
             {data.slice(3).map((item, index) => (

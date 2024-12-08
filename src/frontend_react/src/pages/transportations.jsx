@@ -16,6 +16,8 @@ import { Search, ArrowUpDown, CalendarIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import TransportaionTour from "../components/transportationsTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const Transportation = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -305,10 +307,10 @@ const Transportation = () => {
                     transportation.vehicleType === "Car"
                       ? 3
                       : transportation.vehicleType === "Bus"
-                      ? 7
-                      : transportation.vehicleType === "Boat"
-                      ? 5
-                      : 4
+                        ? 7
+                        : transportation.vehicleType === "Boat"
+                          ? 5
+                          : 4
                   }
                 />
               ))
@@ -320,6 +322,7 @@ const Transportation = () => {
           </div>
         </div>
       </TransportaionTour>
+      <TourismGovernerFooter />
     </>
   );
 };

@@ -21,10 +21,10 @@ const OrderCard = () => {
 
                 // Filter pending and completed orders
                 const pendingOrders = orders.filter((order) => order.status === "pending");
-                const completedOrders = orders.filter((order) => order.status === "completed");
+                const completedOrders = orders.filter((order) => order.status === "delivered"||order.status === "shipped");
 
                 // Calculate total sales
-                const total = completedOrders.reduce((acc, order) => acc + order.price, 0);
+                const total = completedOrders.reduce((acc, order) => acc + order.total, 0);
 
                 // Get today's date to filter today's orders
                 const today = new Date().toLocaleDateString();
@@ -55,7 +55,7 @@ const OrderCard = () => {
                 </div>
                 <span className="text-lg font-semibold text-[#6c3eae]">Total Sales</span>
                 <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-[#6c3eae]">${totalSales.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-[#6c3eae]">${Number(totalSales).toFixed(2)}</span>
                     <Icon icon="heroicons:arrow-trending-up" className="text-[#6c3eae] w-5 h-5" />
                 </div>
                 {/* Circle at the corner (rounded corner style) */}

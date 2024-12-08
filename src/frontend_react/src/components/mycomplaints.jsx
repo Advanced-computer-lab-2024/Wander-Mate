@@ -10,6 +10,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DataTableFacetedFilter } from "../components/table/data-table-faceted-filter";
 import NavigationMenuBar from "./NavigationMenuBar";
 import HeaderT from "./headerT";
+import ComplaintForm from "./fileComplaintComponent";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
 const columns = [
   {
@@ -76,6 +85,7 @@ const ViewMyComplaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [isComplaintFormOpen, setIsComplaintFormOpen] = useState(false);
   const { toast } = useToast();
 
   const fetchComplaints = async () => {
@@ -131,7 +141,19 @@ const ViewMyComplaints = () => {
           <HeaderT />
         </div>
         <br/>
+     
       <div className="mb-3 flex justify-end mr-[5vw]">
+        
+      <div className="mb-4 flex justify-end mr-[2vw]">
+                  <Button onClick={() => setIsComplaintFormOpen(true)}>
+                    File Complaint
+               </Button>
+               <Sheet open={isComplaintFormOpen} onOpenChange={setIsComplaintFormOpen}>
+        <SheetContent>
+          <ComplaintForm />
+        </SheetContent>
+      </Sheet>
+      </div>
         <DataTableFacetedFilter 
           column={table.getColumn("Status")}
           title="Status"
