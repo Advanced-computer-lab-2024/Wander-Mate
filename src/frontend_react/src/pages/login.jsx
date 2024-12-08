@@ -102,7 +102,7 @@ const LogInForm = () => {
             setTimeout(() => {
               if (response.data.status === "accepted") {
                 sessionStorage.setItem("status", "Accepted");
-                navigate("/AboutUsSeller");
+                navigate("/sellerDashboard");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");

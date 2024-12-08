@@ -12,7 +12,7 @@ const ListItemSeller = ({ item, index }) => {
             <Avatar className="h-16 w-16">
               <AvatarImage src={image} />
               <AvatarFallback>
-                {(item.user.FullName || item.user.Username)
+                {(item.fullName)
                   ?.substring(0, 2)
                   .toUpperCase()}
               </AvatarFallback>
@@ -23,10 +23,10 @@ const ListItemSeller = ({ item, index }) => {
           </div>
           <div>
             <div className="text-sm font-medium text-default-800 mb-1 whitespace-nowrap">
-              {item.user.fullName}
+              {item.fullName}
             </div>
             <div className="text-xs text-default-600 whitespace-nowrap">
-              {item.user.email}
+              {item.email}
             </div>
           </div>
         </div>
