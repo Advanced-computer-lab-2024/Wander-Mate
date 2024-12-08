@@ -11,7 +11,6 @@ import {
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import axios from "axios";
-// import BasicMap from "./ui/basic-map";
 import NonMovableMap from "./ui/nonMovableMap";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
@@ -28,7 +27,6 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
  
-
   const handleOpenChange = (open) => {
     console.log(place);
     setIsOpen(open);
@@ -43,9 +41,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
     }
   };
 
-  const doNothing = () => {
-
-  }
+  const doNothing = () => {}
 
   const images = place.images;
 
@@ -87,15 +83,13 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
   
       const { userID } = await reply.json();
   
-      // Log the data before sending the request
       const requestData = {
         userId: userID,
         eventId: place.placeId,
         type: "Attraction",
       };
-      console.log("Request Data:", requestData);  // <-- Added this log
+      console.log("Request Data:", requestData);
   
-      // Call the correct endpoint based on the current state of `isFavorite`
       if (isFavorite) {
         await axios.delete("http://localhost:8000/unbookmarkEvent", { data: requestData });
         toast.success("Removed from Favorites");
@@ -103,9 +97,6 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
         await axios.post("http://localhost:8000/Bookmarkevent", requestData);
         toast.success("Added to Favorites");
       }
-  
-      // Update the favorite status only after the backend operation succeeds
-      // setIsFavorite((prevState) => !prevState);
     } catch (error) {
       console.error("Error toggling favorite Place:", error);
       if (error.response) {
@@ -114,10 +105,6 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
       toast.error("Failed to update favorite status: " + (error.response?.data?.message || error.message));
     }
   };
-  
-  
-  
-  
 
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
@@ -158,43 +145,43 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Place Image */}
               <div className="aspect-square overflow-hidden rounded-lg ">
-              <Carousel >
-            <CarouselContent>
-              {images.length > 0 ? (
-                images.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
-                      <img
-                        className="w-full h-full "
-                        src={
-                          image.data
-                            ? `data:${image.contentType};base64,${image.data}`
-                            : image
-                        }
-                        alt={`${place.name} image ${index + 1}`}
-                      />
-                    </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                <CarouselItem>
-                  <div className="flex items-center justify-center h-full">
-                    <img
-                      src="/placeholder.svg?height=191&width=191"
-                      alt="Placeholder"
-                      className="max-h-[191px] w-auto"
-                    />
-                  </div>
-                </CarouselItem>
-              )}
-            </CarouselContent>
-            {images.length > 1 && (
-              <>
-                <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
-                <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
-              </>
-            )}
-          </Carousel>
+                <Carousel >
+                  <CarouselContent>
+                    {images.length > 0 ? (
+                      images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <div className="w-full h-full flex items-center justify-center bg-default-100 dark:bg-default-200">
+                            <img
+                              className="w-full h-full "
+                              src={
+                                image.data
+                                  ? `data:${image.contentType};base64,${image.data}`
+                                  : image
+                              }
+                              alt={`${place.name} image ${index + 1}`}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))
+                    ) : (
+                      <CarouselItem>
+                        <div className="flex items-center justify-center h-full">
+                          <img
+                            src="/placeholder.svg?height=191&width=191"
+                            alt="Placeholder"
+                            className="max-h-[191px] w-auto"
+                          />
+                        </div>
+                      </CarouselItem>
+                    )}
+                  </CarouselContent>
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white cursor-pointer z-10 bg-gray-800 rounded-full p-2 hover:bg-gray-600" />
+                    </>
+                  )}
+                </Carousel>
               </div>
 
               {/* Place Info */}
@@ -232,7 +219,15 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                       <div>
                         <span className="font-semibold">Ticket Prices:</span>
                         <ul className="text-sm text-gray-600">
-                         {place.currency} {place.TicketPrices}
+                          {place.TicketPrices && place.TicketPrices.length > 0 ? (
+                            place.TicketPrices.map((ticket, index) => (
+                              <li key={index}>
+                                {ticket.type}: {place.currency} {ticket.price}
+                              </li>
+                            ))
+                          ) : (
+                            <li>No ticket prices available</li>
+                          )}
                         </ul>
                       </div>
                   </div>
@@ -304,9 +299,6 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
-                {/* <TabsTrigger value="attractions">
-                  Nearby Attractions
-                </TabsTrigger> */}
                 <TabsTrigger value="Location">
                   Location
                 </TabsTrigger>
@@ -343,50 +335,35 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                   </CardContent>
                 </Card>
               </TabsContent>
-              {/* <TabsContent value="attractions" className="mt-4">
+              <TabsContent value="Location" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    <p className="text-gray-600">
-                      {place.nearbyAttractions
-                        ? place.nearbyAttractions
-                        : "No nearby attractions information available."}
+                    <p className="text-sm text-gray-600 mb-4">
+                      <span className="font-semibold">Location:</span> {place.location}
+                      <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => {
+                          const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
+                          window.open(mapUrl, "_blank");
+                        }}
+                      >
+                        <Icon
+                          icon="heroicons:location-marker"
+                          className="w-4 h-4 mr-2"
+                        />
+                        Open in Maps
+                      </Button>
                     </p>
+                    <div className="w-full h-64 rounded-lg">
+                      <NonMovableMap
+                        initialLocation={[place.longitude, place.latitude]}
+                        onLocationSelect={doNothing}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent> */}
-              <TabsContent value="Location" className="mt-4">
-  <Card>
-    <CardContent className="p-6">
-      <p className="text-sm text-gray-600 mb-4">
-        <span className="font-semibold">Location:</span> {place.location}
-        {/* New Button to Open Google Maps */}
-        <Button
-          variant="outline"
-          className="ml-4"
-          onClick={() => {
-            const mapUrl = `https://www.google.com/maps?q=${place.latitude},${place.longitude}`;
-            window.open(mapUrl, "_blank");
-          }}
-        >
-          <Icon
-            icon="heroicons:location-marker"
-            className="w-4 h-4 mr-2"
-          />
-          Open in Maps
-        </Button>
-      </p>
-      {/* Displaying the Map directly */}
-      <div className="w-full h-64 rounded-lg">
-        <NonMovableMap
-          initialLocation={[place.longitude, place.latitude]}
-          onLocationSelect={doNothing}
-        />
-      </div>
-    </CardContent>
-  </Card>
-</TabsContent>
-
-
+              </TabsContent>
             </Tabs>
           </div>
         </div>
@@ -394,3 +371,4 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
     </Dialog>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
@@ -11,7 +11,7 @@ import {
   CarouselNext,
 } from "./ui/carousel";
 import PlaceModal from "./placeModel";
-import { Ticket } from "lucide-react";
+import { Ticket } from 'lucide-react';
 
 export default function PlaceCard({
   placeId,
@@ -31,7 +31,8 @@ export default function PlaceCard({
   currency
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [favorite,setFavorite]=useState(false);
+  const [favorite, setFavorite] = useState(false);
+
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
@@ -100,12 +101,16 @@ export default function PlaceCard({
   };
 
   return (
-    <PlaceModal place={place} isOpen={isModalOpen} setIsOpen={setIsModalOpen} favorite={favorite === null ? false : favorite}
-    setFavorite={setFavorite}    >
+    <PlaceModal 
+      place={place} 
+      isOpen={isModalOpen} 
+      setIsOpen={setIsModalOpen} 
+      favorite={favorite === null ? false : favorite}
+      setFavorite={setFavorite}
+    >
       <Card
         className="p-4 rounded-md cursor-pointer"
         onClick={() => setIsModalOpen(true)}
-        
       >
         <div className="relative h-[191px] mb-3 rounded-md overflow-hidden">
           <Carousel>
@@ -155,16 +160,16 @@ export default function PlaceCard({
             Category: {category}
           </p>
           <div className="flex flex-wrap gap-1 mb-2">
-          {tags && tags.length > 0 ? (
-            tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))
-          ) : (
-            <div className="w-full h-4" /> // Add a space equivalent to the height of a badge
-          )}
-        </div>
+            {tags && tags.length > 0 ? (
+              tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))
+            ) : (
+              <div className="w-full h-4" /> 
+            )}
+          </div>
 
           <div className="flex items-center mb-2">
             {[...Array(5)].map((_, i) => (
@@ -178,6 +183,16 @@ export default function PlaceCard({
             ))}
             <span className="ml-2 text-sm text-gray-600">{ratings}</span>
           </div>
+          {/* {TicketPrices && TicketPrices.length > 0 && (
+            <div className="mb-2">
+              <p className="text-sm font-medium">Ticket Prices:</p>
+              {TicketPrices.map((ticket, index) => (
+                <p key={index} className="text-sm">
+                  {ticket.type}: {currency} {ticket.price}
+                </p>
+              ))}
+            </div>
+          )} */}
           <Button
             className="w-full"
             variant="outline"
@@ -194,3 +209,4 @@ export default function PlaceCard({
     </PlaceModal>
   );
 }
+
