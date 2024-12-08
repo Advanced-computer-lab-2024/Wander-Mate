@@ -879,7 +879,86 @@ const markNotificationAsReadSeller = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+const getTotalQuantitiesForSeller = async (req, res) => {
+  try {
+    const { sellerId } = req.params; // Extract sellerId from route parameters
 
+    // Step 1: Fetch the seller's products
+    const sellerProducts = await ProductModel.find({ seller: sellerId }).select('_id name price');
+    
+    if (sellerProducts.length === 0) {
+      return res.status(404).json({ message: "No products found for the seller Alah." });
+    }
+
+    // Create a map for product details
+    const productDetailsMap = sellerProducts.reduce((map, product) => {
+      map[product._id.toString()] = {
+        name: product.name,
+        price: product.price,
+      };
+      return map;
+    }, {});
+
+    // Step 2: Fetch total quantities sold for the seller's products
+    const productIds = sellerProducts.map(product => product._id);
+    
+    const result = await OrderModel.aggregate([
+      {
+        $match: {
+          products: { $exists: true, $ne: [] },
+          quantities: { $exists: true, $ne: [] },
+        },
+      },
+      {
+        $project: {
+          productQuantities: { $zip: { inputs: ["$products", "$quantities"] } },
+        },
+      },
+      {
+        $unwind: "$productQuantities",
+      },
+      {
+        $project: {
+          productId: { $arrayElemAt: ["$productQuantities", 0] },
+          quantity: { $arrayElemAt: ["$productQuantities", 1] },
+        },
+      },
+      {
+        $match: { productId: { $in: productIds } },
+      },
+      {
+        $group: {
+          _id: "$productId",
+          totalQuantity: { $sum: "$quantity" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          totalQuantity: 1,
+        },
+      },
+    ]);
+
+    // Step 3: Combine results with product details
+    const response = result.map(item => ({
+      productId: item.productId,
+      totalQuantity: item.totalQuantity,
+      productDetails: productDetailsMap[item.productId.toString()],
+    }));
+
+    res.status(200).json({
+      message: "Total quantities calculated and populated successfully.",
+      data: response,
+    });
+  } catch (error) {
+    console.error("Error calculating total quantities by seller:", error);
+    res.status(500).json({
+      message: "Server error while calculating total quantities by seller.",
+    });
+  }
+};
 
 module.exports = {
   createSeller,
@@ -908,4 +987,5 @@ module.exports = {
   viewMyNotificationsSeller,
   removeNotificationSeller,
   markNotificationAsReadSeller,
+  getTotalQuantitiesForSeller
 };

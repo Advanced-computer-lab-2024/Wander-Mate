@@ -21,6 +21,8 @@ import {
 import BasicMap from "./ui/basic-map";
 import { Portal } from "@radix-ui/react-portal";
 import NationalitySelect from "./nationsSelect";
+
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 const AddNewAddressCard = ({ onAddressAdded }) => {
   const [username, setUsername] = useState("");
   const [countries, setCountries] = useState([]);
@@ -158,64 +160,65 @@ const AddNewAddressCard = ({ onAddressAdded }) => {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto max-h-[80vh] overflow-y-auto z-1000">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">Add New Address</CardTitle>
-        <div className="mt-2">
-          <Badge
-            variant="secondary"
-            className="inline-block px-3 py-1 rounded-full text-sm"
-          >
-            {username}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="street">Street</Label>
-            <Input
-              id="street"
-              name="street"
-              value={newAddress.street}
-              onChange={handleInputChange}
-              required
-            />
+    <React.Fragment>
+      <Card className="w-full max-w-md mx-auto max-h-[80vh] overflow-y-auto z-1000">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Add New Address</CardTitle>
+          <div className="mt-2">
+            <Badge
+              variant="secondary"
+              className="inline-block px-3 py-1 rounded-full text-sm"
+            >
+              {username}
+            </Badge>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              name="city"
-              value={newAddress.city}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State</Label>
-            <Input
-              id="state"
-              name="state"
-              value={newAddress.state}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="zipCode">Zip Code</Label>
-            <Input
-              id="zipCode"
-              name="zipCode"
-              value={newAddress.zipCode}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
-            <NationalitySelect onChange={handleCountryChange} />
-            {/* <Select
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="street">Street</Label>
+              <Input
+                id="street"
+                name="street"
+                value={newAddress.street}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                name="city"
+                value={newAddress.city}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="state">State</Label>
+              <Input
+                id="state"
+                name="state"
+                value={newAddress.state}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="zipCode">Zip Code</Label>
+              <Input
+                id="zipCode"
+                name="zipCode"
+                value={newAddress.zipCode}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <NationalitySelect onChange={handleCountryChange} />
+              {/* <Select
                 onValueChange={handleCountryChange}
                 value={newAddress.country}
               >
@@ -241,17 +244,19 @@ const AddNewAddressCard = ({ onAddressAdded }) => {
                   </div>
                 </SelectContent>
               </Select> */}
-          </div>
-          <BasicMap
-            initialLocation={newAddress.location.coordinates}
-            onLocationSelect={handleLocationSelect}
-          />
-          <Button type="submit" className="w-full">
-            Add Address
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            </div>
+            <BasicMap
+              initialLocation={newAddress.location.coordinates}
+              onLocationSelect={handleLocationSelect}
+            />
+            <Button type="submit" className="w-full">
+              Add Address
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 };
 

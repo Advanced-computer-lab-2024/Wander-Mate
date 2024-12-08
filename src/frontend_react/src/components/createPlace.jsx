@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -6,8 +6,10 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Icon } from "@iconify/react";
-import toast from 'react-hot-toast';
-import { Toaster } from 'react-hot-toast';
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 import BasicMap from './ui/basic-map';
 
 const CreatePlace = () => {
@@ -79,7 +81,7 @@ const CreatePlace = () => {
       const newPreviewImages = newFiles.map(file => URL.createObjectURL(file));
       setPreviewImages(prev => [...prev, ...newPreviewImages]);
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
@@ -87,9 +89,9 @@ const CreatePlace = () => {
   };
 
   const handleTagChange = (tagId) => {
-    setSelectedTags(prev =>
+    setSelectedTags((prev) =>
       prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
+        ? prev.filter((id) => id !== tagId)
         : [...prev, tagId]
     );
   };
@@ -99,15 +101,18 @@ const CreatePlace = () => {
     const submitData = new FormData();
 
     for (const key in formData) {
-      if (key === 'Location') {
-        const [lat, lng] = formData[key].split(',').map(Number);
-        submitData.append('Location', JSON.stringify({
-          type: "Point",
-          coordinates: [lng, lat],
-        }));
-      } else if (key === 'pictures') {
+      if (key === "Location") {
+        const [lat, lng] = formData[key].split(",").map(Number);
+        submitData.append(
+          "Location",
+          JSON.stringify({
+            type: "Point",
+            coordinates: [lng, lat],
+          })
+        );
+      } else if (key === "pictures") {
         formData[key].forEach((file) => {
-          submitData.append('pictures', file);
+          submitData.append("pictures", file);
         });
       } else {
         submitData.append(key, formData[key]);
@@ -241,16 +246,16 @@ const CreatePlace = () => {
                 />
               </div>
 
-              <div className="space-y-6">
-                <Input
-                  id="Name"
-                  name="Name"
-                  placeholder="Place Name"
-                  required
-                  value={formData.Name}
-                  onChange={handleInputChange}
-                  className="text-2xl font-bold"
-                />
+                <div className="space-y-6">
+                  <Input
+                    id="Name"
+                    name="Name"
+                    placeholder="Place Name"
+                    required
+                    value={formData.Name}
+                    onChange={handleInputChange}
+                    className="text-2xl font-bold"
+                  />
 
                 <div className="space-y-2">
                   <BasicMap
@@ -281,25 +286,31 @@ const CreatePlace = () => {
                   </RadioGroup>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Tags:</Label>
-                  <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
-                    {tags.map(tag => (
-                      <div key={tag._id} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`tag_${tag._id}`}
-                          checked={selectedTags.includes(tag._id)}
-                          onChange={() => handleTagChange(tag._id)}
-                          className="h-4 w-4 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <label htmlFor={`tag_${tag._id}`} className="text-sm font-medium">
-                          {tag.Name}
-                        </label>
-                      </div>
-                    ))}
+                  <div className="space-y-2">
+                    <Label>Tags:</Label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
+                      {tags.map((tag) => (
+                        <div
+                          key={tag._id}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            id={`tag_${tag._id}`}
+                            checked={selectedTags.includes(tag._id)}
+                            onChange={() => handleTagChange(tag._id)}
+                            className="h-4 w-4 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <label
+                            htmlFor={`tag_${tag._id}`}
+                            className="text-sm font-medium"
+                          >
+                            {tag.Name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
                 <div>
                   <Label>Ticket Prices</Label>
@@ -351,17 +362,17 @@ const CreatePlace = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Place Description:</Label>
-                  <Textarea
-                    id="Description"
-                    name="Description"
-                    placeholder="Describe this place"
-                    required
-                    value={formData.Description}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Place Description:</Label>
+                    <Textarea
+                      id="Description"
+                      name="Description"
+                      placeholder="Describe this place"
+                      required
+                      value={formData.Description}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
                 <div className="space-y-2">
                   <Label>Opening Hours:</Label>

@@ -16,6 +16,8 @@ import { useThemeStore } from "../store";
 import { useTheme } from "next-themes";
 import { themes } from "../config/thems";
 import { Doughnut } from "react-chartjs-2";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 import {
   Card,
   CardHeader,
@@ -73,14 +75,16 @@ const LegendEventsSeller = ({ height = 350 }) => {
 
         const { userID } = await reply.json();
         const sellerId = userID;
-        const response = await fetch(`http://localhost:8000/getSalesReport/${sellerId}`);
+        const response = await fetch(
+          `http://localhost:8000/getTotalQuantitiesForSeller/${sellerId}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const result = await response.json();
-
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (result.data && Array.isArray(result.data)) {
+          setChartData(result.data);
         } else {
           console.error("No sales data available");
           setChartData([]);
@@ -97,12 +101,24 @@ const LegendEventsSeller = ({ height = 350 }) => {
   }, []);
 
   const data = {
-    labels: chartData?.length > 0 ? chartData.map((item) => item.productName) : [],
+    labels:
+      chartData?.length > 0
+        ? chartData.map((item) => item.productDetails.name)
+        : [],
     datasets: [
       {
         label: "Total Quantity",
-        data: chartData?.length > 0 ? chartData.map((item) => item.totalQuantity) : [],
-        backgroundColor: [rgbPrimary, rgbInfo, rgbWarning, rgbSuccess, rgbMuted],
+        data:
+          chartData?.length > 0
+            ? chartData.map((item) => item.totalQuantity)
+            : [],
+        backgroundColor: [
+          rgbPrimary,
+          rgbInfo,
+          rgbWarning,
+          rgbSuccess,
+          rgbMuted,
+        ],
       },
     ],
   };
@@ -126,14 +142,17 @@ const LegendEventsSeller = ({ height = 350 }) => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <Card className="max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle>Sales Report</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Doughnut options={options} data={data} height={height} />
-      </CardContent>
-    </Card>
+    <React.Fragment>
+      <Card className="max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle>Sales Report</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Doughnut options={options} data={data} height={height} />
+        </CardContent>
+      </Card>
+      {/* <TourismGovernerFooter /> */}
+    </React.Fragment>
   );
 };
 

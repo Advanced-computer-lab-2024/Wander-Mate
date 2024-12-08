@@ -5,8 +5,10 @@ import ItineraryCard from "../components/itineraryCard";
 import ActivityCard from "../components/activityCard";
 import PlaceCard from "../components/placeCard";
 import useEmblaCarousel from "embla-carousel-react";
+import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../components/ui/button";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const EmblaCarousel = ({ children, title }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -142,7 +144,11 @@ const ViewBookmarks = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto p-4">
+        <ECommerceDefaultSkeleton />
+      </div>
+    );
   }
 
   if (error) {
@@ -274,6 +280,7 @@ const ViewBookmarks = () => {
           </EmblaCarousel>
         </div>
       )}
+      <TourismGovernerFooter />
     </React.Fragment>
   );
 };

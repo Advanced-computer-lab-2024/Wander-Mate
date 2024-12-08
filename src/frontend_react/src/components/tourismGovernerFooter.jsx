@@ -8,18 +8,16 @@ const TourismGovernerFooter = () => {
         <div className="flex flex-wrap justify-between">
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-2">About WanderMate</h3>
-            <p className="text-gray-400">
-              Your Traveling Best Mate
-            </p>
+            <p className="text-gray-400">Your Traveling Best Mate</p>
           </div>
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-2">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <Link to="/about" className="text-gray-400 hover:text-white">
                   About Us
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/contact" className="text-gray-400 hover:text-white">
                   Contact

@@ -41,62 +41,60 @@ const ChangePassword = ({ URL }) => {
     return Object.values(updatedRequirements).every(Boolean);
   };
 
- const handleChangePassword = async () => {
-  if (!validatePassword(newPassword)) {
-    setError("Password does not meet the requirements.");
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    setError("Passwords do not match.");
-    return;
-  }
-
-  try {
-    // Fetch the username from sessionStorage
-    const username = sessionStorage.getItem("username");
-    if (!username) {
-      setError("Username not found in session.");
+  const handleChangePassword = async () => {
+    if (!validatePassword(newPassword)) {
+      setError("Password does not meet the requirements.");
       return;
     }
 
-    // Fetch the user ID from the backend using the username
-    const reply = await fetch(`http://localhost:8000/getID/${username}`);
-    if (!reply.ok) throw new Error("Failed to get user ID");
-
-    // Destructure userID from the response
-    const { userID } = await reply.json();
-
-    // Call API to change the password
-    const response = await fetch(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: userID,          // Use the userID received from the backend
-        oldPassword: currentPassword,
-        newPassword: newPassword,
-      }),
-    });
-
-    const data = await response.json();
-    if (data.success) {
-      setError("");
-      toast.success("Password changed successfully.");
-    } else {
-      toast.error(data.message);
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
     }
-  } catch (error) {
-    toast.error(error.message || "An unexpected error occurred.");
-  }
-};
 
+    try {
+      // Fetch the username from sessionStorage
+      const username = sessionStorage.getItem("username");
+      if (!username) {
+        setError("Username not found in session.");
+        return;
+      }
+
+      // Fetch the user ID from the backend using the username
+      const reply = await fetch(`http://localhost:8000/getID/${username}`);
+      if (!reply.ok) throw new Error("Failed to get user ID");
+
+      // Destructure userID from the response
+      const { userID } = await reply.json();
+
+      // Call API to change the password
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userID, // Use the userID received from the backend
+          oldPassword: currentPassword,
+          newPassword: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setError("");
+        toast.success("Password changed successfully.");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message || "An unexpected error occurred.");
+    }
+  };
 
   return (
     <div className="space-y-6">
-      
-      <Toaster/>
+      <Toaster />
       <Card className="rounded-lg p-6 w-full">
         <CardContent>
           <div className="grid grid-cols-12 gap-y-5">
@@ -177,43 +175,42 @@ const ChangePassword = ({ URL }) => {
             </div>
 
             <div className="mt-2 text-sm text-gray-600 col-span-12">
-                Password Requirements:
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li
-                    className={`${
-                      requirementsMet.length ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    At least 8 characters
-                  </li>
-                  <li
-                    className={`${
-                      requirementsMet.number ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    At least 1 number
-                  </li>
-                  <li
-                    className={`${
-                      requirementsMet.specialChar
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    At least 1 special character (!@#$%^&*)
-                  </li>
-                  <li
-                    className={`${
-                      requirementsMet.uppercase
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    At least 1 uppercase letter
-                  </li>
-                </ul>
-              </div>
-
+              Password Requirements:
+              <ul className="list-disc pl-5 mt-1 space-y-1">
+                <li
+                  className={`${
+                    requirementsMet.length ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  At least 8 characters
+                </li>
+                <li
+                  className={`${
+                    requirementsMet.number ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  At least 1 number
+                </li>
+                <li
+                  className={`${
+                    requirementsMet.specialChar
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  At least 1 special character (!@#$%^&*)
+                </li>
+                <li
+                  className={`${
+                    requirementsMet.uppercase
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  At least 1 uppercase letter
+                </li>
+              </ul>
+            </div>
 
             {error && (
               <div className="col-span-12 text-red-500 text-sm">{error}</div>

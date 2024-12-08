@@ -5,6 +5,9 @@ import FileUploaderMultiple from "../components/uploadDocs";
 import { useNavigate } from "react-router-dom";
 import auth3Light from "../public/images/auth/auth3-light.png";
 import auth3Dark from "../public/images/auth/auth3-dark.png";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import React from "react";
+
 const UploadDocs = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState();
@@ -56,21 +59,28 @@ const UploadDocs = () => {
     fetchId();
   });
   return (
-    <div className="loginwrapper  flex justify-center items-center relative overflow-hidden">
-      <img
-        src={auth3Dark}
-        alt="background"
-        className="absolute top-0 left-0 w-full h-full light:hidden"
-      />
-      <img
-        src={auth3Light}
-        alt="background"
-        className="absolute top-0 left-0 w-full h-full dark:hidden"
-      />
-      <div className="w-full bg-background   py-5 max-w-xl  rounded-xl relative z-10 2xl:p-16 xl:p-12 p-10 m-4 ">
-        <FileUploaderMultiple ownerId={userId} httpRequest={httpRequest} nextPage={"/"}/>
+    <React.Fragment>
+      <div className="loginwrapper  flex justify-center items-center relative overflow-hidden">
+        <img
+          src={auth3Dark}
+          alt="background"
+          className="absolute top-0 left-0 w-full h-full light:hidden"
+        />
+        <img
+          src={auth3Light}
+          alt="background"
+          className="absolute top-0 left-0 w-full h-full dark:hidden"
+        />
+        <div className="w-full bg-background   py-5 max-w-xl  rounded-xl relative z-10 2xl:p-16 xl:p-12 p-10 m-4 ">
+          <FileUploaderMultiple
+            ownerId={userId}
+            httpRequest={httpRequest}
+            nextPage={"/"}
+          />
+        </div>
       </div>
-    </div>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 };
 

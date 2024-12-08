@@ -24,6 +24,7 @@ import {
 import { Filter, ArrowUpDown } from "lucide-react";
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
 import NavigationMenuBar from "../components/NavigationMenuBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function ViewItineraries() {
   const [itineraries, setItineraries] = useState([]);
@@ -413,6 +414,7 @@ export default function ViewItineraries() {
           </div>
         </div>
       </ViewItinerariesTour>
+      <TourismGovernerFooter />
     </>
   );
 }

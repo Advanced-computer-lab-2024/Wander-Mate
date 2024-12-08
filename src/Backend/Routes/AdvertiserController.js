@@ -872,6 +872,94 @@ const getAdvertiserDocuments = async (req, res) => {
   }
 };
 
+const getAdvertiserTotalAttractionBookings = async (req, res) => {
+  const { advertiserId } = req.params; // Assuming the advertiser ID is passed in the URL
+
+  try {
+    // Step 1: Fetch all attractions created by the advertiser
+    const attractions = await attractionModel.find({ Creator: advertiserId }).select(
+      "_id Name"
+    );
+    const attractionIds = attractions.map((attraction) => attraction._id);
+
+    if (attractions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No activities found for this advertiser." });
+    }
+
+    // Step 2: Aggregate bookings for the advertiser's attractions
+    const bookingSummary = await bookingSchema.aggregate([
+      {
+        $match: {
+          itemId: { $in: attractionIds }, // Match bookings for advertiser's attractions
+          itemModel: "Attraction", // Ensure we're only considering Attraction model
+        },
+      },
+      {
+        $group: {
+          _id: "$itemId", // Group by attraction ID
+          totalBookings: { $sum: 1 }, // Count total bookings
+          totalRevenue: { $sum: "$price" }, // Sum revenue
+        },
+      },
+      {
+        $lookup: {
+          from: "attractions", // Join with Attraction model to get details
+          localField: "_id",
+          foreignField: "_id",
+          as: "attractionDetails",
+        },
+      },
+      {
+        $unwind: "$attractionDetails", // Flatten the attraction details
+      },
+      {
+        $project: {
+          _id: 0,
+          attractionId: "$_id",
+          attractionName: "$attractionDetails.Name",
+          totalBookings: 1,
+          totalRevenue: 1,
+        },
+      },
+    ]);
+
+    // Check if any bookings were found
+    if (bookingSummary.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this advertiser's activities." });
+    }
+
+    // Step 3: Calculate grand totals for the advertiser
+    const totalRevenue = bookingSummary.reduce(
+      (acc, record) => acc + record.totalRevenue,
+      0
+    );
+    const totalBookings = bookingSummary.reduce(
+      (acc, record) => acc + record.totalBookings,
+      0
+    );
+
+    // Step 4: Send response
+    res.status(200).json({
+      message: "Activity report generated successfully.",
+      report: {
+        activities: bookingSummary,
+        summary: {
+          totalBookings,
+          totalRevenue,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error generating activity report:", error);
+    res.status(500).json({
+      message: "Server error while generating activity report.",
+    });
+  }
+};
 
 module.exports = {
   createActivity,
@@ -900,4 +988,5 @@ module.exports = {
   markNotificationAsReadAd,
   removeNotificationAd,
   getAdvertiserDocuments,
+  getAdvertiserTotalAttractionBookings
 };

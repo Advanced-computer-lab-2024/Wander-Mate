@@ -14,6 +14,7 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent } from "../components/ui/card";
 import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "../components/ui/button";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const ProductsGuest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,7 +54,7 @@ const ProductsGuest = () => {
     let updatedProducts = allProducts
       .filter(
         (product) =>
-          !product.isArchived&&
+          !product.isArchived &&
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           product.price >= minPrice &&
           product.price <= maxPrice
@@ -75,9 +76,9 @@ const ProductsGuest = () => {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const c=sessionStorage.getItem("curr");
-        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
-          
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
         );
         const data = await response.json();
         setExchangeRates(data.rates);
@@ -116,7 +117,6 @@ const ProductsGuest = () => {
 
   return (
     <>
-
       <div className="container mx-auto p-4">
         <Card className="mb-8">
           <CardContent className="p-6">
@@ -213,8 +213,9 @@ const ProductsGuest = () => {
                 productId={product._id}
                 name={product.name}
                 description={product.description}
-                price={(product.price/ (exchangeRates[currency] || 1)
-                ).toFixed(2)}
+                price={(product.price / (exchangeRates[currency] || 1)).toFixed(
+                  2
+                )}
                 seller={product.seller || "Unknown"}
                 ratings={product.ratings}
                 reviews={product.reviews}
@@ -230,6 +231,7 @@ const ProductsGuest = () => {
           )}
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
 };

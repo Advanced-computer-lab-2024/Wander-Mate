@@ -16,6 +16,7 @@ import { useThemeStore } from "../store";
 import { useTheme } from "next-themes";
 import { themes } from "../config/thems";
 import { Doughnut } from "react-chartjs-2";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 ChartJS.register(
   CategoryScale,
@@ -67,20 +68,26 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
 
         const { userID } = await reply.json();
         const tourguideId = userID;
-        const response = await fetch(`http://localhost:8000/getItinerarySalesReport/${tourguideId}`);
+        const response = await fetch(
+          `http://localhost:8000/getTotalBookingsForItineraryTourGuide/${tourguideId}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         const result = await response.json();
         // Check if result.data exists and is an array
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (
+          result.report.itineraries &&
+          Array.isArray(result.report.itineraries)
+        ) {
+          setChartData(result.report.itineraries);
         } else {
           console.error("No sales data available");
           setChartData([]); // Set to empty array if data is invalid
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setChartData([]); // Set to empty array on error
       } finally {
         setLoading(false); // Stop loading
@@ -92,12 +99,22 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
 
   // Check if chartData is empty or undefined before calling .map()
   const data = {
-    labels: chartData?.length > 0 ? chartData.map(item => item.itineraryName) : [],
+    labels:
+      chartData?.length > 0 ? chartData.map((item) => item.itineraryName) : [],
     datasets: [
       {
         label: "Total Quantity",
-        data: chartData?.length > 0 ? chartData.map(item => item.totalBookings) : [],
-        backgroundColor: [rgbPrimary, rgbInfo, rgbWarning, rgbSuccess, rgbMuted],
+        data:
+          chartData?.length > 0
+            ? chartData.map((item) => item.totalBookings)
+            : [],
+        backgroundColor: [
+          rgbPrimary,
+          rgbInfo,
+          rgbWarning,
+          rgbSuccess,
+          rgbMuted,
+        ],
       },
     ],
   };
@@ -121,12 +138,15 @@ const LegendEventsTourGuide = ({ height = 350 }) => {
   if (loading) return <div>Loading...</div>; // Show loading message until data is fetched
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6 ml-6">Itineraries</h1>
-      <div className="bg-white rounded-lg shadow-lg p-6">
-      <Doughnut options={options} data={data} height={height} />
+    <React.Fragment>
+      <div>
+        <h1 className="text-3xl font-bold mb-6 ml-6">Itineraries</h1>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <Doughnut options={options} data={data} height={height} />
+        </div>
       </div>
-    </div>
+      {/* <TourismGovernerFooter /> */}
+    </React.Fragment>
   );
 };
 

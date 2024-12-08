@@ -23,6 +23,7 @@ import {
 import { Filter, Loader, ArrowUpDown } from "lucide-react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ActivitiesTour from "../components/activitiesTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function Activities() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -294,6 +295,7 @@ export default function Activities() {
           </div>
         </div>
       </ActivitiesTour>
+      <TourismGovernerFooter />
     </>
   );
 }

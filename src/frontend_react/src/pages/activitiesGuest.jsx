@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, Loader } from "lucide-react";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function ActivitiesGuest() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +38,7 @@ export default function ActivitiesGuest() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
-  const combo=sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const fetchCategories = async () => {
     try {
@@ -89,9 +90,9 @@ export default function ActivitiesGuest() {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const c=sessionStorage.getItem("curr");
-        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
-          
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
         );
         const data = await response.json();
         setExchangeRates(data.rates);
@@ -236,7 +237,9 @@ export default function ActivitiesGuest() {
                   "Unknown Category"
                 }
                 tags={activity.Tags.map((tagId) => tagMap[tagId])}
-                price={(activity.Price/ (exchangeRates[currency] || 1)).toFixed(2)}
+                price={(
+                  activity.Price / (exchangeRates[currency] || 1)
+                ).toFixed(2)}
                 date={activity.Date}
                 time={activity.Time}
                 category={activity.Category}
@@ -249,6 +252,7 @@ export default function ActivitiesGuest() {
           )}
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
 }
