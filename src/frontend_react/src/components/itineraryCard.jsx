@@ -165,7 +165,13 @@ const ItineraryCard = ({
             </Carousel>
           </div>
           <div>
-            <p className="font-bold text-base mb-1">{name}</p>
+          <div className="flex items-center justify-between">
+  <p className="font-bold text-base">{name}</p>
+  <span className="flex items-center text-secondary-foreground font-normal text-xs gap-x-1">
+    <Icon icon="ph:star-fill" className="text-yellow-400" />
+    <span>{rating}</span>
+  </span>
+</div>
 
             {tags && tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
