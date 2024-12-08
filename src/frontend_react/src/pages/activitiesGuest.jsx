@@ -21,7 +21,8 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, Loader } from "lucide-react";
-import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import GuestFooter from "../components/GuestFooter";
+import GuestNavigationMenuBar from "../components/Guestnavbar";
 
 export default function ActivitiesGuest() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,6 +40,7 @@ export default function ActivitiesGuest() {
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
   const combo = sessionStorage.getItem("curr");
+  const [likedItemsCount, setLikedItemsCount] = useState(0);
 
   const fetchCategories = async () => {
     try {
@@ -146,6 +148,7 @@ export default function ActivitiesGuest() {
 
   return (
     <>
+    <GuestNavigationMenuBar likedItemsCount={likedItemsCount} />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Activities</h1>
 
@@ -252,7 +255,7 @@ export default function ActivitiesGuest() {
           )}
         </div>
       </div>
-      <TourismGovernerFooter />
+      <GuestFooter />
     </>
   );
 }

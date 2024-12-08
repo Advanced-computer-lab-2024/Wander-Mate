@@ -24,6 +24,8 @@ import {
 } from "../components/ui/sheet";
 import { Filter, X } from "lucide-react";
 import ViewPlacesTour from "../components/placesTour";
+import GuestFooter from "../components/GuestFooter";
+import GuestNavigationMenuBar from "../components/Guestnavbar";
 
 export default function PlacesGuest() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,6 +40,7 @@ export default function PlacesGuest() {
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
   const combo=sessionStorage.getItem("curr");
+  const [likedItemsCount, setLikedItemsCount] = useState(0);
 
   const fetchImages = async (activityId) => {
     try {
@@ -168,6 +171,7 @@ export default function PlacesGuest() {
 
   return (
     <>
+    <GuestNavigationMenuBar likedItemsCount={likedItemsCount} />
       <ViewPlacesTour>
         <div className="container mx-auto p-4" id="container">
           <h1 className="text-2xl font-bold mb-4">Places</h1>
@@ -272,6 +276,7 @@ export default function PlacesGuest() {
           </div>
         </div>
       </ViewPlacesTour>
+      <GuestFooter />
     </>
   );
 }

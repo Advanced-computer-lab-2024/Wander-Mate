@@ -249,7 +249,7 @@ const ProductCardGuest = ({
               onClick={(e) => {
                 e.stopPropagation();
                 if (isInStock()) {
-                  handleAddToCart();
+                  navigate("/loginPage");
                 } else {
                   // Implement notify me functionality here
                   console.log("Notify me when available");

@@ -122,6 +122,9 @@ import AdDashboard from "./pages/AdDashboard";
 import TourismGovernerPlaces from "./pages/tourismGovernerPlaces";
 import TourismGovProfile from "./pages/TourismGovProfile";
 import TopUsers from "./components/topUsers";
+import GuestNavigationMenuBar from "./components/Guestnavbar";
+import Aboutusguest from "./pages/aboutusguest";
+import MeetPageguest from "./pages/meetpageguest";
 
 function App() {
   return (
@@ -285,6 +288,9 @@ function App() {
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
         <Route path="/TourismGovProfile" element={<TourismGovProfile/>}/>
         <Route path="/pop" element={<TopUsers />} />
+        <Route path="/GuestNavigationMenuBar" element={<GuestNavigationMenuBar/>}/>
+        <Route path="/aboutusguest" element={<Aboutusguest/>}/>
+        <Route path="/meetpageguest"element={<MeetPageguest/>}/>
       </Routes>
     </Router>
   );
