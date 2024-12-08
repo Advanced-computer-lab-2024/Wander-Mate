@@ -42,7 +42,9 @@ export default function EditablePlaceModal({
     name: place.name,
     description: place.description,
     category: place.category,
-    ticketPrices: place.ticketPrices || [],
+    ticketPrices: place.TicketPrices && place.TicketPrices.length > 0
+      ? JSON.parse(place.TicketPrices[0])
+      : [],
     currency: place.currency,
     location: place.location,
   });
@@ -167,7 +169,7 @@ export default function EditablePlaceModal({
         {
           Name: editedPlace.name,
           Description: editedPlace.description,
-          TicketPrices: editedPlace.ticketPrices,
+          TicketPrices: JSON.stringify(editedPlace.ticketPrices),
           OpeningHours: editedPlace.OpeningHours,
         }
       );
@@ -176,6 +178,9 @@ export default function EditablePlaceModal({
         setIsEditing(false);
         toast.success("Place details updated successfully!");
         // Update the place state or refetch data here
+        if (typeof place.onUpdate === 'function') {
+          place.onUpdate(response.data);
+        }
       } else {
         toast.error("Failed to update place details");
       }
@@ -224,7 +229,9 @@ export default function EditablePlaceModal({
       name: place.name,
       description: place.description,
       category: place.category,
-      ticketPrices: place.ticketPrices || [],
+      ticketPrices: place.TicketPrices && place.TicketPrices.length > 0
+        ? JSON.parse(place.TicketPrices[0])
+        : [],
       currency: place.currency,
       location: place.location,
     });
@@ -232,20 +239,20 @@ export default function EditablePlaceModal({
 
   const handleAddTicketPrice = () => {
     if (newTicketType && newTicketPrice) {
-      setEditedPlace((prev) => ({
+      setEditedPlace(prev => ({
         ...prev,
         ticketPrices: [
           ...prev.ticketPrices,
-          { type: newTicketType, price: parseFloat(newTicketPrice) },
+          [newTicketType, parseFloat(newTicketPrice)]
         ],
       }));
-      setNewTicketType("");
-      setNewTicketPrice("");
+      setNewTicketType('');
+      setNewTicketPrice('');
     }
   };
 
   const handleRemoveTicketPrice = (index) => {
-    setEditedPlace((prev) => ({
+    setEditedPlace(prev => ({
       ...prev,
       ticketPrices: prev.ticketPrices.filter((_, i) => i !== index),
     }));
@@ -343,13 +350,11 @@ export default function EditablePlaceModal({
                           className="flex items-center space-x-2 mt-2"
                         >
                           <Input
-                            value={ticket.type}
+                            value={ticket[0]}
                             onChange={(e) => {
-                              const newTicketPrices = [
-                                ...editedPlace.ticketPrices,
-                              ];
-                              newTicketPrices[index].type = e.target.value;
-                              setEditedPlace((prev) => ({
+                              const newTicketPrices = [...editedPlace.ticketPrices];
+                              newTicketPrices[index][0] = e.target.value;
+                              setEditedPlace(prev => ({
                                 ...prev,
                                 ticketPrices: newTicketPrices,
                               }));
@@ -358,15 +363,11 @@ export default function EditablePlaceModal({
                           />
                           <Input
                             type="number"
-                            value={ticket.price}
+                            value={ticket[1]}
                             onChange={(e) => {
-                              const newTicketPrices = [
-                                ...editedPlace.ticketPrices,
-                              ];
-                              newTicketPrices[index].price = parseFloat(
-                                e.target.value
-                              );
-                              setEditedPlace((prev) => ({
+                              const newTicketPrices = [...editedPlace.ticketPrices];
+                              newTicketPrices[index][1] = e.target.value ? parseFloat(e.target.value) : '';
+                              setEditedPlace(prev => ({
                                 ...prev,
                                 ticketPrices: newTicketPrices,
                               }));
@@ -396,7 +397,7 @@ export default function EditablePlaceModal({
                         <Button onClick={handleAddTicketPrice}>Add</Button>
                       </div>
                     </div>
-                    <div>
+                    {/* <div>
                       <Label htmlFor="currency">Currency</Label>
                       <Input
                         id="currency"
@@ -405,7 +406,7 @@ export default function EditablePlaceModal({
                         onChange={handleInputChange}
                         placeholder="Currency"
                       />
-                    </div>
+                    </div> */}
 
                     <div className="flex space-x-4">
                       <Button onClick={handleSave}>Save Changes</Button>
@@ -446,19 +447,21 @@ export default function EditablePlaceModal({
                         <span className="font-semibold">Category:</span>{" "}
                         {editedPlace.category}
                       </p>
-                      <div>
-                        <span className="font-semibold">Ticket Prices:</span>
-                        <ul className="text-sm text-gray-600">
-                          {editedPlace.ticketPrices.map((ticket, index) => (
-                            <li key={index}>
-                              {ticket.type}: {editedPlace.currency}{" "}
-                              {ticket.price}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="ticket-prices mb-2">
+                        {editedPlace.ticketPrices.length > 0 ? (
+                          editedPlace.ticketPrices.map((priceEntry, index) => (
+                            <div key={index} className="ticket-price">
+                              <span>{priceEntry[0]}</span>:{" "}
+                              <span>
+                                {priceEntry[1]} {editedPlace.currency}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No ticket prices available</p>
+                        )}
                       </div>
                     </div>
-                    {/* Favorite Button and Share Button */}
                     <div className="flex space-x-4 mb-6">
                       <Button className="flex-1" onClick={handleEdit}>
                         <Icon
@@ -601,3 +604,4 @@ export default function EditablePlaceModal({
     </Dialog>
   );
 }
+

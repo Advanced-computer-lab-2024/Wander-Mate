@@ -257,7 +257,7 @@ export default function TourismGovernerPlaces() {
           ) : filteredPlaces.length > 0 ? (
             filteredPlaces.map((place) => {
               // Console log the fetched place data
-              console.log('Fetched Place:', place);
+              console.log('Fetched Place:', place.TicketPrices);
               
               return (
                 <EditablePlaceCard
@@ -274,7 +274,7 @@ export default function TourismGovernerPlaces() {
                     categories.find((cat) => cat._id === place.Category)?.Name ||
                     "No Category"
                   }
-                  TicketPrices={place.TicketPrices}
+                  TicketPrices={place.TicketPrices[0]}
                   OpeningHours={place.OpeningHours}
                 />
               );

@@ -104,6 +104,12 @@ export default function EditablePlaceCard({
     currency,
   };
 
+  // Parse the TicketPrices string from the array
+  const parsedTicketPrices =
+    TicketPrices && TicketPrices.length > 0
+      ? JSON.parse(TicketPrices[0]) // Parse the single string inside the array
+      : [];
+
   return (
     <EditablePlaceModal
       place={place}
@@ -174,6 +180,22 @@ export default function EditablePlaceCard({
               <div className="w-full h-4" /> // Add a space equivalent to the height of a badge
             )}
           </div>
+
+          {/* Render Ticket Prices */}
+          {/* <div className="ticket-prices mb-2">
+            {parsedTicketPrices.length > 0 ? (
+              parsedTicketPrices.map((priceEntry, index) => (
+                <div key={index} className="ticket-price">
+                  <span>{priceEntry[0]}</span>:{" "}
+                  <span>
+                    {priceEntry[1]}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p>No ticket prices available</p>
+            )}
+          </div> */}
 
           <div className="flex items-center mb-2">
             {[...Array(5)].map((_, i) => (
