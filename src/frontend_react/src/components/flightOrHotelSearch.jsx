@@ -8,6 +8,8 @@ import HotelCard from "./hotelCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import beach from "../public/images/onTheBeach.jpeg";
 import NavigationMenuBar from "./NavigationMenuBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const FlightOrHotelSearch = () => {
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
@@ -359,6 +361,7 @@ const FlightOrHotelSearch = () => {
           </div>
         )}
       </div>
+      <TourismGovernerFooter />
     </>
   );
 };

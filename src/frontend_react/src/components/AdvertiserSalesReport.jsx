@@ -16,6 +16,12 @@ import { useThemeStore } from "../store";
 import { useTheme } from "next-themes";
 import { themes } from "../config/thems";
 import { Doughnut } from "react-chartjs-2";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/card";
 
 ChartJS.register(
   CategoryScale,
@@ -67,9 +73,11 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
 
         const { userID } = await reply.json();
         const advertiserId = userID;
-        const response = await fetch(`http://localhost:8000/getAttractionSalesReport/${advertiserId}`);
+        const response = await fetch(
+          `http://localhost:8000/getAttractionSalesReport/${advertiserId}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         const result = await response.json();
         // Check if result.data exists and is an array
@@ -80,7 +88,7 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
           setChartData([]); // Set to empty array if data is invalid
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setChartData([]); // Set to empty array on error
       } finally {
         setLoading(false); // Stop loading
@@ -92,12 +100,22 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
 
   // Check if chartData is empty or undefined before calling .map()
   const data = {
-    labels: chartData?.length > 0 ? chartData.map(item => item.attractionName) : [],
+    labels:
+      chartData?.length > 0 ? chartData.map((item) => item.attractionName) : [],
     datasets: [
       {
         label: "Total Quantity",
-        data: chartData?.length > 0 ? chartData.map(item => item.totalBookings) : [],
-        backgroundColor: [rgbPrimary, rgbInfo, rgbWarning, rgbSuccess, rgbMuted],
+        data:
+          chartData?.length > 0
+            ? chartData.map((item) => item.totalBookings)
+            : [],
+        backgroundColor: [
+          rgbPrimary,
+          rgbInfo,
+          rgbWarning,
+          rgbSuccess,
+          rgbMuted,
+        ],
       },
     ],
   };
@@ -121,11 +139,14 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
   if (loading) return <div>Loading...</div>; // Show loading message until data is fetched
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6 ml-6">Activities</h1>
-      <div className="bg-white rounded-lg shadow-lg p-6"></div>
-      <Doughnut options={options} data={data} height={height} />
-    </div>
+    <Card className="max-w-lg mx-auto">
+      <CardHeader>
+        <CardTitle>Sales Report</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Doughnut options={options} data={data} height={height} />
+      </CardContent>
+    </Card>
   );
 };
 
