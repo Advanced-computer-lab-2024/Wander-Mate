@@ -26,6 +26,7 @@ import ProductCard from "../components/productCard";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { Skeleton } from "../components/ui/skeleton";
 import NavigationMenuBar from "../components/NavigationMenuBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function SellerPage() {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -300,6 +301,7 @@ export default function SellerPage() {
           )}
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
 }

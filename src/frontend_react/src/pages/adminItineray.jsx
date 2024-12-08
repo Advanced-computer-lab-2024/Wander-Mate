@@ -22,6 +22,7 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function AdminItineraries() {
   const [itineraries, setItineraries] = useState([]);
@@ -45,17 +46,18 @@ export default function AdminItineraries() {
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-
     const fetchExchangeRates = async () => {
       try {
-        const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+        const response = await fetch(
+          "https://api.exchangerate-api.com/v4/latest/USD"
+        );
         const data = await response.json();
         setExchangeRates(data.rates);
       } catch (error) {
         console.error("Error fetching exchange rates:", error);
       }
     };
-  
+
     fetchExchangeRates();
 
     const fetchItineraries = async () => {
@@ -136,7 +138,7 @@ export default function AdminItineraries() {
 
   const filterAndSortItineraries = () => {
     let filtered = itineraries.filter((itinerary) => {
-    //   if (itinerary.isFlagged) return false;
+      //   if (itinerary.isFlagged) return false;
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
@@ -229,12 +231,12 @@ export default function AdminItineraries() {
           onChange={handleSearch}
           className="flex-grow"
         />
-            <Label
-              htmlFor="sort-criteria"
-              className="text-sm font-medium mb-2 block"
-            >
-              Sort by
-            </Label>
+        <Label
+          htmlFor="sort-criteria"
+          className="text-sm font-medium mb-2 block"
+        >
+          Sort by
+        </Label>
         <div className="flex items-center gap-2">
           <div>
             <Select
@@ -250,12 +252,7 @@ export default function AdminItineraries() {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleSortOrderToggle}
-            
-          >
+          <Button variant="outline" size="icon" onClick={handleSortOrderToggle}>
             <ArrowUpDown
               className={`h-4 w-4 ${sortOrder === "asc" ? "rotate-180" : ""}`}
             />
@@ -288,7 +285,9 @@ export default function AdminItineraries() {
                     type="number"
                     id="budgetMin"
                     value={budget[0]}
-                    onChange={(e) => setBudget([Number(e.target.value), budget[1]])}
+                    onChange={(e) =>
+                      setBudget([Number(e.target.value), budget[1]])
+                    }
                     className="w-24"
                   />
                   <span>-</span>
@@ -296,12 +295,14 @@ export default function AdminItineraries() {
                     type="number"
                     id="budgetMax"
                     value={budget[1]}
-                    onChange={(e) => setBudget([budget[0], Number(e.target.value)])}
+                    onChange={(e) =>
+                      setBudget([budget[0], Number(e.target.value)])
+                    }
                     className="w-24"
                   />
                 </div>
               </div>
-              
+
               {/* Currency Dropdown */}
               <div>
                 <Label htmlFor="currency">Currency</Label>
@@ -366,7 +367,6 @@ export default function AdminItineraries() {
               </Button>
             </div>
           </SheetContent>
-
         </Sheet>
       </div>
 
@@ -377,29 +377,42 @@ export default function AdminItineraries() {
               key={itinerary._id}
               itineraryId={itinerary._id}
               name={itinerary.Name}
-              images={itinerary.LocationsToVisit.flatMap((location) => location.Pictures || [])}
+              images={itinerary.LocationsToVisit.flatMap(
+                (location) => location.Pictures || []
+              )}
               tags={[
-                ...itinerary.LocationsToVisit.flatMap((location) => location.Tags || []),
-                ...itinerary.Activities.flatMap((activity) => activity.Tags || [])
+                ...itinerary.LocationsToVisit.flatMap(
+                  (location) => location.Tags || []
+                ),
+                ...itinerary.Activities.flatMap(
+                  (activity) => activity.Tags || []
+                ),
               ].map((tagId) => tagMap[tagId])}
-              price={(itinerary.Price * (exchangeRates[currency] || 1)).toFixed(2)}
+              price={(itinerary.Price * (exchangeRates[currency] || 1)).toFixed(
+                2
+              )}
               currrn={currency}
               rating={itinerary.Ratings}
               Activities={itinerary.Activities.map((activity) => activity.Name)}
-              LocationsToVisit={itinerary.LocationsToVisit.map((location) => location.Name)}
-              TimeLine = {itinerary.TimeLine}
-              AvailableDates = {itinerary.AvailableDates}
-              PickUpLocation= {itinerary.PickUpLocation}
-              DropOffLocation = {itinerary.DropOffLocation}
+              LocationsToVisit={itinerary.LocationsToVisit.map(
+                (location) => location.Name
+              )}
+              TimeLine={itinerary.TimeLine}
+              AvailableDates={itinerary.AvailableDates}
+              PickUpLocation={itinerary.PickUpLocation}
+              DropOffLocation={itinerary.DropOffLocation}
               Language={itinerary.Language}
               flag={itinerary.isFlagged}
               Creator={itinerary.Creator}
             />
           ))
         ) : (
-          <p className="col-span-full text-center text-gray-500">No itineraries found</p>
+          <p className="col-span-full text-center text-gray-500">
+            No itineraries found
+          </p>
         )}
       </div>
+      <TourismGovernerFooter />
     </div>
-  )
+  );
 }

@@ -128,15 +128,15 @@ function App() {
       <Routes>
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/registerPage" element={<RegisterPage />} />
-        <Route path="/NavigationMenuBar" element={<NavigationMenuBar />} />
+        {/* <Route path="/NavigationMenuBar" element={<NavigationMenuBar />} /> */}
         <Route path="/products" element={<Products />} />
         <Route path="/AdvertiserHomepage" element={<AdvertiserHomePage />} />
         <Route path="/createActivity" element={<CreateActivity />} />
         <Route path="/places" element={<Places />} />
-        <Route path="/personalDetails" element={<TouristSettings />} />
+        {/* <Route path="/personalDetails" element={<TouristSettings />} /> */}
         <Route path="/viewAllComplaints" element={<ViewAllComplaints />} />
         <Route path="/viewItineraries" element={<ViewItineraries />} />
-        <Route path="/ratings" element={<Rating />} />
+        {/* <Route path="/ratings" element={<Rating />} /> */}
         <Route path="/uploadDocs" element={<UploadDocs />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="/" element={<StartPage />} />
@@ -146,7 +146,7 @@ function App() {
         <Route path="/productsDetails" element={<ProductDetails />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/flights" element={<FlightOrHotelSearch />} />
-        <Route path="/bookFlight" element={<BookFlight />} />
+        {/* <Route path="/bookFlight" element={<BookFlight />} /> */}
         <Route path="/newPassword" element={<NewPasswordPage />} />
         <Route path="/rejected" element={<Rejected />} />
         <Route path="pending" element={<Pending />} />
@@ -154,7 +154,7 @@ function App() {
         <Route path="/comment" element={<CommentPage />} />
         <Route path="/productSeller" element={<ProductSeller />} />
         <Route path="/sellerProducts" element={<SellerProducts />} />
-        <Route path="/map" element={<BasicMap />} />
+        {/* <Route path="/map" element={<BasicMap />} /> */}
         <Route path="/transportations" element={<Transportations />} />
         <Route path="/createPlace" element={<CreatePlace />} />
         <Route path="/showRegisteredWithDocs" element={<ShowWithDocs />} />

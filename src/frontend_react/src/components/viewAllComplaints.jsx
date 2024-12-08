@@ -5,6 +5,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton"; // You can install this package
 import AdminNavBar from "./AdminNavBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const ViewAllComplaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,6 @@ const ViewAllComplaints = () => {
               };
             })
           );
-
 
           setComplaints(enrichedComplaints);
         } else {
@@ -86,6 +87,7 @@ const ViewAllComplaints = () => {
               ))}
           </tbody>
         </table>
+        <TourismGovernerFooter />
       </Fragment>
     );
   }
@@ -94,11 +96,12 @@ const ViewAllComplaints = () => {
 
   return (
     <Fragment>
-      <AdminNavBar/>
-      <br/>
-      <br/>
-      
+      <AdminNavBar />
+      <br />
+      <br />
+
       <DataTable data={complaints} columns={columns} />
+      <TourismGovernerFooter />
     </Fragment>
   );
 };

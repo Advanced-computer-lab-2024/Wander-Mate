@@ -1,6 +1,7 @@
 import NavigationMenuBarAd from "../components/navBarAdvertiser";
 import SalesReportTableadvertiser from "../components/salestableadvertiser";
 import LegendEventsAdvertiser from "../components/AdvertiserSalesReport";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const AdDashboard = () => {
   return (
@@ -10,6 +11,8 @@ const AdDashboard = () => {
       <LegendEventsAdvertiser />
       <br></br>
       <SalesReportTableadvertiser />
+      <br></br>
+      <TourismGovernerFooter />
     </div>
   );
 };

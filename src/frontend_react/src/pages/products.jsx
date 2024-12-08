@@ -16,6 +16,7 @@ import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "../components/ui/button";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ProductsTour from "../components/productsTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -235,6 +236,7 @@ const Products = () => {
           </div>
         </div>
       </ProductsTour>
+      <TourismGovernerFooter />
     </>
   );
 };

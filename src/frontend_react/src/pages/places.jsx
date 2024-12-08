@@ -25,6 +25,7 @@ import {
 import { Filter, X } from "lucide-react";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ViewPlacesTour from "../components/placesTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function Places() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +39,7 @@ export default function Places() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [currency, setCurrency] = useState("USD");
-  const combo=sessionStorage.getItem("curr");
+  const combo = sessionStorage.getItem("curr");
 
   const fetchImages = async (activityId) => {
     try {
@@ -111,9 +112,9 @@ export default function Places() {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const c=sessionStorage.getItem("curr");
-        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${c}`
-          
+        const c = sessionStorage.getItem("curr");
+        const response = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${c}`
         );
         const data = await response.json();
         setExchangeRates(data.rates);
@@ -265,7 +266,8 @@ export default function Places() {
                     categories.find((cat) => cat._id === place.Category)
                       ?.Name || "No Category"
                   }
-                  TicketPrices={(place.TicketPrices / (exchangeRates[currency] || 1)
+                  TicketPrices={(
+                    place.TicketPrices / (exchangeRates[currency] || 1)
                   ).toFixed(2)}
                 />
               ))
@@ -275,6 +277,7 @@ export default function Places() {
           </div>
         </div>
       </ViewPlacesTour>
+      <TourismGovernerFooter />
     </>
   );
 }
