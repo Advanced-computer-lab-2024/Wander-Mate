@@ -23,6 +23,8 @@ import {
 import { Filter, Loader } from "lucide-react";
 import AddAdvertiserActivityModel from "../components/AddAdvertsierActivityModel";
 import NavigationMenuBarAd from "../components/navBarAdvertiser";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 export default function AdvertiserActivities() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -254,8 +256,8 @@ export default function AdvertiserActivities() {
                 date={activity.Date}
                 time={activity.Time}
                 category={
-                  categories.find((cat) => cat._id === activity.Category)?.Name ||
-                  "No Category"
+                  categories.find((cat) => cat._id === activity.Category)
+                    ?.Name || "No Category"
                 }
                 isAvailable={activity.IsAvailable}
                 rating={activity.Ratings}
@@ -267,6 +269,7 @@ export default function AdvertiserActivities() {
           )}
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
 }

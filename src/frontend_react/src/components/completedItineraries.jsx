@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import CompletedItineraryCard from "./completedItineraryCard";
 import ECommerceDefaultSkeleton from "./ECommerceDefaultSkeleton";
 import axios from "axios";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function CompletedItineraries() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -105,67 +106,70 @@ export default function CompletedItineraries() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Completed Itineraries</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            aria-label="Previous itineraries"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            aria-label="Next itineraries"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex -mx-2">
-          {itineraries.map((itinerary) => (
-            <div
-              key={itinerary._id}
-              className="flex-shrink-0 w-full md:w-1/2 px-2"
+    <React.Fragment>
+      <div className="container mx-auto p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Completed Itineraries</h1>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollPrev}
+              disabled={!canScrollPrev}
+              aria-label="Previous itineraries"
             >
-              <CompletedItineraryCard
-                itineraryId={itinerary.itemId._id}
-                name={itinerary.itemId.Name}
-                images={itinerary.itemId.LocationsToVisit.flatMap(
-                  (location) => location.Pictures || []
-                )}
-                price={itinerary.itemId.Price}
-                currrn={itinerary.itemId.Currency || "USD"}
-                rating={itinerary.itemId.Ratings}
-                Activities={itinerary.itemId.Activities.map(
-                  (activity) => activity.Name
-                )}
-                LocationsToVisit={itinerary.itemId.LocationsToVisit.map(
-                  (location) => location.Name
-                )}
-                TimeLine={itinerary.itemId.TimeLine}
-                BookedDate={itinerary.bookedDate}
-                PickUpLocation={itinerary.itemId.PickUpLocation}
-                DropOffLocation={itinerary.itemId.DropOffLocation}
-                Language={itinerary.itemId.Language}
-                totalRatings={itinerary.itemId.totalRatings}
-                myItRating={ratings[itinerary.itemId._id]}
-                myTourRating={ratings[itinerary.itemId.Creator._id]}
-                Creator={itinerary.itemId.Creator}
-                reFetchratings={getMyRating}
-              />
-            </div>
-          ))}
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollNext}
+              disabled={!canScrollNext}
+              aria-label="Next itineraries"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex -mx-2">
+            {itineraries.map((itinerary) => (
+              <div
+                key={itinerary._id}
+                className="flex-shrink-0 w-full md:w-1/2 px-2"
+              >
+                <CompletedItineraryCard
+                  itineraryId={itinerary.itemId._id}
+                  name={itinerary.itemId.Name}
+                  images={itinerary.itemId.LocationsToVisit.flatMap(
+                    (location) => location.Pictures || []
+                  )}
+                  price={itinerary.itemId.Price}
+                  currrn={itinerary.itemId.Currency || "USD"}
+                  rating={itinerary.itemId.Ratings}
+                  Activities={itinerary.itemId.Activities.map(
+                    (activity) => activity.Name
+                  )}
+                  LocationsToVisit={itinerary.itemId.LocationsToVisit.map(
+                    (location) => location.Name
+                  )}
+                  TimeLine={itinerary.itemId.TimeLine}
+                  BookedDate={itinerary.bookedDate}
+                  PickUpLocation={itinerary.itemId.PickUpLocation}
+                  DropOffLocation={itinerary.itemId.DropOffLocation}
+                  Language={itinerary.itemId.Language}
+                  totalRatings={itinerary.itemId.totalRatings}
+                  myItRating={ratings[itinerary.itemId._id]}
+                  myTourRating={ratings[itinerary.itemId.Creator._id]}
+                  Creator={itinerary.itemId.Creator}
+                  reFetchratings={getMyRating}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 }

@@ -70,7 +70,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

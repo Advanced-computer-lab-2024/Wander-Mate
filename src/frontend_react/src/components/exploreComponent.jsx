@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ItineraryCard from "./itineraryCard"; // Use your ItineraryCard-like component
 import { Button } from "./ui/button";
 import ECommerceDefaultSkeleton from "./ECommerceDefaultSkeleton";
+import ItineraryCardGuest from "./itineraryCardGuest";
 
 const ExploreComponent = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -52,7 +53,7 @@ const ExploreComponent = () => {
 
   const handleDiscoverMore = () => {
     // Redirect to View Itineraries page (adjust the navigation logic as per your setup)
-    window.location.href = "/viewItineraries"; // Replace with your routing mechanism if needed
+    window.location.href = "/viewItinerariesGuest"; // Replace with your routing mechanism if needed
   };
 
   return (
@@ -70,7 +71,7 @@ const ExploreComponent = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {itineraries.map((itinerary) =>
             !itinerary.isFlagged ? (
-              <ItineraryCard
+              <ItineraryCardGuest
                 key={itinerary._id}
                 itineraryId={itinerary._id}
                 name={itinerary.Name}
