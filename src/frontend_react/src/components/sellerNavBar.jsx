@@ -260,7 +260,7 @@ const SellerNavBar = () => {
                 <Button variant="ghost" size="icon" aria-label="Notifications">
                   <Bell className="h-5 w-5" />
                   {notifications.some((n) => !n.isRead) && (
-                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                    <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
                   )}
                 </Button>
               </PopoverTrigger>

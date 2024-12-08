@@ -287,6 +287,8 @@ export default function Activities() {
                   }
                   isAvailable={activity.IsAvailable}
                   rating={activity.Ratings}
+                  Creator={activity.Creator}
+
                 />
               ))
             ) : (

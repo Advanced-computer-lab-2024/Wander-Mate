@@ -64,20 +64,18 @@ const TourismGovernerFooter = () => {
             </h3>
             <ul style={{ listStyleType: "none", padding: "0" }}>
               <li>
-                <Link
-                  to="/contact"
+                <span
                   style={linkStyles}
                   onMouseOver={(e) =>
                     (e.target.style.color = hoverLinkStyles.color)
                   }
                   onMouseOut={(e) => (e.target.style.color = linkStyles.color)}
                 >
-                  Contact
-                </Link>
+                  Contact Us At : wandermate4@outlook.com
+                </span>
               </li>
               <li>
-                <Link
-                  to="/privacy"
+                <span
                   style={linkStyles}
                   onMouseOver={(e) =>
                     (e.target.style.color = hoverLinkStyles.color)
@@ -85,7 +83,7 @@ const TourismGovernerFooter = () => {
                   onMouseOut={(e) => (e.target.style.color = linkStyles.color)}
                 >
                   Privacy Policy
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -113,6 +111,7 @@ const TourismGovernerFooter = () => {
             </div>
           </div>
         </div>
+        <br />
         <div
           style={{
             position: "absolute", // This positions the element relative to its nearest positioned ancestor
