@@ -347,7 +347,7 @@ export default function ProductModal({
                         />
                         {isInStock()
                           ? "Add to Cart"
-                          : "Notify Me When Available"}
+                          : "Out Of Stock"}
                       </Button>
                     ) : (
                       <div className="flex flex-wrap gap-4 mb-4">

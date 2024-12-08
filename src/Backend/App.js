@@ -279,6 +279,7 @@ const {
   markNotificationAsReadAd,
   getAdvertiserDocuments,
   getAdvertiserTotalAttractionBookings,
+  getTouristsByAdvertiser,
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -714,3 +715,4 @@ app.get(
 );
 app.get("/getTopCustomersSeller/:sellerId", getTouristsBySeller);
 app.get("/getTopCustomersTourGuide/:tourGuideId", getTouristsByTourGuide);
+app.get("/getTopCustomersAdvertiser/:advertiserId", getTouristsByAdvertiser);
