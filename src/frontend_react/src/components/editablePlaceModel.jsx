@@ -197,6 +197,7 @@ export default function EditablePlaceModal({
       if (response.status === 200) {
         toast.success("Place deleted successfully!");
         handleOpenChange(false);
+        window.location.reload();
         // Implement any necessary state updates or navigation here
       } else {
         toast.error("Failed to delete place");

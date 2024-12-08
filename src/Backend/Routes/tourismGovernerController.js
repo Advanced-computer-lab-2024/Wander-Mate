@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const Tag = require("../Models/HistoricalTags.js");
 const Attraction = require("../Models/attractions.js");
 const Itinerary = require("../Models/itinerary.js");
+const BookMark = require("../Models/bookMark.js");
 
 //Read
 const getPlaces = async (req, res) => {
@@ -60,6 +61,7 @@ const createPlace = async (req, res) => {
   try {
     const {
       Username,
+      Creator,
       Name,
       Description,
       Location,
@@ -68,9 +70,7 @@ const createPlace = async (req, res) => {
       Category,
       Tags, // Now handling Tags as an array
     } = req.body;
-
     const objectId = new mongoose.Types.ObjectId("67025cc3bb14549b7e29f378");
-
     // Check if the pictures are uploaded (req.files is used for multiple file uploads)
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "At least one image is required." });
@@ -90,6 +90,8 @@ const createPlace = async (req, res) => {
     try {
       parsedTags = JSON.parse(Tags);
     } catch (error) {
+      console.log(error);
+
       return res.status(400).json({ message: "Invalid tags format." });
     }
 
@@ -101,7 +103,7 @@ const createPlace = async (req, res) => {
     const model = "TourismGoverner";
     // Create the new place in the database
     const newPlace = await attractionModel.create({
-      Creator: Username,
+      Creator,
       CreatorModel: model,
       Name,
       Description,
@@ -195,6 +197,7 @@ const deletePlace = async (req, res) => {
       .status(200)
       .json({ message: "Place deleted and removed from all bookmarks" });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 };
