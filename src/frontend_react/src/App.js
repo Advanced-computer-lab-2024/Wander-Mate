@@ -119,6 +119,7 @@ import AdminOrders from "./pages/AdminOrder";
 import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
 import AdDashboard from "./pages/AdDashboard";
+import TourismGovernerPlaces from "./pages/tourismGovernerPlaces";
 
 function App() {
   return (
@@ -279,6 +280,7 @@ function App() {
         <Route path="/TourGuideDash" element={<TourGuideDash />} />
         <Route path="/sellerDashboard" element={<SellerDashboard />} />
         <Route path="/AdDashboard" element={<AdDashboard />} />
+        <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
       </Routes>
     </Router>
   );

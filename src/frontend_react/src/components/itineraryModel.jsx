@@ -359,8 +359,22 @@ export default function ItineraryModel({
                       {itinerary.currrn} {itinerary.price || "N/A"}
                     </p>
                     <p className="text-sm text-gray-600">
-                      <span className="font-semibold">Ratings:</span>{" "}
-                      {itinerary.rating}
+                    <div className="flex items-center mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Icon
+                        key={i}
+                        icon="ph:star-fill"
+                        className={`w-5 h-5 ${
+                          i < Math.floor(itinerary.rating)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-2 text-sm text-gray-600">
+                      ({itinerary.rating})
+                    </span>
+                  </div>
                     </p>
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Available Dates:</span>

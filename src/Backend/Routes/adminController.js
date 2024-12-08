@@ -38,6 +38,7 @@ const Review = require("../Models/review.js");
 const BookedFlights = require("../Models/bookedFlights.js");
 const BookedHotel = require("../Models/bookedHotel.js");
 const BookedMarks = require("../Models/bookMark.js").default;
+const BookmarkModel = require("../Models/bookMark.js");
 const address = require("../Models/address.js");
 const cart = require("../Models/cart.js");
 const wishlist = require("../Models/whishlist.js");
@@ -260,7 +261,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -286,7 +287,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -312,7 +313,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -338,7 +339,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -364,7 +365,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
@@ -392,7 +393,7 @@ const deleteAccount = async (req, res) => {
       await orderModel.deleteMany({ userId: userID });
       await Review.deleteMany({ userId: userID });
       await Complaints.deleteMany({ Maker: userID });
-      await BookedMarks.deleteMany({ userId: userID });
+      await BookmarkModel.deleteMany({ userId: userID });
       await address.deleteMany({ userId: userID });
       await cart.deleteMany({ touristID: userID });
       await wishlist.deleteMany({ userId: userID });
