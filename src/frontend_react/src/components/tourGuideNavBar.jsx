@@ -206,7 +206,7 @@ const TourGuideNavBar = () => {
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/TourGuideDash" className="flex items-center space-x-2">
             <SiteLogo />
             <span className="text-xl font-bold">WanderMate</span>
           </Link>

@@ -118,6 +118,7 @@ import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrder";
 import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
+import AdDashboard from "./pages/AdDashboard";
 
 function App() {
   return (
@@ -272,6 +273,7 @@ function App() {
         <Route path="/AdminOrders" element={<AdminOrders/>}/>
         <Route path="/TourGuideDash" element={<TourGuideDash/>}/>
         <Route path="/sellerDashboard" element={<SellerDashboard/>}/>
+        <Route path="/AdDashboard" element={<AdDashboard/>}/>
       </Routes>
     </Router>
   );

@@ -150,7 +150,7 @@ const LogInForm = () => {
             setTimeout(() => {
               if (response.data.status === "accepted") {
                 sessionStorage.setItem("status", "Accepted");
-                navigate("/AboutUsAD");
+                navigate("/AdDashboard");
               } else {
                 if (response.data.status === "rejected") {
                   navigate("/rejected");

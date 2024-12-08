@@ -339,6 +339,8 @@ export function SalesReportTableadvertiser() {
 
   return (
     <>
+    <h1 className="text-3xl font-bold mb-6 ml-6">Sales Report</h1>
+    <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center flex-wrap gap-2 px-4">
         <Input
           placeholder="Search attraction names..."
@@ -492,6 +494,7 @@ export function SalesReportTableadvertiser() {
             />
           </Button>
         </div>
+      </div>
       </div>
     </>
   );
