@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import CompletedActivityCard from "./completedActivityCard";
 import ECommerceDefaultSkeleton from "./ECommerceDefaultSkeleton";
 import axios from "axios";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function CompletedActivities() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -108,57 +109,60 @@ export default function CompletedActivities() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Completed Activities</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            aria-label="Previous activities"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            aria-label="Next activities"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+    <React.Fragment>
+      <div className="container mx-auto p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Completed Activities</h1>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollPrev}
+              disabled={!canScrollPrev}
+              aria-label="Previous activities"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollNext}
+              disabled={!canScrollNext}
+              aria-label="Next activities"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex -mx-2">
+            {Array.isArray(activities) &&
+              activities.map((activity) => (
+                <div
+                  key={activity._id}
+                  className="flex-shrink-0 w-full md:w-1/2 px-2"
+                >
+                  <CompletedActivityCard
+                    activityId={activity.itemId._id}
+                    name={activity.itemId.Name}
+                    price={activity.itemId.Price}
+                    currrn={activity.itemId.Currency || "USD"}
+                    rating={activity.itemId.Ratings}
+                    TimeLine={activity.itemId.TimeLine}
+                    BookedDate={activity.bookedDate}
+                    Language={activity.itemId.Language}
+                    totalRatings={activity.itemId.Ratings}
+                    myItRating={ratings[activity.itemId._id]}
+                    myTourRating={ratings[activity.itemId.Creator._id]}
+                    Creator={activity.itemId.Creator}
+                    reFetchratings={getMyRating}
+                  />
+                </div>
+              ))}
+          </div>
         </div>
       </div>
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex -mx-2">
-          {Array.isArray(activities) &&
-            activities.map((activity) => (
-              <div
-                key={activity._id}
-                className="flex-shrink-0 w-full md:w-1/2 px-2"
-              >
-                <CompletedActivityCard
-                  activityId={activity.itemId._id}
-                  name={activity.itemId.Name}
-                  price={activity.itemId.Price}
-                  currrn={activity.itemId.Currency || "USD"}
-                  rating={activity.itemId.Ratings}
-                  TimeLine={activity.itemId.TimeLine}
-                  BookedDate={activity.bookedDate}
-                  Language={activity.itemId.Language}
-                  totalRatings={activity.itemId.Ratings}
-                  myItRating={ratings[activity.itemId._id]}
-                  myTourRating={ratings[activity.itemId.Creator._id]}
-                  Creator={activity.itemId.Creator}
-                  reFetchratings={getMyRating}
-                />
-              </div>
-            ))}
-        </div>
-      </div>
-    </div>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 }

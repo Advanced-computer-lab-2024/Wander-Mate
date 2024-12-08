@@ -16,34 +16,36 @@ export default function AboutUsTGov() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <NavigationMenuBarTGov />
-      <div className="full">
-        <div className="frame">
-          <div className="inner-container">
-            <h1 className="title">QUALITY & PASSION</h1>
-            <div className="buttonR">
-              <span className="buttonR-text" onClick={handleRegClick}>
-                Home Page
-              </span>
+    <React.Fragment>
+      <div className="min-h-screen bg-gray-50">
+        <NavigationMenuBarTGov />
+        <div className="full">
+          <div className="frame">
+            <div className="inner-container">
+              <h1 className="title">QUALITY & PASSION</h1>
+              <div className="buttonR">
+                <span className="buttonR-text" onClick={handleRegClick}>
+                  Home Page
+                </span>
+              </div>
             </div>
           </div>
+          <main className="w-full px-0 py-6">
+            {" "}
+            {/* Set the main container to full width */}
+            <div className="w-full">
+              <OurAcheivementsBlock />
+            </div>
+            <div className="w-full">
+              <OurService />
+            </div>
+            <div className="w-full">
+              <WhatPeopleSay />
+            </div>
+          </main>
         </div>
-        <main className="w-full px-0 py-6">
-          {" "}
-          {/* Set the main container to full width */}
-          <div className="w-full">
-            <OurAcheivementsBlock />
-          </div>
-          <div className="w-full">
-            <OurService />
-          </div>
-          <div className="w-full">
-            <WhatPeopleSay />
-          </div>
-        </main>
       </div>
       <TourismGovernerFooter />
-    </div>
+    </React.Fragment>
   );
 }

@@ -185,17 +185,17 @@ function App() {
         <Route path="/sellertable" element={<SellerTable />} />
         <Route path="/tourismgovtable" element={<TourismGovTable />} />
         <Route path="/tourguidetable" element={<TourGuideTable />} />
-        <Route path="/orderCard" element={<orderCard />} />
+        {/* <Route path="/orderCard" element={<orderCard />} /> */}
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
-        <Route path="/hotelcard" element={<HotelCard />} />
-        <Route path="/hotelcheckout" element={<HotelCheckout />} />
+        {/* <Route path="/hotelcard" element={<HotelCard />} /> */}
+        {/* <Route path="/hotelcheckout" element={<HotelCheckout />} /> */}
         <Route
           path="/advertiserActivities"
           element={<AdvertiserActivities />}
         />
-        <Route path="/payForFlight" element={<PayForFlight />} />
-        <Route path="/adminNavBar" element={<AdminNavBar />} />
+        {/* <Route path="/payForFlight" element={<PayForFlight />} /> */}
+        {/* <Route path="/adminNavBar" element={<AdminNavBar />} /> */}
         {/* <Route path="/adminOrders" element={<Orders />} /> */}
         <Route path="/sellerProduct" element={<SellerPage />} />
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
