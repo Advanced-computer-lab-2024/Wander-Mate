@@ -48,6 +48,7 @@ import {
   CardContent,
   CardFooter,
 } from "../components/ui/card";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const columns = [
   {
@@ -352,7 +353,9 @@ export function SalesReportTable() {
               placeholder="Search product names..."
               value={table.getColumn("productName")?.getFilterValue() ?? ""}
               onChange={(event) =>
-                table.getColumn("productName")?.setFilterValue(event.target.value)
+                table
+                  .getColumn("productName")
+                  ?.setFilterValue(event.target.value)
               }
               className="max-w-sm min-w-[200px] h-10"
             />
@@ -404,7 +407,7 @@ export function SalesReportTable() {
             </DropdownMenu>
           </div>
         </CardHeader>
-  
+
         <CardContent>
           <Table className="table-fixed w-full">
             <TableHeader>
@@ -457,7 +460,7 @@ export function SalesReportTable() {
           </Table>
         </CardContent>
       </Card>
-  
+
       <div className="flex items-center flex-wrap gap-4 px-4 py-4">
         <div className="flex gap-2 items-center">
           <Button
@@ -472,7 +475,7 @@ export function SalesReportTable() {
               className="w-5 h-5 rtl:rotate-180"
             />
           </Button>
-  
+
           {table.getPageOptions().map((page, pageIdx) => (
             <Button
               key={`sales-report-table-${pageIdx}`}
@@ -487,7 +490,7 @@ export function SalesReportTable() {
               {page + 1}
             </Button>
           ))}
-  
+
           <Button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -502,10 +505,9 @@ export function SalesReportTable() {
           </Button>
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
-  
-  
 }
 
 export default SalesReportTable;

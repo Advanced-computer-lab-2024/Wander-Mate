@@ -213,8 +213,8 @@ function App() {
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
         <Route path="/myBookings" element={<MyBookings />} />
-        <Route path="/AddAdminButton" element={<AddAdminButton />} />
-        <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
+        {/* <Route path="/AddAdminButton" element={<AddAdminButton />} /> */}
+        {/* <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} /> */}
         <Route path="/ItineraryReport" element={<ItineraryReport />} />
         <Route
           path="/AdvertiserProfileInformation"
@@ -283,7 +283,7 @@ function App() {
         <Route path="/sellerDashboard" element={<SellerDashboard />} />
         <Route path="/AdDashboard" element={<AdDashboard />} />
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
-        <Route path="/TourismGovProfile" element={<TourismGovProfile/>}/>
+        <Route path="/TourismGovProfile" element={<TourismGovProfile />} />
         <Route path="/pop" element={<TopUsers />} />
       </Routes>
     </Router>
