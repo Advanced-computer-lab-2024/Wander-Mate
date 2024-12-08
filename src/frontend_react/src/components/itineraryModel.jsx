@@ -42,8 +42,8 @@ export default function ItineraryModel({
   const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
   const navigateToTourGuide = () => {
-    const creatorData = encodeURIComponent(JSON.stringify(itinerary.Creator)); // Serialize creator data
-    navigate(`/itineraryTourGuide?creator=${creatorData}`);
+    const creatorData = encodeURIComponent(JSON.stringify(itinerary.Creator._id)); // Serialize creator data
+    navigate(`/tgitineraries?creator=${itinerary.Creator._id}`);
   };
   const images = itinerary.images;
   const renderStars = (rating) => {
