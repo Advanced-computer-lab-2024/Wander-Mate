@@ -16,12 +16,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import AdminNavBar from "../components/AdminNavBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const TourismGovTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
   const [tourismGovs, setTourismGovs] = useState([]); // Store tourism governor data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
 
   useEffect(() => {
     const fetchTourismGovs = async () => {
@@ -48,36 +49,40 @@ const TourismGovTable = () => {
   };
 
   const deleteTourismGov = async (tourismGov) => {
-    
-      const deletetourismgov =  axios.delete("http://localhost:8000/deleteaccount", {
-        data: { Username: tourismGov.Username,
-          userID: tourismGov._id,
-         },
-      });
-      toast.promise(
-        deletetourismgov,
-        {
-          loading: "Deleting seller...",
-          success: "Seller account deleted successfully!",
-          error: "Error deleting the account.",
+    const deletetourismgov = axios.delete(
+      "http://localhost:8000/deleteaccount",
+      {
+        data: { Username: tourismGov.Username, userID: tourismGov._id },
+      }
+    );
+    toast.promise(
+      deletetourismgov,
+      {
+        loading: "Deleting seller...",
+        success: "Seller account deleted successfully!",
+        error: "Error deleting the account.",
+      },
+      {
+        // Optional settings for the toast (you can customize these)
+        success: {
+          duration: 4000, // The toast will disappear after 4 seconds
+          icon: "✅",
         },
-        {
-          // Optional settings for the toast (you can customize these)
-          success: {
-            duration: 4000, // The toast will disappear after 4 seconds
-            icon: "✅",
-          },
-          error: {
-            duration: 4000,
-            icon: "❌",
-          },
-        }
-      );
-      try {
-        const response = await deletetourismgov;
+        error: {
+          duration: 4000,
+          icon: "❌",
+        },
+      }
+    );
+    try {
+      const response = await deletetourismgov;
       if (response.status === 200) {
         // Remove the tourist from the state if the deletion is successful
-        setTourismGovs(tourismGovs.filter(tourismGov1 => tourismGov1.Username !== tourismGov.Username));
+        setTourismGovs(
+          tourismGovs.filter(
+            (tourismGov1) => tourismGov1.Username !== tourismGov.Username
+          )
+        );
         //alert("tourismGov account deleted successfully!");
       }
     } catch (err) {
@@ -85,7 +90,6 @@ const TourismGovTable = () => {
       //alert("Error deleting account");
     }
   };
-
 
   const columns = [
     {
@@ -121,54 +125,62 @@ const TourismGovTable = () => {
 
   return (
     <>
-    <AdminNavBar/>
-    <Toaster/>
-    <br></br>
-    <h1 className="text-3xl font-bold mb-6 ml-6">All Tourism Governers</h1>
-    <Table>
-      <TableHeader className="text-left">
-        <TableRow>
-          {columns.map((column) => (
-            <TableHead key={column.key}>{column.label}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tourismGovs.map((tourismGov) => (
-          <Fragment key={tourismGov._id}>
-            <TableRow>
-              <TableCell>
-                <div className="flex items-center gap-4">
-                  <div className="flex gap-3 items-center">
-                    <Avatar className="rounded-full">
-                      <AvatarImage src={getImageSrc(tourismGov.picture)} />
-                      <AvatarFallback>{tourismGov.Username[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <span className="text-sm block text-card-foreground">
-                        {tourismGov.Username}
-                      </span>
+      <AdminNavBar />
+      <Toaster />
+      <br></br>
+      <h1 className="text-3xl font-bold mb-6 ml-6">All Tourism Governers</h1>
+      <Table>
+        <TableHeader className="text-left">
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead key={column.key}>{column.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tourismGovs.map((tourismGov) => (
+            <Fragment key={tourismGov._id}>
+              <TableRow>
+                <TableCell>
+                  <div className="flex items-center gap-4">
+                    <div className="flex gap-3 items-center">
+                      <Avatar className="rounded-full">
+                        <AvatarImage src={getImageSrc(tourismGov.picture)} />
+                        <AvatarFallback>
+                          {tourismGov.Username[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <span className="text-sm block text-card-foreground">
+                          {tourismGov.Username}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell>{new Date(tourismGov.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>{new Date(tourismGov.updatedAt).toLocaleDateString()}</TableCell>
-              <TableCell className="flex items-center justify-start px-4 py-6">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  color="destructive"
-                  className="h-7 w-7 border-none p-0" onClick={()=> deleteTourismGov(tourismGov)} 
-                >
-                  <Icon icon="heroicons:trash" className="h-5 w-5" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          </Fragment>
-        ))}
-      </TableBody>
-    </Table>
+                </TableCell>
+                <TableCell>
+                  {new Date(tourismGov.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(tourismGov.updatedAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="flex items-center justify-start px-4 py-6">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    color="destructive"
+                    className="h-7 w-7 border-none p-0"
+                    onClick={() => deleteTourismGov(tourismGov)}
+                  >
+                    <Icon icon="heroicons:trash" className="h-5 w-5" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            </Fragment>
+          ))}
+        </TableBody>
+      </Table>
+      <TourismGovernerFooter />
     </>
   );
 };
