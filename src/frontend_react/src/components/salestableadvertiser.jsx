@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const columns = [
   {
@@ -195,7 +196,9 @@ export function SalesReportTableadvertiser() {
 
   const processData = (salesReport) => {
     return salesReport.reduce((acc, item) => {
-      const existingItem = acc.find((i) => i.attractionId === item.attractionId); // Group by productId
+      const existingItem = acc.find(
+        (i) => i.attractionId === item.attractionId
+      ); // Group by productId
       if (existingItem) {
         // Add to existing product's data
         existingItem.attractions.push({
@@ -228,14 +231,16 @@ export function SalesReportTableadvertiser() {
   const applyDateFilter = (month, year) => {
     const filteredData = originalData
       .map((item) => {
-        const filteredAttractions = (item.attractions|| []).filter((attraction) => {
-          const date = new Date(attraction.bookedDate);
-          const monthMatch =
-            month === "all" || date.getMonth().toString() === month;
-          const yearMatch =
-            year === "all" || date.getFullYear().toString() === year;
-          return monthMatch && yearMatch;
-        });
+        const filteredAttractions = (item.attractions || []).filter(
+          (attraction) => {
+            const date = new Date(attraction.bookedDate);
+            const monthMatch =
+              month === "all" || date.getMonth().toString() === month;
+            const yearMatch =
+              year === "all" || date.getFullYear().toString() === year;
+            return monthMatch && yearMatch;
+          }
+        );
 
         if (filteredAttractions.length === 0) return null;
 
@@ -339,163 +344,166 @@ export function SalesReportTableadvertiser() {
 
   return (
     <>
-    <h1 className="text-3xl font-bold mb-6 ml-6">Sales Report</h1>
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center flex-wrap gap-2 px-4">
-        <Input
-          placeholder="Search attraction names..."
-          value={table.getColumn("attractionName")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("attractionName")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm min-w-[200px] h-10"
-        />
-        <Select value={selectedMonth} onValueChange={handleMonthChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Month" />
-          </SelectTrigger>
-          <SelectContent>
-            {months.map((month) => (
-              <SelectItem key={month.value} value={month.value}>
-                {month.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={selectedYear} onValueChange={handleYearChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Year" />
-          </SelectTrigger>
-          <SelectContent>
-            {years.map((year) => (
-              <SelectItem key={year.value} value={year.value}>
-                {year.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild></DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div>
-        <Table className="table-fixed w-full">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+      <h1 className="text-3xl font-bold mb-6 ml-6">Sales Report</h1>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center flex-wrap gap-2 px-4">
+          <Input
+            placeholder="Search attraction names..."
+            value={table.getColumn("attractionName")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table
+                .getColumn("attractionName")
+                ?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm min-w-[200px] h-10"
+          />
+          <Select value={selectedMonth} onValueChange={handleMonthChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Month" />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((month) => (
+                <SelectItem key={month.value} value={month.value}>
+                  {month.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedYear} onValueChange={handleYearChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Year" />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map((year) => (
+                <SelectItem key={year.value} value={year.value}>
+                  {year.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild></DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
                   );
                 })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="text-center last:text-center"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div>
+          <Table className="table-fixed w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="text-center last:text-center"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-      <div className="flex items-center flex-wrap gap-4 px-4 py-4">
-        <div className="flex gap-2 items-center">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="h-8 w-8"
-          >
-            <Icon
-              icon="heroicons:chevron-left"
-              className="w-5 h-5 rtl:rotate-180"
-            />
-          </Button>
-
-          {table.getPageOptions().map((page, pageIdx) => (
+        <div className="flex items-center flex-wrap gap-4 px-4 py-4">
+          <div className="flex gap-2 items-center">
             <Button
-              key={`sales-report-table-${pageIdx}`}
-              onClick={() => table.setPageIndex(pageIdx)}
-              variant={
-                pageIdx === table.getState().pagination.pageIndex
-                  ? ""
-                  : "outline"
-              }
-              className={cn("w-8 h-8")}
+              variant="outline"
+              size="icon"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="h-8 w-8"
             >
-              {page + 1}
+              <Icon
+                icon="heroicons:chevron-left"
+                className="w-5 h-5 rtl:rotate-180"
+              />
             </Button>
-          ))}
 
-          <Button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-          >
-            <Icon
-              icon="heroicons:chevron-right"
-              className="w-5 h-5 rtl:rotate-180"
-            />
-          </Button>
+            {table.getPageOptions().map((page, pageIdx) => (
+              <Button
+                key={`sales-report-table-${pageIdx}`}
+                onClick={() => table.setPageIndex(pageIdx)}
+                variant={
+                  pageIdx === table.getState().pagination.pageIndex
+                    ? ""
+                    : "outline"
+                }
+                className={cn("w-8 h-8")}
+              >
+                {page + 1}
+              </Button>
+            ))}
+
+            <Button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+            >
+              <Icon
+                icon="heroicons:chevron-right"
+                className="w-5 h-5 rtl:rotate-180"
+              />
+            </Button>
+          </div>
         </div>
       </div>
-      </div>
+      {/* <TourismGovernerFooter /> */}
     </>
   );
 }

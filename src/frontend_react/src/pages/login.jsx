@@ -138,7 +138,7 @@ const LogInForm = () => {
             sessionStorage.setItem("Type", "TourismGoverner");
 
             setTimeout(() => {
-              navigate("/TourismGovHomePage");
+              navigate("/TGovPlaces");
             }, 1000);
             break;
           case "Advertiser":

@@ -17,6 +17,7 @@ import { Button } from "../components/ui/button";
 import GuestNavigationMenuBar from "../components/Guestnavbar";
 import ProductsTour from "../components/productsTour";
 import GuestFooter from "../components/GuestFooter";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const ProductsGuest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -236,7 +237,7 @@ const ProductsGuest = () => {
           </div>
         </div>
       </ProductsTour>
-      <GuestFooter />
+      <TourismGovernerFooter />
     </>
   );
 };

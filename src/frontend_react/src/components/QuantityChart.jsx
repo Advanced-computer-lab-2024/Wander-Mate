@@ -16,6 +16,7 @@ import { useThemeStore } from "../store";
 import { useTheme } from "next-themes";
 import { themes } from "../config/thems";
 import { Doughnut } from "react-chartjs-2";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 ChartJS.register(
   CategoryScale,
@@ -112,6 +113,7 @@ const LegendEvents = ({ height = 350 }) => {
   return (
     <div>
       <Doughnut options={options} data={data} height={height} />
+      {/* <TourismGovernerFooter /> */}
     </div>
   );
 };

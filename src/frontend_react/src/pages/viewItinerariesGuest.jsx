@@ -23,7 +23,9 @@ import {
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 import GuestNavigationMenuBar from "../components/Guestnavbar";
+import GuestFooter from "../components/GuestFooter";
 
 export default function ViewItinerariesGuest() {
   const [itineraries, setItineraries] = useState([]);
@@ -145,7 +147,7 @@ export default function ViewItinerariesGuest() {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice = itinerary.Price ;
+      const convertedPrice = itinerary.Price;
       const matchesBudget =
         convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
@@ -224,7 +226,7 @@ export default function ViewItinerariesGuest() {
 
   return (
     <>
-    <GuestNavigationMenuBar likedItemsCount={likedItemsCount} />
+    <GuestNavigationMenuBar/>
       <ViewItinerariesTour>
         <div className="container mx-auto p-4" id="container">
           <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
@@ -387,8 +389,7 @@ export default function ViewItinerariesGuest() {
                       (activity) => activity.Tags || []
                     ),
                   ].map((tagId) => tagMap[tagId])}
-                  price={
-                    itinerary.Price}
+                  price={itinerary.Price}
                   rating={itinerary.Ratings}
                   Activities={itinerary.Activities.map(
                     (activity) => activity.Name
@@ -412,6 +413,7 @@ export default function ViewItinerariesGuest() {
           </div>
         </div>
       </ViewItinerariesTour>
+      <GuestFooter />
     </>
   );
 }

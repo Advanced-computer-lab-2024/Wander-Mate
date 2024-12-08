@@ -1,9 +1,8 @@
-
-import React from 'react';
-import TGovSettings from '../components/TGovSettings';
-import HeaderAdmin from '../components/headeradmin';
-import NavigationMenuBarTGov from '../components/NavigationMenuBarTGov';
-
+import React from "react";
+import TGovSettings from "../components/TGovSettings";
+import HeaderTGov from "../components/headerTGov";
+import NavigationMenuBarTGov from "../components/NavigationMenuBarTGov";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const TourismGovProfile = () => {
   // Example username for illustration
@@ -12,19 +11,20 @@ const TourismGovProfile = () => {
   return (
     <div>
       <NavigationMenuBarTGov />
-    
+
       <div className="w-full px-0 py-0">
         {/* Top Banner with full-width image */}
         <div className="mt-[-23px]">
-          <HeaderAdmin />
+          <HeaderTGov />
         </div>
-  
+
         {/* Main Content */}
-      <div className="w-full max-w-8xl mx-auto space-y-10">
-        <TGovSettings/>
-      </div>
+        <div className="w-full max-w-8xl mx-auto space-y-10">
+          <TGovSettings />
         </div>
       </div>
+      <TourismGovernerFooter />
+    </div>
   );
 };
 

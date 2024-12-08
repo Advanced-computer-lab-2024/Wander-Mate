@@ -8,6 +8,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import ECommerceDefaultSkeleton from "../components/ECommerceDefaultSkeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../components/ui/button";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const EmblaCarousel = ({ children, title }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -279,6 +280,7 @@ const ViewBookmarks = () => {
           </EmblaCarousel>
         </div>
       )}
+      <TourismGovernerFooter />
     </React.Fragment>
   );
 };

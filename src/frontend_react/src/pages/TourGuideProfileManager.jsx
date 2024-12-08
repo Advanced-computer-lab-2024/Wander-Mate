@@ -245,7 +245,7 @@ const TourGuideProfileManager = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

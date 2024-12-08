@@ -213,7 +213,7 @@ const SellerNavBar = () => {
           </Link>
 
           <div className="hidden md:flex space-x-6">
-          <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild>
               <Link to="/sellerDashboard" className="flex items-center">
                 <span>Home Page</span>
               </Link>
@@ -240,7 +240,7 @@ const SellerNavBar = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link to="/MeetPageTG" className="flex items-center">
+                  <Link to="/MeetPageSeller" className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Meet the Team</span>
                   </Link>
@@ -252,7 +252,6 @@ const SellerNavBar = () => {
                 <span>Products</span>
               </Link>
             </Button>
-            
           </div>
 
           <div className="flex items-center space-x-4">

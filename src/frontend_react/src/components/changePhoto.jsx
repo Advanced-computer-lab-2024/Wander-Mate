@@ -3,8 +3,9 @@ import { toast } from "./ui/use-toast";
 import axios from "axios";
 import UserPhoto from "./userPhoto";
 import { useNavigate } from "react-router-dom";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
-const ChangePhoto = ({user = "seller"}) => {
+const ChangePhoto = ({ user = "seller" }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [userID, setUserID] = useState(null);
@@ -119,7 +120,9 @@ const ChangePhoto = ({user = "seller"}) => {
     } catch (error) {
       toast({
         title: "Upload failed",
-        description: error.response?.data?.error || "Couldn't upload image. Please try again.",
+        description:
+          error.response?.data?.error ||
+          "Couldn't upload image. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -128,15 +131,17 @@ const ChangePhoto = ({user = "seller"}) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 mt-[-40px]">
-      <UserPhoto 
-        onImageSelect={handleImageSelect} 
-        isUploading={isUploading} 
-        initialImage={profileImage}
-      />
-    </div>
+    <React.Fragment>
+      <div className="flex flex-col items-center space-y-4 mt-[-40px]">
+        <UserPhoto
+          onImageSelect={handleImageSelect}
+          isUploading={isUploading}
+          initialImage={profileImage}
+        />
+      </div>
+      {/* <TourismGovernerFooter /> */}
+    </React.Fragment>
   );
 };
 
 export default ChangePhoto;
-

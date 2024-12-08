@@ -28,6 +28,7 @@ import ViewPlacesTour from "../components/placesTour";
 import NavigationMenuBarTGov from "../components/NavigationMenuBarTGov";
 import EditablePlaceCard from "../components/editablePlaceCard";
 import CreatePlace from "../components/createPlace";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function TourismGovernerPlaces() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -284,6 +285,7 @@ export default function TourismGovernerPlaces() {
         </div>
 
       </div>
+      <TourismGovernerFooter />
     </>
   );
 }

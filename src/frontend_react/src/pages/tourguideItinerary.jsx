@@ -20,8 +20,9 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
-import TourGuideNavBar from '../components/tourGuideNavBar';
+import TourGuideNavBar from "../components/tourGuideNavBar";
 import AddTourGuideItineraryModel from "../components/AddTourGuideItinerary";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const TourGuideItineraries = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -431,6 +432,7 @@ const TourGuideItineraries = () => {
           )}
         </div>
       </div>
+      <TourismGovernerFooter />
     </>
   );
 };

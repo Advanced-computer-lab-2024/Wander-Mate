@@ -1,6 +1,6 @@
 // pages/UserPage.jsx
 import React from "react";
-import NavigationMenuBarTGov from "../components/NavigationMenuBarTGov";
+import SellerNavBar from "../components/sellerNavBar";
 import UserCard from "../components/meetComp";
 import pic1 from "../public/images/files/tony.jpg";
 import pic2 from "../public/images/files/khelo.jpg";
@@ -14,7 +14,7 @@ import pic9 from "../public/images/files/Nadeem.jpg";
 import pic10 from "../public/images/files/youssefashraf.jpg";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
-const MeetPageTGov = () => {
+const MeetPageSeller = () => {
   // Predefined user data
   const users = [
     {
@@ -81,7 +81,7 @@ const MeetPageTGov = () => {
 
   return (
     <>
-      <NavigationMenuBarTGov />
+      <SellerNavBar />
       <div className="container mx-auto p-6">
         <h2 className="text-2xl font-semibold text-center mb-6">
           Meet The Team
@@ -97,4 +97,4 @@ const MeetPageTGov = () => {
   );
 };
 
-export default MeetPageTGov;
+export default MeetPageSeller;

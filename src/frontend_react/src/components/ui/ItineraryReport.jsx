@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,17 +8,17 @@ import {
   TableRow,
 } from "./table";
 import { Button } from "./button";
-import TouristDetailsModal from "./touristDetailsModal";  // Import the modal
+import TouristDetailsModal from "./touristDetailsModal"; // Import the modal
 
 const ItineraryReportTable = () => {
-  const [reports, setReports] = useState([]);  // All reports (unfiltered)
+  const [reports, setReports] = useState([]); // All reports (unfiltered)
   const [filteredReports, setFilteredReports] = useState([]); // Filtered reports based on month and year
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItinerary, setSelectedItinerary] = useState(null); // State to store the selected itinerary
   const [tourists, setTourists] = useState([]); // State to store tourists
-  const [month, setMonth] = useState(''); // Selected month for filter
-  const [year, setYear] = useState('');  // Selected year for filter
+  const [month, setMonth] = useState(""); // Selected month for filter
+  const [year, setYear] = useState(""); // Selected year for filter
 
   const columns = [
     { key: "itineraryName", label: "Itinerary Name" },
@@ -29,9 +29,9 @@ const ItineraryReportTable = () => {
   ];
 
   const fetchTourGuideID = async () => {
-    const username = sessionStorage.getItem('username');
+    const username = sessionStorage.getItem("username");
     if (!username) {
-      setError('No username found in session storage.');
+      setError("No username found in session storage.");
       setLoading(false);
       return;
     }
@@ -51,10 +51,12 @@ const ItineraryReportTable = () => {
 
   const fetchItineraryReport = async (guideID) => {
     try {
-      const response = await fetch(`http://localhost:8000/viewItineraryReport/${guideID}`);
+      const response = await fetch(
+        `http://localhost:8000/viewItineraryReport/${guideID}`
+      );
       if (!response.ok) throw new Error("Failed to fetch itinerary report");
       const { report } = await response.json();
-      setReports(report);  // Store all the reports
+      setReports(report); // Store all the reports
       setFilteredReports(report); // Initially, no filter applied
       setLoading(false);
     } catch (error) {
@@ -65,19 +67,21 @@ const ItineraryReportTable = () => {
   };
 
   const handleViewDetails = async (itineraryName) => {
-    const selected = filteredReports.find((report) => report.itineraryName === itineraryName);
+    const selected = filteredReports.find(
+      (report) => report.itineraryName === itineraryName
+    );
     if (selected) {
       setTourists(selected.tourists);
-      setSelectedItinerary(selected.itineraryName);  // Set the selected itinerary
+      setSelectedItinerary(selected.itineraryName); // Set the selected itinerary
     }
   };
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'month') {
-      setMonth(value);  // Update the month state
-    } else if (name === 'year') {
-      setYear(value);  // Update the year state
+    if (name === "month") {
+      setMonth(value); // Update the month state
+    } else if (name === "year") {
+      setYear(value); // Update the year state
     }
   };
 
@@ -89,12 +93,14 @@ const ItineraryReportTable = () => {
       return;
     }
 
-    const filtered = reports.filter(report => {
+    const filtered = reports.filter((report) => {
       const bookingsInMonth = report.bookedDates.filter((bookedDate) => {
         const date = new Date(bookedDate);
-        const bookingMonth = date.getMonth() + 1;  // getMonth() returns 0 for January, so we add 1
+        const bookingMonth = date.getMonth() + 1; // getMonth() returns 0 for January, so we add 1
         const bookingYear = date.getFullYear();
-        return bookingMonth === parseInt(month) && bookingYear === parseInt(year);
+        return (
+          bookingMonth === parseInt(month) && bookingYear === parseInt(year)
+        );
       });
       return bookingsInMonth.length > 0;
     });
@@ -104,9 +110,9 @@ const ItineraryReportTable = () => {
 
   // Clear filter button handler
   const handleClearFilter = () => {
-    setMonth('');  // Reset month filter
-    setYear('');   // Reset year filter
-    setFilteredReports(reports);  // Show all reports again
+    setMonth(""); // Reset month filter
+    setYear(""); // Reset year filter
+    setFilteredReports(reports); // Show all reports again
   };
 
   useEffect(() => {
@@ -114,7 +120,7 @@ const ItineraryReportTable = () => {
   }, []);
 
   useEffect(() => {
-    filterReportsByMonthAndYear();  // Re-filter the reports every time month or year changes
+    filterReportsByMonthAndYear(); // Re-filter the reports every time month or year changes
   }, [month, year, reports]);
 
   if (loading) return <div>Loading...</div>;
@@ -133,9 +139,13 @@ const ItineraryReportTable = () => {
         >
           <option value="">Select Month</option>
           {Array.from({ length: 12 }, (_, index) => {
-            const monthName = new Date(0, index).toLocaleString('default', { month: 'long' });
+            const monthName = new Date(0, index).toLocaleString("default", {
+              month: "long",
+            });
             return (
-              <option key={index} value={index + 1}>{monthName}</option>
+              <option key={index} value={index + 1}>
+                {monthName}
+              </option>
             );
           })}
         </select>
@@ -149,24 +159,26 @@ const ItineraryReportTable = () => {
         >
           <option value="">Select Year</option>
           {/* You can customize the range of years based on your requirements */}
-          {Array.from({ length: 10 }, (_, index) => 2020 + index).map((yearOption) => (
-            <option key={yearOption} value={yearOption}>{yearOption}</option>
-          ))}
+          {Array.from({ length: 10 }, (_, index) => 2020 + index).map(
+            (yearOption) => (
+              <option key={yearOption} value={yearOption}>
+                {yearOption}
+              </option>
+            )
+          )}
         </select>
 
         {/* Clear Filter Button */}
-        <Button 
-          onClick={handleClearFilter}
-        >
-          Clear Filter
-        </Button>
+        <Button onClick={handleClearFilter}>Clear Filter</Button>
       </div>
 
       <Table className="table-fixed w-full">
         <TableHeader>
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column.key} className="px-4 py-2 text-left">{column.label}</TableHead>
+              <TableHead key={column.key} className="px-4 py-2 text-left">
+                {column.label}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -174,26 +186,34 @@ const ItineraryReportTable = () => {
           {filteredReports.map((report, index) => {
             return (
               <TableRow key={index}>
-                <TableCell className="px-4 py-2">{report.itineraryName}</TableCell>
-                <TableCell className="px-4 py-2">{report.totalTourists}</TableCell>
                 <TableCell className="px-4 py-2">
-                  {report.itineraryPrice !== undefined && !isNaN(report.itineraryPrice)
-                    ? `$${report.itineraryPrice.toFixed(2)}`
-                    : 'N/A'}
+                  {report.itineraryName}
                 </TableCell>
                 <TableCell className="px-4 py-2">
-                  {report.itineraryPrice !== undefined && report.totalTourists !== undefined
+                  {report.totalTourists}
+                </TableCell>
+                <TableCell className="px-4 py-2">
+                  {report.itineraryPrice !== undefined &&
+                  !isNaN(report.itineraryPrice)
+                    ? `$${report.itineraryPrice.toFixed(2)}`
+                    : "N/A"}
+                </TableCell>
+                <TableCell className="px-4 py-2">
+                  {report.itineraryPrice !== undefined &&
+                  report.totalTourists !== undefined
                     ? `$${(report.totalTourists * report.itineraryPrice).toFixed(2)}`
-                    : 'N/A'}
+                    : "N/A"}
                 </TableCell>
                 <TableCell className="px-4 py-2">
                   {report.itineraryActive !== undefined
-                    ? (report.itineraryActive ? 'Yes' : 'No')
-                    : 'N/A'}
+                    ? report.itineraryActive
+                      ? "Yes"
+                      : "No"
+                    : "N/A"}
                 </TableCell>
                 <TableCell className="px-4 py-2">
-                  <Button 
-                    onClick={() => handleViewDetails(report.itineraryName)}  // Pass the itinerary name here
+                  <Button
+                    onClick={() => handleViewDetails(report.itineraryName)} // Pass the itinerary name here
                     className="p-0 px-15 h-auto hover:bg-transparent bg-transparent text-primary hover:text-primary/80 hover:underline"
                   >
                     View Details
