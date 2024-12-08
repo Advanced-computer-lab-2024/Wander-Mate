@@ -28,6 +28,7 @@ import ViewPlacesTour from "../components/placesTour";
 import NavigationMenuBarTGov from "../components/NavigationMenuBarTGov";
 import EditablePlaceCard from "../components/editablePlaceCard";
 import CreatePlace from "../components/createPlace";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function TourismGovernerPlaces() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -254,30 +255,37 @@ export default function TourismGovernerPlaces() {
               <ECommerceDefaultSkeleton key={index} />
             ))
           ) : filteredPlaces.length > 0 ? (
-            filteredPlaces.map((place) => (
-              <EditablePlaceCard
-                currency={combo}
-                key={place._id}
-                placeId={place._id}
-                name={place.Name}
-                images={place.Pictures}
-                latitude={place.Location.coordinates[1]}
-                longitude={place.Location.coordinates[0]}
-                description={place.Description}
-                tags={place.Tags.map((tagId) => tagMap[tagId])}
-                category={
-                  categories.find((cat) => cat._id === place.Category)?.Name ||
-                  "No Category"
-                }
-                TicketPrices={place.TicketPrices}
-                OpeningHours={place.OpeningHours}
-              />
-            ))
+            filteredPlaces.map((place) => {
+              // Console log the fetched place data
+              console.log('Fetched Place:', place);
+              
+              return (
+                <EditablePlaceCard
+                  currency={combo}
+                  key={place._id}
+                  placeId={place._id}
+                  name={place.Name}
+                  images={place.Pictures}
+                  latitude={place.Location.coordinates[1]}
+                  longitude={place.Location.coordinates[0]}
+                  description={place.Description}
+                  tags={place.Tags.map((tagId) => tagMap[tagId])}
+                  category={
+                    categories.find((cat) => cat._id === place.Category)?.Name ||
+                    "No Category"
+                  }
+                  TicketPrices={place.TicketPrices}
+                  OpeningHours={place.OpeningHours}
+                />
+              );
+            })
           ) : (
             <p>No places found</p>
           )}
         </div>
+
       </div>
+      <TourismGovernerFooter />
     </>
   );
 }

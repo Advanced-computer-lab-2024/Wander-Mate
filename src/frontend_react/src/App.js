@@ -103,6 +103,7 @@ import MeetPage from "./pages/meetPage";
 import MeetPageTG from "./pages/meetPageTG";
 import MeetPageTGov from "./pages/meetPageTGov";
 import MeetPageAd from "./pages/meetPageAD";
+import MeetPageSeller from "./pages/meetPageSeller";
 import SalesReportTableadvertiser from "./components/salestableadvertiser";
 import SellerHomePage from "./pages/SellerHomePage";
 import ViewMyComplaints from "./components/mycomplaints";
@@ -120,6 +121,7 @@ import TourGuideDash from "./pages/tourGuideDashboard";
 import SellerDashboard from "./components/sellerDashboard";
 import AdDashboard from "./pages/AdDashboard";
 import TourismGovernerPlaces from "./pages/tourismGovernerPlaces";
+import TourismGovProfile from "./pages/TourismGovProfile";
 import TopUsers from "./components/topUsers";
 
 function App() {
@@ -184,17 +186,17 @@ function App() {
         <Route path="/sellertable" element={<SellerTable />} />
         <Route path="/tourismgovtable" element={<TourismGovTable />} />
         <Route path="/tourguidetable" element={<TourGuideTable />} />
-        <Route path="/orderCard" element={<orderCard />} />
+        {/* <Route path="/orderCard" element={<orderCard />} /> */}
         <Route path="/addressDropDown" element={<AddressDropDown />} />
         <Route path="/adminItineray" element={<AdminItineraries />} />
-        <Route path="/hotelcard" element={<HotelCard />} />
-        <Route path="/hotelcheckout" element={<HotelCheckout />} />
+        {/* <Route path="/hotelcard" element={<HotelCard />} /> */}
+        {/* <Route path="/hotelcheckout" element={<HotelCheckout />} /> */}
         <Route
           path="/advertiserActivities"
           element={<AdvertiserActivities />}
         />
-        <Route path="/payForFlight" element={<PayForFlight />} />
-        <Route path="/adminNavBar" element={<AdminNavBar />} />
+        {/* <Route path="/payForFlight" element={<PayForFlight />} /> */}
+        {/* <Route path="/adminNavBar" element={<AdminNavBar />} /> */}
         {/* <Route path="/adminOrders" element={<Orders />} /> */}
         <Route path="/sellerProduct" element={<SellerPage />} />
         {/* <Route path="/purchasedProducts" element={<PurchasedProducts />} /> */}
@@ -212,8 +214,8 @@ function App() {
         <Route path="/completedActivities" element={<CompletedActivities />} />
         <Route path="/levelAndBadge" element={<LevelAndBadge />} />
         <Route path="/myBookings" element={<MyBookings />} />
-        <Route path="/AddAdminButton" element={<AddAdminButton />} />
-        <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} />
+        {/* <Route path="/AddAdminButton" element={<AddAdminButton />} /> */}
+        {/* <Route path="/AddTourismGovButton" element={<AddTourismGovButton />} /> */}
         <Route path="/ItineraryReport" element={<ItineraryReport />} />
         <Route
           path="/AdvertiserProfileInformation"
@@ -249,6 +251,7 @@ function App() {
         <Route path="/MeetPage" element={<MeetPage />} />
         <Route path="/MeetPageTGov" element={<MeetPageTGov />} />
         <Route path="/MeetPageAd" element={<MeetPageAd />} />
+        <Route path="/MeetPageSeller" element={<MeetPageSeller />} />
         <Route path="/TourGuideDocs" element={<TourGuideDocs />} />
         <Route path="/AdDocs" element={<AdDocs />} />
         <Route path="/SellerDocs" element={<SellerDocs />} />
@@ -282,6 +285,7 @@ function App() {
         <Route path="/sellerDashboard" element={<SellerDashboard />} />
         <Route path="/AdDashboard" element={<AdDashboard />} />
         <Route path="/TGovPlaces" element={<TourismGovernerPlaces />} />
+        <Route path="/TourismGovProfile" element={<TourismGovProfile />} />
         <Route path="/pop" element={<TopUsers />} />
       </Routes>
     </Router>

@@ -23,6 +23,7 @@ import {
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function ViewItinerariesGuest() {
   const [itineraries, setItineraries] = useState([]);
@@ -143,7 +144,7 @@ export default function ViewItinerariesGuest() {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice = itinerary.Price ;
+      const convertedPrice = itinerary.Price;
       const matchesBudget =
         convertedPrice >= budget[0] && convertedPrice <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
@@ -384,8 +385,7 @@ export default function ViewItinerariesGuest() {
                       (activity) => activity.Tags || []
                     ),
                   ].map((tagId) => tagMap[tagId])}
-                  price={
-                    itinerary.Price}
+                  price={itinerary.Price}
                   rating={itinerary.Ratings}
                   Activities={itinerary.Activities.map(
                     (activity) => activity.Name
@@ -409,6 +409,7 @@ export default function ViewItinerariesGuest() {
           </div>
         </div>
       </ViewItinerariesTour>
+      <TourismGovernerFooter />
     </>
   );
 }

@@ -247,6 +247,7 @@ const {
   removeNotificationTG,
   markNotificationAsReadTG,
   getItinerarySalesReport,
+  getTotalBookingsForItineraryTourGuide
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -275,6 +276,7 @@ const {
   removeNotificationAd,
   markNotificationAsReadAd,
   getAdvertiserDocuments,
+  getAdvertiserTotalAttractionBookings
 } = require("./Routes/AdvertiserController.js");
 
 const {
@@ -697,3 +699,5 @@ app.post("/sendAttractionNotifications",sendAttractionNotifications);
 app.get("/getTotalQuantities",getTotalQuantities);
 app.get("/getTotalBookings",getTotalBookings);
 app.get("/getTotalQuantitiesForSeller/:sellerId",getTotalQuantitiesForSeller);
+app.get("/getAdvertiserTotalAttractionBookings/:advertiserId",getAdvertiserTotalAttractionBookings);
+app.get("/getTotalBookingsForItineraryTourGuide/:guideId",getTotalBookingsForItineraryTourGuide);

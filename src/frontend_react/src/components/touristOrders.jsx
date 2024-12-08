@@ -3,13 +3,35 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "../components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
 import { useToast } from "../components/ui/use-toast";
-import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
+import {
+  useReactTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+} from "@tanstack/react-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
 import { DataTableFacetedFilter } from "../components/table/data-table-faceted-filter";
 import NavigationMenuBar from "./NavigationMenuBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const columns = [
   {
     accessorKey: "invoiceNumber",
@@ -100,7 +122,7 @@ const columns = [
       }
       return null;
     },
-  }
+  },
 ];
 
 const TouristOrdersTable = () => {
@@ -111,11 +133,13 @@ const TouristOrdersTable = () => {
 
   const fetchOrders = async (userID) => {
     try {
-      const response = await axios.get(`http://localhost:8000/getMyOrders/${userID}`);
-      const ordersWithOpenDetails = response.data.orders.map(order => ({
+      const response = await axios.get(
+        `http://localhost:8000/getMyOrders/${userID}`
+      );
+      const ordersWithOpenDetails = response.data.orders.map((order) => ({
         ...order,
         openOrderDetails: () => setSelectedOrder(order),
-        cancelOrder: (orderId) => handleCancelOrder(orderId)
+        cancelOrder: (orderId) => handleCancelOrder(orderId),
       }));
       setOrders(ordersWithOpenDetails);
     } catch (error) {
@@ -131,9 +155,9 @@ const TouristOrdersTable = () => {
   };
 
   const fetchTouristID = async () => {
-    const username = sessionStorage.getItem('username');
+    const username = sessionStorage.getItem("username");
     if (!username) {
-      console.error('No username found in session storage.');
+      console.error("No username found in session storage.");
       toast({
         title: "Error",
         description: "No user information found. Please log in again.",
@@ -160,13 +184,17 @@ const TouristOrdersTable = () => {
 
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await axios.delete(`http://localhost:8000/cancel-order/${orderId}`);
+      const response = await axios.delete(
+        `http://localhost:8000/cancel-order/${orderId}`
+      );
       if (response.status === 200) {
         // Update the order status to "cancelled"
-        setOrders(prevOrders => prevOrders.map(order => 
-          order._id === orderId ? { ...order, status: "cancelled" } : order
-        ));
-        
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId ? { ...order, status: "cancelled" } : order
+          )
+        );
+
         // Show success popup
         toast({
           title: "Success",
@@ -206,11 +234,12 @@ const TouristOrdersTable = () => {
 
   return (
     <>
-        <NavigationMenuBar />
-        <br/> <br/>
-        <h1 className="text-3xl font-bold text-center mb-8">Your Orders History</h1>
+      <NavigationMenuBar />
+      <br /> <br />
+      <h1 className="text-3xl font-bold text-center mb-8">
+        Your Orders History
+      </h1>
       <div className="mb-4 flex justify-end">
-
         <DataTableFacetedFilter
           column={table.getColumn("status")}
           title="Order Status"
@@ -277,7 +306,6 @@ const TouristOrdersTable = () => {
           </TableBody>
         </Table>
       </div>
-
       {selectedOrder && (
         <OrderDetailsModal
           open={!!selectedOrder}
@@ -285,6 +313,7 @@ const TouristOrdersTable = () => {
           order={selectedOrder}
         />
       )}
+      <TourismGovernerFooter />
     </>
   );
 };
@@ -296,18 +325,29 @@ const OrderDetailsModal = ({ open, onClose, order }) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <DialogHeader className="text-center pb-4">
-          <DialogTitle className="text-2xl font-semibold text-gray-800">Order Details</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold text-gray-800">
+            Order Details
+          </DialogTitle>
           <DialogDescription className="text-sm text-gray-500">
             Below are the details of your order.
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-2">
-          <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>Total Amount:</strong> ${order.total.toFixed(2)}</p>
-          <p><strong>Order Date:</strong> {new Date(order.date).toLocaleDateString("en-GB")}</p>
-          <p><strong>Is Paid:</strong> {order.isPaid ? "Yes" : "No"}</p>
-          
+          <p>
+            <strong>Status:</strong> {order.status}
+          </p>
+          <p>
+            <strong>Total Amount:</strong> ${order.total.toFixed(2)}
+          </p>
+          <p>
+            <strong>Order Date:</strong>{" "}
+            {new Date(order.date).toLocaleDateString("en-GB")}
+          </p>
+          <p>
+            <strong>Is Paid:</strong> {order.isPaid ? "Yes" : "No"}
+          </p>
+
           <div>
             <strong>Products:</strong>
             <ul className="list-disc pl-5 mt-2">
@@ -332,4 +372,3 @@ const OrderDetailsModal = ({ open, onClose, order }) => {
 };
 
 export default TouristOrdersTable;
-

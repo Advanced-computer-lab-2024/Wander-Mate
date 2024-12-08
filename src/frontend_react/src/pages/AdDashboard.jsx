@@ -11,7 +11,6 @@ const AdDashboard = () => {
       <LegendEventsAdvertiser />
       <br></br>
       <SalesReportTableadvertiser />
-      <br></br>
       <TourismGovernerFooter />
     </div>
   );

@@ -335,7 +335,7 @@ const CreatePlace = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

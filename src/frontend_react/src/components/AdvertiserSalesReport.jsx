@@ -22,6 +22,7 @@ import {
   CardTitle,
   CardContent,
 } from "../components/ui/card";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 ChartJS.register(
   CategoryScale,
@@ -74,15 +75,19 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
         const { userID } = await reply.json();
         const advertiserId = userID;
         const response = await fetch(
-          `http://localhost:8000/getAttractionSalesReport/${advertiserId}`
+          `http://localhost:8000/getAdvertiserTotalAttractionBookings/${advertiserId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const result = await response.json();
         // Check if result.data exists and is an array
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (
+          result.report.activities &&
+          Array.isArray(result.report.activities)
+        ) {
+          setChartData(result.report.activities);
         } else {
           console.error("No sales data available");
           setChartData([]); // Set to empty array if data is invalid
@@ -139,14 +144,17 @@ const LegendEventsAdvertiser = ({ height = 350 }) => {
   if (loading) return <div>Loading...</div>; // Show loading message until data is fetched
 
   return (
-    <Card className="max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle>Sales Report</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Doughnut options={options} data={data} height={height} />
-      </CardContent>
-    </Card>
+    <React.Fragment>
+      <Card className="max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle>Sales Report</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Doughnut options={options} data={data} height={height} />
+        </CardContent>
+      </Card>
+      {/* <TourismGovernerFooter /> */}
+    </React.Fragment>
   );
 };
 
