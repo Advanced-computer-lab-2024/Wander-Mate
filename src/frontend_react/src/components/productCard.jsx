@@ -262,7 +262,7 @@ const ProductCard = ({
                 icon={isInStock() ? "heroicons:shopping-bag" : "heroicons:bell"}
                 className="w-4 h-4 ltr:mr-2 rtl:ml-2"
               />
-              {isInStock() ? "Add to Cart" : "Notify Me When Available"}
+              {isInStock() ? "Add to Cart" : "Out Of Stock"}
             </Button>
           ) : (
             <div className="flex flex-wrap gap-4">
