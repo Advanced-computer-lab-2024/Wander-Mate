@@ -17,6 +17,8 @@ import { Badge } from "../components/ui/badge";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import AdminNavBar from "../components/AdminNavBar";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
+
 const TouristTable = () => {
   const [collapsedRows, setCollapsedRows] = useState([]);
   const [tourists, setTourists] = useState([]);
@@ -216,6 +218,7 @@ const TouristTable = () => {
           ))}
         </TableBody>
       </Table>
+      <TourismGovernerFooter />
     </>
   );
 };
