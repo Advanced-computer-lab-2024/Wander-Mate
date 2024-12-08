@@ -48,7 +48,7 @@ const TouristSettings = () => {
           </Tabs>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };

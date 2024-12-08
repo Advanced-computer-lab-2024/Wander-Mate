@@ -12,37 +12,39 @@ const UserProfilePage = () => {
   const username = sessionStorage.getItem("username");
 
   return (
-    <div>
-      <NavigationMenuBar />
+    <React.Fragment>
+      <div>
+        <NavigationMenuBar />
 
-      <div className="w-full px-0 py-0">
-        {/* Move HeaderT slightly up */}
-        <div className="mt-[-23px]">
-          <HeaderT />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-          {/* First Component - Move up a little bit */}
-          <div className="lg:col-span-2 -mt-12 -mr-16">
-            <TouristSettings />
+        <div className="w-full px-0 py-0">
+          {/* Move HeaderT slightly up */}
+          <div className="mt-[-23px]">
+            <HeaderT />
           </div>
 
-          {/* Second Component - Move up and left */}
-          <div className="lg:col-span-1 flex justify-start">
-            <div className="w-full lg:w-[158%] mt-[-24px] ml-[-300px]">
-              <TouristPreferenceTags />
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+            {/* First Component - Move up a little bit */}
+            <div className="lg:col-span-2 -mt-12 -mr-16">
+              <TouristSettings />
+            </div>
 
-              {/* Position LevelAndBadge directly below TouristPreferenceTags */}
-              <div className="mt-4">
-                <LevelAndBadge /> {/* Add the LevelAndBadge component here */}
+            {/* Second Component - Move up and left */}
+            <div className="lg:col-span-1 flex justify-start">
+              <div className="w-full lg:w-[158%] mt-[-24px] ml-[-300px]">
+                <TouristPreferenceTags />
+
+                {/* Position LevelAndBadge directly below TouristPreferenceTags */}
+                <div className="mt-4">
+                  <LevelAndBadge /> {/* Add the LevelAndBadge component here */}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <TourismGovernerFooter />
-    </div>
+    </React.Fragment>
   );
 };
 

@@ -159,7 +159,7 @@ const LevelAndBadge = () => {
           </div>
         </CardContent>
       </Card>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 };
