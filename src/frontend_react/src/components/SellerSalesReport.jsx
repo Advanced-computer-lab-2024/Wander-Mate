@@ -73,14 +73,14 @@ const LegendEventsSeller = ({ height = 350 }) => {
 
         const { userID } = await reply.json();
         const sellerId = userID;
-        const response = await fetch(`http://localhost:8000/getSalesReport/${sellerId}`);
+        const response = await fetch(`http://localhost:8000/getTotalQuantitiesForSeller/${sellerId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const result = await response.json();
-
-        if (result.salesReport && Array.isArray(result.salesReport)) {
-          setChartData(result.salesReport);
+        console.log(result);
+        if (result.data && Array.isArray(result.data)) {
+          setChartData(result.data);
         } else {
           console.error("No sales data available");
           setChartData([]);
@@ -97,7 +97,7 @@ const LegendEventsSeller = ({ height = 350 }) => {
   }, []);
 
   const data = {
-    labels: chartData?.length > 0 ? chartData.map((item) => item.productName) : [],
+    labels: chartData?.length > 0 ? chartData.map((item) => item.productDetails.name) : [],
     datasets: [
       {
         label: "Total Quantity",

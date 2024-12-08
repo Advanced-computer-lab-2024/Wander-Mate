@@ -4,7 +4,7 @@ const salesSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    refPath: "ownerModel",
+    refPath: "userModel",
   },
   userModel: {
     type: String,

@@ -12,6 +12,7 @@ import LegendEvents from "../components/QuantityChart";
 import LegendEvents2 from "../components/BookingsQuantity";
 import { Label } from "../components/ui/label";
 import AllProductsAtAdmin from "../components/AllProductsAdminDashBoard";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const Admin = () => {
   return (
@@ -56,6 +57,7 @@ const Admin = () => {
       </main>
 
       {/* Footer */}
+      <TourismGovernerFooter />
     </div>
   );
 };

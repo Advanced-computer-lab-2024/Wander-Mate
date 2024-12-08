@@ -7,6 +7,7 @@ import WhatPeopleSay from "../components/whatpeoplesay"; // Import the WhatPeopl
 import ExploreComponent from "../components/exploreComponent"; // Import the ExploreComponent
 import { useNavigate } from "react-router-dom";
 import BookingSteps from "../components/processComponent";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const StartPage = () => {
   const navigate = useNavigate();
@@ -59,44 +60,54 @@ const StartPage = () => {
   }, []);
 
   return (
-    <div className="full">
-      <MainNav targetId1="ourServiceSection" targetId2="processComponent" targetId3="exploreComponent" />
-      <div className="frame">
-        <div className="inner-container">
-          <h1 className="title">QUALITY & PASSION</h1>
-          <div className="buttonR">
-            <span className="buttonR-text" onClick={handleRegClick}>
-              Register Now
-            </span>
+    <React.Fragment>
+      <div className="full">
+        <MainNav
+          targetId1="ourServiceSection"
+          targetId2="processComponent"
+          targetId3="exploreComponent"
+        />
+        <div className="frame">
+          <div className="inner-container">
+            <h1 className="title">QUALITY & PASSION</h1>
+            <div className="buttonR">
+              <span className="buttonR-text" onClick={handleRegClick}>
+                Register Now
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Our Services Section */}
-      <div ref={ourServiceRef} className="fade-in">
-        <OurService id="ourServiceSection" />
-      </div>
+        {/* Our Services Section */}
+        <div ref={ourServiceRef} className="fade-in">
+          <OurService id="ourServiceSection" />
+        </div>
 
-      {/* Booking Steps Section */}
-    
+        {/* Booking Steps Section */}
 
-      {/* Our Achievements Section */}
-      <div ref={ourAchievementsRef} className="fade-in">
-        <OurAcheivementsBlock />
-      </div>
-      <div ref={bookingStepsRef} className="fade-in" id="processComponent" >
-        <BookingSteps  />
-      </div>
-      {/* What People Say Section */}
-      <div ref={whatPeopleSayRef} className="fade-in">
-        <WhatPeopleSay />
-      </div>
+        {/* Our Achievements Section */}
+        <div ref={ourAchievementsRef} className="fade-in">
+          <OurAcheivementsBlock />
+        </div>
+        <div ref={bookingStepsRef} className="fade-in" id="processComponent">
+          <BookingSteps />
+        </div>
+        {/* What People Say Section */}
+        <div ref={whatPeopleSayRef} className="fade-in">
+          <WhatPeopleSay />
+        </div>
 
-      {/* Explore Component Section */}
-      <div ref={exploreComponentRef} className="fade-in" id="exploreComponent">
-        <ExploreComponent />
+        {/* Explore Component Section */}
+        <div
+          ref={exploreComponentRef}
+          className="fade-in"
+          id="exploreComponent"
+        >
+          <ExploreComponent />
+        </div>
       </div>
-    </div>
+      <TourismGovernerFooter />
+    </React.Fragment>
   );
 };
 

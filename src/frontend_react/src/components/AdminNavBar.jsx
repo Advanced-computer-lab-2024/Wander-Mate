@@ -258,11 +258,7 @@ const AdminNavBar = () => {
                   <span onClick={goToProfile}>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span onClick={logout}>Log out</span>
-                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
-                </DropdownMenuItem>
+                
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <div className="mr-2 h-4 w-4">
                     <AddAdminButton />
@@ -274,6 +270,11 @@ const AdminNavBar = () => {
                     <AddTourismGovButton />
                   </div>
                   Add new tourism governor
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span onClick={logout}>Log out</span>
+                  <DropdownMenuShortcut>⇧⌘L</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

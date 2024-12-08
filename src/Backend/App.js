@@ -147,6 +147,7 @@ const {
   viewMyNotificationsSeller,
   removeNotificationSeller,
   markNotificationAsReadSeller,
+  getTotalQuantitiesForSeller
 } = require("./Routes/sellerController.js");
 
 const {
@@ -695,3 +696,4 @@ app.post("/sendAttractionNotifications",sendAttractionNotifications);
 
 app.get("/getTotalQuantities",getTotalQuantities);
 app.get("/getTotalBookings",getTotalBookings);
+app.get("/getTotalQuantitiesForSeller/:sellerId",getTotalQuantitiesForSeller);

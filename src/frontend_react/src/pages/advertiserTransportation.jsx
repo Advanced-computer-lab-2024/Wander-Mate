@@ -19,6 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import CreateTransportationDialog from "../components/addNewTransportationCard";
 import EditableTransportationCard from "../components/editableTransportationCard";
 import NavigationMenuBarAd from "../components/navBarAdvertiser";
+import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 const AdvertiserTransportation = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -127,171 +128,172 @@ const AdvertiserTransportation = () => {
 
   return (
     <>
-        <NavigationMenuBarAd />
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Transportation Listings</h1>
-      <Card className="mb-8">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="w-full md:w-1/3 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search by destination or start place..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <div className="w-full md:w-64">
-                <Label
-                  htmlFor="price-range"
-                  className="text-sm font-medium mb-2 block"
-                >
-                  Price Range
-                </Label>
-                <Slider
-                  id="price-range"
-                  value={priceRange}
-                  max={10000}
-                  step={1}
-                  onValueChange={handlePriceRangeChange}
-                  className="mb-2"
+      <NavigationMenuBarAd />
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Transportation Listings</h1>
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="w-full md:w-1/3 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search by destination or start place..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="pl-10"
                 />
-                <div className="flex justify-between text-sm">
-                  <Input
-                    type="number"
-                    value={minPrice}
-                    onChange={handleMinPriceChange}
-                    className="w-20 text-right"
-                  />
-                  <Input
-                    type="number"
-                    value={maxPrice}
-                    onChange={handleMaxPriceChange}
-                    className="w-20 text-right"
-                  />
-                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div className="w-full md:w-64">
                   <Label
-                    htmlFor="sort-criteria"
+                    htmlFor="price-range"
                     className="text-sm font-medium mb-2 block"
                   >
-                    Sort by
+                    Price Range
                   </Label>
-                  <Select
-                    onValueChange={handleSortChange}
-                    defaultValue={sortCriteria}
-                  >
-                    <SelectTrigger id="sort-criteria" className="w-[120px]">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="rating">Rating</SelectItem>
-                      <SelectItem value="price">Price</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleSortOrderToggle}
-                  className="mt-6"
-                >
-                  <ArrowUpDown
-                    className={`h-4 w-4 ${
-                      sortOrder === "asc" ? "rotate-180" : ""
-                    }`}
+                  <Slider
+                    id="price-range"
+                    value={priceRange}
+                    max={10000}
+                    step={1}
+                    onValueChange={handlePriceRangeChange}
+                    className="mb-2"
                   />
-                </Button>
+                  <div className="flex justify-between text-sm">
+                    <Input
+                      type="number"
+                      value={minPrice}
+                      onChange={handleMinPriceChange}
+                      className="w-20 text-right"
+                    />
+                    <Input
+                      type="number"
+                      value={maxPrice}
+                      onChange={handleMaxPriceChange}
+                      className="w-20 text-right"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div>
+                    <Label
+                      htmlFor="sort-criteria"
+                      className="text-sm font-medium mb-2 block"
+                    >
+                      Sort by
+                    </Label>
+                    <Select
+                      onValueChange={handleSortChange}
+                      defaultValue={sortCriteria}
+                    >
+                      <SelectTrigger id="sort-criteria" className="w-[120px]">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="rating">Rating</SelectItem>
+                        <SelectItem value="price">Price</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleSortOrderToggle}
+                    className="mt-6"
+                  >
+                    <ArrowUpDown
+                      className={`h-4 w-4 ${
+                        sortOrder === "asc" ? "rotate-180" : ""
+                      }`}
+                    />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4">
-            <div>
-              <Label
-                htmlFor="date-picker"
-                className="text-sm font-medium mb-2 block"
-              >
-                Date
-              </Label>
-              <DatePickerWithRange
-                id="date-picker"
-                selected={selectedDate}
-                onSelect={handleDateChange}
-                placeholderText="Select a date"
-              />
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4">
+              <div>
+                <Label
+                  htmlFor="date-picker"
+                  className="text-sm font-medium mb-2 block"
+                >
+                  Date
+                </Label>
+                <DatePickerWithRange
+                  id="date-picker"
+                  selected={selectedDate}
+                  onSelect={handleDateChange}
+                  placeholderText="Select a date"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="vehicle-type"
+                  className="text-sm font-medium mb-2 block"
+                >
+                  Vehicle Type
+                </Label>
+                <Select
+                  onValueChange={handleVehicleTypeChange}
+                  defaultValue={selectedVehicleType}
+                >
+                  <SelectTrigger id="vehicle-type" className="w-[150px]">
+                    <SelectValue placeholder="Vehicle Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="Car">Car</SelectItem>
+                    <SelectItem value="Bus">Bus</SelectItem>
+                    <SelectItem value="Boat">Boat</SelectItem>
+                    <SelectItem value="Helicopter">Helicopter</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div style={{ alignSelf: "flex-end" }}>
+                <CreateTransportationDialog />
+              </div>
             </div>
-            <div>
-              <Label
-                htmlFor="vehicle-type"
-                className="text-sm font-medium mb-2 block"
-              >
-                Vehicle Type
-              </Label>
-              <Select
-                onValueChange={handleVehicleTypeChange}
-                defaultValue={selectedVehicleType}
-              >
-                <SelectTrigger id="vehicle-type" className="w-[150px]">
-                  <SelectValue placeholder="Vehicle Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All</SelectItem>
-                  <SelectItem value="Car">Car</SelectItem>
-                  <SelectItem value="Bus">Bus</SelectItem>
-                  <SelectItem value="Boat">Boat</SelectItem>
-                  <SelectItem value="Helicopter">Helicopter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div style={{ alignSelf: "flex-end" }}>
-              <CreateTransportationDialog />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          Array.from({ length: 6 }).map((_, index) => (
-            <ECommerceDefaultSkeleton key={index} />
-          ))
-        ) : filteredTransportations.length > 0 ? (
-          filteredTransportations.map((transportation) => (
-            <EditableTransportationCard
-              key={transportation._id}
-              transportationId={transportation._id}
-              destination={transportation.destination}
-              startPlace={transportation.startPlace}
-              price={transportation.price}
-              vehicleType={transportation.vehicleType}
-              availability={transportation.availability}
-              discount={transportation.discount}
-              ratings={transportation.ratings}
-              date={transportation.date}
-              advertiserId={transportation.advertiserId}
-              quantity={
-                transportation.vehicleType === "Car"
-                  ? 3
-                  : transportation.vehicleType === "Bus"
-                  ? 7
-                  : transportation.vehicleType === "Boat"
-                  ? 5
-                  : 4
-              }
-            />
-          ))
-        ) : (
-          <p className="col-span-full text-center text-gray-500">
-            No transportation options found
-          </p>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <ECommerceDefaultSkeleton key={index} />
+            ))
+          ) : filteredTransportations.length > 0 ? (
+            filteredTransportations.map((transportation) => (
+              <EditableTransportationCard
+                key={transportation._id}
+                transportationId={transportation._id}
+                destination={transportation.destination}
+                startPlace={transportation.startPlace}
+                price={transportation.price}
+                vehicleType={transportation.vehicleType}
+                availability={transportation.availability}
+                discount={transportation.discount}
+                ratings={transportation.ratings}
+                date={transportation.date}
+                advertiserId={transportation.advertiserId}
+                quantity={
+                  transportation.vehicleType === "Car"
+                    ? 3
+                    : transportation.vehicleType === "Bus"
+                      ? 7
+                      : transportation.vehicleType === "Boat"
+                        ? 5
+                        : 4
+                }
+              />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500">
+              No transportation options found
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+      <TourismGovernerFooter />
     </>
   );
 };
