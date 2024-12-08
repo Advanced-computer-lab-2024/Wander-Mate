@@ -2,7 +2,7 @@ import NavigationMenuBarAd from "../components/navBarAdvertiser";
 import SalesReportTableadvertiser from "../components/salestableadvertiser";
 import LegendEventsAdvertiser from "../components/AdvertiserSalesReport";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
-
+import TopCustomersAdvertiser from "../components/topCustomersAdvertiser";
 const AdDashboard = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -13,7 +13,7 @@ const AdDashboard = () => {
             <LegendEventsAdvertiser />
           </div>
           <div className="w-full md:w-1/2">
-           
+           <TopCustomersAdvertiser/>
           </div>
         </div>
         <SalesReportTableadvertiser />
