@@ -25,10 +25,12 @@ import {
   Tag,
   LucideSquareChartGantt,
   Table,
+  TicketPercent,
 } from "lucide-react";
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
+import CreatePromoCode from "./CreatePromoCode";
 
 const SiteLogo = () => (
   <svg
@@ -245,9 +247,9 @@ const AdminNavBar = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar>
-                <AvatarFallback >
-  {username.slice(0, 2).toUpperCase() || "AD"}
-</AvatarFallback>
+                  <AvatarFallback>
+                    {username.slice(0, 2).toUpperCase() || "AD"}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -260,7 +262,7 @@ const AdminNavBar = () => {
                   <span onClick={goToProfile}>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <div className="mr-2 h-4 w-4">
                     <AddAdminButton />
@@ -272,6 +274,12 @@ const AdminNavBar = () => {
                     <AddTourismGovButton />
                   </div>
                   Add new tourism governor
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4">
+                    <CreatePromoCode />
+                  </div>
+                  Create Promo Code
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
