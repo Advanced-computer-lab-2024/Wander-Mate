@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import AdvertiserActivityModal from "./advertiserActivitiesModel";
-import { StarIcon } from 'lucide-react';
+import { StarIcon } from "lucide-react";
 
 export default function AdvertiserActivityCard({
   activityId,
@@ -20,6 +20,7 @@ export default function AdvertiserActivityCard({
   rating,
   discounts,
   checkedTags,
+  categoryId,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,10 +38,15 @@ export default function AdvertiserActivityCard({
     rating,
     discounts,
     checkedTags,
+    categoryId,
   };
 
   return (
-    <AdvertiserActivityModal activity={activity} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+    <AdvertiserActivityModal
+      activity={activity}
+      isOpen={isModalOpen}
+      setIsOpen={setIsModalOpen}
+    >
       <Card
         className="p-4 rounded-md cursor-pointer"
         onClick={() => setIsModalOpen(true)}
@@ -75,13 +81,17 @@ export default function AdvertiserActivityCard({
             <StarIcon
               key={star}
               className={`w-4 h-4 ${
-                star <= Math.round(rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                star <= Math.round(rating)
+                  ? "text-yellow-400 fill-current"
+                  : "text-gray-300"
               }`}
             />
           ))}
-          <span className="ml-2 text-sm text-gray-600">({Number(rating).toFixed(1)})</span>
+          <span className="ml-2 text-sm text-gray-600">
+            ({Number(rating).toFixed(1)})
+          </span>
         </div>
-        
+
         <div className="flex flex-wrap gap-1 mb-2">
           {tags && tags.length > 0 ? (
             tags.map((tag, index) => (

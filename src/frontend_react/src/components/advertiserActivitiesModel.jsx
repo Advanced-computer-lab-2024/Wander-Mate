@@ -10,7 +10,11 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import NonMovableMap from "./ui/nonMovableMap";
 import BasicMap from "./ui/basic-map";
-import { CustomPopover as Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import {
+  CustomPopover as Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./ui/popover";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
@@ -25,15 +29,18 @@ export default function AdvertiserActivityModal({
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit mode
   const [updatedActivity, setUpdatedActivity] = useState({
     ...activity,
-    discounts: activity.discounts || [], 
-    category: activity.category || '',// Ensure discounts is always an array
+    discounts: activity.discounts || [],
+    category: activity.categoryId || "", // Ensure discounts is always an array
   });
-    const [categories, setCategories] = useState([]); // State for categories
+  const [categories, setCategories] = useState([]); // State for categories
   const [tags, setTags] = useState([]); // State for available tags
   const [selectedTags, setSelectedTags] = useState(activity.checkedTags); // State for selected tags
   const [loadingCategories, setLoadingCategories] = useState(false); // State for loading categories
   const [loadingTags, setLoadingTags] = useState(false); // State for loading tags
-  const [newDiscount, setNewDiscount] = useState({ percentage: "", description: "" })
+  const [newDiscount, setNewDiscount] = useState({
+    percentage: "",
+    description: "",
+  });
 
   useEffect(() => {
     // Fetch categories when component mounts
@@ -62,7 +69,9 @@ export default function AdvertiserActivityModal({
     const fetchTags = async () => {
       try {
         setLoadingTags(true);
-        const response = await fetch("http://localhost:8000/readPreferenceTags");
+        const response = await fetch(
+          "http://localhost:8000/readPreferenceTags"
+        );
         if (!response.ok) throw new Error("Failed to fetch tags");
         const data = await response.json();
 
@@ -80,13 +89,13 @@ export default function AdvertiserActivityModal({
       }
     };
 
-    
     fetchCategories();
     fetchTags();
   }, []);
 
   const handleOpenChange = (open) => {
     setIsOpen(open);
+    console.log(updatedActivity);
     if (!open) {
       setIsBookingConfirmed(false);
     }
@@ -106,15 +115,15 @@ export default function AdvertiserActivityModal({
   const sendAttractionNotifications = async (activityId) => {
     try {
       await axios.post("http://localhost:8000/sendAttractionNotifications", {
-        activityId: activityId
+        activityId: activityId,
       });
-      toast.success('Notifications sent successfully!', {
+      toast.success("Notifications sent successfully!", {
         duration: 3000,
-        icon: '📢',
+        icon: "📢",
       });
     } catch (error) {
-      console.error('Error sending notifications:', error);
-      toast.error('Failed to send notifications. Please try again.', {
+      console.error("Error sending notifications:", error);
+      toast.error("Failed to send notifications. Please try again.", {
         duration: 3000,
       });
     }
@@ -123,39 +132,43 @@ export default function AdvertiserActivityModal({
   // Handle form submission to update the activity
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-  
-    toast.promise(
-      axios.patch("http://localhost:8000/updateActivity", {
-        id: activity.activityId,
-        Name: updatedActivity.name,
-        Time: updatedActivity.time,
-        DateString: updatedActivity.date,
-        Location: { type: "Point", coordinates: updatedActivity.location.coordinates },
-        Price: updatedActivity.price,
-        Category: updatedActivity.category,
-        Tags: selectedTags,
-        Discounts: updatedActivity.discounts,
-        IsAvailable: updatedActivity.isAvailable
-      }),
-      {
-        loading: 'Updating activity...',
-        success: 'Activity updated successfully!',
-        error: 'Error updating activity.',
-      },
-      {
-        style: {
-          minWidth: '250px',
+
+    toast
+      .promise(
+        axios.patch("http://localhost:8000/updateActivity", {
+          id: activity.activityId,
+          Name: updatedActivity.name,
+          Time: updatedActivity.time,
+          DateString: updatedActivity.date,
+          Location: {
+            type: "Point",
+            coordinates: updatedActivity.location.coordinates,
+          },
+          Price: updatedActivity.price,
+          Category: updatedActivity.category,
+          Tags: selectedTags,
+          Discounts: updatedActivity.discounts,
+          IsAvailable: updatedActivity.isAvailable,
+        }),
+        {
+          loading: "Updating activity...",
+          success: "Activity updated successfully!",
+          error: "Error updating activity.",
         },
-        success: {
-          duration: 5000,
-          icon: '🎉',
-        },
-      }
-    )
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 5000,
+            icon: "🎉",
+          },
+        }
+      )
       .then((response) => {
         setUpdatedActivity(response.data.activity); // Update the state with the response data
         setIsEditing(false); // Exit edit mode
-  
+
         // Check if the activity is now available and send notifications if true
         if (!activity.IsAvailable && response.data.activity.IsAvailable) {
           return sendAttractionNotifications(activity.activityId);
@@ -166,42 +179,39 @@ export default function AdvertiserActivityModal({
         window.location.reload(); // Reload the page
       })
       .catch((error) => {
-        console.error('Error:', error);
+        console.error("Error:", error);
         // The error message will be handled by the toast automatically
       });
   };
 
   const handleDeleteActivity = async () => {
-    
-      toast.promise(
+    toast
+      .promise(
         axios.delete("http://localhost:8000/deleteActivity", {
           data: { id: activity.activityId },
         }),
         {
-          loading: 'Deleting activity...',
-          success: 'Activity deleted successfully!',
-          error: 'Error deleting activity.',
+          loading: "Deleting activity...",
+          success: "Activity deleted successfully!",
+          error: "Error deleting activity.",
         },
         {
           style: {
-            minWidth: '250px',
+            minWidth: "250px",
           },
           success: {
             duration: 5000,
-            icon: '🎉',
+            icon: "🎉",
           },
         }
       )
-        .then(() => {
-          window.location.reload();
-        })
-        .catch((error) => {
-          // The error message will be handled by the toast automatically
-        });
-    
+      .then(() => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        // The error message will be handled by the toast automatically
+      });
   };
-  
-  
 
   // Handle input field changes
   const handleInputChange = (e) => {
@@ -226,229 +236,280 @@ export default function AdvertiserActivityModal({
 
   return (
     <>
-    {/* Toaster component added here to show notifications */}
+      {/* Toaster component added here to show notifications */}
 
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-    
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" size="full">
-      <Toaster />
-        <div className="relative">
-          <Button variant="ghost" className="absolute right-0 top-0" onClick={() => handleOpenChange(false)}>
-            <Icon icon="ph:x" className="h-4 w-4" />
-          </Button>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Map Section */}
-              <div>
-                <Tabs defaultValue="location" className="w-full">
-                  <TabsList className="w-full justify-start">
-                    <TabsTrigger value="location">Location</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="location" className="mt-4">
-                    <Card>
-                      <CardContent className="p-6">
-                        <div className="w-full h-64 rounded-lg overflow-hidden">
-                          {/* Conditionally render the map based on isEditing state */}
-                          {isEditing ? (
-                            <BasicMap onLocationSelect={handleLocationSelect} />
-                          ) : (
-                            <NonMovableMap
-                              initialLocation={activity.location.coordinates.slice()}
-                              onLocationSelect={() => {}} // Do nothing when in view mode
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent
+          className="max-w-4xl max-h-[90vh] overflow-y-auto"
+          size="full"
+        >
+          <Toaster />
+          <div className="relative">
+            <Button
+              variant="ghost"
+              className="absolute right-0 top-0"
+              onClick={() => handleOpenChange(false)}
+            >
+              <Icon icon="ph:x" className="h-4 w-4" />
+            </Button>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Map Section */}
+                <div>
+                  <Tabs defaultValue="location" className="w-full">
+                    <TabsList className="w-full justify-start">
+                      <TabsTrigger value="location">Location</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="location" className="mt-4">
+                      <Card>
+                        <CardContent className="p-6">
+                          <div className="w-full h-64 rounded-lg overflow-hidden">
+                            {/* Conditionally render the map based on isEditing state */}
+                            {isEditing ? (
+                              <BasicMap
+                                onLocationSelect={handleLocationSelect}
+                              />
+                            ) : (
+                              <NonMovableMap
+                                initialLocation={activity.location.coordinates.slice()}
+                                onLocationSelect={() => {}} // Do nothing when in view mode
+                              />
+                            )}
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="mt-4"
+                            onClick={() => {
+                              const [lat, lng] = activity.location.coordinates;
+                              const mapUrl = `https://www.google.com/maps?q=${lng},${lat}`;
+                              window.open(mapUrl, "_blank");
+                            }}
+                          >
+                            <Icon
+                              icon="heroicons:location-marker"
+                              className="w-4 h-4 mr-2"
                             />
-                          )}
-                        </div>
-                        <Button
-                          variant="outline"
-                          className="mt-4"
-                          onClick={() => {
-                            const [lat, lng] = activity.location.coordinates;
-                            const mapUrl = `https://www.google.com/maps?q=${lng},${lat}`;
-                            window.open(mapUrl, "_blank");
-                          }}
-                        >
-                          <Icon icon="heroicons:location-marker" className="w-4 h-4 mr-2" />
-                          Open in Maps
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
-              </div>
-
-
-              {/* Activity Details Section */}
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{activity.name}</h1>
-
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">
-                    <span className="font-semibold">Date:</span> {new Date(activity.date).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-2">
-                    <span className="font-semibold">Time:</span> {activity.time}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-2">
-                    <span className="font-semibold">Category:</span> {activity.category || "Not specified"}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-2">
-                    <span className="font-semibold">Price:</span> ${activity.price}
-                  </p>
-                  {/* Display Discounts in View Mode */}
-                  {activity.discounts && activity.discounts.length > 0 ? (
-                    <div className="mb-3">
-                      <p className="text-sm font-bold">Discounts:</p>
-                      <ul className="list-disc pl-5">
-                        {activity.discounts.map((discount, index) => (
-                          <li key={index} className="text-sm text-green-600">
-                            {discount.description}: {discount.percentage}% off
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {activity.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <Icon
-                      icon={activity.isAvailable ? "ph:check-circle" : "ph:x-circle"}
-                      className={`w-5 h-5 ${activity.isAvailable ? "text-green-500" : "text-red-500"}`}
-                    />
-                    <span className="ml-2 text-sm">
-                      {activity.isAvailable ? "Available" : "Not Available"}
-                    </span>
-                  </div>
+                            Open in Maps
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </Tabs>
                 </div>
 
-                {/* Editable Form */}
-                {isEditing && (
-                  <form onSubmit={handleEditSubmit} className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm text-gray-600">
-                        Name
-                      </label>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={updatedActivity.name}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 p-2 rounded-md"
-                      />
-                    </div>
+                {/* Activity Details Section */}
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                    {activity.name}
+                  </h1>
 
-                    <div>
-                      <Label htmlFor="price" className="block text-sm text-gray-600">
-                        Price
-                      </Label>
-                      <Input
-                        id="price"
-                        name="price"
-                        type="number"
-                        value={updatedActivity.price}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 p-2 rounded-md"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="date" className="block text-sm text-gray-600">
-                        Date
-                      </Label>
-                      <Input
-                        id="date"
-                        name="date"
-                        type="date"
-                        value={new Date(updatedActivity.date).toISOString().split('T')[0]}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 p-2 rounded-md"
-                      />
-                    </div>
-
-                    {/* Time Input */}
-                    <div>
-                      <Label htmlFor="time" className="block text-sm text-gray-600">
-                        Time
-                      </Label>
-                      <Input
-                        id="time"
-                        name="time"
-                        type="time"
-                        value={updatedActivity.time}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 p-2 rounded-md"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="category" className="block text-sm text-gray-600">
-                        Category
-                      </Label>
-                      <select
-                        id="category"
-                        name="category"
-                        value={updatedActivity.category} // This should be the category name
-                        onChange={(e) => {
-                          const selectedCategoryId= e.target.value;
-                          setUpdatedActivity((prev) => ({
-                            ...prev,
-                            category: selectedCategoryId, // Update with the category name
-                          }));
-                        }}
-                        className="w-full border border-gray-300 p-2 rounded-md"
-                        disabled={loadingCategories}
-                      >
-                        <option value="">Select a category</option>
-                        {loadingCategories ? (
-                          <option>Loading...</option>
-                        ) : (
-                          categories.map((category) => (
-                            <option key={category._id} value={category._id}>
-                              {category.Name}
-                            </option>
-                          ))
-                        )}
-                      </select>
-                    </div>
-
-
-                    {/* Tag Selection Section */}
-                    <div>
-                      <Label htmlFor="tags" className="block text-sm text-gray-600">
-                        Tags
-                      </Label>
-                      <div className="space-y-2">
-                        {loadingTags ? (
-                          <p>Loading tags...</p>
-                        ) : (
-                          tags.map((tag) => (
-                            <div key={tag._id} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                value={tag._id}
-                                checked={selectedTags.includes(tag._id)}
-                                onChange={handleTagChange}
-                                className="mr-2"
-                              />
-                              <label>{tag.Name}</label>
-                            </div>
-                          ))
-                        )}
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">
+                      <span className="font-semibold">Date:</span>{" "}
+                      {new Date(activity.date).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <span className="font-semibold">Time:</span>{" "}
+                      {activity.time}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <span className="font-semibold">Category:</span>{" "}
+                      {activity.category || "Not specified"}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <span className="font-semibold">Price:</span> $
+                      {activity.price}
+                    </p>
+                    {/* Display Discounts in View Mode */}
+                    {activity.discounts && activity.discounts.length > 0 ? (
+                      <div className="mb-3">
+                        <p className="text-sm font-bold">Discounts:</p>
+                        <ul className="list-disc pl-5">
+                          {activity.discounts.map((discount, index) => (
+                            <li key={index} className="text-sm text-green-600">
+                              {discount.description}: {discount.percentage}% off
+                            </li>
+                          ))}
+                        </ul>
                       </div>
+                    ) : null}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {activity.tags.map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
-                    {/* Discounts */}
+                    <div className="flex items-center mb-4">
+                      <Icon
+                        icon={
+                          activity.isAvailable
+                            ? "ph:check-circle"
+                            : "ph:x-circle"
+                        }
+                        className={`w-5 h-5 ${
+                          activity.isAvailable
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      />
+                      <span className="ml-2 text-sm">
+                        {activity.isAvailable ? "Available" : "Not Available"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Editable Form */}
+                  {isEditing && (
+                    <form onSubmit={handleEditSubmit} className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="name"
+                          className="block text-sm text-gray-600"
+                        >
+                          Name
+                        </label>
+                        <input
+                          id="name"
+                          name="name"
+                          type="text"
+                          value={updatedActivity.name}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-2 rounded-md"
+                        />
+                      </div>
+
+                      <div>
+                        <Label
+                          htmlFor="price"
+                          className="block text-sm text-gray-600"
+                        >
+                          Price
+                        </Label>
+                        <Input
+                          id="price"
+                          name="price"
+                          type="number"
+                          value={updatedActivity.price}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-2 rounded-md"
+                        />
+                      </div>
+
+                      <div>
+                        <Label
+                          htmlFor="date"
+                          className="block text-sm text-gray-600"
+                        >
+                          Date
+                        </Label>
+                        <Input
+                          id="date"
+                          name="date"
+                          type="date"
+                          value={
+                            new Date(updatedActivity.date)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-2 rounded-md"
+                        />
+                      </div>
+
+                      {/* Time Input */}
+                      <div>
+                        <Label
+                          htmlFor="time"
+                          className="block text-sm text-gray-600"
+                        >
+                          Time
+                        </Label>
+                        <Input
+                          id="time"
+                          name="time"
+                          type="time"
+                          value={updatedActivity.time}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-2 rounded-md"
+                        />
+                      </div>
+
+                      <div>
+                        <Label
+                          htmlFor="category"
+                          className="block text-sm text-gray-600"
+                        >
+                          Category
+                        </Label>
+                        <select
+                          id="category"
+                          name="category"
+                          value={updatedActivity.category} // This should be the category name
+                          onChange={(e) => {
+                            const selectedCategoryId = e.target.value;
+                            setUpdatedActivity((prev) => ({
+                              ...prev,
+                              category: selectedCategoryId, // Update with the category name
+                            }));
+                          }}
+                          className="w-full border border-gray-300 p-2 rounded-md"
+                          disabled={loadingCategories}
+                        >
+                          <option value="">Select a category</option>
+                          {loadingCategories ? (
+                            <option>Loading...</option>
+                          ) : (
+                            categories.map((category) => (
+                              <option key={category._id} value={category._id}>
+                                {category.Name}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                      </div>
+
+                      {/* Tag Selection Section */}
+                      <div>
+                        <Label
+                          htmlFor="tags"
+                          className="block text-sm text-gray-600"
+                        >
+                          Tags
+                        </Label>
+                        <div className="space-y-2">
+                          {loadingTags ? (
+                            <p>Loading tags...</p>
+                          ) : (
+                            tags.map((tag) => (
+                              <div key={tag._id} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  value={tag._id}
+                                  checked={selectedTags.includes(tag._id)}
+                                  onChange={handleTagChange}
+                                  className="mr-2"
+                                />
+                                <label>{tag.Name}</label>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                      {/* Discounts */}
                       <div className="space-y-2">
                         <label>Discounts:</label>
                         <div className="space-y-2 border rounded p-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                             <div className="space-y-2">
-                              <Label htmlFor="discountPercentage">Percentage:</Label>
+                              <Label htmlFor="discountPercentage">
+                                Percentage:
+                              </Label>
                               <Input
                                 id="discountPercentage"
                                 name="discountPercentage"
@@ -456,12 +517,17 @@ export default function AdvertiserActivityModal({
                                 placeholder="e.g., 10"
                                 value={newDiscount.percentage}
                                 onChange={(e) =>
-                                  setNewDiscount((prev) => ({ ...prev, percentage: e.target.value }))
+                                  setNewDiscount((prev) => ({
+                                    ...prev,
+                                    percentage: e.target.value,
+                                  }))
                                 }
                               />
                             </div>
                             <div className="space-y-2">
-                              <label htmlFor="discountDescription">Description:</label>
+                              <label htmlFor="discountDescription">
+                                Description:
+                              </label>
                               <Input
                                 id="discountDescription"
                                 name="discountDescription"
@@ -469,33 +535,41 @@ export default function AdvertiserActivityModal({
                                 placeholder="e.g., Holiday Special"
                                 value={newDiscount.description}
                                 onChange={(e) =>
-                                  setNewDiscount((prev) => ({ ...prev, description: e.target.value }))
+                                  setNewDiscount((prev) => ({
+                                    ...prev,
+                                    description: e.target.value,
+                                  }))
                                 }
                               />
                             </div>
                             <Button
-                        type="button"
-                        onClick={() => {
-                          const { percentage, description } = newDiscount
-                          if (!percentage || !description) {
-                            return
-                          }
-                          setUpdatedActivity((prev) => ({
-                            ...prev,
-                            discounts: [...prev.discounts, { percentage, description }],
-                          }))
-                          setNewDiscount({ percentage: "", description: "" })
-                          
-                        }}
-                      >
-                        Add Discount
-                      </Button>
-
+                              type="button"
+                              onClick={() => {
+                                const { percentage, description } = newDiscount;
+                                if (!percentage || !description) {
+                                  return;
+                                }
+                                setUpdatedActivity((prev) => ({
+                                  ...prev,
+                                  discounts: [
+                                    ...prev.discounts,
+                                    { percentage, description },
+                                  ],
+                                }));
+                                setNewDiscount({
+                                  percentage: "",
+                                  description: "",
+                                });
+                              }}
+                            >
+                              Add Discount
+                            </Button>
                           </div>
 
                           {/* Display Discounts */}
                           <div className="space-y-2">
-                            {updatedActivity.discounts && updatedActivity.discounts.length > 0 ? (
+                            {updatedActivity.discounts &&
+                            updatedActivity.discounts.length > 0 ? (
                               updatedActivity.discounts
                                 .filter((d) => d.percentage && d.description) // Exclude temporary fields
                                 .map((discount, index) => (
@@ -504,33 +578,38 @@ export default function AdvertiserActivityModal({
                                     className="flex justify-between items-center border p-2 rounded"
                                   >
                                     <p>
-                                      <strong>{discount.percentage}%</strong> - {discount.description}
+                                      <strong>{discount.percentage}%</strong> -{" "}
+                                      {discount.description}
                                     </p>
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       onClick={() => {
-                                        const updatedDiscounts = updatedActivity.discounts.filter(
-                                          (_, i) => i !== index
-                                        );
+                                        const updatedDiscounts =
+                                          updatedActivity.discounts.filter(
+                                            (_, i) => i !== index
+                                          );
                                         setUpdatedActivity((prev) => ({
                                           ...prev,
                                           discounts: updatedDiscounts,
                                         }));
                                       }}
                                     >
-                                      <Icon icon="ph:trash" className="h-4 w-4" />
+                                      <Icon
+                                        icon="ph:trash"
+                                        className="h-4 w-4"
+                                      />
                                     </Button>
                                   </div>
                                 ))
                             ) : (
-                              <p className="text-sm text-gray-500">No discounts added yet.</p>
+                              <p className="text-sm text-gray-500">
+                                No discounts added yet.
+                              </p>
                             )}
                           </div>
                         </div>
                       </div>
-
-
 
                       {/* Availability */}
                       <div className="flex items-center gap-2">
@@ -538,7 +617,10 @@ export default function AdvertiserActivityModal({
                         <Switch
                           checked={updatedActivity.isAvailable}
                           onCheckedChange={(value) =>
-                            setUpdatedActivity((prev) => ({ ...prev, isAvailable: value }))
+                            setUpdatedActivity((prev) => ({
+                              ...prev,
+                              isAvailable: value,
+                            }))
                           }
                         />
                       </div>
@@ -553,33 +635,33 @@ export default function AdvertiserActivityModal({
                         >
                           Cancel
                         </Button>
-                        <Button color="destructive" onClick={handleDeleteActivity}>
+                        <Button
+                          color="destructive"
+                          onClick={handleDeleteActivity}
+                        >
                           Delete Activity
                         </Button>
                       </div>
-
-                      
                     </form>
                   )}
 
-                {/* Buttons Below */}
-                {!isEditing && (
-                  <div className="flex space-x-4 mt-6">
-
-
-                    <Button variant="outline" onClick={() => setIsEditing(true)}>
-                      Edit Activity
-                    </Button>
-                    
-                  </div>
-                )}
+                  {/* Buttons Below */}
+                  {!isEditing && (
+                    <div className="flex space-x-4 mt-6">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit Activity
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
