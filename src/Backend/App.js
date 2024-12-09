@@ -220,6 +220,9 @@ const {
   getEmail,
   getTotalQuantities,
   getTotalBookings,
+  viewMyNotificationsAdmin,
+  markNotificationAsReadAdmin,
+  removeNotificationAdmin,
 } = require("./Routes/adminController.js");
 
 const {
@@ -622,6 +625,7 @@ app.get("/viewMyNotifications/:touristId", viewMyNotifications);
 app.get("/viewMyNotificationsTG/:guideID", viewMyNotificationsTG);
 app.get("/viewMyNotificationsAd/:advertiserId", viewMyNotificationsAd);
 app.get("/viewMyNotificationsSeller/:sellerId", viewMyNotificationsSeller);
+app.get("/viewMyNotificationsAdmin/:adminId", viewMyNotificationsAdmin);
 app.delete("/cancel-order/:orderId", cancelOrder);
 app.post("/makeOrder", makeOrder);
 app.get("/getSellerById/:sellerId", getSellerById);
@@ -641,6 +645,10 @@ app.delete(
 app.delete(
   "/removeNotificationSeller/:sellerId/:notificationId",
   removeNotificationSeller
+);
+app.delete(
+  "/removeNotificationAdmin/:adminId/:notificationId",
+  removeNotificationAdmin
 );
 app.put("/isInWishlist", isInWishList);
 app.post("/Bookmarkevent", Bookmarkevent);
@@ -688,6 +696,10 @@ app.put(
 app.put(
   "/markNotificationAsReadSeller/:userID/:notificationId",
   markNotificationAsReadSeller
+);
+app.put(
+  "/markNotificationAsReadAdmin/:userID/:notificationId",
+  markNotificationAsReadAdmin
 );
 app.get("/getRevenue/:userID", getRevenue);
 app.get("/getBookingDetails/:bookingID", getBookingDetails);
