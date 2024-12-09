@@ -89,18 +89,18 @@ const touristRegister = async (req, res) => {
     const hashedPassword = await bcrypt.hash(Password, saltRounds);
 
     // Badge assignment logic based on points
-    const assignBadge = (points) => {
-      if (points <= 100000) {
-        return "level 1"; // Up to 100K points
-      } else if (points <= 500000) {
-        return "level 2"; // Up to 500K points
-      } else {
-        return "level 3"; // More than 500K points
-      }
-    };
+    // const assignBadge = (points) => {
+    //   if (points <= 100000) {
+    //     return "level 1"; // Up to 100K points
+    //   } else if (points <= 500000) {
+    //     return "level 2"; // Up to 500K points
+    //   } else {
+    //     return "level 3"; // More than 500K points
+    //   }
+    // };
 
     // Call the assignBadge function to get the badge based on Points
-    let badge = assignBadge(Points);
+    // let badge = assignBadge(Points);
 
     // 5. Create new user
     const newUser = await userModel.create({
@@ -114,7 +114,7 @@ const touristRegister = async (req, res) => {
       Role,
       Wallet,
       Points: 0,
-      Badge: badge,
+      Badge: "level 1",
     });
     const userID = newUser._id;
     await Usernames.create({
@@ -155,34 +155,43 @@ const handleTourist = async (req, res) => {
       }
       let Points = tourist.Points;
       let currentBadge = tourist.Badge;
+     
+  
       
-      // Assign badge based on points, but prevent downgrading
-      const assignBadge = (points, currentBadge) => {
-        // If the user is already at level 3 or level 2, do not downgrade them
-        if (currentBadge === "level 3") {
-          // Always stay at level 3 if points are above 500K
-          if (points > 500000) return "level 3";
-          // If points are below level 3 but above 100K, stay at level 3 (no downgrade)
-          return "level 3"; // Keep level 3 even if points decrease
-        }
-      
-        if (currentBadge === "level 2") {
-          if (points > 500000) return "level 3";
-          // If points are above level 2 but below 500K, stay at level 2
-          if (points > 100000) return "level 2";
-          // If points are below level 2 threshold, stay at level 2 (no downgrade)
-          return "level 2"; // Keep level 2 even if points decrease
-        }
-      
-        // If the user is not at level 2 or 3, assign based on points
-        if (points <= 100000) return "level 1"; // Up to 100K points
-        if (points <= 500000) return "level 2"; // Up to 500K points
-        return "level 3"; // More than 500K points
-      };
+
+     // Assign badge based on points, but prevent downgrading
+const assignBadge = (points, currentBadge) => {
+  // If the user is already at level 3 or level 2, do not downgrade them
+  if (currentBadge === "level 3") {
+    // Always stay at level 3 if points are above 500K
+    if (points > 500000) return "level 3";
+    // If points are below level 3 but above 100K, stay at level 3 (no downgrade)
+    return "level 3"; // Keep level 3 even if points decrease
+  }
+
+  if (currentBadge === "level 2") {
+    if (points > 500000) return "level 3";
+    // If points are above level 2 but below 500K, stay at level 2
+    if (points > 100000) return "level 2";
+    // If points are below level 2 threshold, stay at level 2 (no downgrade)
+    return "level 2"; // Keep level 2 even if points decrease
+  }
+
+  // If the user is not at level 2 or 3, assign based on points
+  if (points <= 100000) {
+    return "level 1"; // Up to 100K points
+  } else if (points <= 500000) {
+    return "level 2"; // Up to 500K points
+  } else {
+    return "level 3"; // More than 500K points
+  }
+};
+
       
       // Get the updated badge based on the current points and current badge
       const badge = assignBadge(Points, currentBadge);
       tourist.Badge = badge;
+      ;
       
       
       await tourist.save();

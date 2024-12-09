@@ -29,7 +29,7 @@ import {
   TrainIcon,
 } from "lucide-react";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
-
+import NavigationMenuBar from "./NavigationMenuBar";
 const UpcomingBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,6 +171,9 @@ const UpcomingBookings = () => {
   };
 
   return (
+    <>
+    <NavigationMenuBar/>
+    <br></br>
     <React.Fragment>
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
@@ -377,6 +380,7 @@ const UpcomingBookings = () => {
       </Card>
       <TourismGovernerFooter />
     </React.Fragment>
+    </>
   );
 };
 

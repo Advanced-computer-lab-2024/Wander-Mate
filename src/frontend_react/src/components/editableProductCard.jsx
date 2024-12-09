@@ -17,6 +17,7 @@ const EditableProductCard = ({
   reviews,
   quantity,
   seller,
+  isArchived,
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,10 +40,12 @@ const EditableProductCard = ({
         ratings,
         reviews,
         seller,
+        
       }}
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}
       quantity={quantity}
+      isArchiveded={isArchived}
     >
       <Card
         className="p-4 rounded-md cursor-pointer"
