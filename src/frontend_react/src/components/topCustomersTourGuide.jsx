@@ -28,7 +28,7 @@ const TopCustomersTourGuide = () => {
         }
         const result = await response.json();
         console.log(result);
-        setData(result.data);
+        setData(result.tourists);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -49,9 +49,11 @@ const TopCustomersTourGuide = () => {
 
   return (
     <React.Fragment>
+      <h1 className="text-3xl font-bold mb-6 ml-6">Top Customers</h1>
+
       <Card>
         <CardHeader className="flex-row justify-between items-center gap-4 mb-0 border-none p-6">
-          <CardTitle>Top Customers</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent className="pt-0 ">
           <div className="pt-16">

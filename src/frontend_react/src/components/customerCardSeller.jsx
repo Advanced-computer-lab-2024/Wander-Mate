@@ -5,7 +5,7 @@ import { Progress } from "./ui/progress";
 import { cn } from "../lib/utils";
 import { Icon } from "@iconify/react";
 const CustomerCardSeller = ({ item, index }) => {
-  const { score, picture, color, totalPaid, Username } = item;
+  const { score, picture, color, amountPaid, Username } = item;
 
   return (
     <>
@@ -42,8 +42,10 @@ const CustomerCardSeller = ({ item, index }) => {
             <div className="text-base font-semibold text-default-900 mb-1 whitespace-nowrap">
               {item.fullName || item.user.Username}
             </div>
-            <div>{item.email}</div>
-            <Badge className="bg-primary/80">${totalPaid}</Badge>
+            <div>
+                {item.email}
+            </div>
+            <Badge className="bg-primary/80">${amountPaid}</Badge>
           </div>
 
           {/* <div className="flex-none w-full mt-4">
