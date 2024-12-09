@@ -345,17 +345,16 @@ export default function EditableProductModal({
                     {/* Price */}
                     <div className="mb-6">
                       <span className="text-3xl font-bold text-primary">
-                        ${editedProduct.price}
+                        $
+                        {editedProduct.discount > 0
+                          ? editedProduct.price -
+                            (editedProduct.price * editedProduct.discount) / 100
+                          : editedProduct.price}
                       </span>
                       {editedProduct.discount > 0 && (
                         <>
                           <span className="ml-2 text-lg line-through text-gray-500">
-                            $
-                            {(
-                              editedProduct.price +
-                              (editedProduct.price * editedProduct.discount) /
-                                100
-                            ).toFixed(2)}
+                            ${editedProduct.price}
                           </span>
                           <span className="ml-2 text-lg font-semibold text-green-600">
                             {editedProduct.discount}% Off

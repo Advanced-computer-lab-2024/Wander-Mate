@@ -253,6 +253,8 @@ const {
   getItinerarySalesReport,
   getTotalBookingsForItineraryTourGuide,
   getTouristsByTourGuide,
+  getTourGuide,
+  getTourGuideItineraries,
 } = require("./Routes/tourGuideController.js");
 
 const {
@@ -451,6 +453,8 @@ app.get("/searchActivities", searchActivities);
 app.get("/sortActivitiesByRatings", sortActivitiesByRatings);
 app.get("/readPlaces", readPlaces);
 app.get("/getTourguides", getTourguides);
+app.get("/getTourGuide/:guideID", getTourGuide);
+app.get("/getTourGuideItineraries/:guideID", getTourGuideItineraries);
 app.post("/getAge", getAge);
 app.get("/search-flights", SearchFlights);
 app.post("/book-flight/:touristID", BookFlight);
