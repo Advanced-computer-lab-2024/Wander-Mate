@@ -89,10 +89,7 @@ const UpcomingBookings = () => {
     const currentDate = new Date();
     const hoursDifference = Math.abs(createdDate - currentDate) / 36e5;
 
-    if (
-      hoursDifference > 48 ||
-      window.confirm("Are you sure you want to cancel this booking?")
-    ) {
+    if (hoursDifference > 48) {
       try {
         const response = await fetch(
           `http://localhost:8000/cancelBooking/${bookingID}`,
@@ -172,214 +169,220 @@ const UpcomingBookings = () => {
 
   return (
     <>
-    <NavigationMenuBar/>
-    <br></br>
-    <React.Fragment>
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle>My Bookings</CardTitle>
-          <CardDescription>
-            View and manage your upcoming bookings
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[600px] w-full rounded-md border p-4">
-            {loading ? (
-              <p>Loading bookings...</p>
-            ) : bookings.length === 0 ? (
-              <p>No bookings found.</p>
-            ) : (
-              bookings.map((booking) => (
-                <React.Fragment key={booking._id}>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <div className="flex items-center">
-                        {getItemIcon(booking.itemModel)}
-                        <h3 className="text-lg font-semibold ml-2">
-                          {booking.itemModel}
-                        </h3>
+      <NavigationMenuBar />
+      <br></br>
+      <React.Fragment>
+        <Card className="w-full max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle>My Bookings</CardTitle>
+            <CardDescription>
+              View and manage your upcoming bookings
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[600px] w-full rounded-md border p-4">
+              {loading ? (
+                <p>Loading bookings...</p>
+              ) : bookings.length === 0 ? (
+                <p>No bookings found.</p>
+              ) : (
+                bookings.map((booking) => (
+                  <React.Fragment key={booking._id}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <div className="flex items-center">
+                          {getItemIcon(booking.itemModel)}
+                          <h3 className="text-lg font-semibold ml-2">
+                            {booking.itemModel}
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          Created:{" "}
+                          {new Date(booking.createdAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Booked for:{" "}
+                          {new Date(booking.bookedDate).toLocaleDateString()}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500">
-                        Created:{" "}
-                        {new Date(booking.createdAt).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Booked for:{" "}
-                        {new Date(booking.bookedDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="destructive">Cancel Booking</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>
-                            Are you sure you want to cancel this booking?
-                          </DialogTitle>
-                          <DialogDescription>
-                            This action cannot be undone. This will permanently
-                            cancel your booking.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => {}}>
-                            Cancel
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => {
-                              cancelBooking(booking._id, booking.createdAt);
-                              setSelectedBooking(null);
-                            }}
-                          >
-                            Confirm Cancellation
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <Dialog
-                      open={selectedBooking?._id === booking._id}
-                      onOpenChange={(open) => {
-                        if (!open) setSelectedBooking(null);
-                      }}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          onClick={() => handleViewDetails(booking)}
-                        >
-                          View Details
-                        </Button>
-                      </DialogTrigger>
-
-                      <DialogContent>
-                        {selectedBooking?.itemDetails && (
-                          <>
-                            <DialogHeader>
-                              <DialogTitle>
-                                {selectedBooking.itemModel} Details
-                              </DialogTitle>
-                            </DialogHeader>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="destructive">Cancel Booking</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>
+                              Are you sure you want to cancel this booking?
+                            </DialogTitle>
                             <DialogDescription>
-                              {selectedBooking.itemModel === "Attraction" && (
-                                <>
-                                  <p>
-                                    Name: {selectedBooking.itemDetails.Name}
-                                  </p>
-                                  <p>
-                                    Price: ${selectedBooking.itemDetails.Price}
-                                  </p>
-                                </>
-                              )}
-                              {selectedBooking.itemModel === "Itinerary" && (
-                                <>
-                                  <p>
-                                    Name: {selectedBooking.itemDetails.Name}
-                                  </p>
-                                  <p>
-                                    Language:{" "}
-                                    {selectedBooking.itemDetails.Language}
-                                  </p>
-                                  <p>
-                                    Price: ${selectedBooking.itemDetails.Price}
-                                  </p>
-                                  <p>
-                                    Timeline:{" "}
-                                    {selectedBooking.itemDetails.TimeLine}
-                                  </p>
-                                </>
-                              )}
-                              {selectedBooking.itemModel ===
-                                "Transportation" && (
-                                <>
-                                  <p>
-                                    Destination:{" "}
-                                    {selectedBooking.itemDetails.destination}
-                                  </p>
-                                  <p>
-                                    Start Place:{" "}
-                                    {selectedBooking.itemDetails.startPlace}
-                                  </p>
-                                  <p>
-                                    Vehicle Type:{" "}
-                                    {selectedBooking.itemDetails.vehicleType}
-                                  </p>
-                                  <p>
-                                    Price: ${selectedBooking.itemDetails.price}
-                                  </p>
-                                </>
-                              )}
-                              {selectedBooking.itemModel === "HotelBooked" && (
-                                <>
-                                  <p>
-                                    Title: {selectedBooking.itemDetails.title}
-                                  </p>
-                                  <p>
-                                    Check-in:{" "}
-                                    {new Date(
-                                      selectedBooking.itemDetails.checkIn
-                                    ).toLocaleDateString()}
-                                  </p>
-                                  <p>
-                                    Check-out:{" "}
-                                    {new Date(
-                                      selectedBooking.itemDetails.checkOut
-                                    ).toLocaleDateString()}
-                                  </p>
-                                  <p>
-                                    Price: ${selectedBooking.itemDetails.price}
-                                  </p>
-                                  <p>
-                                    Provider:{" "}
-                                    {selectedBooking.itemDetails.provider}
-                                  </p>
-                                </>
-                              )}
-                              {selectedBooking.itemModel ===
-                                "BookedFlights" && (
-                                <>
-                                  <p>
-                                    Departure:{" "}
-                                    {new Date(
-                                      selectedBooking.itemDetails.departureDate
-                                    ).toLocaleString()}
-                                  </p>
-                                  <p>
-                                    Arrival:{" "}
-                                    {new Date(
-                                      selectedBooking.itemDetails.arrivalDate
-                                    ).toLocaleString()}
-                                  </p>
-                                  <p>
-                                    Price: ${selectedBooking.itemDetails.price}
-                                  </p>
-                                </>
-                              )}
+                              This action cannot be undone. This will
+                              permanently cancel your booking.
                             </DialogDescription>
-                          </>
-                        )}
-                        <DialogFooter>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => {}}>
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              onClick={() => {
+                                cancelBooking(booking._id, booking.createdAt);
+                                setSelectedBooking(null);
+                              }}
+                            >
+                              Confirm Cancellation
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog
+                        open={selectedBooking?._id === booking._id}
+                        onOpenChange={(open) => {
+                          if (!open) setSelectedBooking(null);
+                        }}
+                      >
+                        <DialogTrigger asChild>
                           <Button
                             variant="outline"
-                            onClick={() => setSelectedBooking(null)}
+                            onClick={() => handleViewDetails(booking)}
                           >
-                            Close
+                            View Details
                           </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <Separator />
-                </React.Fragment>
-              ))
-            )}
-          </ScrollArea>
-        </CardContent>
-        <CardFooter />
-      </Card>
-      <TourismGovernerFooter />
-    </React.Fragment>
+                        </DialogTrigger>
+
+                        <DialogContent>
+                          {selectedBooking?.itemDetails && (
+                            <>
+                              <DialogHeader>
+                                <DialogTitle>
+                                  {selectedBooking.itemModel} Details
+                                </DialogTitle>
+                              </DialogHeader>
+                              <DialogDescription>
+                                {selectedBooking.itemModel === "Attraction" && (
+                                  <>
+                                    <p>
+                                      Name: {selectedBooking.itemDetails.Name}
+                                    </p>
+                                    <p>
+                                      Price: $
+                                      {selectedBooking.itemDetails.Price}
+                                    </p>
+                                  </>
+                                )}
+                                {selectedBooking.itemModel === "Itinerary" && (
+                                  <>
+                                    <p>
+                                      Name: {selectedBooking.itemDetails.Name}
+                                    </p>
+                                    <p>
+                                      Language:{" "}
+                                      {selectedBooking.itemDetails.Language}
+                                    </p>
+                                    <p>
+                                      Price: $
+                                      {selectedBooking.itemDetails.Price}
+                                    </p>
+                                    <p>
+                                      Timeline:{" "}
+                                      {selectedBooking.itemDetails.TimeLine}
+                                    </p>
+                                  </>
+                                )}
+                                {selectedBooking.itemModel ===
+                                  "Transportation" && (
+                                  <>
+                                    <p>
+                                      Destination:{" "}
+                                      {selectedBooking.itemDetails.destination}
+                                    </p>
+                                    <p>
+                                      Start Place:{" "}
+                                      {selectedBooking.itemDetails.startPlace}
+                                    </p>
+                                    <p>
+                                      Vehicle Type:{" "}
+                                      {selectedBooking.itemDetails.vehicleType}
+                                    </p>
+                                    <p>
+                                      Price: $
+                                      {selectedBooking.itemDetails.price}
+                                    </p>
+                                  </>
+                                )}
+                                {selectedBooking.itemModel ===
+                                  "HotelBooked" && (
+                                  <>
+                                    <p>
+                                      Title: {selectedBooking.itemDetails.title}
+                                    </p>
+                                    <p>
+                                      Check-in:{" "}
+                                      {new Date(
+                                        selectedBooking.itemDetails.checkIn
+                                      ).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                      Check-out:{" "}
+                                      {new Date(
+                                        selectedBooking.itemDetails.checkOut
+                                      ).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                      Price: $
+                                      {selectedBooking.itemDetails.price}
+                                    </p>
+                                    <p>
+                                      Provider:{" "}
+                                      {selectedBooking.itemDetails.provider}
+                                    </p>
+                                  </>
+                                )}
+                                {selectedBooking.itemModel ===
+                                  "BookedFlights" && (
+                                  <>
+                                    <p>
+                                      Departure:{" "}
+                                      {new Date(
+                                        selectedBooking.itemDetails.departureDate
+                                      ).toLocaleString()}
+                                    </p>
+                                    <p>
+                                      Arrival:{" "}
+                                      {new Date(
+                                        selectedBooking.itemDetails.arrivalDate
+                                      ).toLocaleString()}
+                                    </p>
+                                    <p>
+                                      Price: $
+                                      {selectedBooking.itemDetails.price}
+                                    </p>
+                                  </>
+                                )}
+                              </DialogDescription>
+                            </>
+                          )}
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => setSelectedBooking(null)}
+                            >
+                              Close
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <Separator />
+                  </React.Fragment>
+                ))
+              )}
+            </ScrollArea>
+          </CardContent>
+          <CardFooter />
+        </Card>
+        <TourismGovernerFooter />
+      </React.Fragment>
     </>
   );
 };

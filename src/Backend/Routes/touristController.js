@@ -2899,9 +2899,14 @@ const cancelOrder = async (req, res) => {
     // Find the order by orderId
     const order = await ordermodel.findById(orderId);
 
+    const total = order.total;
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    await userModel.findByIdAndUpdate(order.userId, {
+      $inc: { Wallet: total },
+    });
 
     // Check if the order status is already cancelled
     if (order.status === "cancelled") {
