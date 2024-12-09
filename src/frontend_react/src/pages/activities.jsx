@@ -137,7 +137,7 @@ export default function Activities() {
         searchTerm.toLowerCase()
       );
       const matchesCategory = selectedCategory
-        ? activity.Category === selectedCategory
+        ? activity.Category === selectedCategory || selectedCategory === " "
         : true;
       const matchesTags =
         selectedTags.length > 0
@@ -288,7 +288,6 @@ export default function Activities() {
                   isAvailable={activity.IsAvailable}
                   rating={activity.Ratings}
                   Creator={activity.Creator}
-
                 />
               ))
             ) : (

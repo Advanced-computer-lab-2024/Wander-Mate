@@ -22,11 +22,18 @@ import {
   CarouselNext,
 } from "./ui/carousel";
 
-export default function PlaceModal({ place, isOpen, setIsOpen, children, favorite, setFavorite }) {
+export default function PlaceModal({
+  place,
+  isOpen,
+  setIsOpen,
+  children,
+  favorite,
+  setFavorite,
+}) {
   const [reviews, setReviews] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
- 
+
   const handleOpenChange = (open) => {
     console.log(place);
     setIsOpen(open);
@@ -41,12 +48,12 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
     }
   };
 
-  const doNothing = () => {}
+  const doNothing = () => {};
 
   const images = place.images;
 
   useEffect(() => {
-    setIsFavorite(favorite)
+    setIsFavorite(favorite);
     const fetchReviews = async () => {
       if (place.reviews && place.reviews.length > 0) {
         try {
@@ -68,30 +75,35 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true"  && urlParams.get("place") === place.placeId) {
+    if (
+      urlParams.get("open") === "true" &&
+      urlParams.get("place") === place.placeId
+    ) {
       setIsOpen(true);
     }
   }, [isOpen, place.reviews, favorite]);
 
   const handleToggleFavorite = async () => {
-    setIsFavorite(!isFavorite); 
+    setIsFavorite(!isFavorite);
     setFavorite(!favorite);
     try {
       const username = sessionStorage.getItem("username");
       const reply = await fetch(`http://localhost:8000/getID/${username}`);
       if (!reply.ok) throw new Error("Failed to get user ID");
-  
+
       const { userID } = await reply.json();
-  
+
       const requestData = {
         userId: userID,
         eventId: place.placeId,
         type: "Attraction",
       };
       console.log("Request Data:", requestData);
-  
+
       if (isFavorite) {
-        await axios.delete("http://localhost:8000/unbookmarkEvent", { data: requestData });
+        await axios.delete("http://localhost:8000/unbookmarkEvent", {
+          data: requestData,
+        });
         toast.success("Removed from Favorites");
       } else {
         await axios.post("http://localhost:8000/Bookmarkevent", requestData);
@@ -102,7 +114,10 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
       if (error.response) {
         console.error("Server Error:", error.response.data);
       }
-      toast.error("Failed to update favorite status: " + (error.response?.data?.message || error.message));
+      toast.error(
+        "Failed to update favorite status: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
@@ -113,7 +128,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
 
     if (method === "link") {
       navigator.clipboard.writeText(shareUrl).then(() => {
-        alert("Link copied to clipboard!");
+        toast.success("Link copied to clipboard successfully");
         setIsShareOpen(false);
       });
     } else if (method === "email") {
@@ -132,7 +147,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
         size="full"
       >
-        <Toaster/>
+        <Toaster />
         <div className="relative">
           <Button
             variant="ghost"
@@ -145,7 +160,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Place Image */}
               <div className="aspect-square overflow-hidden rounded-lg ">
-                <Carousel >
+                <Carousel>
                   <CarouselContent>
                     {images.length > 0 ? (
                       images.map((image, index) => (
@@ -210,38 +225,41 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                   </div>
                   {/* Place Details */}
                   <div className="space-y-2 mb-6">
-                    
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">Category:</span>{" "}
                       {place.category}
                     </p>
-                    
-                      <div>
-                        <span className="font-semibold">Ticket Prices:</span>
-                        <ul className="text-sm text-gray-600">
-                          {place.TicketPrices && place.TicketPrices.length > 0 ? (
-                            place.TicketPrices.map((ticket, index) => (
-                              <li key={index}>
-                                {ticket.type}: {place.currency} {ticket.price}
-                              </li>
-                            ))
-                          ) : (
-                            <li>No ticket prices available</li>
-                          )}
-                        </ul>
-                      </div>
+
+                    <div>
+                      <span className="font-semibold">Ticket Prices:</span>
+                      <ul className="text-sm text-gray-600">
+                        {place.TicketPrices && place.TicketPrices.length > 0 ? (
+                          place.TicketPrices.map((ticket, index) => (
+                            <li key={index}>
+                              {ticket.type}: {place.currency} {ticket.price}
+                            </li>
+                          ))
+                        ) : (
+                          <li>No ticket prices available</li>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                   {/* Favorite Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
-                  <Button
-                      className={`flex-1 ${isFavorite ? "bg-red-500 hover:bg-red-600" : ""}`}
+                    <Button
+                      className={`flex-1 ${
+                        isFavorite ? "bg-red-500 hover:bg-red-600" : ""
+                      }`}
                       onClick={handleToggleFavorite}
                     >
                       <Icon
                         icon={isFavorite ? "ph:heart-fill" : "ph:heart"}
                         className="w-4 h-4 mr-2"
                       />
-                      {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                      {isFavorite
+                        ? "Remove from Favorites"
+                        : "Add to Favorites"}
                     </Button>
                     <Popover
                       open={isShareOpen}
@@ -299,9 +317,7 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                 <TabsTrigger value="reviews">
                   Reviews ({reviews.length})
                 </TabsTrigger>
-                <TabsTrigger value="Location">
-                  Location
-                </TabsTrigger>
+                <TabsTrigger value="Location">Location</TabsTrigger>
               </TabsList>
               <TabsContent value="info" className="mt-4">
                 <Card>
@@ -339,7 +355,8 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
                 <Card>
                   <CardContent className="p-6">
                     <p className="text-sm text-gray-600 mb-4">
-                      <span className="font-semibold">Location:</span> {place.location}
+                      <span className="font-semibold">Location:</span>{" "}
+                      {place.location}
                       <Button
                         variant="outline"
                         className="ml-4"
@@ -371,4 +388,3 @@ export default function PlaceModal({ place, isOpen, setIsOpen, children, favorit
     </Dialog>
   );
 }
-

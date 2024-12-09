@@ -168,7 +168,6 @@ const PayForActivity = ({ amount, disabled, activity }) => {
           </Button>
         </DialogTrigger>
         <DialogContent size="2xl" className="p-0">
-          <Toaster />
           <DialogHeader className="p-6 pb-2">
             {alertMessage && (
               <Alert color="destructive" variant="soft" className="mb-4">
