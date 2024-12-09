@@ -24,11 +24,15 @@ export default function EditableProductModal({
   setIsOpen,
   children,
   quantity,
+  isAdded: initialIsAdded,
+  isArchiveded,
 }) {
   const [reviews, setReviews] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [seller, setSeller] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isAdded, setIsAdded] = useState(initialIsAdded);
+  const [current, setCurrent] = useState(isArchiveded);
   const [editedProduct, setEditedProduct] = useState({
     name: product.name,
     description: product.description,
@@ -61,7 +65,43 @@ export default function EditableProductModal({
       fetchSellerInfo();
     }
   }, [product.seller]);
+  const handleArchiveProduct = async () => {
+    try {
+      const isArchived = !current; // Toggle the archived status
+      const response = await axios.patch(
+        `http://localhost:8000/SellerarchiveProduct/${product.productId}`,
+        { isArchived }
+      );
 
+      if (response.data.product) {
+        setIsAdded(true); // Set the button as "added" once the product is archived
+        toast(
+          `Product has been ${
+            isArchived ? "archived" : "unarchived"
+          } successfully!`,
+          {
+            icon: "👏",
+            style: {
+              borderRadius: "10px",
+              background: "#826AF9",
+              color: "#fff",
+            },
+          }
+        );
+      }
+      setCurrent(!current);
+    } catch (error) {
+      console.error("Error archiving/unarchiving product:", error);
+      toast("Failed to archive/unarchive product", {
+        icon: "🚨",
+        style: {
+          borderRadius: "10px",
+          background: "#E53E3E",
+          color: "#fff",
+        },
+      });
+    }
+  };
   const getInitials = (name) => {
     if (!name) return "SS";
     return name
@@ -402,6 +442,22 @@ export default function EditableProductModal({
                         />
                         Edit Product
                       </Button>
+                    <div className="flex space-x-4 mb-6">
+                    {/* Replace the Add to Cart / Notify Me Button with Archive Button */}
+
+                    <Button
+                      className="flex-1"
+                      onClick={handleArchiveProduct} // Use the new archive function
+                    >
+                      <Icon
+                        icon={
+                          current ? "heroicons:archive" : "heroicons:unarchive"
+                        }
+                        className="w-4 h-4 mr-2"
+                      />
+                      {current ? "Unarchive" : "Archive"}
+                    </Button>
+                    </div>
                       <Popover
                         open={isShareOpen}
                         onOpenChange={setIsShareOpen}

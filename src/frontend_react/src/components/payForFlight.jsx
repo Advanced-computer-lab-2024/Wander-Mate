@@ -75,7 +75,7 @@ const PayForFlight = ({
         setAlertMessage(response.data || "Payment failed.");
       }
     } catch (error) {
-      setAlertMessage("An error occurred during the transaction.");
+      setAlertMessage("There is no enough money in your wallet.");
     }
   };
 

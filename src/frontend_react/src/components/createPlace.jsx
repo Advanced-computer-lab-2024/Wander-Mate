@@ -142,7 +142,7 @@ const CreatePlace = () => {
         throw new Error("Failed to create place");
       }
       setIsOpen(false);
-
+      window.location.reload();
       return response.json();
     };
 
@@ -163,6 +163,7 @@ const CreatePlace = () => {
         },
       }
     );
+    
 
     try {
       await createPlacePromise();
@@ -180,6 +181,7 @@ const CreatePlace = () => {
       setPreviewImages([]);
       setTicketPrices([]);
       setIsOpen(false);
+      
     } catch (error) {
       console.error("Error:", error);
     }

@@ -365,7 +365,7 @@ const SellerarchiveProduct = async (req, res) => {
     const { isArchived } = req.body; // Get the new archive status from request body
 
     // Find the product by ID and update its isArchived status
-    const product = await ProductModel.findByIdAndUpdate(
+    const product = await productModel.findByIdAndUpdate(
       productId,
       { isArchived },
       { new: true } // Return the updated document
