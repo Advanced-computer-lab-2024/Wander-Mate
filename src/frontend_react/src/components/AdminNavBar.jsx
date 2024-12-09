@@ -29,12 +29,14 @@ import {
   Tag,
   LucideSquareChartGantt,
   Table,
+  TicketPercent,
   Trash2,
   Bell,
 } from "lucide-react";
 
 import AddAdminButton from "./AddAdminButton";
 import AddTourismGovButton from "./AddTourismGovButton";
+import CreatePromoCode from "./CreatePromoCode";
 
 const SiteLogo = () => (
   <svg
@@ -339,63 +341,61 @@ const AdminNavBar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Notifications">
-                  <Bell className="h-5 w-5" />
-                  {notifications.some((n) => !n.isRead) && (
-                    <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-4">
-                  <h3 className="font-medium text-lg">Notifications</h3>
-                  {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">
-                      No new notifications
-                    </p>
-                  ) : (
-                    <ScrollArea className="h-[300px]">
-                      {notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className={`p-4 ${
-                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
-                          } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+                {notifications.some((n) => !n.isRead) && (
+                  <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg">Notifications</h3>
+                {notifications.length === 0 ? (
+                  <p className="text-sm text-gray-500">No new notifications</p>
+                ) : (
+                  <ScrollArea className="h-[300px]">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification._id}
+                        className={`p-4 ${
+                          notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                        } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                      >
+                        <p
+                          className="text-sm"
+                          onClick={() =>
+                            markNotificationAsRead(notification._id)
+                          }
                         >
-                          <p
-                            className="text-sm"
-                            onClick={() =>
-                              markNotificationAsRead(notification._id)
-                            }
-                          >
-                            {notification.message}
-                          </p>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteNotification(notification._id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete notification</span>
-                          </Button>
-                        </div>
-                      ))}
-                    </ScrollArea>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
+                          {notification.message}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteNotification(notification._id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete notification</span>
+                        </Button>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar>
-                <AvatarFallback >
-  {username.slice(0, 2).toUpperCase() || "AD"}
-</AvatarFallback>
+                  <AvatarFallback>
+                    {username.slice(0, 2).toUpperCase() || "AD"}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -408,7 +408,7 @@ const AdminNavBar = () => {
                   <span onClick={goToProfile}>Profile</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <div className="mr-2 h-4 w-4">
                     <AddAdminButton />
@@ -420,6 +420,12 @@ const AdminNavBar = () => {
                     <AddTourismGovButton />
                   </div>
                   Add new tourism governor
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <div className="mr-2 h-4 w-4">
+                    <CreatePromoCode />
+                  </div>
+                  Create Promo Code
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
