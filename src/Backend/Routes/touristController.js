@@ -155,45 +155,38 @@ const handleTourist = async (req, res) => {
       }
       let Points = tourist.Points;
       let currentBadge = tourist.Badge;
-     
-  
-      
 
-     // Assign badge based on points, but prevent downgrading
-const assignBadge = (points, currentBadge) => {
-  // If the user is already at level 3 or level 2, do not downgrade them
-  if (currentBadge === "level 3") {
-    // Always stay at level 3 if points are above 500K
-    if (points > 500000) return "level 3";
-    // If points are below level 3 but above 100K, stay at level 3 (no downgrade)
-    return "level 3"; // Keep level 3 even if points decrease
-  }
+      // Assign badge based on points, but prevent downgrading
+      const assignBadge = (points, currentBadge) => {
+        // If the user is already at level 3 or level 2, do not downgrade them
+        if (currentBadge === "level 3") {
+          // Always stay at level 3 if points are above 500K
+          if (points > 500000) return "level 3";
+          // If points are below level 3 but above 100K, stay at level 3 (no downgrade)
+          return "level 3"; // Keep level 3 even if points decrease
+        }
 
-  if (currentBadge === "level 2") {
-    if (points > 500000) return "level 3";
-    // If points are above level 2 but below 500K, stay at level 2
-    if (points > 100000) return "level 2";
-    // If points are below level 2 threshold, stay at level 2 (no downgrade)
-    return "level 2"; // Keep level 2 even if points decrease
-  }
+        if (currentBadge === "level 2") {
+          if (points > 500000) return "level 3";
+          // If points are above level 2 but below 500K, stay at level 2
+          if (points > 100000) return "level 2";
+          // If points are below level 2 threshold, stay at level 2 (no downgrade)
+          return "level 2"; // Keep level 2 even if points decrease
+        }
 
-  // If the user is not at level 2 or 3, assign based on points
-  if (points <= 100000) {
-    return "level 1"; // Up to 100K points
-  } else if (points <= 500000) {
-    return "level 2"; // Up to 500K points
-  } else {
-    return "level 3"; // More than 500K points
-  }
-};
+        // If the user is not at level 2 or 3, assign based on points
+        if (points <= 100000) {
+          return "level 1"; // Up to 100K points
+        } else if (points <= 500000) {
+          return "level 2"; // Up to 500K points
+        } else {
+          return "level 3"; // More than 500K points
+        }
+      };
 
-      
       // Get the updated badge based on the current points and current badge
       const badge = assignBadge(Points, currentBadge);
       tourist.Badge = badge;
-      ;
-      
-      
       await tourist.save();
 
       return res.status(200).json(tourist);
@@ -2796,7 +2789,7 @@ const applyPromoCode = async (req, res) => {
     // Find the promo code
     const code = await PromoCode.findOne({
       code: promoCode,
-      assignedTo: touristID,
+      $or: [{ assignedTo: touristID }, { assignedTo: null }],
       isUsed: false,
     });
 
@@ -3501,12 +3494,27 @@ const previewPromoCode = async (req, res) => {
   const { touristId } = req.params;
   const { promoCode, purchaseAmount } = req.body;
 
+  if (!promoCode) {
+    return res.status(400).json({ message: "Promo code is required." });
+  }
+
+  if (!touristId) {
+    return res.status(400).json({ message: "Tourist ID is required." });
+  }
+
+  if (
+    !purchaseAmount ||
+    typeof purchaseAmount !== "number" ||
+    purchaseAmount <= 0
+  ) {
+    return res.status(400).json({ message: "Invalid purchase amount." });
+  }
+
   try {
-    // Find the promo code
     const code = await PromoCode.findOne({
       code: promoCode,
-      assignedTo: touristId,
       isUsed: false,
+      $or: [{ assignedTo: touristId }, { assignedTo: null }],
     });
 
     if (!code) {
@@ -3515,18 +3523,15 @@ const previewPromoCode = async (req, res) => {
         .json({ message: "Promo code not found or already used." });
     }
 
-    // Check if the promo code is expired
     const currentDate = new Date();
-    if (code.expiryDate < currentDate) {
+    if (new Date(code.expiryDate) < currentDate) {
       return res.status(400).json({ message: "Promo code has expired." });
     }
 
-    // Calculate the discount (e.g., 10% discount)
-    const discount = 0.1; // Example discount rate
+    const discount = code.discountRate || 0.1; // Use promo-specific discount or default
     const discountAmount = purchaseAmount * discount;
     const finalAmount = purchaseAmount - discountAmount;
 
-    // Return the preview information without marking the code as used
     res.status(200).json({
       message: "Promo code preview successful",
       originalAmount: purchaseAmount,
@@ -3534,7 +3539,11 @@ const previewPromoCode = async (req, res) => {
       finalAmount,
     });
   } catch (error) {
-    console.error("Error previewing promo code:", error);
+    console.error("Error previewing promo code:", {
+      error,
+      touristId,
+      promoCode,
+    });
     res.status(500).json({ message: "Internal server error" });
   }
 };

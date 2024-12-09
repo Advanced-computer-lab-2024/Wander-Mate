@@ -169,7 +169,7 @@ export default function CompletedItineraries() {
           </div>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 }

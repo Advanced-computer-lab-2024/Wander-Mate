@@ -70,6 +70,9 @@ This structured approach ensures that the codebase remains clean, efficient, and
 ![Preview](5.png)
 ![Preview](6.png)
 ![Preview](8.png)
+![Preview](10.png)
+![Preview](11.png)
+![Preview](12.png)
 ---
 
 ## Tech/Framework Used
@@ -839,6 +842,10 @@ Actual API in Code: https://api.emailjs.com/api/v1.0/email/send
 5. **Map Box API (using Mapbox Maps)**  
 Website: [Mapbox](https://www.mapbox.com)  
 Actual API in Code: https://maps.googleapis.com/maps/api/js?key=AIzaSyCUGuPbWdSWysqduevM3zHurxQAf8cFyTY&libraries=places&callback=initMap
+
+6. **Currency exchange API (using currency exchange)**  
+Website: [Currency Exchange](https://www.exchangerate-api.com)
+Actual API in Code: https://api.exchangerate-api.com/v4/latest/${c}
 
 
 ## Contribute

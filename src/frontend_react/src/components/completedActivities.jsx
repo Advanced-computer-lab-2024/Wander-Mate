@@ -162,7 +162,7 @@ export default function CompletedActivities() {
           </div>
         </div>
       </div>
-      <TourismGovernerFooter />
+      {/* <TourismGovernerFooter /> */}
     </React.Fragment>
   );
 }
