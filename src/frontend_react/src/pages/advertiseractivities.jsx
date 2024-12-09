@@ -259,6 +259,7 @@ export default function AdvertiserActivities() {
                   categories.find((cat) => cat._id === activity.Category)
                     ?.Name || "No Category"
                 }
+                categoryId={activity.Category}
                 isAvailable={activity.IsAvailable}
                 rating={activity.Ratings}
                 discounts={activity.Discounts}
