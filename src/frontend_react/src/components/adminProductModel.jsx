@@ -24,7 +24,7 @@ export default function AdminProductModal({
   isAdded: initialIsAdded,
   count: initialCount,
   isAuthenticated,
-  isArchiveded
+  isArchiveded,
 }) {
   const [reviews, setReviews] = useState([]);
   const [count, setCount] = useState(1);
@@ -32,7 +32,7 @@ export default function AdminProductModal({
   const [isAdded, setIsAdded] = useState(initialIsAdded);
   const [seller, setSeller] = useState(null);
   const navigate = useNavigate();
-  const [current, setCurrent] = useState(isArchiveded); 
+  const [current, setCurrent] = useState(isArchiveded);
 
   const goToCart = () => {
     navigate("/cart");
@@ -126,7 +126,10 @@ export default function AdminProductModal({
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("open") === "true" && urlParams.get("product") === product.productId) {
+    if (
+      urlParams.get("open") === "true" &&
+      urlParams.get("product") === product.productId
+    ) {
       setIsOpen(true);
     }
   }, [isOpen, product.reviews]);
@@ -142,7 +145,9 @@ export default function AdminProductModal({
       if (response.data.product) {
         setIsAdded(true); // Set the button as "added" once the product is archived
         toast(
-          `Product has been ${isArchived ? "archived" : "unarchived"} successfully!`,
+          `Product has been ${
+            isArchived ? "archived" : "unarchived"
+          } successfully!`,
           {
             icon: "👏",
             style: {
@@ -166,9 +171,6 @@ export default function AdminProductModal({
       });
     }
   };
-
-  
-
 
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];
@@ -251,16 +253,16 @@ export default function AdminProductModal({
                   {/* Price */}
                   <div className="mb-6">
                     <span className="text-3xl font-bold text-primary">
-                      ${product.price}
+                      $
+                      {product.discount > 0
+                        ? product.price -
+                          (product.price * product.discount) / 100
+                        : product.price}
                     </span>
-                    {product.discount && (
+                    {product.discount > 0 && (
                       <>
                         <span className="ml-2 text-lg line-through text-gray-500">
-                          $
-                          {(
-                            product.price +
-                            (product.price * product.discount) / 100
-                          ).toFixed(2)}
+                          ${product.price}
                         </span>
                         <span className="ml-2 text-lg font-semibold text-green-600">
                           {product.discount}% Off
@@ -300,17 +302,19 @@ export default function AdminProductModal({
                   {/* Add to Cart Button and Share Button */}
                   <div className="flex space-x-4 mb-6">
                     {/* Replace the Add to Cart / Notify Me Button with Archive Button */}
-                    
-  <Button
-    className="flex-1"
-    onClick={handleArchiveProduct} // Use the new archive function
-  >
-    <Icon
-      icon={current ? "heroicons:archive" : "heroicons:unarchive"}
-      className="w-4 h-4 mr-2"
-    />
-    {current ? "Unarchive" : "Archive"}
-  </Button>
+
+                    <Button
+                      className="flex-1"
+                      onClick={handleArchiveProduct} // Use the new archive function
+                    >
+                      <Icon
+                        icon={
+                          current ? "heroicons:archive" : "heroicons:unarchive"
+                        }
+                        className="w-4 h-4 mr-2"
+                      />
+                      {current ? "Unarchive" : "Archive"}
+                    </Button>
 
                     <Popover
                       open={isShareOpen}

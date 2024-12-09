@@ -14,58 +14,56 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import { User } from "lucide-react";
+import { Plus, UserPlus } from "lucide-react";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-import { UserPlus } from "lucide-react";
+
 function SubmitButton({ pending }) {
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Creating..." : "Create Tourism Governor"}
+      {pending ? "Creating..." : "Create Promo Code"}
     </Button>
   );
 }
 
-export async function addAdmin(username, password) {
+const createPromoCode = async ({ code, expiryDate }) => {
   try {
-    const usernameFromSession = sessionStorage.getItem("username");
-
-    // Assuming the backend has an 'addAdmin' API endpoint
-    const response = await fetch("http://localhost:8000/addTourismGov", {
+    const response = await fetch("http://localhost:8000/createPromoCode", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Username: username,
-        Password: password,
-        CreatedBy: usernameFromSession,
-      }), // Adding created by field
+        code,
+        expiryDate,
+        assignedTo: null,
+        isUsed: false,
+      }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || "Failed to create tourism governor");
+      throw new Error(data.message || "Failed to create promo code");
     }
 
-    // Handle successful creation (optional - you can manage any additional status like tokens if needed)
     return {
-      success: toast.success("tourism governor added successfully."),
-      message: "tourism governor created successfully",
+      success: toast.success("Promo code created successfully."),
+      message: "Promo code created successfully",
+      promoCode: data.promoCode,
     };
   } catch (error) {
-    console.error("Error creating tourism governor:", error);
+    console.error("Error creating promo code:", error);
     return {
-      success: toast.error("Can't create the tourism governor"),
-      message: "Can't create the tourism governor",
+      success: toast.error("Can't create the promo code"),
+      message: "Can't create the promo code",
     };
   }
-}
+};
 
-export default function AddAdminDialog() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+export default function CreatePromoCode() {
+  const [code, setCode] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
   const [state, setState] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const dialogRef = useRef(null);
@@ -82,7 +80,7 @@ export default function AddAdminDialog() {
     event.preventDefault();
     setIsPending(true);
 
-    const result = await addAdmin(username, password); // Call the updated 'addAdmin' function
+    const result = await createPromoCode({ code, expiryDate });
     setState(result);
     setIsPending(false);
 
@@ -93,53 +91,49 @@ export default function AddAdminDialog() {
 
   return (
     <div>
+      <Toaster />
       <Dialog
         open={state?.success ? false : undefined}
         onOpenChange={handleOpenChange}
         ref={dialogRef}
       >
         <DialogTrigger asChild>
-          <UserPlus className="mr-2 h-4 w-4">
-            Add New tourism governor
-            <span onClick={DialogTrigger}>Add New tourism governor</span>
-          </UserPlus>
+          <UserPlus className="mr-2 h-4 w-4">Create Promo Code</UserPlus>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add New tourism governor</DialogTitle>
+            <DialogTitle>Create Promo Code</DialogTitle>
             <DialogDescription>
-              Enter the details for the new Tourism Governor account.
+              Enter the details for the new promo code.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-3 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
+                <Label htmlFor="code" className="text-right">
+                  Code
                 </Label>
                 <Input
-                  id="username"
-                  name="username"
+                  id="code"
+                  name="code"
                   className="col-span-3"
                   required
-                  pattern="\S+" // Ensure no spaces in username
-                  title="Username should not contain spaces"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
                 />
               </div>
               <div className="grid grid-cols-3 items-center gap-4">
-                <Label htmlFor="password" className="text-right">
-                  Password
+                <Label htmlFor="expiryDate" className="text-right">
+                  Expiry Date
                 </Label>
                 <Input
-                  id="password"
-                  name="password"
-                  type="password"
+                  id="expiryDate"
+                  name="expiryDate"
+                  type="date"
                   className="col-span-3"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(e.target.value)}
                 />
               </div>
             </div>

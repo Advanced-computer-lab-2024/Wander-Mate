@@ -126,7 +126,7 @@ import TopUsers from "./components/topUsers";
 import GuestNavigationMenuBar from "./components/Guestnavbar";
 import Aboutusguest from "./pages/aboutusguest";
 import MeetPageguest from "./pages/meetpageguest";
-
+import TourGuideItinerarieshis from "./pages/tgItinerary";
 import AdvertiserPage from "./pages/activityAdvertiser";
 
 function App() {
@@ -299,6 +299,8 @@ function App() {
         <Route path="/aboutusguest" element={<Aboutusguest />} />
         <Route path="/meetpageguest" element={<MeetPageguest />} />
         <Route path="/activityAdvertiser"element={<AdvertiserPage/>}/>
+        <Route path="/tgitineraries"element={<TourGuideItinerarieshis/>}/>
+
       </Routes>
     </Router>
   );

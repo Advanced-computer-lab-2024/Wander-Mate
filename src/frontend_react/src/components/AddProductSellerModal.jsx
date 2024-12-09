@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Icon } from "@iconify/react";
-import { toast, Toaster } from "react-hot-toast";
+import  toast,{ Toaster } from "react-hot-toast";
 
 const AddProductSellerModal = () => {
   const [formData, setFormData] = useState({
@@ -53,50 +53,70 @@ const AddProductSellerModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const submitData = new FormData();
     submitData.append("Name", formData.Name);
     submitData.append("Price", formData.Price);
     submitData.append("Description", formData.Description);
     submitData.append("Quantity", formData.Quantity);
     submitData.append("picture", formData.picture);
-
-    try {
-      const username = sessionStorage.getItem("username");
-      const reply = await fetch(`http://localhost:8000/getID/${username}`);
-      if (!reply.ok) throw new Error("Failed to get tourist ID");
-
-      const { userID } = await reply.json();
-      const sellerId = userID;
-      submitData.append("Seller", sellerId);
-
-      const response = await fetch("http://localhost:8000/addProductseller", {
-        method: "POST",
-        body: submitData,
-      });
-
-      if (response.ok) {
-        toast.success("Added successfully");
-        setFormData({
-          Name: "",
-          Price: "",
-          Description: "",
-          Quantity: "",
-          picture: null,
-          seller: sellerId,
+  
+    const createProduct = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get tourist ID");
+  
+        const { userID } = await reply.json();
+        const sellerId = userID;
+        submitData.append("Seller", sellerId);
+  
+        const response = await fetch("http://localhost:8000/addProductseller", {
+          method: "POST",
+          body: submitData,
         });
-        setPreviewImage(null);
-        setIsOpen(false);
-        toast.success("Product added successfully");
-        window.location.reload();
-      } else {
-        toast.error("Error adding product.");
+  
+        if (!response.ok) {
+          throw new Error("Error adding product.");
+        }
+  
+        return response.json(); // Assuming the server sends a success response with data
+      } catch (error) {
+        console.error("Error:", error);
+        throw error; // Ensures the error propagates to the toast.error handler
       }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Failed to add product.");
-    }
+    };
+  
+    toast.promise(
+      createProduct(),
+      {
+        loading: "Adding product...",
+        success: "Product added successfully!",
+        error: "Failed to add product.",
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 5000,
+          icon: "🎉",
+        },
+      }
+    ).then(() => {
+      setFormData({
+        Name: "",
+        Price: "",
+        Description: "",
+        Quantity: "",
+        picture: null,
+      });
+      setPreviewImage(null);
+      setIsOpen(false);
+      window.location.reload();
+    });
   };
+  
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

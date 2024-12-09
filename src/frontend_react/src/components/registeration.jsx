@@ -624,6 +624,12 @@ const Registration = () => {
                   {errors.accepted}
                 </p>
               )}
+              {selectedRole !== "Tourist" && activestep === 2 && (
+                <span>
+                  Be Aware That you will be asked to upload Documents to
+                  continue your journey with us
+                </span>
+              )}
             </div>
           </form>
           <div className="flex justify-between mt-4">
