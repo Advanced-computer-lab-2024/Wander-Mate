@@ -155,9 +155,8 @@ const TourGuideItineraries = () => {
       const matchesSearch = itinerary.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const convertedPrice = itinerary.Price * (exchangeRates[currency] || 1);
       const matchesBudget =
-        convertedPrice >= budget[0] && convertedPrice <= budget[1];
+      itinerary.Price >= budget[0] && itinerary.Price <= budget[1];
       const filterStartDate = startDate ? new Date(startDate) : null;
       const filterEndDate = endDate ? new Date(endDate) : null;
       const matchesDate = itinerary.AvailableDates.some((date) => {
@@ -322,7 +321,7 @@ const TourGuideItineraries = () => {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <Label htmlFor="currency">Currency</Label>
                   <select
                     id="currency"
@@ -337,7 +336,7 @@ const TourGuideItineraries = () => {
                         </option>
                       ))}
                   </select>
-                </div>
+                </div> */}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
