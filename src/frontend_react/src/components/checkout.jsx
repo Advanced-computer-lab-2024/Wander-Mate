@@ -167,6 +167,7 @@ const CheckOut = ({
         "http://localhost:8000/makeOrder",
         orderData
       );
+
       if (response.status === 200) {
         toast({
           title: "Order Created",
