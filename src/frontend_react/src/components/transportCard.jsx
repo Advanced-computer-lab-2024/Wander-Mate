@@ -530,13 +530,13 @@ const TransportationCard = ({
                           <Button
                             className="text-white w-full"
                             onClick={handleBook}
-                            disabled={userAge < 18}
+                            disabled={userAge < 18 || !availability}
                           >
                             <Icon
                               icon="heroicons:shopping-bag"
                               className="w-4 h-4 mr-2"
                             />
-                            Book Now
+                            {!availability ? "Not Available" : "Book Now"}
                           </Button>
                           {userAge < 18 && (
                             <p className="text-red-500 text-sm mt-2">

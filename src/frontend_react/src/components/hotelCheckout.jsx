@@ -162,6 +162,7 @@ const HotelCheckOut = ({
     } catch (error) {
       console.error("Error processing booking:", error);
     }
+    setActiveIndex(totalSlide);
   };
 
   const handlePaymentError = (error) => {
