@@ -188,9 +188,14 @@ const ViewBookmarks = () => {
                         longitude={event.Location.coordinates[1]}
                         ratings={[]}
                         reviews={[]}
-                        TicketPrices={(
-                          event.TicketPrices / (exchangeRates[currency] || 1)
-                        ).toFixed(2)}
+                        TicketPrices={
+                          event.TicketPrices && event.TicketPrices.length > 0
+                            ? JSON.parse(event.TicketPrices[0]).map(([type, price]) => ({
+                                type,
+                                price: (parseFloat(price) / (exchangeRates[currency] || 1)).toFixed(2)
+                              }))
+                            : []
+                        }
                         currency={currency}
                       />
                     </div>
