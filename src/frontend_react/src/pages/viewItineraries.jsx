@@ -21,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import { Filter, ArrowUpDown } from "lucide-react";
+import { Filter, ArrowUpDown } from 'lucide-react';
 import ViewItinerariesTour from "../components/ViewItinerariesTour";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
@@ -130,7 +130,7 @@ export default function ViewItineraries() {
   };
 
   const clearFilters = () => {
-    setLanguage("");
+    setLanguage("any");
     setBudget([0, 100000]);
     setStartDate("");
     setEndDate("");
@@ -167,8 +167,7 @@ export default function ViewItineraries() {
       const matchesTags =
         selectedTags.length === 0 ||
         allTags.some((tag) => selectedTags.includes(tag));
-      const matchesLanguage =
-        language === " " || !language || itinerary.Language === language;
+      const matchesLanguage = language === "any" || !language || itinerary.Language === language;
 
       return (
         matchesSearch &&
@@ -316,8 +315,6 @@ export default function ViewItineraries() {
                       </div>
                     </div>
 
-                    {/* Currency Dropdown */}
-
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="startDate">Start Date</Label>
@@ -360,6 +357,27 @@ export default function ViewItineraries() {
                           </div>
                         ))}
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="language">Language</Label>
+                      <Select
+                        id="language"
+                        value={language}
+                        onValueChange={(value) => setLanguage(value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Language" />
+                        </SelectTrigger>
+                        <SelectContent portal={false}>
+                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="English">English</SelectItem>
+                          <SelectItem value="Arabic">Arabic</SelectItem>
+                          <SelectItem value="French">French</SelectItem>
+                          <SelectItem value="German">German</SelectItem>
+                          <SelectItem value="Italian">Italian</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <Button onClick={clearFilters} variant="outline">
@@ -420,3 +438,4 @@ export default function ViewItineraries() {
     </React.Fragment>
   );
 }
+

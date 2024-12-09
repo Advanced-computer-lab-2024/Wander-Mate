@@ -329,7 +329,7 @@ const PersonalDetails = () => {
                         isOpen={isConfirmationOpen}
                         onConfirm={handleDeleteAccount}
                         onCancel={handleCancelDelete}
-                        message="Are you sure you want to delete this itinerary?"
+                        message="Are you sure you want to delete this account?"
                       />
           </div>
         </div>
