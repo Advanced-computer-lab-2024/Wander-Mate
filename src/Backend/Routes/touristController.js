@@ -1469,7 +1469,7 @@ const requestTouristAccountDeletion = async (req, res) => {
 
     res.status(200).json({
       message:
-        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
+        "Account deleted successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);

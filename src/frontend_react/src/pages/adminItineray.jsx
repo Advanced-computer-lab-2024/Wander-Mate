@@ -23,6 +23,7 @@ import {
 } from "../components/ui/sheet";
 import { Filter, ArrowUpDown } from "lucide-react";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import AdminNavBar from "../components/AdminNavBar";
 
 export default function AdminItineraries() {
   const [itineraries, setItineraries] = useState([]);
@@ -221,6 +222,7 @@ export default function AdminItineraries() {
 
   return (
     <React.Fragment>
+      <AdminNavBar/>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Available Itineraries</h1>
 

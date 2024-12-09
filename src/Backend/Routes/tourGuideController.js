@@ -549,7 +549,7 @@ const requestTourGuideAccountDeletion = async (req, res) => {
 
     res.status(200).json({
       message:
-        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
+        "Account deleted successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
@@ -629,11 +629,11 @@ const getTourGuide = async (req, res) => {
   try {
     const { guideID } = req.params;
     const GUIDE = await tourGuideModel.findById(guideID);
-    
+
     if (GUIDE) {
       return res.status(200).json(GUIDE); // Return to avoid multiple responses
     }
-    
+
     return res.status(404).json({ error: "Tour guide not found" }); // Use 404 for not found
   } catch (error) {
     console.error("Error fetching tour guide:", error); // Log the error for debugging
@@ -641,11 +641,11 @@ const getTourGuide = async (req, res) => {
   }
 };
 
-const getTourGuideItineraries = async (req,res) => {
-  try{
-    const {guideID} = req.params;
-    const itineraries = await Itinerary.find({Creator: guideID});
-    if(itineraries){
+const getTourGuideItineraries = async (req, res) => {
+  try {
+    const { guideID } = req.params;
+    const itineraries = await Itinerary.find({ Creator: guideID });
+    if (itineraries) {
       return res.status(200).json(itineraries);
     }
     return res.status(404).json({ error: "Tour guide not found" }); // Use 404 for not found
@@ -653,8 +653,7 @@ const getTourGuideItineraries = async (req,res) => {
     console.error("Error fetching tour guide:", error); // Log the error for debugging
     res.status(500).json({ error: "Internal Server Error" }); // Use 500 for server errors
   }
-}
-
+};
 
 const viewItineraryReport = async (req, res) => {
   try {
