@@ -157,7 +157,7 @@ export default function AdvertiserActivityModal({
         setIsEditing(false); // Exit edit mode
   
         // Check if the activity is now available and send notifications if true
-        if (response.data.activity.IsAvailable) {
+        if (!activity.IsAvailable && response.data.activity.IsAvailable) {
           return sendAttractionNotifications(activity.activityId);
         }
       })
