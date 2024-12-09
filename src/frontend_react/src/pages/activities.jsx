@@ -20,14 +20,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import { Filter, Loader, ArrowUpDown } from "lucide-react";
+import { Filter, Loader, ArrowUpDown } from 'lucide-react';
+import { Slider } from "../components/ui/slider";
 import NavigationMenuBar from "../components/NavigationMenuBar";
 import ActivitiesTour from "../components/activitiesTour";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
 
 export default function Activities() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTags, setSelectedTags] = useState([]);
   const [activities, setActivities] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -40,6 +41,11 @@ export default function Activities() {
   const [sortCriteria, setSortCriteria] = useState("rating");
   const [sortOrder, setSortOrder] = useState("desc");
   const combo = sessionStorage.getItem("curr");
+
+  const [budget, setBudget] = useState([0, 10000]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [language, setLanguage] = useState("any");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,8 +133,12 @@ export default function Activities() {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
 
   const clearFilters = () => {
-    setSelectedCategory("");
+    setSelectedCategory("all");
     setSelectedTags([]);
+    setBudget([0, 10000]);
+    setStartDate("");
+    setEndDate("");
+    setLanguage("any");
   };
 
   const filteredActivities = activities
@@ -136,15 +146,27 @@ export default function Activities() {
       const matchesName = activity.Name.toLowerCase().includes(
         searchTerm.toLowerCase()
       );
-      const matchesCategory = selectedCategory
-        ? activity.Category === selectedCategory
-        : true;
+      const matchesCategory = selectedCategory === "all" || activity.Category === selectedCategory;
       const matchesTags =
         selectedTags.length > 0
           ? selectedTags.some((tag) => activity.Tags.includes(tag))
           : true;
+      const matchesBudget =
+        activity.Price >= budget[0] && activity.Price <= budget[1];
+      const activityDate = new Date(activity.Date);
+      const matchesDate =
+        (!startDate || activityDate >= new Date(startDate)) &&
+        (!endDate || activityDate <= new Date(endDate));
+      const matchesLanguage = language === "any" || activity.Language === language;
 
-      return matchesName && matchesCategory && matchesTags;
+      return (
+        matchesName &&
+        matchesCategory &&
+        matchesTags &&
+        matchesBudget &&
+        matchesDate &&
+        matchesLanguage
+      );
     })
     .sort((a, b) => {
       if (sortCriteria === "rating") {
@@ -208,6 +230,58 @@ export default function Activities() {
                   <SheetTitle>Filters</SheetTitle>
                   <SheetDescription>
                     Refine your search with these filters.
+                    <div className="space-y-2">
+                    <Label htmlFor="budget">Budget Range</Label>
+                    <Slider
+                      id="budget"
+                      min={0}
+                      max={10000}
+                      step={100}
+                      value={budget}
+                      onValueChange={setBudget}
+                    />
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="number"
+                        id="budgetMin"
+                        value={budget[0]}
+                        onChange={(e) =>
+                          setBudget([Number(e.target.value), budget[1]])
+                        }
+                        className="w-24"
+                      />
+                      <span>-</span>
+                      <Input
+                        type="number"
+                        id="budgetMax"
+                        value={budget[1]}
+                        onChange={(e) =>
+                          setBudget([budget[0], Number(e.target.value)])
+                        }
+                        className="w-24"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="startDate">Start Date</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="endDate">End Date</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
                   </SheetDescription>
                 </SheetHeader>
                 <div className="grid gap-4 py-4">
@@ -221,7 +295,7 @@ export default function Activities() {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent portal={false}>
-                        <SelectItem value=" ">All Categories</SelectItem>
+                        <SelectItem value="all">All Categories</SelectItem>
                         {categories.map((category) => (
                           <SelectItem key={category._id} value={category._id}>
                             {category.Name}
@@ -250,6 +324,7 @@ export default function Activities() {
                       ))}
                     </div>
                   </div>
+                  
                   <Button onClick={clearFilters} variant="outline">
                     Clear Filters
                   </Button>
@@ -288,7 +363,7 @@ export default function Activities() {
                   isAvailable={activity.IsAvailable}
                   rating={activity.Ratings}
                   Creator={activity.Creator}
-
+                  language={activity.Language}
                 />
               ))
             ) : (
@@ -301,3 +376,4 @@ export default function Activities() {
     </>
   );
 }
+
