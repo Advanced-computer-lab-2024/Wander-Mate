@@ -67,7 +67,7 @@ const PayForActivity = ({ amount, disabled, activity }) => {
         setAlertMessage(response.data || "Payment failed.");
       }
     } catch (error) {
-      setAlertMessage("An error occurred during the transaction.");
+      setAlertMessage("Not enough money in the wallet!");
     }
   };
 
@@ -98,7 +98,8 @@ const PayForActivity = ({ amount, disabled, activity }) => {
 
       const { userID, userModel } = await reply.json();
 
-      const bookedDate = new Date().toISOString();
+      const bookedDate = new Date(activity.date).toISOString();
+      console.log(bookedDate);
       const bookingResponse = await fetch(
         "http://localhost:8000/bookActivity",
         {

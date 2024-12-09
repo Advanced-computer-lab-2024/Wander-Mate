@@ -29,12 +29,15 @@ import {
   TrainIcon,
 } from "lucide-react";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
+import CustomConfirmationDialog from "./ui/confirmationDialog";
+
 import NavigationMenuBar from "./NavigationMenuBar";
 const UpcomingBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const { toast } = useToast();
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false); // State for dialog visibility
 
   useEffect(() => {
     fetchTouristID();
@@ -83,16 +86,15 @@ const UpcomingBookings = () => {
       setLoading(false);
     }
   };
+  const handleDelete = () => {
+    setIsConfirmationOpen(true); // Open the confirmation dialog
+  };
 
   const cancelBooking = async (bookingID, createdAt) => {
-    const createdDate = new Date(createdAt);
-    const currentDate = new Date();
-    const hoursDifference = Math.abs(createdDate - currentDate) / 36e5;
-
-    if (
-      hoursDifference > 48 ||
-      window.confirm("Are you sure you want to cancel this booking?")
-    ) {
+    console.log(bookingID);
+    console.log(createdAt);
+    
+     
       try {
         const response = await fetch(
           `http://localhost:8000/cancelBooking/${bookingID}`,
@@ -100,7 +102,7 @@ const UpcomingBookings = () => {
             method: "DELETE",
           }
         );
-
+        console.log(response);
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to cancel booking.");
@@ -112,8 +114,7 @@ const UpcomingBookings = () => {
         });
 
         // Reload bookings to update the list
-        const touristID = sessionStorage.getItem("touristID");
-        if (touristID) fetchBookings(touristID);
+        window.location.reload();
       } catch (error) {
         console.error("Error cancelling booking:", error);
         toast({
@@ -124,7 +125,7 @@ const UpcomingBookings = () => {
           variant: "destructive",
         });
       }
-    }
+    
   };
 
   const getItemIcon = (itemModel) => {
@@ -169,6 +170,9 @@ const UpcomingBookings = () => {
       });
     }
   };
+  const handleCancelDelete = () => {
+    setIsConfirmationOpen(false); // Close the dialog if canceled
+  };
 
   return (
     <>
@@ -208,36 +212,16 @@ const UpcomingBookings = () => {
                         {new Date(booking.bookedDate).toLocaleDateString()}
                       </p>
                     </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="destructive">Cancel Booking</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>
-                            Are you sure you want to cancel this booking?
-                          </DialogTitle>
-                          <DialogDescription>
-                            This action cannot be undone. This will permanently
-                            cancel your booking.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => {}}>
-                            Cancel
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => {
-                              cancelBooking(booking._id, booking.createdAt);
-                              setSelectedBooking(null);
-                            }}
-                          >
-                            Confirm Cancellation
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                    <Button onClick={handleDelete} color="destructive">
+                        Cancel Booking
+                      </Button>
+
+                      <CustomConfirmationDialog
+                        isOpen={isConfirmationOpen}
+                        onConfirm={()=>cancelBooking(booking._id,booking.bookedDate)}
+                        onCancel={handleCancelDelete}
+                        message="Are you sure you want to delete this product?"
+                      />
                     <Dialog
                       open={selectedBooking?._id === booking._id}
                       onOpenChange={(open) => {
