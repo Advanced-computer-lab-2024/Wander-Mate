@@ -147,7 +147,6 @@ const AdminCategories = () => {
               className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
             >
               <div className="flex items-center space-x-2">
-                {tag.icon}
                 {editingTag === tag._id ? (
                   <Input
                     type="text"
@@ -191,45 +190,12 @@ const AdminCategories = () => {
         <div className="flex space-x-2">
           <Input
             type="text"
-            placeholder="Enter new tag name"
+            placeholder="Enter new Category"
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
             className="flex-grow"
           />
-          <Select value={selectedIcon} onValueChange={setSelectedIcon}>
-            <SelectTrigger className="w-[70px]">
-              <SelectValue placeholder="Select an icon" />
-            </SelectTrigger>
-            <SelectContent>
-              {iconOptions.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <div className="flex items-center">
-                    {option.icon && (
-                      <span
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        {option.icon}
-                      </span>
-                    )}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+
           <Button onClick={handleCreateTag}>
             <Plus className="h-5 w-5 mr-2" />
             Create New Category
