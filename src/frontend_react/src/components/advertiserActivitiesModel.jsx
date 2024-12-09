@@ -202,11 +202,13 @@ export default function AdvertiserActivityModal({
 
   return (
     <>
-    <Toaster /> {/* Toaster component added here to show notifications */}
+    {/* Toaster component added here to show notifications */}
 
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" size="full">
+      <Toaster />
         <div className="relative">
           <Button variant="ghost" className="absolute right-0 top-0" onClick={() => handleOpenChange(false)}>
             <Icon icon="ph:x" className="h-4 w-4" />
