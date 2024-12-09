@@ -98,7 +98,7 @@ export default function CreatePromoCode() {
         ref={dialogRef}
       >
         <DialogTrigger asChild>
-          <UserPlus className="mr-2 h-4 w-4">Create Promo Code</UserPlus>
+          <Plus className="mr-2 h-4 w-4">Create Promo Code</Plus>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

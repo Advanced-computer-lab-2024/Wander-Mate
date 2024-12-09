@@ -34,6 +34,7 @@ import {
   FileText,
   ListOrdered,
   BookMarked,
+  BookCheck,
 } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "./ui/use-toast";
@@ -390,6 +391,9 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
   const goToOrders = async () => {
     navigate("/touristOrders");
   };
+  const goToMyBookings =async()=>{
+    navigate("/myBookings");
+  };
   const deleteNotification = useCallback(
     async (notificationId) => {
       try {
@@ -729,6 +733,11 @@ const NavigationMenuBar = ({ likedItemsCount = 0 }) => {
                     <ListOrdered className="mr-2 h-4 w-4" />
                     <span onClick={goToOrders}>Orders</span>
                     <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <BookCheck className="mr-2 h-4 w-4" />
+                    <span onClick={goToMyBookings}>My Bookings</span>
+                    <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
