@@ -108,42 +108,74 @@ export default function AdvertiserActivityModal({
   const handleEditSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.patch("http://localhost:8000/updateActivity", {
+    toast.promise(
+      axios.patch("http://localhost:8000/updateActivity", {
         id: activity.activityId,
         Name: updatedActivity.name,
-        Time : updatedActivity.time,
+        Time: updatedActivity.time,
         DateString: updatedActivity.date,
-        Location: {type: "Point", coordinates: updatedActivity.location.coordinates } ,
-        Price:updatedActivity.price,
-        Category:updatedActivity.category,
-        Tags: selectedTags, // Send the selected tags
-        Discounts:updatedActivity.discounts,
-        IsAvailable:updatedActivity.isAvailable
+        Location: { type: "Point", coordinates: updatedActivity.location.coordinates },
+        Price: updatedActivity.price,
+        Category: updatedActivity.category,
+        Tags: selectedTags,
+        Discounts: updatedActivity.discounts,
+        IsAvailable: updatedActivity.isAvailable
+      }),
+      {
+        loading: 'Updating activity...',
+        success: 'Activity updated successfully!',
+        error: 'Error updating activity.',
+      },
+      {
+        style: {
+          minWidth: '250px',
+        },
+        success: {
+          duration: 5000,
+          icon: '🎉',
+        },
+      }
+    )
+      .then((response) => {
+        setUpdatedActivity(response.data.activity); // Update the state with the response data
+        setIsEditing(false); // Exit edit mode
+        window.location.reload(); // Reload the page
+      })
+      .catch((error) => {
+        // The error message will be handled by the toast automatically
       });
-      console.log(activity);
-     toast.success("Activity updated successfully!");
-      setIsEditing(false);
-      setUpdatedActivity(response.data.activity); // Update the state with the response data
-      window.location.reload();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Error updating activity");
-    }
   };
+
   const handleDeleteActivity = async () => {
     if (window.confirm("Are you sure you want to delete this activity?")) {
-      try {
-        // Ensure the ID is passed in the request body correctly
-        const response = await axios.delete("http://localhost:8000/deleteActivity", {
-          data: { id: activity.activityId }, // Pass the ID in the `data` field
+      toast.promise(
+        axios.delete("http://localhost:8000/deleteActivity", {
+          data: { id: activity.activityId },
+        }),
+        {
+          loading: 'Deleting activity...',
+          success: 'Activity deleted successfully!',
+          error: 'Error deleting activity.',
+        },
+        {
+          style: {
+            minWidth: '250px',
+          },
+          success: {
+            duration: 5000,
+            icon: '🎉',
+          },
+        }
+      )
+        .then(() => {
+          window.location.reload();
+        })
+        .catch((error) => {
+          // The error message will be handled by the toast automatically
         });
-        window.location.reload();
-      } catch (error) {
-        console.error("Error deleting activity:", error);
-        toast.error(error.response?.data?.message || "Error deleting activity");
-      }
     }
   };
+  
   
 
   // Handle input field changes
@@ -168,6 +200,9 @@ export default function AdvertiserActivityModal({
   };
 
   return (
+    <>
+    <Toaster /> {/* Toaster component added here to show notifications */}
+
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" size="full">
@@ -515,7 +550,9 @@ export default function AdvertiserActivityModal({
             </div>
           </div>
         </div>
+
       </DialogContent>
     </Dialog>
+    </>
   );
 }
