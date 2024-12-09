@@ -147,7 +147,7 @@ export default function AdvertiserActivityModal({
   };
 
   const handleDeleteActivity = async () => {
-    if (window.confirm("Are you sure you want to delete this activity?")) {
+    
       toast.promise(
         axios.delete("http://localhost:8000/deleteActivity", {
           data: { id: activity.activityId },
@@ -173,7 +173,7 @@ export default function AdvertiserActivityModal({
         .catch((error) => {
           // The error message will be handled by the toast automatically
         });
-    }
+    
   };
   
   
