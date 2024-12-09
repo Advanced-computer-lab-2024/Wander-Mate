@@ -21,8 +21,7 @@ By simplifying and centralizing travel arrangements, we hope to reduce the stres
 
 ## Build Status
 
-The tourist is always being notified when there is an update in activity
-when cancelling a booking the money is not returned to the user wallet
+When cancelling a booking the money is not returned to the user wallet
 
 ---
 
