@@ -1708,31 +1708,40 @@ const cancelBooking = async (req, res) => {
     // If eligible, proceed to cancel the booking
     await Booking.findByIdAndDelete(bookingID);
     if (tourist) {
-      console.log(tourist.Wallet);
+      let price = 0;
+    
       switch (itemModel) {
         case "Attraction":
-          tourist.Wallet = (tourist.Wallet || 0) + attractionId.Price;
+          price = attractionId.Price;
           break;
         case "Itinerary":
-          tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
+          price = itineraryId.Price;
           break;
         case "Transportation":
-          tourist.Wallet = (tourist.Wallet || 0) + transportId.price;
+          price = transportId.price;
           break;
         case "HotelBooked":
-          tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
+          price = bookedHotelId.price;
           break;
         case "BookedFlights":
-          tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.price;
-        default:
+          price = bookedFlightId.price;
           break;
+        default:
+          throw new Error("Unknown item model.");
       }
-
-      console.log(attractionId);
-      console.log(itemModel);
-      console.log(tourist.Wallet);
-      await tourist.save();
+    
+      if (price > 0) {
+        await userModel.findByIdAndUpdate(
+          booking.userId,
+          { $inc: { Wallet: price } },
+          { new: true }
+        );
+        console.log(`Wallet updated by ${price}`);
+      } else {
+        console.error("Price is invalid or zero, Wallet not updated.");
+      }
     }
+    
     res.status(200).json({ message: "Booking cancelled successfully." });
   } catch (err) {
     console.error("Error cancelling booking:", err);
