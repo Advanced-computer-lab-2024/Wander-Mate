@@ -39,7 +39,13 @@ export default function ActivityModal({
   const handleOpenChange = (open) => {
     setIsOpen(open);
     if (!open) {
-      // setIsBookingConfirmed(false);
+      const url = new URL(window.location.href);
+      if (window.location.search.includes("open")) {
+        url.searchParams.delete("open");
+        url.searchParams.delete("activity");
+        window.history.replaceState({}, "", url);
+        window.location.reload();
+      }
     }
   };
 
@@ -143,6 +149,15 @@ export default function ActivityModal({
     fetchUserAge();
     fetchAdvertiserInfo();
   }, []);
+  useEffect (()=>{
+    const urlParams = new URLSearchParams(window.location.search);
+    if (
+      urlParams.get("open") === "true" &&
+      urlParams.get("activity") === activity.activityId
+    ) {
+      setIsOpen(true);
+    }
+  }, [isOpen, activity.Ratings, favorite])
 
   const handleShare = (method) => {
     const currentUrl = window.location.href.split("?")[0];

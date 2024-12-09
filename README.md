@@ -21,13 +21,7 @@ By simplifying and centralizing travel arrangements, we hope to reduce the stres
 
 ## Build Status
 
-(Currently, the project is in [state]. The following features are [completed/in progress] and [testing/under development].)
-
----
-
-## Known Issues
-
-(If there are any issues or bugs not mentioned here, please note them here. Failure to mention problems may result in deductions.)
+The tourist is always being notified when there is an update in activity
 
 ---
 
