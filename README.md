@@ -19,9 +19,9 @@ By simplifying and centralizing travel arrangements, we hope to reduce the stres
 
 ---
 
-## Build Status
+## user complains
 
-The tourist is always being notified when there is an update in activity
+When cancelling a booking the money is not fully returned to the user wallet as there are cancellation fees by the hotel
 
 ---
 
