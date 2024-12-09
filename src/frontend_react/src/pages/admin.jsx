@@ -14,6 +14,9 @@ import { Label } from "../components/ui/label";
 import AllProductsAtAdmin from "../components/AllProductsAdminDashBoard";
 import TourismGovernerFooter from "../components/tourismGovernerFooter";
 import TopUsers from "../components/topUsers";
+import SalesReportTable from "../components/salestableseller";
+import UserStatsCard from "../components/userscard";
+
 const Admin = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -26,8 +29,10 @@ const Admin = () => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <OrderCard />
           </div>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <UserStatsCard />
+          </div>
         </h1>
-
         {/* Card for LegendEvents and LegendEvents2 side by side */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex space-x-8">
@@ -47,9 +52,7 @@ const Admin = () => {
             </div>
           </div>
         </div>
-
         <AdminOrders />
-
         {/* Adding margin-top to create space between AdminOrders and AllProductsAtAdmin */}
         <div className="flex space-x-8 mt-8">
           <div className="w-1/2 mt-8">
@@ -59,6 +62,9 @@ const Admin = () => {
             <TopUsers />
           </div>
         </div>
+        <br />
+        <Label className="text-2xl font-semibold">Sales Table</Label>{" "}
+        <SalesReportTable />
       </main>
 
       {/* Footer */}

@@ -2325,6 +2325,35 @@ const markNotificationAsReadAdmin = async (req, res) => {
   }
 };
 
+const getUserStatistics = async (req, res) => {
+  try {
+    console.log("huhu");
+    const totalUsers = await userModel.countDocuments();
+
+    const monthlyNewUsers = await userModel.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          newUsers: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({ totalUsers, monthlyNewUsers });
+  } catch (error) {
+    console.error("Error fetching user statistics:", error);
+    throw error;
+  }
+};
 
 module.exports = {
   createAdmin,
@@ -2398,4 +2427,5 @@ module.exports = {
   viewMyNotificationsAdmin,
   markNotificationAsReadAdmin,
   removeNotificationAdmin,
+  getUserStatistics,
 };

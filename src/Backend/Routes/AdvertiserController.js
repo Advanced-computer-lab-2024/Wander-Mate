@@ -488,7 +488,7 @@ const requestAdvertiserAccountDeletion = async (req, res) => {
 
     res.status(200).json({
       message:
-        "Account deletion requested successfully. Profile and associated data will no longer be visible.",
+        "Account deleted successfully. Profile and associated data will no longer be visible.",
     });
   } catch (error) {
     console.error("Error processing account deletion request:", error);
@@ -973,7 +973,7 @@ const getTouristsByAdvertiser = async (req, res) => {
     }
 
     // Step 1: Find all attractions associated with the specified advertiser
-    const attractions = await Attraction.find({ advertiserId }); // Assuming the Advertiser's ID is stored in Attraction model
+    const attractions = await Attraction.find({ Creator: advertiserId }); // Assuming the Advertiser's ID is stored in Attraction model
     if (!attractions || attractions.length === 0) {
       return res.status(404).json({
         message: "No attractions found for this advertiser",

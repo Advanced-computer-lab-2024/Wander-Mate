@@ -32,6 +32,7 @@ import {
   TicketPercent,
   Trash2,
   Bell,
+  MapPin,
 } from "lucide-react";
 
 import AddAdminButton from "./AddAdminButton";
@@ -241,17 +242,16 @@ const AdminNavBar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/AdminOrders">
-            <Button variant="ghost">
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Orders
-            </Button>
-          </Link>
-
           <Link to="/viewAllComplaints">
             <Button variant="ghost">
               <AlertTriangle className="mr-2 h-4 w-4" />
               Complaints
+            </Button>
+          </Link>
+          <Link to="/adminItineray">
+            <Button variant="ghost">
+              <MapPin className="mr-2 h-4 w-4" />
+              Itineraries
             </Button>
           </Link>
 

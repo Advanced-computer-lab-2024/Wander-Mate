@@ -223,6 +223,7 @@ const {
   viewMyNotificationsAdmin,
   markNotificationAsReadAdmin,
   removeNotificationAdmin,
+  getUserStatistics,
 } = require("./Routes/adminController.js");
 
 const {
@@ -732,3 +733,4 @@ app.get(
 app.get("/getTopCustomersSeller/:sellerId", getTouristsBySeller);
 app.get("/getTopCustomersTourGuide/:tourGuideId", getTouristsByTourGuide);
 app.get("/getTopCustomersAdvertiser/:advertiserId", getTouristsByAdvertiser);
+app.get("/getUserStatistics", getUserStatistics);

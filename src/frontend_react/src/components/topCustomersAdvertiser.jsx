@@ -28,7 +28,7 @@ const TopCustomersAdvertiser = () => {
         }
         const result = await response.json();
         console.log(result);
-        setData(result.data);
+        setData(result.tourists);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -44,6 +44,7 @@ const TopCustomersAdvertiser = () => {
   }
 
   if (error) {
+    console.log(error);
     return <div>Error: {error}</div>;
   }
 
