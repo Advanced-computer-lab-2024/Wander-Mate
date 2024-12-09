@@ -19,7 +19,7 @@ By simplifying and centralizing travel arrangements, we hope to reduce the stres
 
 ---
 
-## user complains
+## Project Bug
 
 When cancelling a booking the money is not fully returned to the user wallet as there is a problem in converting the currency
 
