@@ -25,7 +25,8 @@ export default function AdvertiserActivityModal({
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit mode
   const [updatedActivity, setUpdatedActivity] = useState({
     ...activity,
-    discounts: activity.discounts || [], // Ensure discounts is always an array
+    discounts: activity.discounts || [], 
+    category: activity.category || '',// Ensure discounts is always an array
   });
     const [categories, setCategories] = useState([]); // State for categories
   const [tags, setTags] = useState([]); // State for available tags
@@ -368,10 +369,10 @@ export default function AdvertiserActivityModal({
                         name="category"
                         value={updatedActivity.category} // This should be the category name
                         onChange={(e) => {
-                          const selectedCategoryName = e.target.value;
+                          const selectedCategoryId= e.target.value;
                           setUpdatedActivity((prev) => ({
                             ...prev,
-                            category: selectedCategoryName, // Update with the category name
+                            category: selectedCategoryId, // Update with the category name
                           }));
                         }}
                         className="w-full border border-gray-300 p-2 rounded-md"
@@ -382,7 +383,7 @@ export default function AdvertiserActivityModal({
                           <option>Loading...</option>
                         ) : (
                           categories.map((category) => (
-                            <option key={category._id} value={category.Name}>
+                            <option key={category._id} value={category._id}>
                               {category.Name}
                             </option>
                           ))
