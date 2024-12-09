@@ -85,6 +85,7 @@ export default function CreateTransportationDialog() {
         });
         toast.success("Added successfully");
         setOpen(false);
+        window.location.reload();
       } else {
         toast.error("Error adding transportation.");
       }
@@ -100,7 +101,7 @@ export default function CreateTransportationDialog() {
         <Button>Add New Transportation</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]" size="lg">
-        <Toaster/>
+        <Toaster />
         <DialogHeader>
           <DialogTitle>Create New Transportation</DialogTitle>
         </DialogHeader>
