@@ -1717,13 +1717,13 @@ const cancelBooking = async (req, res) => {
           tourist.Wallet = (tourist.Wallet || 0) + itineraryId.Price;
           break;
         case "Transportation":
-          tourist.Wallet = (tourist.Wallet || 0) + transportId.Price;
+          tourist.Wallet = (tourist.Wallet || 0) + transportId.price;
           break;
         case "HotelBooked":
           tourist.Wallet = (tourist.Wallet || 0) + bookedHotelId.price;
           break;
         case "BookedFlights":
-          tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.Price;
+          tourist.Wallet = (tourist.Wallet || 0) + bookedFlightId.price;
         default:
           break;
       }
