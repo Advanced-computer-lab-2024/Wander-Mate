@@ -103,12 +103,27 @@ export default function AdvertiserActivityModal({
       },
     }));
   };
-  
+  const sendAttractionNotifications = async (activityId) => {
+    try {
+      await axios.post("http://localhost:8000/sendAttractionNotifications", {
+        activityId: activityId
+      });
+      toast.success('Notifications sent successfully!', {
+        duration: 3000,
+        icon: '📢',
+      });
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      toast.error('Failed to send notifications. Please try again.', {
+        duration: 3000,
+      });
+    }
+  };
 
   // Handle form submission to update the activity
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-
+  
     toast.promise(
       axios.patch("http://localhost:8000/updateActivity", {
         id: activity.activityId,
@@ -140,9 +155,18 @@ export default function AdvertiserActivityModal({
       .then((response) => {
         setUpdatedActivity(response.data.activity); // Update the state with the response data
         setIsEditing(false); // Exit edit mode
+  
+        // Check if the activity is now available and send notifications if true
+        if (response.data.activity.IsAvailable) {
+          return sendAttractionNotifications(activity.activityId);
+        }
+      })
+      .then(() => {
+        // This will run after sendAttractionNotifications (if it was called)
         window.location.reload(); // Reload the page
       })
       .catch((error) => {
+        console.error('Error:', error);
         // The error message will be handled by the toast automatically
       });
   };
