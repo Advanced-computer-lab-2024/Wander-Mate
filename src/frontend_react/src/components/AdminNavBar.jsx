@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
+import { toast } from "./ui/use-toast";
+import axios from "axios";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +15,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { ScrollArea } from "./ui/scroll-area";
 import {
   ShoppingCart,
   LogOut,
@@ -26,6 +30,8 @@ import {
   LucideSquareChartGantt,
   Table,
   TicketPercent,
+  Trash2,
+  Bell,
 } from "lucide-react";
 
 import AddAdminButton from "./AddAdminButton";
@@ -60,6 +66,8 @@ const AdminNavBar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [adminId, setTouristId] = useState(0);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -70,6 +78,34 @@ const AdminNavBar = () => {
       setUsername(storedUsername);
     }
   }, [navigate]);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const username = sessionStorage.getItem("username");
+        if (!username) throw new Error("Username not found in session storage");
+
+        const reply = await fetch(`http://localhost:8000/getID/${username}`);
+        if (!reply.ok) throw new Error("Failed to get Admin ID");
+
+        const { userID } = await reply.json();
+        setTouristId(userID);
+
+        const response = await axios.get(
+          `http://localhost:8000/viewMyNotificationsAdmin/${userID}`
+        );
+        setNotifications(response.data.notifications || []);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load notifications. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   const handleMouseEnter = (dropdown) => {
     if (dropdown === "products") {
@@ -97,6 +133,68 @@ const AdminNavBar = () => {
     sessionStorage.removeItem("username");
     navigate("/loginPage");
   };
+  const markNotificationAsRead = async (id) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/markNotificationAsReadAdmin/${adminId}/${id}`
+      );
+
+      if (response.status === 200) {
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notification) =>
+            notification._id === id
+              ? { ...notification, isRead: true }
+              : notification
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark notification as read. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  const deleteNotification = useCallback(
+    async (notificationId) => {
+      try {
+        const response = await axios.delete(
+          `http://localhost:8000/removeNotificationAdmin/${adminId}/${notificationId}`
+        );
+
+        if (response.status === 200) {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter(
+              (notification) => notification._id !== notificationId
+            )
+          );
+
+          toast({
+            title: "Success",
+            description: "Notification deleted successfully.",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to delete notification. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+
+        toast({
+          title: "Error",
+          description: "Failed to delete notification. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [adminId]
+  );
+
   return (
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-2">
@@ -242,7 +340,55 @@ const AdminNavBar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+                {notifications.some((n) => !n.isRead) && (
+                  <span className="relative right-2 bottom-2 h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg">Notifications</h3>
+                {notifications.length === 0 ? (
+                  <p className="text-sm text-gray-500">No new notifications</p>
+                ) : (
+                  <ScrollArea className="h-[300px]">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification._id}
+                        className={`p-4 ${
+                          notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                        } mb-2 rounded-md cursor-pointer flex justify-between items-center`}
+                      >
+                        <p
+                          className="text-sm"
+                          onClick={() =>
+                            markNotificationAsRead(notification._id)
+                          }
+                        >
+                          {notification.message}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteNotification(notification._id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete notification</span>
+                        </Button>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
